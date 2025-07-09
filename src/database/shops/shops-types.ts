@@ -47,6 +47,7 @@ export interface Product {
     name: string
     emoji: string
     description: string
+    amount?: number
     price: number
     action?: ProductAction
 }

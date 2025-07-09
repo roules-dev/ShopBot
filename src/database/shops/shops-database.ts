@@ -156,16 +156,20 @@ export async function removeProduct(shopId: string, productId: string) {
 export async function updateProduct(shopId: string, productId: string, options: ProductOptionsOptional) {
     if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
     
-    const { name, description, price, emoji, action } = options
+    const { name, description, price, emoji, action, amount } = options
     const product = getShops().get(shopId)!.products.get(productId)
 
     if (!product) throw new DatabaseError(DatabaseErrors.ProductDoesNotExist)
 
     if (name) product.name = name
     if (description) product.description = description
-    if (price) product.price = price
+    if (price != undefined) product.price = price
     if (emoji) product.emoji = emoji
     if (action) product.action = action
+    if (amount != undefined) {
+        if (amount == -1) product.amount = undefined
+        else product.amount = amount
+    }
 
     await save(shopsDatabase)
 }

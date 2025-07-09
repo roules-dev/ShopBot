@@ -3,7 +3,7 @@
         "currencies": {
             "d9997bc7-ce3b-491b-92de-cfa5afd7e955": {
                 "item": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
-                "amount": 14974.9
+                "amount": 14952.1
             },
             "f222099b-7afd-4381-9b7d-be594eebd4f3": {
                 "item": "f222099b-7afd-4381-9b7d-be594eebd4f3",
@@ -30,7 +30,7 @@
                     "id": "d26c10f6-2214-40a4-934a-50724c016b0f",
                     "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
                 },
-                "amount": 2
+                "amount": 19
             },
             "6749e140-3482-4dd2-95b2-528e8ae3165f": {
                 "item": {

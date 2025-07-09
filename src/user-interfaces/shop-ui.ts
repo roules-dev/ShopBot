@@ -2,7 +2,7 @@ import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, 
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "../database/accounts/accounts-database"
 import { getCurrencyName } from "../database/currencies/currencies-database"
 import { DatabaseError } from "../database/database-types"
-import { getProductName, getShopName, getShops } from "../database/shops/shops-database"
+import { getProductName, getShopName, getShops, updateProduct } from "../database/shops/shops-database"
 import { Product, PRODUCT_ACTION_TYPE, ProductActionType, Shop } from "../database/shops/shops-types"
 import { ErrorMessages } from "../utils/constants"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
@@ -132,10 +132,12 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         this.selectedShop.products.forEach(product => {
             const descString = product.description ? product.description : '\u200b'
+            const amountString = product.amount == undefined ?  '' : 
+                product.amount == 0 ? ' (None left)' : ` (${product.amount} left)`
 
             fields.push({ 
                 name: getProductName(this.selectedShop!.id, product.id)!,
-                value: `Price: **${product.price} ${getCurrencyName(this.selectedShop!.currency.id)}**\n${descString}`, 
+                value: `Price: **${product.price} ${getCurrencyName(this.selectedShop!.currency.id)}**${amountString}\n${descString}`, 
                 inline: true 
             })
         })
@@ -283,9 +285,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
             const price = this.selectedProduct.price * (1 - this.discount / 100)
 
             if (userCurrencyAmount < price) return replyErrorMessage(interaction, `You don't have enough **${getCurrencyName(this.selectedShop.currency.id)!}** to buy this product`)
-            
             setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, userCurrencyAmount - price)
             
+            if (this.selectedProduct.amount != undefined && this.selectedProduct.amount <= 0) return replyErrorMessage(interaction, `This product is no longer available`)
+            if (this.selectedProduct.amount != undefined) updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: this.selectedProduct.amount - 1 })
+
             if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
 
             const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
