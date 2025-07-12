@@ -1,7 +1,7 @@
-import { Database, DatabaseJSONBody, UUID } from "../database-types"
+import { Database, DatabaseJSONBody, Id } from "../database-types"
 
 export interface Currency {
-    id: UUID
+    id: Id
     name: string
     emoji: string
 }
@@ -10,12 +10,12 @@ export type CurrencyOptions = Omit<Currency, 'id'>
 export type CurrencyOptionsOptional = Partial<CurrencyOptions>
 
 export interface CurrenciesDatabaseJSONBody extends DatabaseJSONBody {
-    [currencyId: UUID]: Currency
+    [currencyId: Id]: Currency
 }
 
 
 export class CurrenciesDatabase extends Database {
-    public currencies: Map<UUID, Currency>
+    public currencies: Map<Id, Currency>
 
     public constructor (databaseRaw: CurrenciesDatabaseJSONBody, path: string) {
         super(databaseRaw, path)
@@ -28,7 +28,7 @@ export class CurrenciesDatabase extends Database {
         return currencies
     }
 
-    protected parseRaw(databaseRaw: CurrenciesDatabaseJSONBody): Map<UUID, Currency> {
+    protected parseRaw(databaseRaw: CurrenciesDatabaseJSONBody): Map<Id, Currency> {
         return new Map(Object.entries(databaseRaw))
     }
 }

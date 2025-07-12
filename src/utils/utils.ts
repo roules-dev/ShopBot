@@ -1,4 +1,4 @@
-export function assertNeverReached(x: never): never {
+export function assertNeverReached(_: never): never {
     throw new Error('Did not expect to get here')
 }
 

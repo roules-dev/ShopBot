@@ -1,97 +1,97 @@
 {
     "628298729405022216": {
         "currencies": {
-            "d9997bc7-ce3b-491b-92de-cfa5afd7e955": {
-                "item": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+            "ZlPEJfBvvc68Gmd2Hcd9l": {
+                "item": "ZlPEJfBvvc68Gmd2Hcd9l",
                 "amount": 14952.1
             },
-            "f222099b-7afd-4381-9b7d-be594eebd4f3": {
-                "item": "f222099b-7afd-4381-9b7d-be594eebd4f3",
+            "b4kXfz14I6Dg-2HuJN65Z": {
+                "item": "b4kXfz14I6Dg-2HuJN65Z",
                 "amount": 235
             }
         },
         "inventory": {
-            "20d038ab-7dab-4ced-85f2-c38a9076687a": {
+            "Nt4GT7m_M1b-3EeoxbfWC": {
                 "item": {
-                    "id": "20d038ab-7dab-4ced-85f2-c38a9076687a",
-                    "shopId": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441"
+                    "id": "Nt4GT7m_M1b-3EeoxbfWC",
+                    "shopId": "T2ZDGLBOCTvFjxlsfg5Ku"
                 },
                 "amount": 4
             },
-            "b34faea0-cb8c-4fd1-b123-8c37fec471bb": {
+            "3z4IBSyuLcYk9AYFXQhMN": {
                 "item": {
-                    "id": "b34faea0-cb8c-4fd1-b123-8c37fec471bb",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "3z4IBSyuLcYk9AYFXQhMN",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 3
             },
-            "d26c10f6-2214-40a4-934a-50724c016b0f": {
+            "PXMuiYB49HX9TrPvTLzKA": {
                 "item": {
-                    "id": "d26c10f6-2214-40a4-934a-50724c016b0f",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "PXMuiYB49HX9TrPvTLzKA",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 19
             },
-            "6749e140-3482-4dd2-95b2-528e8ae3165f": {
+            "nrxAyQIWlZyFpXhQqLfwT": {
                 "item": {
-                    "id": "6749e140-3482-4dd2-95b2-528e8ae3165f",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "nrxAyQIWlZyFpXhQqLfwT",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 1
             },
-            "869a3fce-4d4a-4bf5-9a98-f704f73c2af8": {
+            "a0TJ56AwvipDIo2o6HzBZ": {
                 "item": {
-                    "id": "869a3fce-4d4a-4bf5-9a98-f704f73c2af8",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "a0TJ56AwvipDIo2o6HzBZ",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 1
             },
-            "b6329e22-a10c-4466-879a-90d732440f0e": {
+            "G4mvJMp6NtefurANxYSUX": {
                 "item": {
-                    "id": "b6329e22-a10c-4466-879a-90d732440f0e",
-                    "shopId": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441"
+                    "id": "G4mvJMp6NtefurANxYSUX",
+                    "shopId": "T2ZDGLBOCTvFjxlsfg5Ku"
                 },
                 "amount": 1
             },
-            "54940be1-3d10-4ea5-91b6-2e12cc02603a": {
+            "z5QSfmPMAEZ4swt6P9RgN": {
                 "item": {
-                    "id": "54940be1-3d10-4ea5-91b6-2e12cc02603a",
-                    "shopId": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441"
+                    "id": "z5QSfmPMAEZ4swt6P9RgN",
+                    "shopId": "T2ZDGLBOCTvFjxlsfg5Ku"
                 },
                 "amount": 1
             },
-            "39b7ad2e-5228-43fe-ad87-edcc3bd6ed76": {
+            "J-fAH8DQfwtRRUjtMqKMq": {
                 "item": {
-                    "id": "39b7ad2e-5228-43fe-ad87-edcc3bd6ed76",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "J-fAH8DQfwtRRUjtMqKMq",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 1
             },
-            "1602844c-c798-495c-aa5c-e11e28f19a35": {
+            "yQRi-X-EG4pLmVcoheUGZ": {
                 "item": {
-                    "id": "1602844c-c798-495c-aa5c-e11e28f19a35",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "yQRi-X-EG4pLmVcoheUGZ",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 1
             },
-            "66a22b1b-7fa7-4219-82f5-b31490286676": {
+            "CSPbI59YmQcI8QiEt8IqA": {
                 "item": {
-                    "id": "66a22b1b-7fa7-4219-82f5-b31490286676",
-                    "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e"
+                    "id": "CSPbI59YmQcI8QiEt8IqA",
+                    "shopId": "O8jl-dKcMa1q6xb1h4kMI"
                 },
                 "amount": 1
             },
-            "39aaa254-e5be-49e9-865f-26b66383ac89": {
+            "zUzsnvPjgm-rtNySeBevE": {
                 "item": {
-                    "id": "39aaa254-e5be-49e9-865f-26b66383ac89",
-                    "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915"
+                    "id": "zUzsnvPjgm-rtNySeBevE",
+                    "shopId": "fvqtk30qXxxsnLHog2xMp"
                 },
                 "amount": 6
             },
-            "d812a77d-5633-4928-85fe-d2be8a4f826d": {
+            "0gH15q970O-n4CYQBi6ft": {
                 "item": {
-                    "id": "d812a77d-5633-4928-85fe-d2be8a4f826d",
-                    "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915"
+                    "id": "0gH15q970O-n4CYQBi6ft",
+                    "shopId": "fvqtk30qXxxsnLHog2xMp"
                 },
                 "amount": 2
             }
@@ -99,8 +99,8 @@
     },
     "1109842206832988272": {
         "currencies": {
-            "d9997bc7-ce3b-491b-92de-cfa5afd7e955": {
-                "item": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+            "ZlPEJfBvvc68Gmd2Hcd9l": {
+                "item": "ZlPEJfBvvc68Gmd2Hcd9l",
                 "amount": 0
             }
         },

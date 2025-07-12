@@ -1,5 +1,5 @@
 import { Client } from 'discord.js'
-import { PrettyLog } from '../utils/pretty-log.js'
+import { PrettyLog } from '../utils/pretty-log'
 
 export const name = 'ready'
 export const once = true

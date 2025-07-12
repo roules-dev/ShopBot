@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
 import { getCurrencies } from "../currencies/currencies-database";
 import { Currency } from "../currencies/currencies-types";
-import { UUID, DatabaseJSONBody, Database } from "../database-types";
+import { Id, DatabaseJSONBody, Database } from "../database-types";
 
 export const PRODUCT_ACTION_TYPE = {
     GiveRole: 'give-role',
@@ -12,7 +12,7 @@ export type ProductActionType = typeof PRODUCT_ACTION_TYPE[keyof typeof PRODUCT_
 
 export type ProductActionOptions<Type extends ProductActionType> = 
     Type extends typeof PRODUCT_ACTION_TYPE.GiveRole ? { roleId: Snowflake } :
-    Type extends typeof PRODUCT_ACTION_TYPE.GiveCurrency ? { currencyId: UUID, amount: number } :
+    Type extends typeof PRODUCT_ACTION_TYPE.GiveCurrency ? { currencyId: Id, amount: number } :
     never;
 
 export type ProductAction = {
@@ -42,8 +42,8 @@ export function isProductActionType(actionType: string): actionType is ProductAc
 }
 
 export interface Product {
-    id: UUID
-    shopId: UUID
+    id: Id
+    shopId: Id
     name: string
     emoji: string
     description: string
@@ -55,32 +55,39 @@ export interface Product {
 export type ProductOptions = Omit<Product, 'id' | 'shopId'>
 export type ProductOptionsOptional = Partial<ProductOptions>
 
+export type ProductJSONBody = Omit<Product, 'action'> & { action?: ProductActionJSONBody }
+export type ProductOptionsJSONBody = Omit<Product, 'id'>
+export type ProductOptionsJSONBodyOptional = Partial<ProductOptionsJSONBody>
 
 export interface Shop {
-    id: UUID
+    id: Id
     name: string
     emoji: string
     description: string
     currency: Currency
     discountCodes: {[code: string]: number}
     reservedTo?: Snowflake
-    products: Map<UUID, Product>
+    products: Map<Id, Product>
 }
 
-export type ShopOptions = Omit<Shop, 'id' | 'products' | 'currency' | 'discountCodes'>
-export type ShopOptionsOptional = Partial<ShopOptions>
+export type ShopOptions = Omit<Shop, 'id'>
+export type ShopOptionsJSONBody = Omit<ShopOptions, 'products' | 'currency'> & { currencyId: Id, products: { [productId: Id]: ProductJSONBody } } 
+export type ShopOptionsOptionalJSONBody = Partial<ShopOptionsJSONBody>
+
+export type EditShopOptions = Omit<Shop, 'id' | 'products' | 'currency' | 'discountCodes'>
+export type EditShopOptionsOptional = Partial<EditShopOptions>
 
 
 export interface ShopsDatabaseJSONBody extends DatabaseJSONBody {
-    [shopId: UUID]: Omit<Shop, 'products' | 'currency'> 
+    [shopId: Id]: Omit<Shop, 'products' | 'currency'> 
         & { 
-            products: { [productId: UUID]: Omit<Product, 'action'> & { action?: ProductActionJSONBody } }
+            products: { [productId: Id]: ProductJSONBody },
+            currencyId: Id
         } 
-        & { currencyId: UUID }
 }
 
 export class ShopsDatabase extends Database {
-    public shops: Map<UUID, Shop>
+    public shops: Map<Id, Shop>
 
     public constructor (databaseRaw: ShopsDatabaseJSONBody, path: string) {
         super(databaseRaw, path)
@@ -92,14 +99,15 @@ export class ShopsDatabase extends Database {
         const shopsJSON: ShopsDatabaseJSONBody = {}
 
         this.shops.forEach((shop, shopId) => {
-            shopsJSON[shopId] = { ...shop, products: Object.fromEntries(shop.products), currencyId: shop.currency.id }
+            const { currency, ...shopWithoutCurrency } = shop
+            shopsJSON[shopId] = { ...shopWithoutCurrency, products: Object.fromEntries(shop.products), currencyId: currency.id }
         })
 
         return shopsJSON
     }
 
-    protected parseRaw(databaseRaw: ShopsDatabaseJSONBody): Map<UUID, Shop> {
-        const shops: Map<UUID, Shop> = new Map()
+    protected parseRaw(databaseRaw: ShopsDatabaseJSONBody): Map<Id, Shop> {
+        const shops: Map<Id, Shop> = new Map()
 
         for (const [shopId, shop] of Object.entries(databaseRaw)) {
             if (!getCurrencies().has(shop.currencyId)) continue

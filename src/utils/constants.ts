@@ -1,4 +1,7 @@
-export const EMOJI_REGEX = /<a?:.+?:\d{18,}>|\p{Extended_Pictographic}/gu
+export const EMOJI_REGEX = /^(<a?:.+?:\d{18,}>|\p{Extended_Pictographic})$/u
+export const SNOWLAKE_REGEX = /^\d{17,20}$/
+export const ID_REGEX = /^[\w\-]{21}$/
+
 
 export enum ErrorMessages {
     InvalidSubcommand = 'Invalid subcommand',

@@ -7,24 +7,31 @@
     "build": "tsc",
     "cleanbuild": "rd /s /q \"dist\" && tsc",
     "dev": "nodemon src/index.ts",
-    "start": "npm run build && node ./dist/index.js",
+    "start": "ts-node src/index.ts",
     "serve": "node dist/index.js",
     "deploy": "npm run build && node ./dist/deploy-commands.js",
-    "test": "npm run build && node ./dist/test.js",
-    "simulate": "npm run build && node ./dist/database/drawing_simulation.js"
+    "test": "ts-node src/test.ts",
+    "simulate": "npm run build && node ./dist/database/drawing_simulation.js",
+    "auth": "ts-node src/setup-auth.ts"
   },
   "license": "GPL-3.0",
   "devDependencies": {
     "@discordjs/rest": "^2.2.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/luxon": "^3.4.2",
-    "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2"
   },
   "dependencies": {
+    "ajv": "^8.17.1",
+    "cors": "^2.8.5",
     "discord.js": "^14.14.1",
+    "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
     "luxon": "^3.5.0",
-    "uuid": "^11.0.5"
+    "nanoid": "^5.1.5"
   }
 }

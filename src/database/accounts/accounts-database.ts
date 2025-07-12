@@ -2,11 +2,16 @@ import { Snowflake } from "discord.js"
 import accounts from '../../../data/accounts.json'
 import { getCurrencies } from "../currencies/currencies-database"
 import { save } from "../database-handler"
-import { DatabaseError, DatabaseErrors } from "../database-types"
+import { DatabaseError } from "../database-types"
 import { Product } from "../shops/shops-types"
 import { Account, AccountsDatabase } from "./accounts-type"
 
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
+
+export async function hasAccount(id: Snowflake): Promise<boolean> {
+    return accountsDatabase.accounts.has(id)
+}
+
 
 export async function getOrCreateAccount(id: Snowflake): Promise<Account> {
     let account = accountsDatabase.accounts.get(id)
@@ -23,7 +28,7 @@ export async function getOrCreateAccount(id: Snowflake): Promise<Account> {
 export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
     const account = await getOrCreateAccount(id)
     
-    if (!getCurrencies().has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
+    if (!getCurrencies().has(currencyId)) throw new DatabaseError("CurrencyDoesNotExist")
 
     const currencyBalance = account.currencies.get(currencyId)
 
@@ -67,7 +72,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
 
 export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'inventory' | 'all') {
     const account = accountsDatabase.accounts.get(id)
-    if (!account) throw new DatabaseError(DatabaseErrors.AccountDoesNotExist)
+    if (!account) throw new DatabaseError("CurrencyDoesNotExist")
 
     if (empty === 'currencies' || empty === 'all') account.currencies.clear()
     if (empty === 'inventory' || empty === 'all') account.inventory.clear()
@@ -92,4 +97,8 @@ export async function takeCurrencyFromAccounts(currencyId: string) {
 
     await save(accountsDatabase)
     return accountsWithCurrency
+}
+
+export function getAccountsJSON() {
+    return accountsDatabase.toJSON()
 }

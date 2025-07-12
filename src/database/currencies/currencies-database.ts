@@ -1,7 +1,7 @@
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import currencies from '../../../data/currencies.json';
 import { save } from "../database-handler";
-import { DatabaseError, DatabaseErrors } from "../database-types";
+import { DatabaseError} from "../database-types";
 import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "./currencies-types";
 
 const currenciesDatabase = new CurrenciesDatabase(currencies, 'data/currencies.json')
@@ -28,23 +28,25 @@ export function getCurrencyName(currencyId: string | undefined): string | undefi
 }
 
 export async function createCurrency(currencyName: string, emoji: string) {
-    if (currenciesDatabase.currencies.has(getCurrencyId(currencyName) || '')) throw new DatabaseError(DatabaseErrors.CurrencyAlreadyExists)
+    if (currenciesDatabase.currencies.has(getCurrencyId(currencyName) || '')) throw new DatabaseError("CurrencyAlreadyExists")
     
-    const newCurrencyId = uuidv4()
+    const newCurrencyId = nanoid()
 
     currenciesDatabase.currencies.set(newCurrencyId, { id: newCurrencyId, name: currencyName, emoji })
-    save(currenciesDatabase)
+    await save(currenciesDatabase)
+
+    return currenciesDatabase.currencies.get(newCurrencyId)!
 }
 
 export async function removeCurrency(currencyId: string) {
-    if (!currenciesDatabase.currencies.has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
+    if (!currenciesDatabase.currencies.has(currencyId)) throw new DatabaseError("CurrencyDoesNotExist")
 
     currenciesDatabase.currencies.delete(currencyId)
     save(currenciesDatabase)
 }
 
 export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {
-    if (!currenciesDatabase.currencies.has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
+    if (!currenciesDatabase.currencies.has(currencyId)) throw new DatabaseError("CurrencyDoesNotExist")
     
     const { name, emoji } = options
 
@@ -56,3 +58,8 @@ export async function updateCurrency(currencyId: string, options: CurrencyOption
     await save(currenciesDatabase)
 }
 
+
+
+export function getCurrenciesJSON() {
+    return currenciesDatabase.toJSON()
+}

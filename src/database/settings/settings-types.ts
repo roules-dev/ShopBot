@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
 import { assertNeverReached } from "../../utils/utils";
-import { Database, DatabaseError, DatabaseErrors } from "../database-types";
+import { Database, DatabaseError } from "../database-types";
 
 const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId"] as const
 
@@ -59,12 +59,12 @@ export class SettingsDatabase extends Database {
         const settings: Settings = new Map()
 
         for (const [id, setting] of Object.entries(databaseRaw)) {
-            if (!(isSettingType(setting.type))) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+            if (!(isSettingType(setting.type))) throw new DatabaseError("InvalidSettingType")
             
             const name = setting.name
             const value = setting.value
 
-            if(settings.has(id)) throw new DatabaseError(DatabaseErrors.DuplicateSettingName)
+            if(settings.has(id)) throw new DatabaseError("DuplicateSettingName")
 
             if (value === null) {
                 settings.set(id, { id, name, value: undefined, type: setting.type })
@@ -75,21 +75,21 @@ export class SettingsDatabase extends Database {
                 case "channelId":
                 case "roleId":
                 case "userId":
-                    if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+                    if (!(typeof value === "string")) throw new DatabaseError("InvalidSettingType")
                     settings.set(id, { id, name, value: value as Snowflake, type: setting.type })
                     break
 
                 case "string":
-                    if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+                    if (!(typeof value === "string")) throw new DatabaseError("InvalidSettingType")
                     settings.set(id, { id, name, value: value as string, type: setting.type })
                     break
                 case "bool":
-                    if (!(typeof value === "boolean")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+                    if (!(typeof value === "boolean")) throw new DatabaseError("InvalidSettingType")
                     settings.set(id, { id, name, value: value as boolean, type: setting.type })
                     break
 
                 case "number":
-                    if (!(typeof value === "number")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+                    if (!(typeof value === "number")) throw new DatabaseError("InvalidSettingType")
                     settings.set(id, { id, name, value: value as number, type: setting.type })
                     break
 
