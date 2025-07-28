@@ -22,8 +22,8 @@ async function handleSlashCommand(interaction: ChatInputCommandInteraction) {
     if (!command) return
     if (interaction?.channel?.type === ChannelType.DM) return
     try {
-        await command.execute(interaction.client, interaction)
         PrettyLog.info(`${interaction.user.username} (${interaction.user.id}) in #${interaction?.channel?.name} (${interaction?.channel?.id}) triggered the command '/${interaction.commandName}'`)
+        await command.execute(interaction.client, interaction)
     } catch (error: unknown) {
         console.error(error)
         PrettyLog.error(`Failed to execute the command '/${interaction.commandName}' (user: ${interaction.user.username} (${interaction.user.id}) in #${interaction?.channel?.name} (${interaction?.channel?.id}))`)

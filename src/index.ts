@@ -20,8 +20,13 @@ declare module 'discord.js' {
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
-registerCommands(client)
-registerEvents(client)
+export async function startClient() {
+	await registerCommands(client)
+	await registerEvents(client)
+	await client.login(config.token)
+}
+
+startClient()
 
 async function registerCommands(client: Client) {
 	client.commands = new Collection()
@@ -54,9 +59,7 @@ async function registerEvents(client: Client<boolean>) {
 	PrettyLog.logLoadStep('Events registered')
 }
 
-client.login(config.token)
 
-
-// process.on('unhandledRejection', (reason: unknown) => PrettyLog.error(`${reason}`, false))
-// process.on('uncaughtException', (reason: unknown) => PrettyLog.error(`${reason}`, false))
-// process.on('uncaughtExceptionMonitor', (reason: unknown) => PrettyLog.error(`${reason}`, false))
+process.on('unhandledRejection', (reason: unknown) => PrettyLog.error(`${reason}`, false))
+process.on('uncaughtException', (reason: unknown) => PrettyLog.error(`${reason}`, false))
+process.on('uncaughtExceptionMonitor', (reason: unknown) => PrettyLog.error(`${reason}`, false))
