@@ -1,4 +1,6 @@
-# ShopBot 2
+# ShopBot 2 with API
+
+*This version is experimental, it is still in development, use at your own risk*
 
 ### Contents
 - [👋 Introduction](#introduction)
@@ -191,6 +193,9 @@ If you encounter any issue with a command, you can open an [issue](https://githu
 - Show user's account: `/account` 
  
 - Display the shops: `/shop` 
+
+## API
+
 
 <br><br>
 

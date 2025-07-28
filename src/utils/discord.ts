@@ -1,5 +1,5 @@
 import { MessageFlags, TextChannel } from "discord.js"
-import { getSettings } from "../database/settings/settings-handler"
+import { getSetting } from "../database/settings/settings-handler"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
 import { ErrorMessages } from "./constants"
 import { PrettyLog } from "./pretty-log"
@@ -42,7 +42,7 @@ export async function logToDiscord(interaction: UserInterfaceInteraction, messag
     PrettyLog.info(`Logged to Discord: ${message}`)
     
     try {
-        const logChannelSetting = getSettings().get('logChannelId')
+        const logChannelSetting = getSetting('logChannelId')
         if (!logChannelSetting?.value || logChannelSetting.type !== 'channelId') return
         const logChannel = await interaction.guild?.channels.fetch(logChannelSetting.value)
         if (!(logChannel instanceof TextChannel)) return

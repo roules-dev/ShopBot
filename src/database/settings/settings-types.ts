@@ -2,7 +2,7 @@ import { Snowflake } from "discord.js";
 import { assertNeverReached } from "../../utils/utils";
 import { Database, DatabaseError } from "../database-types";
 
-const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId"] as const
+const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId", "enum"] as const
 
 type SettingType = typeof settingTypes[number]
 
@@ -18,6 +18,10 @@ export type Setting = { id: string, name: string } & ({
 } | {
     value: Snowflake | undefined
     type: "channelId" | "roleId" | "userId"
+} | {
+    value: string | undefined
+    options: string[]
+    type: "enum"
 }) 
 
 
@@ -32,7 +36,7 @@ function isSettingType(type: unknown): type is SettingType {
 export type Settings = Map<string, Setting>
 
 type SettingsJSONBody = {
-    [name: string]: Omit<Setting, "type" | "value"> & { type: string, value: string | boolean | number | null }
+    [name: string]: Omit<Setting, "type" | "value" | "options"> & { type: string, value: string | boolean | number | null, options?: string[] }
 }
 
 export class SettingsDatabase extends Database {
@@ -67,7 +71,11 @@ export class SettingsDatabase extends Database {
             if(settings.has(id)) throw new DatabaseError("DuplicateSettingName")
 
             if (value === null) {
-                settings.set(id, { id, name, value: undefined, type: setting.type })
+                if (setting.type === "enum") {
+                    settings.set(id, { ...(setting as Setting), value: undefined })
+                } else {
+                    settings.set(id, { id, name, value: undefined, type: setting.type })
+                }
                 continue
             }
 
@@ -91,6 +99,12 @@ export class SettingsDatabase extends Database {
                 case "number":
                     if (!(typeof value === "number")) throw new DatabaseError("InvalidSettingType")
                     settings.set(id, { id, name, value: value as number, type: setting.type })
+                    break
+
+                case "enum":
+                    if (!(typeof value === "string") || setting.options === undefined) throw new DatabaseError("InvalidSettingType")
+                    
+                    settings.set(id, { id, name, value: value as string, options: setting.options, type: setting.type })
                     break
 
                 default:

@@ -96,6 +96,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 type === 'string' ? value : 
                 type === 'bool' ? (value ? '✅' : '❌') :
                 type === 'number' ? `${value}` :
+                type === 'enum' ? value :
                 type === 'channelId' ? channelMention(value) :
                 type === 'roleId' ? roleMention(value) :
                 type === 'userId' ? userMention(value) :
@@ -218,6 +219,23 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 components.push(userSelectMenu)
                 break
 
+            case 'enum':
+                const optionSelectMenu = new ExtendedStringSelectMenuComponent(
+                    {
+                        customId: 'edit-setting+enum',
+                        placeholder: `Select an option for ${setting.name}`,
+                        time: 120_000
+                    },
+                    new Map(setting.options.map(option => [option, option])),
+                    async (interaction: StringSelectMenuInteraction, selectedOption: string) => {
+                        this.selectedSetting = await setSetting(setting.id, selectedOption)
+                        this.updateInteraction(interaction)
+                    }
+                )
+
+                components.push(optionSelectMenu)
+                break
+                
             default:
                 assertNeverReached(setting)
         }
