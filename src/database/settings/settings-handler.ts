@@ -9,6 +9,10 @@ export function getSettings(): Settings {
     return settingsDatabase.settings
 }
 
+export function getSetting(id: string): Setting | undefined {
+    return settingsDatabase.settings.get(id)
+}
+
 export async function setSetting(id: string, value: any): Promise<Setting> {
     if (!settingsDatabase.settings.has(id)) throw new Error("Setting does not exist")
     const setting = settingsDatabase.settings.get(id)!

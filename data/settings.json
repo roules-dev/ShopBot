@@ -4,5 +4,24 @@
         "name": "Log Channel",
         "value": "1332836427238739988",
         "type": "channelId"
+    },
+    "activityMessage": {
+        "id": "activityMessage",
+        "name": "Activity Message",
+        "value": "free market",
+        "type": "string"
+    },
+    "activityType": {
+        "id": "activityType",
+        "name": "Activity Type",
+        "value": "Competing",
+        "options": [
+            "Playing",
+            "Streaming",
+            "Listening",
+            "Watching",
+            "Competing"
+        ],
+        "type": "enum"
     }
 }
