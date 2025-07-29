@@ -18,7 +18,7 @@ declare module 'discord.js' {
 	}
 }
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] })
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences] })
 
 export async function startClient() {
 	if (!config.token) {

@@ -151,6 +151,7 @@ The users have an account and an inventory, initially empty. In addition to bein
   /accounts-manage
     | view-account <target>
     | give <target> <amount>
+    | bulk-give <role> <amount>
     | take <target> <amount>
 ```
 

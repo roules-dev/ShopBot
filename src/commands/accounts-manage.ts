@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
-import { AccountGiveFlow, AccountTakeFlow } from "../user-flows/accounts-flows"
+import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "../user-flows/accounts-flows"
 import { AccountUserInterface } from "../user-interfaces/account-ui"
 import { replyErrorMessage } from "../utils/discord"
 import { ErrorMessages } from "../utils/constants"
@@ -23,6 +23,22 @@ export const data = new SlashCommandBuilder()
         .addUserOption(option => option
             .setName('target')
             .setDescription('The user you want to give money')
+            .setRequired(true)    
+        )
+        .addNumberOption(option => option
+            .setName('amount')
+            .setDescription('The amount of money to give')
+            .setRequired(true)
+            .setMaxValue(99999999)
+            .setMinValue(1)
+        )
+    )
+    .addSubcommand(subcommand => subcommand
+        .setName('bulk-give')
+        .setDescription('Give money to users with a certain role')
+        .addRoleOption(option => option
+            .setName('role')
+            .setDescription('The role you want to give money to')
             .setRequired(true)    
         )
         .addNumberOption(option => option
@@ -69,6 +85,13 @@ export async function execute(_: Client, interaction: ChatInputCommandInteractio
             accountGiveFlow.start(interaction)    
 
             break
+
+        case 'bulk-give':
+            const accountBulkGiveFlow = new BulkAccountGiveFlow()
+            accountBulkGiveFlow.start(interaction)
+            
+            break
+
         case 'take':
             const accountTakeFlow = new AccountTakeFlow()
             accountTakeFlow.start(interaction)

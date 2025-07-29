@@ -1,4 +1,4 @@
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, User, userMention } from "discord.js"
+import { APIRole, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, roleMention, StringSelectMenuInteraction, User, userMention } from "discord.js"
 import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts/accounts-database"
 import { getCurrencies, getCurrencyName } from "../database/currencies/currencies-database"
 import { Currency } from "../database/currencies/currencies-types"
@@ -12,10 +12,10 @@ export class AccountGiveFlow extends UserFlow {
     public id = 'account-give'
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedCurrency: Currency | null = null
+    protected selectedCurrency: Currency | null = null
     
     private target: User | null = null
-    private amount: number | null = null
+    protected amount: number | null = null
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
@@ -71,7 +71,7 @@ export class AccountGiveFlow extends UserFlow {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
-        submitButton.toggle(this.selectedCurrency != null && this.target != null && this.amount != null)
+        submitButton.toggle(this.selectedCurrency != null)
     }
 
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
@@ -84,6 +84,55 @@ export class AccountGiveFlow extends UserFlow {
             await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, currentBalance + this.amount)
 
             return await updateAsSuccessMessage(interaction, `You successfully gave ${bold(`${this.amount}`)} ${getCurrencyName(this.selectedCurrency.id)} to ${userMention(this.target.id)}`)
+            
+        } catch (error) {
+            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
+        }
+    }
+}
+
+export class BulkAccountGiveFlow extends AccountGiveFlow {
+    private targetRole: Role | APIRole | null = null
+
+    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+        const currencies = getCurrencies()
+        if (!currencies.size) return replyErrorMessage(interaction, `Can't give money. ${ErrorMessages.NoCurrencies}`)
+    
+        const targetRole = interaction.options.getRole('role')
+        const amount = interaction.options.getNumber('amount')
+    
+        if (!targetRole || !amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+
+        this.targetRole = targetRole
+        this.amount = amount
+
+        this.initComponents()
+        this.updateComponents()
+
+        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
+        this.createComponentsCollectors(response)
+        return
+    }
+
+    protected override getMessage(): string {
+        const roleString = this.targetRole ? roleMention(this.targetRole.id) : bold('Select Role')
+        return `Give ${bold(`${this.amount} [${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]`)} to all users with role ${roleString}`
+    }
+
+    protected override async success(interaction: ButtonInteraction): Promise<unknown> {
+        this.disableComponents()
+        
+        try {
+            if (!this.selectedCurrency || !this.targetRole || !this.amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            
+            const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
+
+            for (const userId of targetUsersIds) {
+                const currentBalance = (await getOrCreateAccount(userId)).currencies.get(this.selectedCurrency.id)?.amount || 0
+                await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
+            }
+
+            return await updateAsSuccessMessage(interaction, `You successfully gave ${bold(`${this.amount}`)} ${getCurrencyName(this.selectedCurrency.id)} to to all users with role ${roleMention(this.targetRole.id)}`)
             
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)

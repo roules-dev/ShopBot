@@ -8,6 +8,10 @@
             "f222099b-7afd-4381-9b7d-be594eebd4f3": {
                 "item": "f222099b-7afd-4381-9b7d-be594eebd4f3",
                 "amount": 235
+            },
+            "ae296c50-87b4-45fc-b40e-3b0feff8b011": {
+                "item": "ae296c50-87b4-45fc-b40e-3b0feff8b011",
+                "amount": 50
             }
         },
         "inventory": {
@@ -102,6 +106,15 @@
             "d9997bc7-ce3b-491b-92de-cfa5afd7e955": {
                 "item": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
                 "amount": 0
+            }
+        },
+        "inventory": {}
+    },
+    "665849503978618891": {
+        "currencies": {
+            "ae296c50-87b4-45fc-b40e-3b0feff8b011": {
+                "item": "ae296c50-87b4-45fc-b40e-3b0feff8b011",
+                "amount": 50
             }
         },
         "inventory": {}
