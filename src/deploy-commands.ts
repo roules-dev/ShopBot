@@ -3,79 +3,113 @@ import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBu
 import fs from 'node:fs'
 import path from 'node:path'
 import { clientId, token } from '../config/config.json'
-import { PrettyLog } from './utils/pretty-log.js'
+import { PrettyLog } from './utils/pretty-log'
+
+let rest: REST | undefined
 
 const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
 const commandsPath = path.join(__dirname, 'commands')
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
 for (const file of commandFiles) {
-	const filePath = path.join(commandsPath, file)
-	const command = require(filePath)
-	commands.push((command.data as SlashCommandBuilder).toJSON())
+    const filePath = path.join(commandsPath, file)
+    const command = require(filePath)
+    commands.push((command.data as SlashCommandBuilder).toJSON())
 }
 
-if (!clientId || !token) {
-	PrettyLog.error('Missing clientId or token in config.json')
-	process.exit(1)
-}
+function appDeployCommands() {
+    return new Promise((resolve, reject) => {
+        getRest().put(Routes.applicationCommands(clientId), { body: commands })
+            .then(() => {
+                PrettyLog.success('Successfully registered application commands.')
+                resolve(true)
+            })
+            .catch(reject)
+        })
 
-const rest = new REST({ version: '10' }).setToken(token)
-
-function appDeployCommands()  {
-	rest.put(Routes.applicationCommands(clientId), { body: commands })
-		.then(() => PrettyLog.success('Successfully registered application commands.'))
-		.catch(console.error)
 }
 function appDeleteCommands() {
-	rest.put(Routes.applicationCommands(clientId), { body: [] })
-	.then(() => PrettyLog.success('Successfully deleted application commands.'))
-	.catch(console.error)
+    return new Promise((resolve, reject) => {
+        getRest().put(Routes.applicationCommands(clientId), { body: [] })
+            .then(() => {
+                PrettyLog.success('Successfully deleted application commands.')
+                resolve(true)
+            })
+            .catch(reject)
+    })
 }
+
 function guildDeployCommands(guildId: Snowflake) {
-	rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
-		.then(() => PrettyLog.success('Successfully registered all guild commands.'))
-		.catch(console.error)
+    return new Promise((resolve, reject) => {
+        getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+            .then(() => {
+                PrettyLog.success('Successfully registered all guild commands.')
+                resolve(true)
+            })
+            .catch(reject)
+    })
 }
+
 function guildDeleteCommands(guildId: Snowflake) {
-	rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
-		.then(() => PrettyLog.success('Successfully deleted all guild commands.'))
-		.catch(console.error)
+    return new Promise((resolve, reject) => {
+        getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
+            .then(() => {
+                PrettyLog.success('Successfully deleted all guild commands.')
+                resolve(true)
+            })
+            .catch(reject)
+    })
 }
 
 export {
-	appDeleteCommands, appDeployCommands, guildDeleteCommands, guildDeployCommands
+    appDeleteCommands, appDeployCommands, guildDeleteCommands, guildDeployCommands
 }
 
-const flag = process.argv[2]
-const guildId = process.argv[3]
+if (require.main === module) {
 
-switch (flag) {
-	case '/a':
-		appDeployCommands()
-		break
+    const flag = process.argv[2]
+    const guildId = process.argv[3]
 
-	case '/ad':
-		appDeleteCommands()
-		break
+    switch (flag) {
+        case '/a':
+            appDeployCommands()
+            break
 
-	case '/g':
-		if (!guildId) {
-			PrettyLog.error('Please specify a guild id')
-			break
-		}
-		guildDeployCommands(guildId)
-		break 
-		
-	case '/gd':
-		if (!guildId) {
-			PrettyLog.error('Please specify a guild id')
-			break
-		}
-		guildDeleteCommands(guildId)
-		break 
+        case '/ad':
+            appDeleteCommands()
+            break
 
-	default:
-		PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n')
+        case '/g':
+            if (!guildId) {
+                PrettyLog.error('Please specify a guild id')
+                break
+            }
+            guildDeployCommands(guildId)
+            break 
+            
+        case '/gd':
+            if (!guildId) {
+                PrettyLog.error('Please specify a guild id')
+                break
+            }
+            guildDeleteCommands(guildId)
+            break 
+
+        default:
+            PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n')
+    }
 }
 
+
+
+function getRest() {
+    if (!clientId || !token) {
+        PrettyLog.error('Missing clientId or token in config.json')
+        process.exit(1)
+    }
+
+    if (!rest) {
+        rest = new REST({ version: '10' }).setToken(token)
+    }
+    return rest
+}

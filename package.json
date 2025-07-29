@@ -11,7 +11,8 @@
     "serve": "node dist/index.js",
     "deploy": "npm run build && node ./dist/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
-    "simulate": "npm run build && node ./dist/database/drawing_simulation.js"
+    "simulate": "npm run build && node ./dist/database/drawing_simulation.js",
+    "setup": "node ./dist/setup-helper.js"
   },
   "license": "GPL-3.0",
   "devDependencies": {
