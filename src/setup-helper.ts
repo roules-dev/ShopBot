@@ -15,13 +15,16 @@ rl.on('close', () => {
 
 
 async function setup() {
-    const id = await questionWithCondition(`Bot client ID: `, id => /^\d{17,20}$/.test(id), 'Client ID not valid')
+    console.log('\n\n———————————————————————————\n')
+    PrettyLog.info('Dependencies installed, please enter your bot credentials', false)
+
+    const id = await questionWithCondition(`\nBot client ID: `, id => /^\d{17,20}$/.test(id), 'Client ID not valid')
     config.clientId = id
 
-    const token = await questionWithCondition(`Bot token: `, token => token.length > 0, 'Please enter a token')
+    const token = await questionWithCondition(`\nBot token: `, token => token.length > 0, 'Please enter a token')
     config.token = token
 
-    const resetData = await questionWithCondition('Reset data? (y/n): ', answer => answer === 'y' || answer === 'n')
+    const resetData = await questionWithCondition('\nReset data? (y/n): ', answer => answer === 'y' || answer === 'n')
     if (resetData === 'y') {
         fs.writeFileSync('./data/shops.json', JSON.stringify({}, null, 2))
         fs.writeFileSync('./data/accounts.json', JSON.stringify({}, null, 2))
@@ -30,9 +33,14 @@ async function setup() {
 
     rl.close()
     
+    console.log('\n———————————————————————————\n')
+    PrettyLog.info('Deploying commands', false)
     await appDeployCommands()
-    PrettyLog.success('Setup complete')
-    PrettyLog.info(`You can now start the bot using ${PrettyLog.italic('npm run serve')}`)
+    
+    console.log('\n———————————————————————————\n')
+    
+    PrettyLog.success('Setup complete', false)
+    PrettyLog.info(`You can now start the bot using ${PrettyLog.italic('npm run serve')}`, false)
 }
 
 setup()
@@ -44,7 +52,7 @@ function questionWithCondition(question: string, condition: (answer: string) => 
             if (condition(answer)) {
                 resolve(answer)
             } else {
-                console.log(errorMessage ?? 'Answer not valid')
+                PrettyLog.warning(errorMessage ?? 'Answer not valid', false)
                 resolve(questionWithCondition(question, condition))
             }
         })

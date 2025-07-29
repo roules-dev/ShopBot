@@ -43,7 +43,7 @@ export class PrettyLog {
         console.log(`\x1b[7m ✓ \x1b[32m Success \x1b[0m \x1b[32m${message}\x1b[0m`)
 
         if (!save) return
-        this.saveLogs(`✓ Succes - ${message}`)
+        this.saveLogs(`✓ Success - ${message}`)
     }
     
     static stepX(): string{

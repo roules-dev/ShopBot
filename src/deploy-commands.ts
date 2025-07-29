@@ -21,7 +21,7 @@ function appDeployCommands() {
     return new Promise((resolve, reject) => {
         getRest().put(Routes.applicationCommands(clientId), { body: commands })
             .then(() => {
-                PrettyLog.success('Successfully registered application commands.')
+                PrettyLog.success('Successfully registered application commands.', false)
                 resolve(true)
             })
             .catch(reject)
@@ -32,7 +32,7 @@ function appDeleteCommands() {
     return new Promise((resolve, reject) => {
         getRest().put(Routes.applicationCommands(clientId), { body: [] })
             .then(() => {
-                PrettyLog.success('Successfully deleted application commands.')
+                PrettyLog.success('Successfully deleted application commands.', false)
                 resolve(true)
             })
             .catch(reject)
@@ -43,7 +43,7 @@ function guildDeployCommands(guildId: Snowflake) {
     return new Promise((resolve, reject) => {
         getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
             .then(() => {
-                PrettyLog.success('Successfully registered all guild commands.')
+                PrettyLog.success('Successfully registered all guild commands.', false)
                 resolve(true)
             })
             .catch(reject)
@@ -54,7 +54,7 @@ function guildDeleteCommands(guildId: Snowflake) {
     return new Promise((resolve, reject) => {
         getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
             .then(() => {
-                PrettyLog.success('Successfully deleted all guild commands.')
+                PrettyLog.success('Successfully deleted all guild commands.', false)
                 resolve(true)
             })
             .catch(reject)
