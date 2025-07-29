@@ -196,7 +196,7 @@ If you encounter any issue with a command, you can open an [issue](https://githu
 
 
 ## 📸 Screenshots 
-### What members of the discord can see
+### What members of the discord server can see
 #### Shop 
 <img src="./readme/assets/shop.png"/> 
 
