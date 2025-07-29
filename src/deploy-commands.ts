@@ -15,6 +15,11 @@ for (const file of commandFiles) {
 	commands.push((command.data as SlashCommandBuilder).toJSON())
 }
 
+if (!clientId || !token) {
+	PrettyLog.error('Missing clientId or token in config.json')
+	process.exit(1)
+}
+
 const rest = new REST({ version: '10' }).setToken(token)
 
 function appDeployCommands()  {
@@ -44,6 +49,7 @@ export {
 
 const flag = process.argv[2]
 const guildId = process.argv[3]
+
 switch (flag) {
 	case '/a':
 		appDeployCommands()

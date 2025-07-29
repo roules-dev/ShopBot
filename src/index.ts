@@ -21,6 +21,11 @@ declare module 'discord.js' {
 const client = new Client({ intents: [GatewayIntentBits.Guilds] })
 
 export async function startClient() {
+	if (!config.token) {
+		PrettyLog.error('Missing token in config.json')
+		process.exit(1)
+	}
+
 	await registerCommands(client)
 	await registerEvents(client)
 	await client.login(config.token)
