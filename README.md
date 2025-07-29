@@ -69,40 +69,25 @@ Once you found the hoster for your bot, here are the steps to follow: <br>
 9. Select **Guild Install** and copy the generated URL
 10. Follow this URL and add the bot to the server you want, accept everything, the bot should be added to your server !
 
-#### Configuring the bot
-Now, we'll link the code to the bot.
-1. You need to have [Node.js](https://nodejs.org/en) installed on your machine.
-2. [Download my code](https://github.com/DragonJules/ShopBot/archive/refs/heads/main.zip) and extract it from the ZIP file (or clone the repo), open the folder where it's located, and open a terminal from here.
-3. Install the required packages and compile the code by executing the following command:
-```bash
-npm install
-```
-4. In the bot folder, open the **config** folder, then open **config.json** in any text editor, fill it with the informations you saved previously, like following:
-```json
-{
-  "clientId": "[The Application ID you have saved]",
-  "token": "[The Token you have saved]"
-}
-```
-
 #### Uploading the bot
-Your Bot is ready to be uploaded on the server ! The following steps may vary depending on your hosting solution.
-1. Upload the whole **ShopBot-main** folder on the server.
-2. Create a routine for restarting the server. Such that the following command is executed from the bot's folder each time the server is restarted.
-```bash
-npm run start
+Now, we'll link the code to the bot, and upload it on the server.
+1. You need to have [Node.js](https://nodejs.org/en) installed on the machine where you want to host the bot.
+2. Download the code from the [latest release](https://github.com/roules-dev/ShopBot/releases) and extract it from the ZIP file, open the folder where it's located, and open a terminal from here.
+3. Execute the following command
 ```
-3. Open a terminal from the bot's folder and execute the following command :
-```bash
-npm run deploy /a
+npm run setup
 ```
-4. Restart the server, or run the following command : 
-```bash
-npm run start
+4. Follow the instructions in the terminal (it will ask for your bot's token and Application ID)
+5. When it asks : _reset data ?_, answer yes (y) if you don't want the placeholder shops, currencies and products that I used to test the bot
+6. You can now run your bot by executing the following command
 ```
+npm run serve
+```
+(Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background) <br>
+(You can also create a routine such that this command is executed from the bot's folder each time the server is restarted)
 
 All done ! You did it, your bot should be working perfectly ! 
-If you have any problem with it, feel free to message me on Discord, or open an [issue on Github](https://github.com/DragonJules/ShopBot/issues)
+If you have any problem with it, feel free to message me on Discord, or open an [issue on Github](https://github.com/roules-dev/ShopBot/issues)
 
 ---
 
@@ -148,7 +133,7 @@ All of these can be edited after the Product has been created.
 A product is assigned to a specific shop.
 
 You can create 'Action Products', these are products that will trigger an action when bought.
-It can be used to give money to a user, give the user a role. (That's all for now but I'm willing to add more in the future, feel free to give your suggestions in the [Issues](https://github.com/DragonJules/ShopBot/issues))
+It can be used to give money to a user, give the user a role. (That's all for now but I'm willing to add more in the future, feel free to give your suggestions in the [Issues](https://github.com/roules-dev/ShopBot/issues))
 
 ##### Commands :
 ```
@@ -183,7 +168,7 @@ When deleting any shop or currency, you also do select it after sending the comm
 This for you not to have to remember the name of each currency and shop to manage them.
 
 The use of those command is made as intuitive as possible using Discord's slash-commands and message components.
-If you encounter any issue with a command, you can open an [issue](https://github.com/DragonJules/ShopBot/issues).
+If you encounter any issue with a command, you can open an [issue](https://github.com/roules-dev/ShopBot/issues).
 
 
 ### Commands for everyone:
@@ -230,17 +215,17 @@ I will after that add the following features, some of which have been suggested 
 - ✅ New commands system, for easier use
 - ✅ Editable shops, products and currencies
 - ❓ API to automate actions like: filling accounts; managing currencies, shops and products 
-- ✅ Automatic action products (e.g. give a certain amount of currency to a user, give a role to a user, if you have more suggestions feel free to [give them here](https://github.com/DragonJules/ShopBot/issues))
+- ✅ Automatic action products (e.g. give a certain amount of currency to a user, give a role to a user, if you have more suggestions feel free to [give them here](https://github.com/roules-dev/ShopBot/issues))
 - ✅ Shops reserved for specific roles
 
-The roadmap is now visible [here](https://github.com/DragonJules/ShopBot/blob/main/roadmap.md).
+The roadmap is now visible [here](https://github.com/roules-dev/ShopBot/blob/main/roadmap.md).
 <br>
 
 - Create a release, a precompiled version of the bot, with an easier way of installing it. 
 
 All those changes will be made on this branch.
 
-If you have a feature idea you think will fit this bot, feel free to suggest it [here](https://github.com/DragonJules/ShopBot/issues).
+If you have a feature idea you think will fit this bot, feel free to suggest it [here](https://github.com/roules-dev/ShopBot/issues).
 
 ## ⚖️ Legal Information
 
@@ -281,5 +266,5 @@ Don't forget to leave a star, it helps a lot !
 
 ---
 
-If something is missing in this document, please open an [issue](https://github.com/DragonJules/ShopBot/issues).
+If something is missing in this document, please open an [issue](https://github.com/roules-dev/ShopBot/issues).
 
