@@ -60,7 +60,7 @@ Once you found the hoster for your bot, here are the steps to follow: <br>
 3. In the **Installation** tab, untick **User Install**, and in **Install Link** select **None**
 4. Copy the **Application ID** from the **General Information** tab, save it for later.
 5. Select tab **Bot**, click **Reset Token**, copy the token, save it for later.
-6. Cutomize the bot as you want (Profile picture, banner, name...). Below **Authorization Flow**, untick **Public Bot**, tick **Server Members Intent** 
+6. Cutomize the bot as you want (Profile picture, banner, name...). Below **Authorization Flow**, untick **Public Bot**, tick **Presence Intent** and **Server Members Intent** 
 7. Save changes.
 8. In the **OAuth2** tab, in **Scopes**, select **bot** and **application.commands**, then tick the following permissions:
    * Read Messages/View Channels
