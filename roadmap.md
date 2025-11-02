@@ -8,10 +8,12 @@
 - [x] New settings system
 - [x] Products with a set stock
 - [ ] ability to buy a set amount
+- [ ] multi language support 
 
 ### Code refactoring
 - [x] Add pagination at the level of user interface class
 - [x] Improve UI Implementation
+- [ ] improve db implementation
 
 ## Roadmap
 1. ~~products with set stock~~
