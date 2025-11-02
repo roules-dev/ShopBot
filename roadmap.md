@@ -7,6 +7,7 @@
 - [x] Shops reserved for specific roles
 - [x] New settings system
 - [x] Products with a set stock
+- [ ] ability to buy a set amount
 
 ### Code refactoring
 - [x] Add pagination at the level of user interface class
