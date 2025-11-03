@@ -23,5 +23,12 @@
             "Competing"
         ],
         "type": "enum"
+    },
+    "displayedShopsIds": {
+        "id": "displayedShopsIds",
+        "userEditable": false,
+        "name": "Displayed Shops",
+        "value": null,
+        "type": "string"
     }
 }

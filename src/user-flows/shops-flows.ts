@@ -911,3 +911,83 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         }
     }
 }
+
+
+export class DisplayPermanentShopFlow extends UserFlow {
+    id = 'display-permanent-shop'
+    protected components: Map<string, ExtendedComponent> = new Map()
+    private selectedShop: Shop | null = null
+
+    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+        const shops = getShops()
+        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+
+        this.initComponents()
+        this.updateComponents()
+
+        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
+        this.createComponentsCollectors(response)
+        return
+    }
+
+    protected override getMessage(): string {
+        return `Permanently display shop **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.`
+    }
+
+    protected override initComponents(): void {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+            {
+                customId: `${this.id}+select-shop`,
+                placeholder: 'Select a shop',
+                time: 120_000,
+            },
+            getShops(),
+            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+                this.selectedShop = selected
+                this.updateInteraction(interaction)
+            },
+        )
+
+        const submitShopButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+submit-shop`,
+                time: 120_000,
+                label: 'Submit Shop',
+                emoji: {name: '✅'},
+                style: ButtonStyle.Success,
+                disabled: true,
+            },
+            (interaction: ButtonInteraction) => this.success(interaction)
+        )
+
+        this.components.set(shopSelectMenu.customId, shopSelectMenu)
+        this.components.set(submitShopButton.customId, submitShopButton)
+    }
+
+    protected override updateComponents(): void {
+        const submitShopButton = this.components.get(`${this.id}+submit-shop`)
+        if (!(submitShopButton instanceof ExtendedButtonComponent)) return
+
+        submitShopButton.toggle(this.selectedShop != null)
+    }
+
+    protected override async success(interaction: UserInterfaceInteraction) {
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+
+        const channel = interaction.channel
+        if (!channel || !channel.isSendable()) {
+            return updateAsErrorMessage(interaction, "You must be in a text channel to use this command.")
+        }
+
+        try {
+            updateAsSuccessMessage(interaction, `You successfully displayed the shop ${bold(getShopName(this.selectedShop.id) || '')} in this channel.`)
+            channel.send("shop here")
+
+            return
+        }
+        catch (error) {
+            return updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
+        }
+    }
+
+}

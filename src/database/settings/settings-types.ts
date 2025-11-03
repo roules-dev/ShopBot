@@ -6,7 +6,7 @@ const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId
 
 type SettingType = typeof settingTypes[number]
 
-export type Setting = { id: string, name: string } & ({
+export type Setting = { id: string, name: string, userEditable?: boolean } & ({
     value: string | undefined
     type: "string"
 } | {
@@ -74,7 +74,7 @@ export class SettingsDatabase extends Database {
                 if (setting.type === "enum") {
                     settings.set(id, { ...(setting as Setting), value: undefined })
                 } else {
-                    settings.set(id, { id, name, value: undefined, type: setting.type })
+                    settings.set(id, { ...(setting as Setting), value: undefined, type: setting.type })
                 }
                 continue
             }
@@ -84,27 +84,27 @@ export class SettingsDatabase extends Database {
                 case "roleId":
                 case "userId":
                     if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as Snowflake, type: setting.type })
+                    settings.set(id, { ...(setting as Setting), value: value as Snowflake, type: setting.type })
                     break
 
                 case "string":
                     if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as string, type: setting.type })
+                    settings.set(id, { ...(setting as Setting), value: value as string, type: setting.type })
                     break
                 case "bool":
                     if (!(typeof value === "boolean")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as boolean, type: setting.type })
+                    settings.set(id, { ...(setting as Setting), value: value as boolean, type: setting.type })
                     break
 
                 case "number":
                     if (!(typeof value === "number")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as number, type: setting.type })
+                    settings.set(id, { ...(setting as Setting), value: value as number, type: setting.type })
                     break
 
                 case "enum":
                     if (!(typeof value === "string") || setting.options === undefined) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
                     
-                    settings.set(id, { id, name, value: value as string, options: setting.options, type: setting.type })
+                    settings.set(id, { ...(setting as Setting), value: value as string, options: setting.options, type: setting.type })
                     break
 
                 default:

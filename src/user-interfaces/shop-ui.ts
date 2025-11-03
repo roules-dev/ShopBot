@@ -1,15 +1,14 @@
-import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
+import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "../database/accounts/accounts-database"
 import { getCurrencyName } from "../database/currencies/currencies-database"
 import { DatabaseError } from "../database/database-types"
 import { getProductName, getShopName, getShops, updateProduct } from "../database/shops/shops-database"
-import { Product, PRODUCT_ACTION_TYPE, ProductActionType, Shop } from "../database/shops/shops-types"
+import { Product, PRODUCT_ACTION_TYPE, Shop } from "../database/shops/shops-types"
 import { ErrorMessages } from "../utils/constants"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { AccountUserInterface } from "./account-ui"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent } from "./extended-components"
 import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInteraction } from "./user-interfaces"
-import { assertNeverReached } from "../utils/utils"
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'

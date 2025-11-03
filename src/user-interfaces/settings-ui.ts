@@ -87,6 +87,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         settings.forEach(setting => {
             const { name, type, value } = setting
 
+            if (setting.userEditable === false) return
+
             if (value === undefined || value === "") {
                 fields.push({ name, value: "Not set", inline: true })
                 return
