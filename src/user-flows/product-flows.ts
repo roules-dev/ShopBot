@@ -720,7 +720,7 @@ export class EditProductFlow extends UserFlow {
             case EditProductOption.PRICE:
                 const priceString = interaction.options.getNumber(option)?.toFixed(2)
                 if (priceString == undefined) return null
-                return parseInt(priceString)
+                return +priceString
             case EditProductOption.EMOJI:
                 const emojiOption = interaction.options.getString(option)
                 return emojiOption?.match(EMOJI_REGEX)?.[0] ?? null
