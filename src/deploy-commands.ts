@@ -66,7 +66,6 @@ export {
 }
 
 if (require.main === module) {
-
     const flag = process.argv[2]
     const guildId = process.argv[3]
 

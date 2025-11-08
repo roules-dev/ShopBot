@@ -1,5 +1,3 @@
-
-
 import { BaseInteraction, ChannelType, ChatInputCommandInteraction, InteractionType } from 'discord.js'
 import { PrettyLog } from '../utils/pretty-log'
 import { replyErrorMessage } from '../utils/discord'
