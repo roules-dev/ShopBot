@@ -43,7 +43,7 @@ For example:
 └── ...
 ```
 
-If your language doesn’t exist yet, create a new file named after the [ISO 639-1 language code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes):
+If your language doesn’t exist yet, create a new file named after the [Discord locales codes](https://discord.com/developers/docs/reference#locales):
 
 > Example: `de.json` for German, `pt.json` for Portuguese, `ja.json` for Japanese, etc.
 

@@ -5,6 +5,7 @@ import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder
 import config from '../config/config.json'
 import { PrettyLog } from './utils/pretty-log'
 import './utils/strings'
+import { addLocalisationToCommand } from './utils/localisation'
 
 
 interface Command {
@@ -41,6 +42,9 @@ async function registerCommands(client: Client) {
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file)
 		const command: Command = require(filePath)
+
+		addLocalisationToCommand(command.data)
+		
 		client.commands.set(command.data.name, command)
 	}
 

@@ -29,10 +29,10 @@
             "name": "account",
             "description": "Display your account"
         },
-        "accountsManage": {
+        "accounts-manage": {
             "name": "accounts-manage",
             "description": "Manage user accounts",
-            "subcommands": {
+            "options": {
                 "view-account": {
                     "name": "view-account",
                     "description": "View a user's account",
@@ -87,10 +87,10 @@
                 }
             }
         },
-        "currenciesManage": {
+        "currencies-manage": {
             "name": "currencies-manage",
             "description": "Manage your currencies",
-            "subcommands": {
+            "options": {
                 "create": {
                     "name": "create",
                     "description": "Create a new currency",
@@ -108,13 +108,11 @@
                 "remove": {
                     "name": "remove",
                     "description": "Remove the selected currency"
-                }
-            },
-            "subcommandGroups": {
+                },
                 "edit": {
                     "name": "edit",
                     "description": "Edit a currency",
-                    "subcommands": {
+                    "options": {
                         "name": {
                             "name": "name",
                             "description": "Change name. You will select the currency later",
@@ -139,10 +137,10 @@
                 }
             }
         },
-        "productsManage": {
+        "products-manage": {
             "name": "products-manage",
             "description": "Manage your products",
-            "subcommands": {
+            "options": {
                 "add": {
                     "name": "add",
                     "description": "Add a new product",
@@ -176,13 +174,11 @@
                 "remove": {
                     "name": "remove",
                     "description": "Remove a product"
-                }
-            },
-            "subcommandGroups": {
+                },
                 "edit": {
                     "name": "edit",
                     "description": "Edit a product",
-                    "subcommands": {
+                    "options": {
                         "name": {
                             "name": "name",
                             "description": "Change Name. You will select the product later",
@@ -246,10 +242,10 @@
         "name": "shop",
         "description": "Display shops and buy products"
     },
-    "shopsManage": {
+    "shops-manage": {
         "name": "shops-manage",
         "description": "Manage your Shops",
-        "subcommands": {
+        "options": {
             "create": {
                 "name": "create",
                 "description": "Create a new Shop",
@@ -297,13 +293,11 @@
             "remove-discount-code": {
                 "name": "remove-discount-code",
                 "description": "Remove a discount code"
-            }
-        },
-        "subcommandGroups": {
+            },
             "edit": {
                 "name": "edit",
                 "description": "Edit a shop",
-                "subcommands": {
+                "options": {
                     "name": {
                         "name": "name",
                         "description": "Change Name. You will select the shop later",
