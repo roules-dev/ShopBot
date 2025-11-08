@@ -115,7 +115,7 @@ export class AddProductFlow extends UserFlow {
                 amount: this.productAmount ?? undefined
             })
 
-            return await updateAsSuccessMessage(interaction, `You successfully added the product ${bold(getProductName(this.selectedShop.id, newProduct.id) || '')} to the shop ${bold(getShopName(this.selectedShop.id) || '')}`)
+            return await updateAsSuccessMessage(interaction, `You successfully added the product ${bold(this.productName)} to the shop ${bold(getShopName(this.selectedShop.id) || '')}`)
 
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -169,7 +169,11 @@ export class AddActionProductFlow extends AddProductFlow {
                         break
                     case PRODUCT_ACTION_TYPE.GiveCurrency:
                         const productActionAsGiveCurrency = (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>)
-                        const isProductActionGiveCurrency = this.productAction != null && this.productAction?.options != undefined && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).amount !== undefined && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId !== undefined && productActionAsGiveCurrency != undefined 
+                        const isProductActionGiveCurrency = this.productAction != null 
+                            && this.productAction?.options != undefined 
+                            && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).amount !== undefined 
+                            && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId !== undefined 
+                            && productActionAsGiveCurrency != undefined 
 
                         const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : 'Unset'
                         const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId) : undefined
@@ -565,8 +569,8 @@ export class EditProductFlow extends UserFlow {
     }
 
     protected getMessage(): string {
-        if (this.stage == EditProductFlowStage.SELECT_SHOP) return `Edit product from ${bold(`[${getShopName(this.selectedShop?.id) || 'Select Shop'}]`)}.\nNew ${bold(`${this.updateOption}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
-        if (this.stage == EditProductFlowStage.SELECT_PRODUCT) return `Edit Product: ${bold(`[${getProductName(this.selectedShop?.id, this.selectedProduct?.id) || 'Select Product'}]`)} from ${bold(getShopName(this.selectedShop?.id) || '')}. \nNew ${bold(`${this.updateOption}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
+        if (this.stage == EditProductFlowStage.SELECT_SHOP) return `Edit product from ${bold(`[${getShopName(this.selectedShop?.id) || 'Select Shop'}]`)}.\nNew ${bold(`${this.getUpdateOptionName(this.updateOption!)}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
+        if (this.stage == EditProductFlowStage.SELECT_PRODUCT) return `Edit Product: ${bold(`[${getProductName(this.selectedShop?.id, this.selectedProduct?.id) || 'Select Product'}]`)} from ${bold(getShopName(this.selectedShop?.id) || '')}. \nNew ${bold(`${this.getUpdateOptionName(this.updateOption!)}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
 
         PrettyLog.warning(`Unknown stage: ${this.stage}`)
         return ''
@@ -702,7 +706,7 @@ export class EditProductFlow extends UserFlow {
 
             await updateProduct(this.selectedShop.id, this.selectedProduct.id, updateOption)
 
-            return await updateAsSuccessMessage(interaction, `You successfully updated the product ${bold(oldName)} from the shop ${bold(getShopName(this.selectedShop.id) || '')}. \nNew ${bold(this.updateOption)}: ${bold(this.getUpdateValueString(this.updateOption))}`)
+            return await updateAsSuccessMessage(interaction, `You successfully updated the product ${bold(oldName)} from the shop ${bold(getShopName(this.selectedShop.id) || '')}. \nNew ${bold(this.getUpdateOptionName(this.updateOption!))}: ${bold(this.getUpdateValueString(this.updateOption))}`)
 
         } catch (error) {
             await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -710,29 +714,46 @@ export class EditProductFlow extends UserFlow {
         }
     }
 
-    private getUpdateValue(interaction: ChatInputCommandInteraction, subcommand: EditProductOption): string | number | null {
-        const option = `new-${subcommand}`
-
-        switch (subcommand) {
+    private getUpdateOptionName(option: EditProductOption): string {
+        switch (option) {
             case EditProductOption.NAME:
+                return 'name'
             case EditProductOption.DESCRIPTION:
-                return interaction.options.getString(option)?.replaceSpaces() ?? null
+                return 'description'
             case EditProductOption.PRICE:
-                const priceString = interaction.options.getNumber(option)?.toFixed(2)
-                if (priceString == undefined) return null
-                return +priceString
+                return 'price'
             case EditProductOption.EMOJI:
-                const emojiOption = interaction.options.getString(option)
-                return emojiOption?.match(EMOJI_REGEX)?.[0] ?? null
+                return 'emoji'
             case EditProductOption.AMOUNT:
-                return interaction.options.getInteger(option)
+                return 'amount'
             default:
-                assertNeverReached(subcommand)
+                assertNeverReached(option)
         }
     }
 
-    private getUpdateValueString(subcommand: EditProductOption | null): string {
-        switch (subcommand) {
+    private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditProductOption): string | number | null {
+        const interactionOption = `new-${option}`
+
+        switch (option) {
+            case EditProductOption.NAME:
+            case EditProductOption.DESCRIPTION:
+                return interaction.options.getString(interactionOption)?.replaceSpaces() ?? null
+            case EditProductOption.PRICE:
+                const priceString = interaction.options.getNumber(interactionOption)?.toFixed(2)
+                if (priceString == undefined) return null
+                return +priceString
+            case EditProductOption.EMOJI:
+                const emojiOption = interaction.options.getString(interactionOption)
+                return emojiOption?.match(EMOJI_REGEX)?.[0] ?? null
+            case EditProductOption.AMOUNT:
+                return interaction.options.getInteger(interactionOption)
+            default:
+                assertNeverReached(option)
+        }
+    }
+
+    private getUpdateValueString(option: EditProductOption | null): string {
+        switch (option) {
             case null:
                 return 'unset'
             case EditProductOption.NAME:
@@ -746,7 +767,7 @@ export class EditProductFlow extends UserFlow {
                 if (this.updateOptionValue == -1) return 'unlimited'
                 return `${this.updateOptionValue ?? 'unset'}`
             default:
-                assertNeverReached(subcommand)
+                assertNeverReached(option)
         }
     }
 }

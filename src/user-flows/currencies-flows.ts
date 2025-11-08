@@ -10,6 +10,7 @@ import { EMOJI_REGEX, ErrorMessages } from "../utils/constants"
 import { PrettyLog } from "../utils/pretty-log"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"
+import { assertNeverReached } from "../utils/utils"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -125,7 +126,7 @@ export class EditCurrencyFlow extends UserFlow {
         if (!subcommand || !Object.values(EditCurrencyOption).includes(subcommand as EditCurrencyOption)) return replyErrorMessage(interaction, ErrorMessages.InvalidSubcommand)
         this.updateOption = subcommand as EditCurrencyOption
 
-        this.updateOptionValue = this.getUpdateValue(interaction, subcommand)
+        this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
 
         this.initComponents()
         this.updateComponents()
@@ -136,7 +137,7 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Edit **[${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]**.\n**New ${this.updateOption}**: ${bold(`${this.updateOptionValue}`)}`
+        return `Edit **[${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]**.\n**New ${this.getUpdateOptionName(this.updateOption!)}**: ${bold(`${this.updateOptionValue}`)}`
     }
 
     protected override initComponents(): void {
@@ -182,22 +183,32 @@ export class EditCurrencyFlow extends UserFlow {
 
             await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
 
-            return await updateAsSuccessMessage(interaction, `You successfully edited the currency ${bold(oldName)}. \nNew ${bold(this.updateOption)}: ${bold(this.updateOptionValue)}`)
+            return await updateAsSuccessMessage(interaction, `You successfully edited the currency ${bold(oldName)}. \nNew ${bold(this.getUpdateOptionName(this.updateOption))}: ${bold(this.updateOptionValue)}`)
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
     }
 
-    private getUpdateValue(interaction: ChatInputCommandInteraction, subcommand: string): string {
-        switch (subcommand) {
+    private getUpdateOptionName(option: EditCurrencyOption): string {
+        switch (option) {
             case EditCurrencyOption.NAME:
-                return interaction.options.getString(`new-${subcommand}`)?.replaceSpaces() || ''
+                return 'name'
             case EditCurrencyOption.EMOJI:
-                const emojiOption = interaction.options.getString(`new-${subcommand}`)
+                return 'emoji'
+            default:
+                assertNeverReached(option)
+        }
+    }
+
+    private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption): string {
+        switch (option) {
+            case EditCurrencyOption.NAME:
+                return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ''
+            case EditCurrencyOption.EMOJI:
+                const emojiOption = interaction.options.getString(`new-${option}`)
                 return emojiOption?.match(EMOJI_REGEX)?.[0] || ''
             default:
-                PrettyLog.warning(`Unknown edit currency option: ${subcommand}`)
-                return ''
+                assertNeverReached(option)
         }
     }
 }

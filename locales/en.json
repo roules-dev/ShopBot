@@ -1,0 +1,657 @@
+{
+    "errorMessages": {
+        "default": "An error occured while executing this command, please try again later.",
+        "invalidSubcommand": "Invalid subcommand",
+        "insufficientParameters": "Insufficient parameters",
+
+        "noShops": "There isn't any shop.\n-# Use `/shops-manage create` to create a new one",
+        "noCurrencies": "There isn't any currency.\n-# Use `/currencies-manage create` to create a new currency",
+        "noProducts": "The selected shop has no products",
+        
+        "notOnlyEmojisInName": "The name can't contain only custom emojis",
+
+        "shopDoesNotExist": "Shop does not exist",
+        "shopAlreadyExists": "Shop already exists",
+        "invalidPosition": "Invalid position",
+
+        "currencyDoesNotExist": "Currency does not exist",
+        "currencyAlreadyExists": "Currency already exists",
+
+        "productDoesNotExist": "Product does not exist",
+
+        "accountDoesNotExist": "Account does not exist",
+
+        "invalidSettingType": "Provided setting type is invalid",
+        "duplicateSettingName": "Provided setting name already exists"
+    },
+    "commands": {
+        "account": {
+            "name": "account",
+            "description": "Display your account"
+        },
+        "accountsManage": {
+            "name": "accounts-manage",
+            "description": "Manage user accounts",
+            "subcommands": {
+                "view-account": {
+                    "name": "view-account",
+                    "description": "View a user's account",
+                    "options": {
+                        "target": {
+                            "name": "target",
+                            "description": "The user you want to see the account of"
+                        }
+                    }
+                },
+                "give": {
+                    "name": "give",
+                    "description": "Give currency to a user",
+                    "options": {
+                        "target": {
+                            "name": "target",
+                            "description": "The user you want to give currency to"
+                        },
+                        "amount": {
+                            "name": "amount",
+                            "description": "The amount of currency to give"
+                        }
+                    }
+                },
+                "bulk-give": {
+                    "name": "bulk-give",
+                    "description": "Give currency to all users with a specific role",
+                    "options": {
+                        "role": {
+                            "name": "role",
+                            "description": "The role of users you want to give currency to"
+                        },
+                        "amount": {
+                            "name": "amount",
+                            "description": "The amount of currency to give to each user"
+                        }
+                    }
+                },
+                "take": {
+                    "name": "take",
+                    "description": "Take currency from a user",
+                    "options": {
+                        "target": {
+                            "name": "target",
+                            "description": "The user you want to take currency from"
+                        },
+                        "amount": {
+                            "name": "amount",
+                            "description": "The amount of currency to take, If you want to take all target's money, you will be able to do it later"
+                        }
+                    }
+                }
+            }
+        },
+        "currenciesManage": {
+            "name": "currencies-manage",
+            "description": "Manage your currencies",
+            "subcommands": {
+                "create": {
+                    "name": "create",
+                    "description": "Create a new currency",
+                    "options": {
+                        "name": {
+                            "name": "name",
+                            "description": "The name of the currency"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "The emoji of the currency (optional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "remove",
+                    "description": "Remove the selected currency"
+                }
+            },
+            "subcommandGroups": {
+                "edit": {
+                    "name": "edit",
+                    "description": "Edit a currency",
+                    "subcommands": {
+                        "name": {
+                            "name": "name",
+                            "description": "Change name. You will select the currency later",
+                            "options": {
+                                "new-name": {
+                                    "name": "new-name",
+                                    "description": "The new name of the currency"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Change Emoji. You will select the currency later",
+                            "options": {
+                                "new-emoji": {
+                                    "name": "new-emoji",
+                                    "description": "The new emoji of the currency (if you just want to remove it write anything)"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "productsManage": {
+            "name": "products-manage",
+            "description": "Manage your products",
+            "subcommands": {
+                "add": {
+                    "name": "add",
+                    "description": "Add a new product",
+                    "options": {
+                        "name": {
+                            "name": "name",
+                            "description": "The name of the product"
+                        },
+                        "price": {
+                            "name": "price",
+                            "description": "The price of the product"
+                        },
+                        "description": {
+                            "name": "description",
+                            "description": "The description of the product (optional)"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "The emoji of the product (optional)"
+                        },
+                        "amount": {
+                            "name": "amount",
+                            "description": "The amount of the product (optional)"
+                        },
+                        "action": {
+                            "name": "action",
+                            "description": "The action of the product (optional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "remove",
+                    "description": "Remove a product"
+                }
+            },
+            "subcommandGroups": {
+                "edit": {
+                    "name": "edit",
+                    "description": "Edit a product",
+                    "subcommands": {
+                        "name": {
+                            "name": "name",
+                            "description": "Change Name. You will select the product later",
+                            "options": {
+                                "new-name": {
+                                    "name": "new-name",
+                                    "description": "The new name of the product"
+                                }
+                            }
+                        },
+                        "description": {
+                            "name": "description",
+                            "description": "Change Description. You will select the product later",
+                            "options": {
+                                "new-description": {
+                                    "name": "new-description",
+                                    "description": "The new description of the product"
+                                }
+                            }
+                        },
+                        "price": {
+                            "name": "price",
+                            "description": "Change Price. You will select the product later",
+                            "options": {
+                                "new-price": {
+                                    "name": "new-price",
+                                    "description": "The new price of the product"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Change Emoji. You will select the product later",
+                            "options": {
+                                "new-emoji": {
+                                    "name": "new-emoji",
+                                    "description": "The new emoji of the product (if you just want to remove it write anything)"
+                                }
+                            }
+                        },
+                        "amount": {
+                            "name": "amount",
+                            "description": "Change Amount. You will select the product later",
+                            "options": {
+                                "new-amount": {
+                                    "name": "new-amount",
+                                    "description": "The new amount of the product (-1 for unlimited)"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "settings": {
+        "name": "settings",
+        "description": "See and edit your settings"
+    },
+    "shop": {
+        "name": "shop",
+        "description": "Display shops and buy products"
+    },
+    "shopsManage": {
+        "name": "shops-manage",
+        "description": "Manage your Shops",
+        "subcommands": {
+            "create": {
+                "name": "create",
+                "description": "Create a new Shop",
+                "options": {
+                    "name": {
+                        "name": "name",
+                        "description": "The name of the shop"
+                    },
+                    "description": {
+                        "name": "description",
+                        "description": "The description of the shop (optional)"
+                    },
+                    "emoji": {
+                        "name": "emoji",
+                        "description": "The emoji of the shop (optional)"
+                    },
+                    "reserved-to": {
+                        "name": "reserved-to",
+                        "description": "Specify if should be reserved to a role (optional)"
+                    }
+                }
+            },
+            "remove": {
+                "name": "remove",
+                "description": "Remove the selected shop"
+            },
+            "reorder": {
+                "name": "reorder",
+                "description": "Reorder shops"
+            },
+            "create-discount-code": {
+                "name": "create-discount-code",
+                "description": "Create a discount code",
+                "options": {
+                    "code": {
+                        "name": "code",
+                        "description": "The discount code"
+                    },
+                    "amount": {
+                        "name": "amount",
+                        "description": "The amount of the discount (in %)"
+                    }
+                }
+            },
+            "remove-discount-code": {
+                "name": "remove-discount-code",
+                "description": "Remove a discount code"
+            }
+        },
+        "subcommandGroups": {
+            "edit": {
+                "name": "edit",
+                "description": "Edit a shop",
+                "subcommands": {
+                    "name": {
+                        "name": "name",
+                        "description": "Change Name. You will select the shop later",
+                        "options": {
+                            "new-name": {
+                                "name": "new-name",
+                                "description": "The new name of the shop"
+                            }
+                        }
+                    },
+                    "description": {
+                        "name": "description",
+                        "description": "Change Description. You will select the shop later",
+                        "options": {
+                            "new-description": {
+                                "name": "new-description",
+                                "description": "The new description of the shop"
+                            }
+                        }
+                    },
+                    "emoji": {
+                        "name": "emoji",
+                        "description": "Change Emoji. You will select the shop later",
+                        "options": {
+                            "new-emoji": {
+                                "name": "new-emoji",
+                                "description": "The new emoji of the shop"
+                            }
+                        }
+                    },
+                    "reserved-to": {
+                        "name": "reserved-to",
+                        "description": "Change the role the shop is reserved to. You will select the shop later",
+                        "options": {
+                            "reserved-to-role": {
+                                "name": "reserved-to-role",
+                                "description": "The new role the shop will be reserved to. Leave empty to delete"
+                            }
+                        }
+                    },
+                    "currency": {
+                        "name": "currency",
+                        "description": "Change Currency. You will select the shop later"
+                    }
+                }
+            }
+        }
+    },
+    "defaultComponents": {
+        "selectCurrencyPlaceholder": "Select a currency",
+        "selectShopPlaceholder": "Select a shop",
+        "selectRolePlaceholder": "Select a role",
+        "changeShopButtonLabel": "Change shop",
+        "submitShopButtonLabel": "Submit shop"
+    },
+    "userInterfaces": {
+        "extendedComponents": {
+            "confirmationModal": {
+                "title": "⚠️ Are you sure?",
+                "cantBeUndone": "This action can't be undone",
+                "enterYes": "Enter 'Yes' to confirm"
+            },
+            "editModal": {
+                "title": "Edit {edit}",
+                "new": "New {edit}"
+            }
+        },
+        "settings": {
+            "embeds": {
+                "settings": {
+                    "title": "⚙️ Settings",
+                    "description": "You can edit your settings here",
+                    "unseSettingPlaceholder": "Not set"
+                }
+            },
+
+            "components": {
+                "selectSettingPlaceholder": "Edit a setting",
+                "defaultEditor": {
+                    "title": "Edit {name}"
+                },
+                "toggleEditor": {
+                    "toggleOn": "Enable",
+                    "toggleOff": "Disable"
+                },
+                "selector": {
+                    "title": "Select {type} for {name}",
+                    "types": {
+                        "role": "a role",
+                        "user": "a user",
+                        "channel": "a channel",
+                        "option": "an option"
+                    }
+                },
+                "resetButtonLabel": "Reset",
+                "backButtonLabel": "Back"
+            }
+        },
+        "account": {
+            "embeds": {
+                "account": {
+                    "title": "💰 _{displayName}_'s Account"
+                },
+                "inventory": {
+                    "title": "💼 _{displayName}_'s Inventory"
+                }
+            },
+            "components": {
+                "showAccountButtonLabel": "Show account",
+                "showInventoryButtonLabel": "Show inventory"
+            },
+            "errors": {
+                "accountEmpty": "❌ Account is empty",
+                "inventoryEmpty": "❌ Inventory is empty"
+            }
+        },
+        "shop": {
+            "embeds": {
+                "shop": {
+                    "products": "Products",
+                    "reservedTo": "{role} only",
+                    "noProduct": "There is no product available here",
+                    "xProductsLeft": "{x} left",
+                    "noProductLeft": "None left",
+                    "price": "Price"
+                }
+
+            },
+            "components": {
+                "buyButtonLabel": "Buy a product",
+                "showAccountButtonLabel": "My account"
+            }
+        },
+        "buy": {
+            "message": {
+                "discountCode": "Discount code",
+                "buyMessage": "Buy {product} from {shop}",
+                "price": "for {price}",
+                
+                "notEnoughMoney": "You don't have enough {currency} to buy this product.",
+                "productNoLongerAvailable": "This product is no longer available.",
+                "successfullyBought": "You successfully bought {product} in {shop} for {price}"
+            },
+            "components": {
+                "selectProductMenuPlaceholder": "Select a product",
+                "buyButtonLabel": "Buy",
+                "discountCodeButtonLabel": "I have a discount code",
+                "setDiscountCodeModal": {
+                    "title": "Set discount code",
+                    "inputLabel": "Discount Code"
+                }
+            },
+            "actionProducts": {
+                "giveRole": {
+                    "message": "You were granted the role {role}"
+                },
+                "giveCurrency": {
+                    "message": "You were given {amount} {currency}"
+                }
+            }
+        }
+    },
+    "userFlows": {
+        "accountGive": {
+            "errorMessages": {
+                "cantGiveMoney": "Can't give money."
+            },
+            "messages": {
+                "default": "Give {amount} {currency} to {user}",
+                "bulkGive": "Give {amount} {currency} to all users with role {role}",
+
+                "success": "You successfully gave {amount} {currency} to {user}",
+                "bulkGiveSuccess": "You successfully gave {amount} {currency} to all users with role {role}"
+            },
+            "components": {
+                "submitButtonLabel": "Submit"
+            }
+        },
+        "accountTake": {
+            "errorMessages": {
+                "cantTakeMoney": "Can't take money."
+            },
+            "messages": {
+                "default": "Take {amount} {currency} from {user}",
+                "successfullyEmpted": "You successfully emptied {user} account",
+                "success": "You successfully took {amount} {currency} from {user}"
+            },
+            "components": {
+                "submitButtonLabel": "Submit",
+                "takeAll": "Take all",
+                "emptyAccount": "Empty account"
+
+            }
+        },
+        "currencyRemove": {
+            "errorMessages": {
+                "cantRemoveShop": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
+                "changeShopsCurrencies": "Please consider removing them (`/shops-manage remove`) or changing their currency (`/shops-manage change-currency`) before removing the currency."
+            },
+            "messages": {
+                "default": "Remove {currency}, ⚠️ __**it will also take it from user's accounts**__",
+                "success": "You successfully removed the currency {currency}"
+            },
+            "components": {
+                "submitButtonLabel": "Remove currency"
+            }
+        },
+        "currencyEdit": {
+            "messages": {
+                "default": "Edit {currency}.\n**New ${option}**: {value}",
+                "success": "You successfully edited the currency ${currency}. \nNew ${option}: {value}"
+            },
+            "components": {
+                "submitButtonLabel": "Edit currency"
+            },
+            "editOptions": {
+                "name": "name",
+                "emoji": "emoji"
+            }
+        },
+        "productAdd": {
+            "messages": {
+                "default": "Add Product: {product} for {price} {currency} in {shop}{description}",
+                "description": "Description:",
+                "success": "You successfully added the product {product} to the shop {shop}",
+                "withAction": "with the action {action}",
+                "action": "Action:",
+                "actions": {
+                    "valueUnset": "Unset",
+                    "giveRole": "give {role} role",
+                    "giveCurrency": "give {amount} {currency}"
+                }
+            },
+            "components": {
+                "submitButtonLabel": "Add product",
+                "setAmountButtonLabel": "Set amount",
+                "editAmountModalTitle": "Amount"
+            }
+        },
+        "productRemove": {
+            "messages": {
+                "shopSelectStage": "Remove a product from: {shop}",
+                "productSelectStage": "Remove product: {product} from {shop}",
+                "success": "You successfully removed the product {product} from the shop {shop}"
+            },
+            "components": {
+                "submitButtonLabel": "Remove Product"
+            }
+        },
+        "productEdit": {
+            "errorMessages": {
+                "noShopsWithProducts": "There isn't any shop with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
+            },
+            "messages": {
+                "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
+                "productSelectStage": "Edit product: {product} from {shop}. \nNew {option}: {value}",
+                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}"
+            },
+            "components": {
+                "submitButtonLabel": "Edit product"
+            },
+            "editOptions": {
+                "name": "name",
+                "emoji": "emoji",
+                "price": "price",
+                "description": "description",
+                "amount": "amount"
+            }
+        },
+
+        "shopCreate": {
+            "errorMessages": {
+                "cantCreateShop": "Can't create a new shop."
+            },
+            "messages": {
+                "default": "Create the shop {shop} with currency {currency}",
+                "success": "You successfully created the shop {shop} with currency {currency}. \n-# Use `/shops-manage remove` to remove it"
+            },
+            "components": {
+                "submitButtonLabel": "Create shop",
+                "changeShopNameButtonLabel": "Change shop name",
+                "changeShopEmojiButtonLabel": "Change shop emoji",
+                "editNameModalTitle": "Shop name",
+                "editEmojiModalTitle": "Shop emoji"
+            }
+        },
+        "shopRemove": {
+            "messages": {
+                "default": "Remove the shop {shop}.\n⚠️ __**It will also remove all products from this shop**__",
+                "success": "You successfully removed the shop {shop}"
+            },
+            "components": {
+                "submitButtonLabel": "Remove shop"
+            }
+        },
+        "shopReorder": {
+            "messages": {
+                "default": "Change position of {shop} to {position}",
+                "success": "You successfully changed the position of {shop} to {position}"
+            },
+            "components": {
+                "submitNewPositionLabel": "Submit position"
+            }
+        },
+        "shopEdit": {
+            "messages": {
+                "default": "Edit {shop}.\n**New ${option}**: {value}",
+                "success": "You successfully edited the shop ${shop}. \nNew ${option}: {value}"
+            },
+            "components": {
+                "submitButtonLabel": "Edit shop"
+            },
+            "editOptions": {
+                "name": "name",
+                "emoji": "emoji",
+                "description": "description",
+                "reservedToRole": "reserved to role"
+            }
+        },
+        "shopChangeCurrency": {
+            "messages": {
+                "shopSelectStage": "Change the currency of {shop}",
+                "currencySelectStage": "Change the currency of {shop} to {currency}",
+                "success": "You successfully updated the currency of {shop} to {currency}"
+            },
+            "components": {
+                "submitButtonLabel": "Change currency"
+            }
+        },
+        "discountCodeCreate": {
+            "messages": {
+                "default": "Create a discount code for {shop}.\n**Code**: {code}\nAmount: {amount}% off",
+                "success": "You successfully created the discount code {code} for {shop} with {amount}% off"
+            },
+            "components": {
+                "submitButtonLabel": "Create discount code"
+            }
+        },
+        "discountCodeRemove": {
+            "messages": {
+                "shopSelectStage": "Remove a discount code from {shop}",
+                "codeSelectStage": "Remove discount code {code} from {shop}",
+                "success": "You successfully removed the discount code {code} from {shop}"
+            },
+            "components": {
+                "discountCodeSelectPlaceholder": "Select a discount code",
+                "submitButtonLabel": "Remove discount code"
+            }
+        }
+    }
+}

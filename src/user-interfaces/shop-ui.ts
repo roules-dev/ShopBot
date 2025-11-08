@@ -92,7 +92,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         const shopEmbed = new EmbedBuilder()
             .setTitle(`${getShopName(this.selectedShop.id)!}`)
-            .setDescription(`${reservedToString}${this.selectedShop.description}\n\nProducts:`)
+            .setDescription(`${reservedToString}${this.selectedShop.description}\nProducts:`)
             .setColor(Colors.Gold)
 
 
@@ -340,6 +340,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 const userCurrencyAmount = user.currencies.get(this.selectedShop.currency.id)?.amount || 0
 
                 setAccountCurrencyAmount(interaction.user.id, currency, userCurrencyAmount + amount)
+
+                actionMessage = `You were given ${amount} ${getCurrencyName(currency)}`
                 break
             default:
                 break

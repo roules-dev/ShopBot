@@ -346,6 +346,7 @@ export const EDIT_SHOP_OPTIONS = {
 type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 
 function isShopOption(subcommand: string): subcommand is EditShopOption { return Object.values(EDIT_SHOP_OPTIONS).includes(subcommand as EditShopOption) }
+
 function getShopOptionName(option: EditShopOption): string { 
     switch (option) {
         case EDIT_SHOP_OPTIONS.Name:
@@ -395,7 +396,7 @@ export class EditShopFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Edit **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.\n**New ${this.updateOption}**: ${bold(`${this.updateOptionValueDisplay}`)}`
+        return `Edit **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.\n**New ${this.getUpdateOptionName(this.updateOption!)}**: ${bold(`${this.updateOptionValueDisplay}`)}`
     }
 
     protected override initComponents(): void {
@@ -445,7 +446,7 @@ export class EditShopFlow extends UserFlow {
 
             await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
-            return await updateAsSuccessMessage(interaction, `You successfully edited the shop ${bold(oldName)}.\n New ${bold(this.updateOption)}: ${bold(this.updateOptionValueDisplay)}`)
+            return await updateAsSuccessMessage(interaction, `You successfully edited the shop ${bold(oldName)}.\n New ${bold(getShopOptionName(this.updateOption))}: ${bold(this.updateOptionValueDisplay)}`)
         }
         catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -477,6 +478,19 @@ export class EditShopFlow extends UserFlow {
         if (!updateValue) throw new Error(ErrorMessages.InsufficientParameters)
 
         return updateValue
+    }
+
+    private getUpdateOptionName(option: EditShopOption): string { 
+        switch (option) {
+            case EDIT_SHOP_OPTIONS.Name:
+            case EDIT_SHOP_OPTIONS.Description:
+            case EDIT_SHOP_OPTIONS.Emoji:
+                return option
+            case EDIT_SHOP_OPTIONS.ReservedTo:
+                return 'reserved to role'
+            default:
+                assertNeverReached(option)
+        }
     }
 
     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string | null {
@@ -582,7 +596,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-currency`,
                 time: 120_000,
-                label: 'Submit Currency',
+                label: 'Change currency',
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true

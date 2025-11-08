@@ -255,10 +255,10 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             }
         )
 
-        const returnButton = new ExtendedButtonComponent(
+        const backButton = new ExtendedButtonComponent(
             {
-                customId: 'edit-setting+return-button',
-                label: 'Return',
+                customId: 'edit-setting+back-button',
+                label: 'Back',
                 emoji: '⬅️',
                 style: ButtonStyle.Secondary,
                 time: 120_000
@@ -270,7 +270,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         )
 
         components.push(resetSettingButton)
-        components.push(returnButton)
+        components.push(backButton)
 
         return components
     }

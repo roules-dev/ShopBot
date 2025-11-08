@@ -115,8 +115,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
     }
 
     protected override getMessage(): string {
-        const roleString = this.targetRole ? roleMention(this.targetRole.id) : bold('Select Role')
-        return `Give ${bold(`${this.amount} [${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]`)} to all users with role ${roleString}`
+        return `Give ${bold(`${this.amount} [${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]`)} to all users with role ${roleMention(this.targetRole!.id)}`
     }
 
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
