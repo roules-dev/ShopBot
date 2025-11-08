@@ -28,6 +28,8 @@ export async function getLocales() {
 export async function addLocalisationToCommand(commandData: SlashCommandBuilder) {
     const commandDataJSON = commandData.toJSON()
 
+    // console.dir(commandDataJSON)
+
     commandDataJSON.name_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'name'])
     commandDataJSON.description_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'description'])
     addLocalisationToOptions(commandDataJSON.options || [], ['commands', commandDataJSON.name, 'options'])

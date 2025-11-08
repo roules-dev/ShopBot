@@ -99,8 +99,13 @@ To add your translation, **keep the same keys** and replace the English text wit
 If possible, run the bot locally to make sure everything looks correct.
 It'll also make sure that the name and descriptions of the commands follow discord's [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
-To start the bot, run the following command:
+Follow the steps from the [bot's README](https://github.com/roules-dev/ShopBot?tab=readme-ov-file#-how-to-use) to install and run the bot locally.
 
+To register commands, run the following command:
+```bash
+npm run deploy /a
+```
+And to start the bot, run the following command:
 ```bash
 npm run start
 ```

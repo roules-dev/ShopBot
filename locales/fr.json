@@ -1,135 +1,135 @@
 {
     "errorMessages": {
-        "default": "An error occured while executing this command, please try again later.",
-        "invalidSubcommand": "Invalid subcommand",
-        "insufficientParameters": "Insufficient parameters",
+        "default": "Une erreure est survenue pendant l'exécution de la commande. Veuillez réessayer plus tard.",
+        "invalidSubcommand": "Sous-commande invalide",
+        "insufficientParameters": "Paramètres insuffisants",
 
-        "noShops": "There isn't any shop.\n-# Use `/shops-manage create` to create a new one",
-        "noCurrencies": "There isn't any currency.\n-# Use `/currencies-manage create` to create a new currency",
-        "noProducts": "The selected shop has no products",
-        
-        "notOnlyEmojisInName": "The name can't contain only custom emojis",
+        "noShops": "Il n'y a pas de boutique.\n-# Utilisez `/shops-manage create` pour en créer une nouvelle",
+        "noCurrencies": "Il n'y a pas de devise.\n-# Utilisez `/currencies-manage create` pour créer une nouvelle devise",
+        "noProducts": "La boutique sélectionnée n'a pas de produits",
 
-        "shopDoesNotExist": "Shop does not exist",
-        "shopAlreadyExists": "Shop already exists",
-        "invalidPosition": "Invalid position",
+        "notOnlyEmojisInName": "Le nom ne peut pas contenir que des emojis personnalisés",
 
-        "currencyDoesNotExist": "Currency does not exist",
-        "currencyAlreadyExists": "Currency already exists",
+        "shopDoesNotExist": "La boutique n'existe pas",
+        "shopAlreadyExists": "La boutique existe déjà",
+        "invalidPosition": "Position invalide",
 
-        "productDoesNotExist": "Product does not exist",
+        "currencyDoesNotExist": "La devise n'existe pas",
+        "currencyAlreadyExists": "La devise existe déjà",
 
-        "accountDoesNotExist": "Account does not exist",
+        "productDoesNotExist": "Le produit n'existe pas",
 
-        "invalidSettingType": "Provided setting type is invalid",
-        "duplicateSettingName": "Provided setting name already exists"
+        "accountDoesNotExist": "Le compte n'existe pas",
+
+        "invalidSettingType": "Le type de paramètre fourni est invalide",
+        "duplicateSettingName": "Le nom de paramètre fourni existe déjà"
     },
     "commands": {
         "account": {
-            "name": "account",
-            "description": "Display your account"
+            "name": "compte",
+            "description": "Afficher votre compte"
         },
         "accounts-manage": {
-            "name": "accounts-manage",
-            "description": "Manage user accounts",
+            "name": "gerer-comptes",
+            "description": "Gérer les comptes utilisateurs",
             "options": {
                 "view-account": {
-                    "name": "view-account",
-                    "description": "View a user's account",
+                    "name": "voir-compte",
+                    "description": "Voir le compte d'un utilisateur",
                     "options": {
                         "target": {
-                            "name": "target",
-                            "description": "The user you want to see the account of"
+                            "name": "cible",
+                            "description": "L'utilisateur dont vous voulez voir le compte"
                         }
                     }
                 },
                 "give": {
-                    "name": "give",
-                    "description": "Give currency to a user",
+                    "name": "donner",
+                    "description": "Donner de la monnaie à un utilisateur",
                     "options": {
                         "target": {
-                            "name": "target",
-                            "description": "The user you want to give currency to"
+                            "name": "cible",
+                            "description": "L'utilisateur à qui vous voulez donner de la monnaie"
                         },
                         "amount": {
-                            "name": "amount",
-                            "description": "The amount of currency to give"
+                            "name": "montant",
+                            "description": "Le montant de monnaie à donner"
                         }
                     }
                 },
                 "bulk-give": {
-                    "name": "bulk-give",
-                    "description": "Give currency to all users with a specific role",
+                    "name": "donner-groupe",
+                    "description": "Donner de la monnaie à tous les utilisateurs avec un rôle spécifique",
                     "options": {
                         "role": {
                             "name": "role",
-                            "description": "The role of users you want to give currency to"
+                            "description": "Le rôle des utilisateurs à qui vous voulez donner de la monnaie"
                         },
                         "amount": {
-                            "name": "amount",
-                            "description": "The amount of currency to give to each user"
+                            "name": "montant",
+                            "description": "Le montant de monnaie à donner à chaque utilisateur"
                         }
                     }
                 },
                 "take": {
-                    "name": "take",
-                    "description": "Take currency from a user",
+                    "name": "prendre",
+                    "description": "Prendre de la monnaie à un utilisateur",
                     "options": {
                         "target": {
-                            "name": "target",
-                            "description": "The user you want to take currency from"
+                            "name": "cible",
+                            "description": "L'utilisateur dont vous voulez prendre de la monnaie"
                         },
                         "amount": {
-                            "name": "amount",
-                            "description": "The amount of currency to take, If you want to take all target's money, you will be able to do it later"
+                            "name": "montant",
+                            "description": "Le montant de monnaie à prendre. Si vous voulez prendre toute la monnaie de la cible, vous pourrez le faire plus tard"
                         }
                     }
                 }
             }
         },
         "currencies-manage": {
-            "name": "currencies-manage",
-            "description": "Manage your currencies",
+            "name": "gerer-devises",
+            "description": "Gérer vos devises",
             "options": {
                 "create": {
-                    "name": "create",
-                    "description": "Create a new currency",
+                    "name": "creer",
+                    "description": "Créer une nouvelle devise",
                     "options": {
                         "name": {
-                            "name": "name",
-                            "description": "The name of the currency"
+                            "name": "nom",
+                            "description": "Le nom de la devise"
                         },
                         "emoji": {
                             "name": "emoji",
-                            "description": "The emoji of the currency (optional)"
+                            "description": "L'emoji de la devise (optionnel)"
                         }
                     }
                 },
                 "remove": {
-                    "name": "remove",
-                    "description": "Remove the selected currency"
+                    "name": "supprimer",
+                    "description": "Supprimer la devise sélectionnée"
                 },
                 "edit": {
-                    "name": "edit",
-                    "description": "Edit a currency",
+                    "name": "modifier",
+                    "description": "Modifier une devise",
                     "options": {
                         "name": {
-                            "name": "name",
-                            "description": "Change name. You will select the currency later",
+                            "name": "nom",
+                            "description": "Changer le nom. Vous sélectionnerez la devise plus tard",
                             "options": {
-                                "new-name": {
-                                    "name": "new-name",
-                                    "description": "The new name of the currency"
+                                "nouveau-nom": {
+                                    "name": "nouveau-nom",
+                                    "description": "Le nouveau nom de la devise"
                                 }
                             }
                         },
                         "emoji": {
                             "name": "emoji",
-                            "description": "Change Emoji. You will select the currency later",
+                            "description": "Changer l'emoji. Vous sélectionnerez la devise plus tard",
                             "options": {
-                                "new-emoji": {
-                                    "name": "new-emoji",
-                                    "description": "The new emoji of the currency (if you just want to remove it write anything)"
+                                "nouvel-emoji": {
+                                    "name": "nouvel-emoji",
+                                    "description": "Le nouvel emoji de la devise (si vous voulez juste le supprimer, écrivez n'importe quoi)"
                                 }
                             }
                         }
@@ -138,209 +138,208 @@
             }
         },
         "products-manage": {
-            "name": "products-manage",
-            "description": "Manage your products",
+            "name": "gerer-produits",
+            "description": "Gérer vos produits",
             "options": {
                 "add": {
-                    "name": "add",
-                    "description": "Add a new product",
+                    "name": "ajouter",
+                    "description": "Ajouter un nouveau produit",
                     "options": {
                         "name": {
-                            "name": "name",
-                            "description": "The name of the product"
+                            "name": "nom",
+                            "description": "Le nom du produit"
                         },
                         "price": {
-                            "name": "price",
-                            "description": "The price of the product"
+                            "name": "prix",
+                            "description": "Le prix du produit"
                         },
                         "description": {
                             "name": "description",
-                            "description": "The description of the product (optional)"
+                            "description": "La description du produit (optionnel)"
                         },
                         "emoji": {
                             "name": "emoji",
-                            "description": "The emoji of the product (optional)"
+                            "description": "L'emoji du produit (optionnel)"
                         },
                         "amount": {
-                            "name": "amount",
-                            "description": "The amount of the product (optional)"
+                            "name": "quantite",
+                            "description": "La quantité du produit (optionnel)"
                         },
                         "action": {
                             "name": "action",
-                            "description": "The action of the product (optional)"
+                            "description": "L'action du produit (optionnel)"
                         }
                     }
                 },
                 "remove": {
-                    "name": "remove",
-                    "description": "Remove a product"
+                    "name": "supprimer",
+                    "description": "Supprimer un produit"
                 },
                 "edit": {
-                    "name": "edit",
-                    "description": "Edit a product",
+                    "name": "modifier",
+                    "description": "Modifier un produit",
                     "options": {
                         "name": {
-                            "name": "name",
-                            "description": "Change name. You will select the product later",
+                            "name": "nom",
+                            "description": "Changer le nom. Vous sélectionnerez le produit plus tard",
                             "options": {
                                 "new-name": {
-                                    "name": "new-name",
-                                    "description": "The new name of the product"
+                                    "name": "nouveau-nom",
+                                    "description": "Le nouveau nom du produit"
                                 }
                             }
                         },
                         "description": {
                             "name": "description",
-                            "description": "Change description. You will select the product later",
+                            "description": "Changer la description. Vous sélectionnerez le produit plus tard",
                             "options": {
                                 "new-description": {
-                                    "name": "new-description",
-                                    "description": "The new description of the product"
+                                    "name": "nouvelle-description",
+                                    "description": "La nouvelle description du produit"
                                 }
                             }
                         },
                         "price": {
-                            "name": "price",
-                            "description": "Change price. You will select the product later",
+                            "name": "prix",
+                            "description": "Changer le prix. Vous sélectionnerez le produit plus tard",
                             "options": {
                                 "new-price": {
-                                    "name": "new-price",
-                                    "description": "The new price of the product"
+                                    "name": "nouveau-prix",
+                                    "description": "Le nouveau prix du produit"
                                 }
                             }
                         },
                         "emoji": {
                             "name": "emoji",
-                            "description": "Change emoji. You will select the product later",
+                            "description": "Changer l'emoji. Vous sélectionnerez le produit plus tard",
                             "options": {
                                 "new-emoji": {
-                                    "name": "new-emoji",
-                                    "description": "The new emoji of the product (if you just want to remove it write anything)"
+                                    "name": "nouvel-emoji",
+                                    "description": "Le nouvel emoji du produit (si vous voulez juste le supprimer, écrivez n'importe quoi)"
                                 }
                             }
                         },
                         "amount": {
-                            "name": "amount",
-                            "description": "Change amount. You will select the product later",
+                            "name": "montant",
+                            "description": "Changer la quantité. Vous sélectionnerez le produit plus tard",
                             "options": {
                                 "new-amount": {
-                                    "name": "new-amount",
-                                    "description": "The new amount of the product (-1 for unlimited)"
+                                    "name": "nouveau-montant",
+                                    "description": "La nouvelle quantité du produit (-1 pour illimité)"
                                 }
                             }
                         }
                     }
                 }
             }
-        
         },
         "settings": {
-            "name": "settings",
-            "description": "See and edit your settings"
+            "name": "parametres",
+            "description": "Voir et modifier vos paramètres"
         },
         "shop": {
-            "name": "shop",
-            "description": "Display shops and buy products"
+            "name": "boutique",
+            "description": "Afficher les boutiques et acheter des produits"
         },
         "shops-manage": {
-            "name": "shops-manage",
-            "description": "Manage your shops",
+            "name": "gerer-boutiques",
+            "description": "Gérer vos boutiques",
             "options": {
                 "create": {
-                    "name": "create",
-                    "description": "Create a new shop",
+                    "name": "creer",
+                    "description": "Créer une nouvelle boutique",
                     "options": {
                         "name": {
-                            "name": "name",
-                            "description": "The name of the shop"
+                            "name": "nom",
+                            "description": "Le nom de la boutique"
                         },
                         "description": {
                             "name": "description",
-                            "description": "The description of the shop (optional)"
+                            "description": "La description de la boutique (optionnel)"
                         },
                         "emoji": {
                             "name": "emoji",
-                            "description": "The emoji of the shop (optional)"
+                            "description": "L'emoji de la boutique (optionnel)"
                         },
                         "reserved-to": {
-                            "name": "reserved-to",
-                            "description": "Specify if should be reserved to a role (optional)"
+                            "name": "reservee-a",
+                            "description": "Spécifiez si la boutique doit être réservée à un rôle (optionnel)"
                         }
                     }
                 },
                 "remove": {
-                    "name": "remove",
-                    "description": "Remove the selected shop"
+                    "name": "supprimer",
+                    "description": "Supprimer la boutique sélectionnée"
                 },
                 "reorder": {
-                    "name": "reorder",
-                    "description": "Reorder shops"
+                    "name": "reordonner",
+                    "description": "Réorganiser les boutiques"
                 },
                 "create-discount-code": {
-                    "name": "create-discount-code",
-                    "description": "Create a discount code",
+                    "name": "creer-code-promo",
+                    "description": "Créer un code de réduction",
                     "options": {
                         "code": {
                             "name": "code",
-                            "description": "The discount code"
+                            "description": "Le code de réduction"
                         },
                         "amount": {
-                            "name": "amount",
-                            "description": "The amount of the discount (in %)"
+                            "name": "montant",
+                            "description": "Le montant de la réduction (en %)"
                         }
                     }
                 },
                 "remove-discount-code": {
-                    "name": "remove-discount-code",
-                    "description": "Remove a discount code"
+                    "name": "supprimer-code-promo",
+                    "description": "Supprimer un code de réduction"
                 },
                 "edit": {
-                    "name": "edit",
-                    "description": "Edit a shop",
+                    "name": "modifier",
+                    "description": "Modifier une boutique",
                     "options": {
                         "name": {
-                            "name": "name",
-                            "description": "Change name. You will select the shop later",
+                            "name": "nom",
+                            "description": "Changer le nom. Vous sélectionnerez la boutique plus tard",
                             "options": {
                                 "new-name": {
-                                    "name": "new-name",
-                                    "description": "The new name of the shop"
+                                    "name": "nouveau-nom",
+                                    "description": "Le nouveau nom de la boutique"
                                 }
                             }
                         },
                         "description": {
                             "name": "description",
-                            "description": "Change description. You will select the shop later",
+                            "description": "Changer la description. Vous sélectionnerez la boutique plus tard",
                             "options": {
                                 "new-description": {
-                                    "name": "new-description",
-                                    "description": "The new description of the shop"
+                                    "name": "nouvelle-description",
+                                    "description": "La nouvelle description de la boutique"
                                 }
                             }
                         },
                         "emoji": {
                             "name": "emoji",
-                            "description": "Change emoji. You will select the shop later",
+                            "description": "Changer l'emoji. Vous sélectionnerez la boutique plus tard",
                             "options": {
                                 "new-emoji": {
-                                    "name": "new-emoji",
-                                    "description": "The new emoji of the shop"
+                                    "name": "nouvel-emoji",
+                                    "description": "Le nouvel emoji de la boutique"
                                 }
                             }
                         },
                         "reserved-to": {
-                            "name": "reserved-to",
-                            "description": "Change the role the shop is reserved to. You will select the shop later",
+                            "name": "reservee-a",
+                            "description": "Changer le rôle auquel la boutique est réservée. Vous sélectionnerez la boutique plus tard",
                             "options": {
                                 "reserved-to-role": {
-                                    "name": "reserved-to-role",
-                                    "description": "The new role the shop will be reserved to. Leave empty to delete"
+                                    "name": "reservee-a-role",
+                                    "description": "Le nouveau rôle auquel la boutique sera réservée. Laissez vide pour supprimer"
                                 }
                             }
                         },
                         "currency": {
-                            "name": "currency",
-                            "description": "Change currency. You will select the shop later"
+                            "name": "devise",
+                            "description": "Changer la devise. Vous sélectionnerez la boutique plus tard"
                         }
                     }
                 }
@@ -515,7 +514,7 @@
                 "submitButtonLabel": "Edit currency"
             },
             "editOptions": {
-                "name": "name",
+                "name": "nom",
                 "emoji": "emoji"
             }
         },
@@ -561,7 +560,7 @@
                 "submitButtonLabel": "Edit product"
             },
             "editOptions": {
-                "name": "name",
+                "name": "nom",
                 "emoji": "emoji",
                 "price": "price",
                 "description": "description",
@@ -612,7 +611,7 @@
                 "submitButtonLabel": "Edit shop"
             },
             "editOptions": {
-                "name": "name",
+                "name": "nom",
                 "emoji": "emoji",
                 "description": "description",
                 "reservedToRole": "reserved to role"
