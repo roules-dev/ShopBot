@@ -23,5 +23,15 @@
             "Competing"
         ],
         "type": "enum"
+    },
+    "language": {
+        "id": "language",
+        "name": "Language",
+        "value": "en-US",
+        "type": "enum",
+        "options": [
+            { "value": "en-US", "label": "English (US)" },
+            { "value": "fr", "label": "French" }
+        ]
     }
 }

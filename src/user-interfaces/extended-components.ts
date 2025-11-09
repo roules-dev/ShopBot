@@ -1,8 +1,9 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, LabelBuilder, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { Currency } from "../database/currencies/currencies-types"
-import { isSetting, Setting, Settings } from "../database/settings/settings-types"
+import { Setting } from "../database/settings/settings-types"
 import { Product, Shop } from "../database/shops/shops-types"
 import { UserInterfaceComponentBuilder } from "./user-interfaces"
+import { replaceTemplates } from "../utils/localisation"
 
 export abstract class ExtendedComponent {
     abstract componentType: ComponentType
@@ -143,7 +144,9 @@ export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Produ
                 .setLabel(label)
                 .setValue(key)
 
-            if (typeof value !== 'string' && !isSetting(value) && value.emoji != '') option.setEmoji(value.emoji)
+            if (typeof value === 'object' && 'emoji' in value && typeof value.emoji === 'string' && value.emoji.length > 0) {
+                option.setEmoji(value.emoji)
+            }
 
             options.push(option)
         })
@@ -252,25 +255,27 @@ export class ExtendedUserSelectMenuComponent extends ExtendedSelectMenuComponent
 }
 
 export async function showConfirmationModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction): Promise<[ModalSubmitInteraction, boolean]> {
+    const strings = interaction.client.locale.extendedComponents.confirmationModal
+
     const modalId = 'confirmation-modal'
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
-        .setTitle('⚠️ Are you sure?')
+        .setTitle(strings.title)
 
     const label = new LabelBuilder()
-        .setLabel("This action can't be undone")
+        .setLabel(strings.cantBeUndone)
         .setStringSelectMenuComponent(new StringSelectMenuBuilder()
             .setCustomId('confirm-select-menu')
-            .setPlaceholder("Enter 'Yes' to confirm")
+            .setPlaceholder(strings.selectYes)
             .addOptions(
                 new StringSelectMenuOptionBuilder()
-                    .setLabel('Yes')
+                    .setLabel(strings.yes)
                     .setValue('yes')
             )
             .addOptions(
                 new StringSelectMenuOptionBuilder()
-                    .setLabel('No')
+                    .setLabel(strings.no)
                     .setValue('no')
             )
         )
@@ -299,13 +304,14 @@ export type EditModalOptions = {
 export async function showEditModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     { edit, previousValue, required, minLength, maxLength }: EditModalOptions
 ): Promise<[ModalSubmitInteraction, string]> {
+    const strings = interaction.client.locale.extendedComponents.editModal
 
     const editNormalized = `${edit.toLocaleLowerCase().replaceSpaces('-')}`
     const modalId = `edit-${editNormalized}-modal`
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
-        .setTitle(`Edit ${edit}`)
+        .setTitle(replaceTemplates(strings.title, { edit }))
 
     
     const input = new TextInputBuilder()
@@ -317,7 +323,7 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
         .setMinLength(minLength ?? 0)
 
     const label = new LabelBuilder()
-        .setLabel(`New ${edit}`)
+        .setLabel(replaceTemplates(strings.new, { edit }))
         .setTextInputComponent(input)
 
     modal.addLabelComponents(label)

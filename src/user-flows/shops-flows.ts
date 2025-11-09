@@ -6,7 +6,7 @@ import { createDiscountCode, createShop, getShopName, getShops, removeDiscountCo
 import { Shop } from "../database/shops/shops-types"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showEditModal } from "../user-interfaces/extended-components"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
-import { EMOJI_REGEX, ErrorMessages } from "../utils/constants"
+import { EMOJI_REGEX } from "../utils/constants"
 import { PrettyLog } from "../utils/pretty-log"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"

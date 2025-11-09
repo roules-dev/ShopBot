@@ -6,7 +6,7 @@ import { addProduct, getProductName, getShopName, getShops, removeProduct, updat
 import { createProductAction, Product, ProductAction, ProductActionOptions, PRODUCT_ACTION_TYPE, Shop, ProductActionType, isProductActionType } from "../database/shops/shops-types"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, showEditModal } from "../user-interfaces/extended-components"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
-import { EMOJI_REGEX, ErrorMessages } from "../utils/constants"
+import { EMOJI_REGEX } from "../utils/constants"
 import { PrettyLog } from "../utils/pretty-log"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"

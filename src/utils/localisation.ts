@@ -4,25 +4,30 @@ import fs from 'node:fs/promises';
 import './strings'
 import { PrettyLog } from "./pretty-log";
 
+import en_US_locale from '../../locales/en-US.json';
+
+const defaultLocale = en_US_locale
+export type LocaleStrings = typeof defaultLocale
+
 const localsPath = path.join(__dirname, '..', '..','locales');
 
-const locales: { cache: { [code: string]: unknown }, expired: boolean } = { cache: {}, expired: true };
+const locales: { cache: { [code: string]: LocaleStrings }, expired: boolean } = { cache: {}, expired: true };
 
 export async function getLocales() {
     if (!locales.expired) {
-        return locales
+        return locales.cache
     }
 
     const localesFiles = (await fs.readdir(localsPath)).filter((file) => file.endsWith('.json'))
 
     for (const file of localesFiles) {
         const filePath = path.join(localsPath, file)
-        const content = await fs.readFile(filePath, 'utf-8')
-        locales.cache[file.replace('.json', '')] = JSON.parse(content)
+        const localeContent = require(filePath);
+        locales.cache[file.replace('.json', '')] = localeContent
     }
 
     locales.expired = false
-    return locales
+    return locales.cache
 }
 
 export function invalidateLocalesCache() {
@@ -58,8 +63,8 @@ async function getLocaleStrings(path: string[], maxLength?: number): Promise<{ [
     const locales = await getLocales()
     const result: { [key: string]: string | undefined } = {}
 
-    for (const localeCode in locales.cache) {
-        const locale = locales.cache[localeCode] as any
+    for (const localeCode in locales) {
+        const locale = locales[localeCode] as any
         let current = locale
         for (const key of path) {
             current = current[key]
@@ -86,5 +91,14 @@ async function getLocaleStrings(path: string[], maxLength?: number): Promise<{ [
         result[localeCode] = current
     }
 
+    return result
+}
+
+export function replaceTemplates(str: string, templates: { [key: string]: string | number }): string {
+    let result = str
+    for (const key in templates) {
+        const value = templates[key]
+        result = result.replace(new RegExp(`{${key}}`, 'g'), String(value)) 
+    }
     return result
 }

@@ -354,20 +354,20 @@
         "changeShopButtonLabel": "Change shop",
         "submitShopButtonLabel": "Submit shop"
     },
-    "userInterfaces": {
-        "extendedComponents": {
-            "confirmationModal": {
-                "title": "⚠️ Are you sure?",
-                "cantBeUndone": "This action can't be undone",
-                "selectYes": "Select 'Yes' to confirm",
-                "yes": "Yes",
-                "no": "No"
-            },
-            "editModal": {
-                "title": "Edit {edit}",
-                "new": "New {edit}"
-            }
+    "extendedComponents": {
+        "confirmationModal": {
+            "title": "⚠️ Are you sure?",
+            "cantBeUndone": "This action can't be undone",
+            "selectYes": "Select 'Yes' to confirm",
+            "yes": "Yes",
+            "no": "No"
         },
+        "editModal": {
+            "title": "Edit {edit}",
+            "new": "New {edit}"
+        }
+    },
+    "userInterfaces": {
         "settings": {
             "embeds": {
                 "settings": {
@@ -485,19 +485,19 @@
             },
             "messages": {
                 "default": "Take {amount} {currency} from {user}",
-                "successfullyEmpted": "You successfully emptied {user} account",
+                "successfullyEmptied": "You successfully emptied {user} account",
                 "success": "You successfully took {amount} {currency} from {user}"
             },
             "components": {
                 "submitButtonLabel": "Submit",
-                "takeAll": "Take all",
-                "emptyAccount": "Empty account"
+                "takeAllButtonLabel": "Take all",
+                "emptyAccountButtonLabel": "Empty account"
 
             }
         },
         "currencyCreate": {
             "messages": {
-                "default": "You successfully created the currency {currency}. \n-# Use `/currencies-manage remove` to remove it"
+                "success": "You successfully created the currency {currency}. \n-# Use `/currencies-manage remove` to remove it"
             }
         },
         "currencyRemove": {

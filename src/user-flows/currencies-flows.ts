@@ -6,11 +6,12 @@ import { DatabaseError } from "../database/database-types"
 import { getShopName, getShopsWithCurrency } from "../database/shops/shops-database"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "../user-interfaces/extended-components"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
-import { EMOJI_REGEX, ErrorMessages } from "../utils/constants"
+import { EMOJI_REGEX } from "../utils/constants"
 import { PrettyLog } from "../utils/pretty-log"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"
 import { assertNeverReached } from "../utils/utils"
+import { getLocale } from ".."
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -18,9 +19,11 @@ export class CurrencyRemoveFlow extends UserFlow {
     protected components: Map<string, ExtendedComponent> = new Map()
     private selectedCurrency: Currency | null = null
 
+
+
     async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (currencies.size == 0) return replyErrorMessage(interaction, ErrorMessages.NoCurrencies)
+        if (currencies.size == 0) return replyErrorMessage(interaction, getLocale().errorMessages.noCurrencies)
 
         this.selectedCurrency = null
 
@@ -35,7 +38,7 @@ export class CurrencyRemoveFlow extends UserFlow {
     initComponents(): void {
         const currencySelect = new ExtendedStringSelectMenuComponent<Currency>({
             customId: `${this.id}+select-currency`,
-            placeholder: 'Select a currency',
+            placeholder: getLocale().defaultComponents.selectCurrencyPlaceholder,
             time: 120_000
         }, getCurrencies(),
         (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
@@ -45,7 +48,7 @@ export class CurrencyRemoveFlow extends UserFlow {
 
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
-            label: 'Remove Currency',
+            label: getLocale().userFlows.currencyRemove.components?.submitButtonLabel,
             emoji: {name: '⛔'},
             style: ButtonStyle.Danger,
             disabled: this.selectedCurrency == null,

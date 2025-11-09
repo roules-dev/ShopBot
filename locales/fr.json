@@ -353,20 +353,20 @@
         "changeShopButtonLabel": "Changer de boutique",
         "submitShopButtonLabel": "Soumettre la boutique"
     },
-    "userInterfaces": {
-        "extendedComponents": {
-            "confirmationModal": {
-                "title": "⚠️ Êtes-vous sûr ?",
-                "cantBeUndone": "Cette action est irréversible",
-                "selectYes": "Selectionnez 'Oui' pour confirmer",
-                "yes": "Oui",
-                "no": "Non"
-            },
-            "editModal": {
-                "title": "Modifier {edit}",
-                "new": "Nouveau {edit}"
-            }
+    "extendedComponents": {
+        "confirmationModal": {
+            "title": "⚠️ Êtes-vous sûr ?",
+            "cantBeUndone": "Cette action est irréversible",
+            "selectYes": "Selectionnez 'Oui' pour confirmer",
+            "yes": "Oui",
+            "no": "Non"
         },
+        "editModal": {
+            "title": "Modifier {edit}",
+            "new": "Nouveau {edit}"
+        }
+    },
+    "userInterfaces": {
         "settings": {
             "embeds": {
                 "settings": {
@@ -484,19 +484,19 @@
             },
             "messages": {
                 "default": "Prendre {amount} {currency} de {user}",
-                "successfullyEmpted": "Vous avez vidé avec succès le compte de {user}",
+                "successfullyEmptied": "Vous avez vidé avec succès le compte de {user}",
                 "success": "Vous avez pris avec succès {amount} {currency} de {user}"
             },
             "components": {
                 "submitButtonLabel": "Valider",
-                "takeAll": "Tout prendre",
-                "emptyAccount": "Vider le compte"
+                "takeAllButtonLabel": "Tout prendre",
+                "emptyAccountButtonLabel": "Vider le compte"
 
             }
         },
         "currencyCreate": {
             "messages": {
-                "default": "Vous avez crée avec succès la devise {currency}. \n-# Utilisez `/currencies-manage remove` pour la supprimer"
+                "success": "Vous avez crée avec succès la devise {currency}. \n-# Utilisez `/currencies-manage remove` pour la supprimer"
             }
         },
         "currencyRemove": {

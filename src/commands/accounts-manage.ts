@@ -2,7 +2,6 @@ import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandB
 import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "../user-flows/accounts-flows"
 import { AccountUserInterface } from "../user-interfaces/account-ui"
 import { replyErrorMessage } from "../utils/discord"
-import { ErrorMessages } from "../utils/constants"
 
 export const data = new SlashCommandBuilder()
     .setName('accounts-manage') 
@@ -65,14 +64,14 @@ export const data = new SlashCommandBuilder()
         )
     )
 
-export async function execute(_: Client, interaction: ChatInputCommandInteraction): Promise<void> {
+export async function execute(client: Client, interaction: ChatInputCommandInteraction): Promise<void> {
     const subCommand = interaction.options.getSubcommand()
 
     switch (subCommand) {
         case 'view-account':
             const user = interaction.options.getUser('target')
             if (!user) {
-                replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+                replyErrorMessage(interaction, client.locale.errorMessages.insufficientParameters)
                 break
             }
     
@@ -98,7 +97,7 @@ export async function execute(_: Client, interaction: ChatInputCommandInteractio
             
             break
         default:
-            await replyErrorMessage(interaction, ErrorMessages.InvalidSubcommand)
+            await replyErrorMessage(interaction, client.locale.errorMessages.invalidSubcommand)
             break
     }
 }

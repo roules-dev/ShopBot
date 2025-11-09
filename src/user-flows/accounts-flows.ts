@@ -4,9 +4,10 @@ import { getCurrencies, getCurrencyName } from "../database/currencies/currencie
 import { Currency } from "../database/currencies/currencies-types"
 import { DatabaseError } from "../database/database-types"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "../user-interfaces/extended-components"
-import { ErrorMessages } from "../utils/constants"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"
+import { LocaleStrings, replaceTemplates } from "../utils/localisation"
+import { getLocale } from ".."
 
 export class AccountGiveFlow extends UserFlow {
     public id = 'account-give'
@@ -17,14 +18,15 @@ export class AccountGiveFlow extends UserFlow {
     private target: User | null = null
     protected amount: number | null = null
 
+
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `Can't give money. ${ErrorMessages.NoCurrencies}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${getLocale().userFlows.accountGive.errorMessages?.cantGiveMoney} ${getLocale().errorMessages.noCurrencies}`)
     
         const target = interaction.options.getUser('target')
         const amount = interaction.options.getNumber('amount')
     
-        if (!target || !amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!target || !amount) return replyErrorMessage(interaction, getLocale().errorMessages.insufficientParameters)
 
         this.target = target
         this.amount = amount
@@ -38,12 +40,19 @@ export class AccountGiveFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Give ${bold(`${this.amount} [${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]`)} to ${bold(`${this.target}`)}`
+        return replaceTemplates(
+            getLocale().userFlows.accountGive.messages?.default, 
+            { 
+                amount: bold(`${this.amount}`), 
+                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || getLocale().defaultComponents.selectCurrencyPlaceholder}]`), 
+                user: userMention(this.target!.id) 
+            }
+        )
     }
 
     protected override initComponents(): void {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
-            { customId: `${this.id}+select-currency`, placeholder: 'Select a currency', time: 120_000 },
+            { customId: `${this.id}+select-currency`, placeholder: getLocale().defaultComponents.selectCurrencyPlaceholder, time: 120_000 },
             getCurrencies(),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
@@ -54,7 +63,7 @@ export class AccountGiveFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             { 
                 customId: `${this.id}+submit`, 
-                label: 'Submit', 
+                label: getLocale().userFlows.accountGive.components?.submitButtonLabel, 
                 emoji: '✅', 
                 style: ButtonStyle.Success, 
                 disabled: true,
@@ -78,12 +87,21 @@ export class AccountGiveFlow extends UserFlow {
         this.disableComponents()
         
         try {
-            if (!this.selectedCurrency || !this.target || !this.amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedCurrency || !this.target || !this.amount) return replyErrorMessage(interaction, getLocale().errorMessages.insufficientParameters)
             
             const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
             await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, currentBalance + this.amount)
 
-            return await updateAsSuccessMessage(interaction, `You successfully gave ${bold(`${this.amount}`)} ${getCurrencyName(this.selectedCurrency.id)} to ${userMention(this.target.id)}`)
+            const successMessage = replaceTemplates(
+                getLocale().userFlows.accountGive.messages?.success, 
+                { 
+                    amount: bold(`${this.amount}`), 
+                    currency: getCurrencyName(this.selectedCurrency.id)!, 
+                    user: userMention(this.target.id) 
+                }
+            )
+
+            return await updateAsSuccessMessage(interaction, successMessage)
             
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -94,14 +112,17 @@ export class AccountGiveFlow extends UserFlow {
 export class BulkAccountGiveFlow extends AccountGiveFlow {
     private targetRole: Role | APIRole | null = null
 
+    public override id = 'bulk-account-give'
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `Can't give money. ${ErrorMessages.NoCurrencies}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${getLocale().userFlows.accountGive.errorMessages?.cantGiveMoney} ${getLocale().errorMessages.noCurrencies}`)
     
         const targetRole = interaction.options.getRole('role')
         const amount = interaction.options.getNumber('amount')
     
-        if (!targetRole || !amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!targetRole || !amount) return replyErrorMessage(interaction, getLocale().errorMessages.insufficientParameters)
 
         this.targetRole = targetRole
         this.amount = amount
@@ -115,14 +136,21 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
     }
 
     protected override getMessage(): string {
-        return `Give ${bold(`${this.amount} [${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]`)} to all users with role ${roleMention(this.targetRole!.id)}`
+        return replaceTemplates(
+            getLocale().userFlows.accountGive.messages?.bulkGive, 
+            { 
+                amount: bold(`${this.amount}`), 
+                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || getLocale().defaultComponents.selectCurrencyPlaceholder}]`), 
+                role: roleMention(this.targetRole!.id) 
+            }
+        )
     }
 
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
         
         try {
-            if (!this.selectedCurrency || !this.targetRole || !this.amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedCurrency || !this.targetRole || !this.amount) return replyErrorMessage(interaction, getLocale().errorMessages.insufficientParameters)
             
             const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
 
@@ -149,13 +177,14 @@ export class AccountTakeFlow extends UserFlow {
     private amount: number | null = null
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `Can't take money. ${ErrorMessages.NoCurrencies}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${getLocale().userFlows.accountTake.errorMessages?.cantTakeMoney} ${getLocale().errorMessages.noCurrencies}`)
     
         const target = interaction.options.getUser('target')
         const amount = interaction.options.getNumber('amount')
     
-        if (!target || !amount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!target || !amount) return replyErrorMessage(interaction, getLocale().errorMessages.insufficientParameters)
 
         this.target = target
         this.amount = amount
@@ -169,12 +198,19 @@ export class AccountTakeFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Take ${bold(`${this.amount} [${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]`)} from ${bold(`${this.target}`)}`
+        return replaceTemplates(
+            getLocale().userFlows.accountTake.messages?.default, 
+            { 
+                amount: bold(`${this.amount}`), 
+                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || getLocale().defaultComponents.selectCurrencyPlaceholder}]`), 
+                user: userMention(this.target!.id) 
+            }
+        )
     }
 
     protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
-            { customId: `${this.id}+select-currency`, placeholder: 'Select a currency', time: 120_000 },
+            { customId: `${this.id}+select-currency`, placeholder: getLocale().defaultComponents.selectCurrencyPlaceholder, time: 120_000 },
             getCurrencies(),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
@@ -185,7 +221,7 @@ export class AccountTakeFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: 'Submit',
+                label: getLocale().userFlows.accountTake.components?.submitButtonLabel,
                 emoji: '✅',
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -197,7 +233,7 @@ export class AccountTakeFlow extends UserFlow {
         const takeAllButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+take-all`,
-                label: 'Take all',
+                label: getLocale().userFlows.accountTake.components?.takeAllButtonLabel,
                 emoji: '🔥',
                 style: ButtonStyle.Danger,
                 disabled: true,
@@ -214,7 +250,7 @@ export class AccountTakeFlow extends UserFlow {
         const emptyAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+empty-account`,
-                label: 'Empty account',
+                label: getLocale().userFlows.accountTake.components?.emptyAccountButtonLabel,
                 emoji: '🗑️',
                 style: ButtonStyle.Danger,
                 time: 120_000,
@@ -225,7 +261,7 @@ export class AccountTakeFlow extends UserFlow {
                 if (!confirmed) return this.updateInteraction(modalSubmitInteraction)
 
                 await emptyAccount(this.target!.id, 'currencies')
-                await updateAsSuccessMessage(modalSubmitInteraction, `You successfully emptied ${bold(`${this.target}`)} account`)
+                await updateAsSuccessMessage(modalSubmitInteraction, replaceTemplates(getLocale().userFlows.accountTake.messages.successfullyEmptied, { user: userMention(this.target!.id) }))
             }
         )
 
@@ -250,14 +286,23 @@ export class AccountTakeFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
         try {
-            if (!this.selectedCurrency) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedCurrency) return replyErrorMessage(interaction, getLocale().errorMessages.insufficientParameters)
             
             const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
             const newBalance = Math.max(currentBalance - this.amount!, 0)
             
             await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, newBalance)
 
-            return await updateAsSuccessMessage(interaction, `You successfully took ${bold(`${this.amount}`)} ${getCurrencyName(this.selectedCurrency.id)} from ${bold(`${this.target}`)}`)
+            const successMessage = replaceTemplates(
+                getLocale().userFlows.accountTake.messages?.success, 
+                { 
+                    amount: bold(`${this.amount}`), 
+                    currency: getCurrencyName(this.selectedCurrency.id)!, 
+                    user: userMention(this.target!.id) 
+                }
+            )
+
+            return await updateAsSuccessMessage(interaction, successMessage)
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }

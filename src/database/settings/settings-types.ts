@@ -2,6 +2,7 @@ import { Snowflake } from "discord.js";
 import { assertNeverReached } from "../../utils/utils";
 import { Database, DatabaseError, DatabaseErrors } from "../database-types";
 
+
 const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId", "enum"] as const
 
 type SettingType = typeof settingTypes[number]
@@ -14,20 +15,18 @@ export type Setting = { id: string, name: string } & ({
     type: "bool"
 } | {
     value: number | undefined
-    type: "number"
+    type: "number",
+    min?: number,
+    max?: number
 } | {
     value: Snowflake | undefined
     type: "channelId" | "roleId" | "userId"
 } | {
     value: string | undefined
-    options: string[]
+    options: string[] | { label: string, value: string }[]
     type: "enum"
 }) 
 
-
-export function isSetting(setting: unknown): setting is Setting {
-    return typeof setting === "object" && setting !== null && "id" in setting && "name" in setting && "value" in setting && "type" in setting
-}
     
 function isSettingType(type: unknown): type is SettingType {
     return settingTypes.includes(type as SettingType)
@@ -35,8 +34,22 @@ function isSettingType(type: unknown): type is SettingType {
 
 export type Settings = Map<string, Setting>
 
-type SettingsJSONBody = {
-    [name: string]: Omit<Setting, "type" | "value" | "options"> & { type: string, value: string | boolean | number | null, options?: string[] }
+type UnionToIntersection<U> =
+  (U extends any ? (x: U) => void : never) extends ((x: infer I) => void) ? I : never
+
+type OmitFromUnion<U, K extends keyof any> = U extends any ? Omit<U, K> : never
+
+type ExtraSettingFields = UnionToIntersection<OmitFromUnion<Setting, "id" | "name" | "type" | "value">>
+
+type SettingJSONBody = {
+  id: string
+  name: string
+  type: string
+  value: string | number | boolean | null
+} & Partial<ExtraSettingFields>
+
+export type SettingsJSONBody = {
+    [id: string]: SettingJSONBody
 }
 
 export class SettingsDatabase extends Database {
@@ -71,11 +84,7 @@ export class SettingsDatabase extends Database {
             if(settings.has(id)) throw new DatabaseError(DatabaseErrors.DuplicateSettingName)
 
             if (value === null) {
-                if (setting.type === "enum") {
-                    settings.set(id, { ...(setting as Setting), value: undefined })
-                } else {
-                    settings.set(id, { id, name, value: undefined, type: setting.type })
-                }
+                settings.set(id, { ...(setting as Setting), value: undefined })
                 continue
             }
 
@@ -84,27 +93,33 @@ export class SettingsDatabase extends Database {
                 case "roleId":
                 case "userId":
                     if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as Snowflake, type: setting.type })
+                    settings.set(id, { ...setting, value: value as Snowflake, type: setting.type })
                     break
 
                 case "string":
                     if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as string, type: setting.type })
+                    settings.set(id, { ...setting, value: value as string, type: setting.type })
                     break
                 case "bool":
                     if (!(typeof value === "boolean")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as boolean, type: setting.type })
+                    settings.set(id, { ...setting, value: value as boolean, type: setting.type })
                     break
 
                 case "number":
                     if (!(typeof value === "number")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
-                    settings.set(id, { id, name, value: value as number, type: setting.type })
+
+                    let clampedvalue = value as number
+                    if (setting.min !== undefined) clampedvalue = Math.max(clampedvalue, setting.min)
+                    if (setting.max !== undefined) clampedvalue = Math.min(clampedvalue, setting.max)
+
+                    settings.set(id, { ...setting, value: value as number, type: setting.type })
                     break
 
                 case "enum":
-                    if (!(typeof value === "string") || setting.options === undefined) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+                    if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
+                    if (setting.options === undefined) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
                     
-                    settings.set(id, { id, name, value: value as string, options: setting.options, type: setting.type })
+                    settings.set(id, { ...setting, value: value as string, options: setting.options, type: setting.type })
                     break
 
                 default:

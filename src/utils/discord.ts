@@ -1,27 +1,28 @@
-import { MessageFlags, TextChannel } from "discord.js"
+import { Locale, MessageFlags, TextChannel } from "discord.js"
 import { getSettings } from "../database/settings/settings-handler"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
-import { ErrorMessages } from "./constants"
 import { PrettyLog } from "./pretty-log"
+import { LocaleStrings } from "./localisation"
+import { getLocale } from ".."
 
-export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string | ErrorMessages) {
-    return await interaction.reply({ content: getErrorMessage(errorMessage as string), flags: MessageFlags.Ephemeral })
+export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
+    return await interaction.reply({ content: getErrorMessage(errorMessage), flags: MessageFlags.Ephemeral })
 }
 
-export async function updateAsErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string | ErrorMessages) {
-    const message = getErrorMessage(errorMessage as string)
+export async function updateAsErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
+    const message = getErrorMessage(errorMessage)
 
     if (interaction.deferred) return await interaction.editReply({ content: message, components: [] })
     if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) return await interaction.update({ content: message, components: [] })
     return await interaction.editReply({ content: message, components: [] })
 }
 
-export async function replySuccessMessage(interaction: UserInterfaceInteraction, succesMessage: string) {
-    return await interaction.reply({ content: getSuccessMessage(succesMessage), flags: MessageFlags.Ephemeral })
+export async function replySuccessMessage(interaction: UserInterfaceInteraction, successMessage: string) {
+    return await interaction.reply({ content: getSuccessMessage(successMessage), flags: MessageFlags.Ephemeral })
 }
 
-export async function updateAsSuccessMessage(interaction: UserInterfaceInteraction, succesMessage: string) {
-    const message = getSuccessMessage(succesMessage)
+export async function updateAsSuccessMessage(interaction: UserInterfaceInteraction, successMessage: string) {
+    const message = getSuccessMessage(successMessage)
 
     if (interaction.deferred) return await interaction.editReply({ content: message, components: [] })
     if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) return await interaction.update({ content: message, components: [] })
@@ -31,11 +32,11 @@ export async function updateAsSuccessMessage(interaction: UserInterfaceInteracti
 
 
 function getErrorMessage(errorMessage?: string) {
-    return `❌ ${errorMessage ? errorMessage : 'An error occured while executing this command, please try again later'}`
+    return `❌ ${errorMessage ? errorMessage : getLocale().errorMessages.default}`
 }
 
-function getSuccessMessage(succesMessage: string) {
-    return `✅ ${succesMessage}`
+function getSuccessMessage(successMessage: string) {
+    return `✅ ${successMessage}`
 }
 
 export async function logToDiscord(interaction: UserInterfaceInteraction, message: string) {

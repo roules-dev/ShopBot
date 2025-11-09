@@ -1,6 +1,5 @@
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 import { AddActionProductFlow, AddProductFlow, EditProductFlow, EditProductOption, RemoveProductFlow } from "../user-flows/product-flows"
-import { ErrorMessages } from "../utils/constants"
 import { replyErrorMessage } from "../utils/discord"
 import { PRODUCT_ACTION_TYPE, ProductActionType } from "../database/shops/shops-types"
 
@@ -115,7 +114,7 @@ export const data = new SlashCommandBuilder()
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
-export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
+export async function execute(client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
     const subCommandGroup = interaction.options.getSubcommandGroup()
 
@@ -146,6 +145,6 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 break
             }
 
-            await replyErrorMessage(interaction, ErrorMessages.InvalidSubcommand)
+            await replyErrorMessage(interaction, client.locale.errorMessages.invalidSubcommand)
     }
 }

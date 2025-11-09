@@ -5,7 +5,8 @@ import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder
 import config from '../config/config.json'
 import { PrettyLog } from './utils/pretty-log'
 import './utils/strings'
-import { addLocalisationToCommand } from './utils/localisation'
+import { addLocalisationToCommand, getLocales, LocaleStrings } from './utils/localisation'
+import { getSetting } from './database/settings/settings-handler'
 
 
 interface Command {
@@ -16,6 +17,7 @@ interface Command {
 declare module 'discord.js' {
 	export interface Client {
 	  	commands: Collection<string, Command>
+		locale: LocaleStrings
 	}
 }
 
@@ -64,6 +66,18 @@ async function registerEvents(client: Client<boolean>) {
 	}
 
 	PrettyLog.logLoadStep('Events registered')
+}
+
+async function setLanguageToClient() {
+	const locales = await getLocales()
+
+	const languageSetting = getSetting('language')
+
+	client.locale = locales[languageSetting?.value as string] ?? locales['en-US']
+}
+
+export function getLocale(): LocaleStrings {
+	return client.locale
 }
 
 
