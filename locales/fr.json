@@ -81,7 +81,7 @@
                         },
                         "amount": {
                             "name": "montant",
-                            "description": "Le montant de monnaie à prendre. Si vous voulez prendre toute la monnaie de la cible, vous pourrez le faire plus tard"
+                            "description": "Le montant de monnaie à prendre. Si vous voulez tout prendre, vous pourrez le faire plus tard."
                         }
                     }
                 }
@@ -117,7 +117,7 @@
                             "name": "nom",
                             "description": "Changer le nom. Vous sélectionnerez la devise plus tard",
                             "options": {
-                                "nouveau-nom": {
+                                "new-name": {
                                     "name": "nouveau-nom",
                                     "description": "Le nouveau nom de la devise"
                                 }
@@ -127,7 +127,7 @@
                             "name": "emoji",
                             "description": "Changer l'emoji. Vous sélectionnerez la devise plus tard",
                             "options": {
-                                "nouvel-emoji": {
+                                "new-emoji": {
                                     "name": "nouvel-emoji",
                                     "description": "Le nouvel emoji de la devise (si vous voulez juste le supprimer, écrivez n'importe quoi)"
                                 }
@@ -261,8 +261,8 @@
                             "name": "emoji",
                             "description": "L'emoji de la boutique (optionnel)"
                         },
-                        "reserved-to": {
-                            "name": "reservee-a",
+                        "reserved-to-role": {
+                            "name": "reservee-au-role",
                             "description": "Spécifiez si la boutique doit être réservée à un rôle (optionnel)"
                         }
                     }
@@ -327,12 +327,12 @@
                                 }
                             }
                         },
-                        "reserved-to": {
-                            "name": "reservee-a",
+                        "reserved-to-role": {
+                            "name": "reservee-au-role",
                             "description": "Changer le rôle auquel la boutique est réservée. Vous sélectionnerez la boutique plus tard",
                             "options": {
-                                "reserved-to-role": {
-                                    "name": "reservee-a-role",
+                                "new-role": {
+                                    "name": "nouveau-role",
                                     "description": "Le nouveau rôle auquel la boutique sera réservée. Laissez vide pour supprimer"
                                 }
                             }
@@ -347,115 +347,117 @@
         }
     },
     "defaultComponents": {
-        "selectCurrencyPlaceholder": "Select a currency",
-        "selectShopPlaceholder": "Select a shop",
-        "selectRolePlaceholder": "Select a role",
-        "changeShopButtonLabel": "Change shop",
-        "submitShopButtonLabel": "Submit shop"
+        "selectCurrencyPlaceholder": "Sélectionner une devise",
+        "selectShopPlaceholder": "Sélectionner une boutique",
+        "selectRolePlaceholder": "Sélectionner un rôle",
+        "changeShopButtonLabel": "Changer de boutique",
+        "submitShopButtonLabel": "Soumettre la boutique"
     },
     "userInterfaces": {
         "extendedComponents": {
             "confirmationModal": {
-                "title": "⚠️ Are you sure?",
-                "cantBeUndone": "This action can't be undone",
-                "enterYes": "Enter 'Yes' to confirm"
+                "title": "⚠️ Êtes-vous sûr ?",
+                "cantBeUndone": "Cette action est irréversible",
+                "selectYes": "Selectionnez 'Oui' pour confirmer",
+                "yes": "Oui",
+                "no": "Non"
             },
             "editModal": {
-                "title": "Edit {edit}",
-                "new": "New {edit}"
+                "title": "Modifier {edit}",
+                "new": "Nouveau {edit}"
             }
         },
         "settings": {
             "embeds": {
                 "settings": {
-                    "title": "⚙️ Settings",
-                    "description": "You can edit your settings here",
-                    "unseSettingPlaceholder": "Not set"
+                    "title": "⚙️ Paramètres",
+                    "description": "Vous pouvez modifier vos paramètres ici",
+                    "unseSettingPlaceholder": "Non défini"
                 }
             },
 
             "components": {
-                "selectSettingPlaceholder": "Edit a setting",
-                "defaultEditor": {
-                    "title": "Edit {name}"
+                "selectSettingPlaceholder": "Modifier un paramètre",
+                "defaultModifieror": {
+                    "title": "Modifier {name}"
                 },
-                "toggleEditor": {
-                    "toggleOn": "Enable",
-                    "toggleOff": "Disable"
+                "toggleModifieror": {
+                    "toggleOn": "Activer",
+                    "toggleOff": "Désactiver"
                 },
                 "selector": {
-                    "title": "Select {type} for {name}",
+                    "title": "Sélectionner {type} pour {name}",
                     "types": {
-                        "role": "a role",
-                        "user": "a user",
-                        "channel": "a channel",
-                        "option": "an option"
+                        "role": "un rôle",
+                        "user": "un utilisateur",
+                        "channel": "un salon",
+                        "option": "une option"
                     }
                 },
-                "resetButtonLabel": "Reset",
-                "backButtonLabel": "Back"
+                "resetButtonLabel": "Réinitialiser",
+                "backButtonLabel": "Retour"
             }
         },
         "account": {
             "embeds": {
                 "account": {
-                    "title": "💰 _{displayName}_'s Account"
+                    "title": "💰 Compte de _{displayName}_"
                 },
                 "inventory": {
-                    "title": "💼 _{displayName}_'s Inventory"
+                    "title": "💼 Inventaire de _{displayName}_"
                 }
             },
             "components": {
-                "showAccountButtonLabel": "Show account",
-                "showInventoryButtonLabel": "Show inventory"
+                "showAccountButtonLabel": "Afficher le compte",
+                "showInventoryButtonLabel": "Afficher l'inventaire"
             },
             "errors": {
-                "accountEmpty": "❌ Account is empty",
-                "inventoryEmpty": "❌ Inventory is empty"
+                "accountEmpty": "❌ Le compte est vide",
+                "inventoryEmpty": "❌ L'inventaire est vide"
             }
         },
         "shop": {
             "embeds": {
                 "shop": {
-                    "products": "Products",
-                    "reservedTo": "{role} only",
-                    "noProduct": "There is no product available here",
-                    "xProductsLeft": "{x} left",
-                    "noProductLeft": "None left",
-                    "price": "Price"
+                    "products": "Produits",
+                    "reservedTo": "Réservé au {role}",
+                    "noProduct": "Aucun produit disponible ici",
+                    "xProductsLeft": "restant: {x}",
+                    "noProductLeft": "Plus aucun disponible",
+                    "price": "Prix"
                 }
 
             },
             "components": {
-                "buyButtonLabel": "Buy a product",
-                "showAccountButtonLabel": "My account"
+                "buyButtonLabel": "Acheter un produit",
+                "showAccountButtonLabel": "Mon compte"
             }
         },
         "buy": {
             "message": {
-                "discountCode": "Discount code",
-                "buyMessage": "Buy {product} from {shop}",
-                "price": "for {price}",
+                "discountCode": "Code de réduction",
+                "buyMessage": "Acheter {product} de {shop}",
+                "price": "pour {price}",
                 
-                "notEnoughMoney": "You don't have enough {currency} to buy this product.",
-                "productNoLongerAvailable": "This product is no longer available.",
-                "successfullyBought": "You successfully bought {product} in {shop} for {price}"
+                "notEnoughMoney": "Vous n'avez pas assez de {currency} pour acheter ce produit.",
+                "productNoLongerAvailable": "Ce produit n'est plus disponible.",
+                "successfullyBought": "Vous avez acheté {product} avec succès dans {shop} pour {price}"
             },
             "components": {
-                "selectProductMenuPlaceholder": "Select a product",
-                "buyButtonLabel": "Buy",
-                "discountCodeButtonLabel": "I have a discount code",
+                "selectProductMenuPlaceholder": "Sélectionnez un produit",
+                "buyButtonLabel": "Acheter",
+                "discountCodeButtonLabel": "J'ai un code promo",
                 "setDiscountCodeModal": {
-                    "title": "Set discount code",
-                    "inputLabel": "Discount Code"
+                    "title": "Définir le code de réduction",
+                    "inputLabel": "Code de réduction"
                 }
             },
             "actionProducts": {
                 "giveRole": {
-                    "message": "You were granted the role {role}"
+                    "message": "Vous avez reçu le rôle {role}"
                 },
                 "giveCurrency": {
-                    "message": "You were given {amount} {currency}"
+                    "message": "Vous avez reçu {amount} {currency}"
                 }
             }
         }
@@ -463,55 +465,60 @@
     "userFlows": {
         "accountGive": {
             "errorMessages": {
-                "cantGiveMoney": "Can't give money."
+                "cantGiveMoney": "Impossible de donner de l'argent."
             },
             "messages": {
-                "default": "Give {amount} {currency} to {user}",
-                "bulkGive": "Give {amount} {currency} to all users with role {role}",
+                "default": "Donner {amount} {currency} à {user}",
+                "bulkGive": "Donner {amount} {currency} à tous les utilisateurs avec le rôle {role}",
 
-                "success": "You successfully gave {amount} {currency} to {user}",
-                "bulkGiveSuccess": "You successfully gave {amount} {currency} to all users with role {role}"
+                "success": "Vous avez donné avec succès {amount} {currency} à {user}",
+                "bulkGiveSuccess": "Vous avez donné avec succès {amount} {currency} à tous les utilisateurs avec le rôle {role}"
             },
             "components": {
-                "submitButtonLabel": "Submit"
+                "submitButtonLabel": "Valider"
             }
         },
         "accountTake": {
             "errorMessages": {
-                "cantTakeMoney": "Can't take money."
+                "cantTakeMoney": "Impossible de prendre de l'argent."
             },
             "messages": {
-                "default": "Take {amount} {currency} from {user}",
-                "successfullyEmpted": "You successfully emptied {user} account",
-                "success": "You successfully took {amount} {currency} from {user}"
+                "default": "Prendre {amount} {currency} de {user}",
+                "successfullyEmpted": "Vous avez vidé avec succès le compte de {user}",
+                "success": "Vous avez pris avec succès {amount} {currency} de {user}"
             },
             "components": {
-                "submitButtonLabel": "Submit",
-                "takeAll": "Take all",
-                "emptyAccount": "Empty account"
+                "submitButtonLabel": "Valider",
+                "takeAll": "Tout prendre",
+                "emptyAccount": "Vider le compte"
 
+            }
+        },
+        "currencyCreate": {
+            "messages": {
+                "default": "Vous avez crée avec succès la devise {currency}. \n-# Utilisez `/currencies-manage remove` pour la supprimer"
             }
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveShop": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
-                "changeShopsCurrencies": "Please consider removing them (`/shops-manage remove`) or changing their currency (`/shops-manage change-currency`) before removing the currency."
+                "cantRemoveShop": "⚠️ Impossible de supprimer {currency} ! Les boutiques suivantes l'utilisent encore : {shops}.",
+                "changeShopsCurrencies": "Veuillez les supprimer (`/shops-manage remove`) ou changez leur devise (`/shops-manage change-currency`) avant de supprimer la devise."
             },
             "messages": {
-                "default": "Remove {currency}, ⚠️ __**it will also take it from user's accounts**__",
-                "success": "You successfully removed the currency {currency}"
+                "default": "Supprimer {currency}, ⚠️ __**cela le retirera également des comptes des utilisateurs**__",
+                "success": "Vous avez supprimé avec succès la devise {currency}"
             },
             "components": {
-                "submitButtonLabel": "Remove currency"
+                "submitButtonLabel": "Supprimer la devise"
             }
         },
-        "currencyEdit": {
+        "currencyModifier": {
             "messages": {
-                "default": "Edit {currency}.\n**New ${option}**: {value}",
-                "success": "You successfully edited the currency ${currency}. \nNew ${option}: {value}"
+                "default": "Modifier {currency}.\n**Nouveau {option}**: {value}",
+                "success": "Vous avez modifié avec succès la devise {currency}. \nNouveau {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Edit currency"
+                "submitButtonLabel": "Modifier la devise"
             },
             "editOptions": {
                 "name": "nom",
@@ -520,131 +527,131 @@
         },
         "productAdd": {
             "messages": {
-                "default": "Add Product: {product} for {price} {currency} in {shop}{description}",
-                "description": "Description:",
-                "success": "You successfully added the product {product} to the shop {shop}",
-                "withAction": "with the action {action}",
-                "action": "Action:",
+                "default": "Ajouter un produit : {product} pour {price} {currency} dans {shop}{description}",
+                "description": "Description :",
+                "success": "Vous avez ajouté avec succès le produit {product} à la boutique {shop}",
+                "withAction": "avec l'action {action}",
+                "action": "Action :",
                 "actions": {
-                    "valueUnset": "Unset",
-                    "giveRole": "give {role} role",
-                    "giveCurrency": "give {amount} {currency}"
+                    "valueUnset": "Non défini",
+                    "giveRole": "donner le rôle {role}",
+                    "giveCurrency": "donner {amount} {currency}"
                 }
             },
             "components": {
-                "submitButtonLabel": "Add product",
-                "setAmountButtonLabel": "Set amount",
-                "editAmountModalTitle": "Amount"
+                "submitButtonLabel": "Ajouter le produit",
+                "setAmountButtonLabel": "Définir la quantité",
+                "editAmountModalTitle": "Quantité"
             }
         },
         "productRemove": {
             "messages": {
-                "shopSelectStage": "Remove a product from: {shop}",
-                "productSelectStage": "Remove product: {product} from {shop}",
-                "success": "You successfully removed the product {product} from the shop {shop}"
+                "shopSelectStage": "Supprimer un produit de : {shop}",
+                "productSelectStage": "Supprimer le produit : {product} de {shop}",
+                "success": "Vous avez supprimé avec succès le produit {product} de {shop}"
             },
             "components": {
-                "submitButtonLabel": "Remove Product"
+                "submitButtonLabel": "Supprimer le produit"
             }
         },
-        "productEdit": {
+        "productModifier": {
             "errorMessages": {
-                "noShopsWithProducts": "There isn't any shop with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
+                "noShopsWithProducts": "Il n'y a aucune boutique avec des produits./n-# Utilisez `/shops-manage create` pour créer une boutique, et `/products-manage add` pour ajouter des produits"
             },
             "messages": {
-                "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
-                "productSelectStage": "Edit product: {product} from {shop}. \nNew {option}: {value}",
-                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}"
+                "shopSelectStage": "Modifier un produit de {shop}.\nNouveau {option} : {value}",
+                "productSelectStage": "Modifier le produit : {product} de {shop}. \nNouveau {option} : {value}",
+                "success": "Vous avez modifié avec succès le produit {product} de {shop}. \nNouveau {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Edit product"
+                "submitButtonLabel": "Modifier le produit"
             },
             "editOptions": {
                 "name": "nom",
                 "emoji": "emoji",
-                "price": "price",
+                "price": "prix",
                 "description": "description",
-                "amount": "amount"
+                "amount": "montant"
             }
         },
 
         "shopCreate": {
             "errorMessages": {
-                "cantCreateShop": "Can't create a new shop."
+                "cantCreateShop": "Impossible de créer une nouvelle boutique"
             },
             "messages": {
-                "default": "Create the shop {shop} with currency {currency}",
-                "success": "You successfully created the shop {shop} with currency {currency}. \n-# Use `/shops-manage remove` to remove it"
+                "default": "Créer la boutique {shop} avec la devise {currency}",
+                "success": "Vous avez crée avec succès la boutique {shop} avec la devise {currency}. \n-# Utilisez `/shops-manage remove` pour la supprimer"
             },
             "components": {
-                "submitButtonLabel": "Create shop",
-                "changeShopNameButtonLabel": "Change shop name",
-                "changeShopEmojiButtonLabel": "Change shop emoji",
-                "editNameModalTitle": "Shop name",
-                "editEmojiModalTitle": "Shop emoji"
+                "submitButtonLabel": "Créer la boutique",
+                "changeShopNameButtonLabel": "Changer de nom",
+                "changeShopEmojiButtonLabel": "Changer d'emoji",
+                "editNameModalTitle": "Nom de la boutique",
+                "editEmojiModalTitle": "Emoji de la boutique"
             }
         },
         "shopRemove": {
             "messages": {
-                "default": "Remove the shop {shop}.\n⚠️ __**It will also remove all products from this shop**__",
-                "success": "You successfully removed the shop {shop}"
+                "default": "Supprimer la boutique {shop}.\n⚠️ __**Cela supprimera également tous les produits de la boutique**__",
+                "success": "Vous avez supprimé avec succès la boutique {shop}"
             },
             "components": {
-                "submitButtonLabel": "Remove shop"
+                "submitButtonLabel": "Supprimer la boutique"
             }
         },
         "shopReorder": {
             "messages": {
-                "default": "Change position of {shop} to {position}",
-                "success": "You successfully changed the position of {shop} to {position}"
+                "default": "Mettre la position de {shop} à {position}",
+                "success": "Vous avez placé {shop} à la position {position} avec succès"
             },
             "components": {
-                "submitNewPositionLabel": "Submit position"
+                "submitNouveauPositionLabel": "Valider la position"
             }
         },
-        "shopEdit": {
+        "shopModifier": {
             "messages": {
-                "default": "Edit {shop}.\n**New ${option}**: {value}",
-                "success": "You successfully edited the shop ${shop}. \nNew ${option}: {value}"
+                "default": "Modifier {shop}.\n**Nouveau {option}**: {value}",
+                "success": "Vous avez modifié avec succès la boutique {shop}. \nNouveau {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Edit shop"
+                "submitButtonLabel": "Modifier la boutique"
             },
             "editOptions": {
                 "name": "nom",
                 "emoji": "emoji",
                 "description": "description",
-                "reservedToRole": "reserved to role"
+                "reservedToRole": "reservée au role"
             }
         },
         "shopChangeCurrency": {
             "messages": {
-                "shopSelectStage": "Change the currency of {shop}",
-                "currencySelectStage": "Change the currency of {shop} to {currency}",
-                "success": "You successfully updated the currency of {shop} to {currency}"
+                "shopSelectStage": "Changer la devise de {shop}",
+                "currencySelectStage": "Mettre la devise de {shop} à {currency}",
+                "success": "Vous avez modifié la devise de {shop} en {currency} avec succès"
             },
             "components": {
-                "submitButtonLabel": "Change currency"
+                "submitButtonLabel": "Changer la deviser"
             }
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Create a discount code for {shop}.\n**Code**: {code}\nAmount: {amount}% off",
-                "success": "You successfully created the discount code {code} for {shop} with {amount}% off"
+                "default": "Créer un code promo pour la boutique {shop}.\n**Code**: {code}\nMontant: {amount}% de réduction",
+                "success": "Vous avez crée avec succès le code promo {code} pour {shop} avec {amount}% de réduction"
             },
             "components": {
-                "submitButtonLabel": "Create discount code"
+                "submitButtonLabel": "Créer le code promo"
             }
         },
         "discountCodeRemove": {
             "messages": {
-                "shopSelectStage": "Remove a discount code from {shop}",
-                "codeSelectStage": "Remove discount code {code} from {shop}",
-                "success": "You successfully removed the discount code {code} from {shop}"
+                "shopSelectStage": "Supprimer un code promo de {shop}",
+                "codeSelectStage": "Supprimer le code promo {code} de {shop}",
+                "success": "Vous avez supprimé avec succès le code promo {code} de {shop}"
             },
             "components": {
-                "discountCodeSelectPlaceholder": "Select a discount code",
-                "submitButtonLabel": "Remove discount code"
+                "discountCodeSelectPlaceholder": "Sélectionner un code promo",
+                "submitButtonLabel": "Supprimer le code promo"
             }
         }
     }

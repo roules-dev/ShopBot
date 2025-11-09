@@ -52,7 +52,7 @@ function questionWithCondition(question: string, condition: (answer: string) => 
             if (condition(answer)) {
                 resolve(answer)
             } else {
-                PrettyLog.warning(errorMessage ?? 'Answer not valid', false)
+                PrettyLog.warn(errorMessage ?? 'Answer not valid', false)
                 resolve(questionWithCondition(question, condition))
             }
         })

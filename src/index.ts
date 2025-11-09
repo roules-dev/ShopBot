@@ -43,8 +43,6 @@ async function registerCommands(client: Client) {
 		const filePath = path.join(commandsPath, file)
 		const command: Command = require(filePath)
 
-		addLocalisationToCommand(command.data)
-		
 		client.commands.set(command.data.name, command)
 	}
 

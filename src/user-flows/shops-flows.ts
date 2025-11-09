@@ -540,7 +540,7 @@ export class EditShopCurrencyFlow extends UserFlow {
         if (this.stage === EditShopCurrencyStage.SELECT_SHOP) return `Change the currency of **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.`
         if (this.stage === EditShopCurrencyStage.SELECT_CURRENCY) return `Change the currency of **${getShopName(this.selectedShop?.id)}** to **[${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]**.`
 
-        PrettyLog.warning(`Unknown stage: ${this.stage}`)
+        PrettyLog.warn(`Unknown stage: ${this.stage}`)
         return ''
     }
 
@@ -787,7 +787,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         if (this.stage == DiscountCodeRemoveStage.SELECT_SHOP) return `Remove a discount code from ${bold(`[${getShopName(this.selectedShop?.id) || 'Select Shop'}]`)}.`
         if (this.stage == DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE) return `Remove discount code ${bold(`[${this.selectedDiscountCode || 'Select Discount Code'}]`)} from ${bold(`[${getShopName(this.selectedShop?.id)}]`)}.`
 
-        PrettyLog.warning(`Unknown stage: ${this.stage}`)
+        PrettyLog.warn(`Unknown stage: ${this.stage}`)
         return ''
     }
 

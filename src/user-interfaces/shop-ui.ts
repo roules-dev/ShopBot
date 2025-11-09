@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
+import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "../database/accounts/accounts-database"
 import { getCurrencyName } from "../database/currencies/currencies-database"
 import { DatabaseError } from "../database/database-types"
@@ -246,17 +246,20 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const modal = new ModalBuilder()
             .setCustomId(modalId)
             .setTitle('Set Discount Code')
-        
+
         const discountCodeInput = new TextInputBuilder()
             .setCustomId('discount-code-input')
-            .setLabel('Discount Code')
             .setPlaceholder('XXXXXXX')
             .setStyle(TextInputStyle.Short)
             .setRequired(true)
             .setMaxLength(8)
             .setMinLength(6)
 
-        modal.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(discountCodeInput))
+        const label = new LabelBuilder()
+            .setLabel('Discount code')
+            .setTextInputComponent(discountCodeInput)
+
+        modal.addLabelComponents(label)
 
         await interaction.showModal(modal)
 

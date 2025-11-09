@@ -81,7 +81,7 @@
                         },
                         "amount": {
                             "name": "amount",
-                            "description": "The amount of currency to take, If you want to take all target's money, you will be able to do it later"
+                            "description": "The amount of money to take. If you want to take all target's money, you'll be able to do it later"
                         }
                     }
                 }
@@ -262,8 +262,8 @@
                             "name": "emoji",
                             "description": "The emoji of the shop (optional)"
                         },
-                        "reserved-to": {
-                            "name": "reserved-to",
+                        "reserved-to-role": {
+                            "name": "reserved-to-role",
                             "description": "Specify if should be reserved to a role (optional)"
                         }
                     }
@@ -328,12 +328,12 @@
                                 }
                             }
                         },
-                        "reserved-to": {
-                            "name": "reserved-to",
+                        "reserved-to-role": {
+                            "name": "reserved-to-role",
                             "description": "Change the role the shop is reserved to. You will select the shop later",
                             "options": {
-                                "reserved-to-role": {
-                                    "name": "reserved-to-role",
+                                "new-role": {
+                                    "name": "new-role",
                                     "description": "The new role the shop will be reserved to. Leave empty to delete"
                                 }
                             }
@@ -359,7 +359,9 @@
             "confirmationModal": {
                 "title": "⚠️ Are you sure?",
                 "cantBeUndone": "This action can't be undone",
-                "enterYes": "Enter 'Yes' to confirm"
+                "selectYes": "Select 'Yes' to confirm",
+                "yes": "Yes",
+                "no": "No"
             },
             "editModal": {
                 "title": "Edit {edit}",
@@ -493,6 +495,11 @@
 
             }
         },
+        "currencyCreate": {
+            "messages": {
+                "default": "You successfully created the currency {currency}. \n-# Use `/currencies-manage remove` to remove it"
+            }
+        },
         "currencyRemove": {
             "errorMessages": {
                 "cantRemoveShop": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
@@ -508,8 +515,8 @@
         },
         "currencyEdit": {
             "messages": {
-                "default": "Edit {currency}.\n**New ${option}**: {value}",
-                "success": "You successfully edited the currency ${currency}. \nNew ${option}: {value}"
+                "default": "Edit {currency}.\n**New {option}**: {value}",
+                "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {
                 "submitButtonLabel": "Edit currency"
@@ -605,8 +612,8 @@
         },
         "shopEdit": {
             "messages": {
-                "default": "Edit {shop}.\n**New ${option}**: {value}",
-                "success": "You successfully edited the shop ${shop}. \nNew ${option}: {value}"
+                "default": "Edit {shop}.\n**New {option}**: {value}",
+                "success": "You successfully edited the shop {shop}. \nNew {option}: {value}"
             },
             "components": {
                 "submitButtonLabel": "Edit shop"

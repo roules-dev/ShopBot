@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
+import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, LabelBuilder, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { Currency } from "../database/currencies/currencies-types"
 import { isSetting, Setting, Settings } from "../database/settings/settings-types"
 import { Product, Shop } from "../database/shops/shops-types"
@@ -258,14 +258,24 @@ export async function showConfirmationModal(interaction: MessageComponentInterac
         .setCustomId(modalId)
         .setTitle('⚠️ Are you sure?')
 
-    const confirmationInput = new TextInputBuilder()
-        .setCustomId('confirm-empty-input')
-        .setLabel('This action can\'t be undone')
-        .setPlaceholder('Enter \'Yes\' to confirm')
-        .setStyle(TextInputStyle.Short)
-        .setRequired(true)
+    const label = new LabelBuilder()
+        .setLabel("This action can't be undone")
+        .setStringSelectMenuComponent(new StringSelectMenuBuilder()
+            .setCustomId('confirm-select-menu')
+            .setPlaceholder("Enter 'Yes' to confirm")
+            .addOptions(
+                new StringSelectMenuOptionBuilder()
+                    .setLabel('Yes')
+                    .setValue('yes')
+            )
+            .addOptions(
+                new StringSelectMenuOptionBuilder()
+                    .setLabel('No')
+                    .setValue('no')
+            )
+        )
 
-    modal.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(confirmationInput))
+    modal.addLabelComponents(label)
 
     await interaction.showModal(modal)
 
@@ -275,7 +285,7 @@ export async function showConfirmationModal(interaction: MessageComponentInterac
     if (!modalSubmit.isFromMessage()) return [modalSubmit, false]
     await modalSubmit.deferUpdate()
 
-    return [modalSubmit, modalSubmit.fields.getTextInputValue('confirm-empty-input').toLowerCase().substring(0, 3) == 'yes']
+    return [modalSubmit, modalSubmit.fields.getStringSelectValues('confirm-select-menu')[0] == 'yes']
 }
 
 export type EditModalOptions = {
@@ -296,17 +306,21 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
     const modal = new ModalBuilder()
         .setCustomId(modalId)
         .setTitle(`Edit ${edit}`)
+
     
     const input = new TextInputBuilder()
         .setCustomId(`${editNormalized}-input`)
-        .setLabel(`New ${edit}`)
         .setPlaceholder(previousValue ?? edit)
         .setStyle(TextInputStyle.Short)
         .setRequired(required ?? true)
         .setMaxLength(maxLength ?? 120)
         .setMinLength(minLength ?? 0)
 
-    modal.addComponents(new ActionRowBuilder<TextInputBuilder>().addComponents(input))
+    const label = new LabelBuilder()
+        .setLabel(`New ${edit}`)
+        .setTextInputComponent(input)
+
+    modal.addLabelComponents(label)
 
     await interaction.showModal(modal)
 

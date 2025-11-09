@@ -1,7 +1,8 @@
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js";
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { get } from "node:http";
+import './strings'
+import { PrettyLog } from "./pretty-log";
 
 const localsPath = path.join(__dirname, '..', '..','locales');
 
@@ -24,30 +25,36 @@ export async function getLocales() {
     return locales
 }
 
+export function invalidateLocalesCache() {
+    locales.expired = true
+}
+
+export function getLocaleCodes() {
+    return Object.keys(getLocales())
+}
+
 
 export async function addLocalisationToCommand(commandData: SlashCommandBuilder) {
     const commandDataJSON = commandData.toJSON()
 
-    // console.dir(commandDataJSON)
-
     commandDataJSON.name_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'name'])
     commandDataJSON.description_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'description'])
-    addLocalisationToOptions(commandDataJSON.options || [], ['commands', commandDataJSON.name, 'options'])
+    await addLocalisationToOptions(commandDataJSON.options || [], ['commands', commandDataJSON.name, 'options'])
 
     return commandDataJSON
 }
 
 async function addLocalisationToOptions(options: APIApplicationCommandOption[], path: string[]) {
     for (const option of options) {
-        option.name_localizations = await getLocaleStrings([...path, option.name, 'name'])
-        option.description_localizations = await getLocaleStrings([...path, option.name, 'description'])
+        option.name_localizations = await getLocaleStrings([...path, option.name, 'name'], 32)
+        option.description_localizations = await getLocaleStrings([...path, option.name, 'description'], 100)
         if ("options" in option && option.options) {
             await addLocalisationToOptions(option.options, [...path, option.name, 'options'])
         }
     }
 }
 
-async function getLocaleStrings(path: string[]): Promise<{ [key: string]: string | undefined }> {
+async function getLocaleStrings(path: string[], maxLength?: number): Promise<{ [key: string]: string | undefined }> {
     const locales = await getLocales()
     const result: { [key: string]: string | undefined } = {}
 
@@ -58,7 +65,25 @@ async function getLocaleStrings(path: string[]): Promise<{ [key: string]: string
             current = current[key]
             if (!current) break
         }
-        result[localeCode] = current as string | undefined
+
+        if (typeof current !== 'string') {
+            PrettyLog.warn(`Localisation ${path.join('.')} is not a string in ${localeCode} locale.`)
+            result[localeCode] = undefined
+            continue
+        }
+
+        if (!current || current.length < 1) {
+            PrettyLog.warn(`Localisation ${path.join('.')} is missing in ${localeCode} locale.`)
+            result[localeCode] = undefined
+            continue
+        }
+
+        if (maxLength && current.length > maxLength) {
+            current = current.slice(0, maxLength)
+            PrettyLog.warn(`Localisation ${path.join('.')} is longer than ${maxLength} characters in ${localeCode} locale.`)
+        }
+
+        result[localeCode] = current
     }
 
     return result

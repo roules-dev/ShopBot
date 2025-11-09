@@ -3,7 +3,7 @@ import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBu
 import fs from 'node:fs'
 import path from 'node:path'
 import { clientId, token } from '../config/config.json'
-import { PrettyLog } from './utils/pretty-log'
+import { drawProgressBar, PrettyLog } from './utils/pretty-log'
 import { addLocalisationToCommand } from './utils/localisation'
 
 let rest: REST | undefined
@@ -15,21 +15,40 @@ async function getCommands() {
         return commands.cache
     }
 
+    PrettyLog.info('Loading commands for deployment...')
+
     const commandsList: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
     const commandsPath = path.join(__dirname, 'commands')
     const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
 
-    for (const file of commandFiles) {
+    const commandsCount = commandFiles.length
+
+    if (commandsCount === 0) {
+        PrettyLog.error('No command files found.')
+        process.exit(1)
+    }
+
+    PrettyLog.info(`Found ${commandsCount} command files.`)
+
+    PrettyLog.info('Processing command files...')
+
+    for (const [index, file] of commandFiles.entries()) {
         const filePath = path.join(commandsPath, file)
         const command = require(filePath)
         
-        if (command.data instanceof SlashCommandBuilder) {
-            commandsList.push(await addLocalisationToCommand(command.data))
+        if (!(command.data instanceof SlashCommandBuilder)) {
+            PrettyLog.warn(`The command at ${filePath} is not a valid SlashCommandBuilder instance.`)
             continue
         }
 
-        console.warn(`The command at ${filePath} is not a valid SlashCommandBuilder instance.`)
+        commandsList.push(await addLocalisationToCommand(command.data))
+            
+        drawProgressBar(((index + 1) / commandsCount) * 100)
     }
+    drawProgressBar(100)
+    console.log('')
+
+    PrettyLog.info('All command files processed.')
 
     commands.cache = commandsList
     commands.expired = false

@@ -381,7 +381,7 @@ export class RemoveProductFlow extends UserFlow {
         if (this.stage == RemoveProductFlowStage.SELECT_SHOP) return `Remove a Product from: **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**`
         if (this.stage == RemoveProductFlowStage.SELECT_PRODUCT) return `Remove Product: **[${getProductName(this.selectedShop?.id, this.selectedProduct?.id) || 'Select Product'}]** from ${bold(getShopName(this.selectedShop?.id) || '')}`
 
-        PrettyLog.warning(`Unknown stage: ${this.stage}`)
+        PrettyLog.warn(`Unknown stage: ${this.stage}`)
         return ''
     }
 
@@ -572,7 +572,7 @@ export class EditProductFlow extends UserFlow {
         if (this.stage == EditProductFlowStage.SELECT_SHOP) return `Edit product from ${bold(`[${getShopName(this.selectedShop?.id) || 'Select Shop'}]`)}.\nNew ${bold(`${this.getUpdateOptionName(this.updateOption!)}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
         if (this.stage == EditProductFlowStage.SELECT_PRODUCT) return `Edit Product: ${bold(`[${getProductName(this.selectedShop?.id, this.selectedProduct?.id) || 'Select Product'}]`)} from ${bold(getShopName(this.selectedShop?.id) || '')}. \nNew ${bold(`${this.getUpdateOptionName(this.updateOption!)}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
 
-        PrettyLog.warning(`Unknown stage: ${this.stage}`)
+        PrettyLog.warn(`Unknown stage: ${this.stage}`)
         return ''
     }
 
