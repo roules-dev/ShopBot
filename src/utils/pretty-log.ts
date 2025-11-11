@@ -25,7 +25,7 @@ export class PrettyLog {
         this.saveLogs(`✕ Error - ${message}`)
     }
     
-    static warning(message: string, save = true) {
+    static warn(message: string, save = true) {
         console.log(`\x1b[7m ! \x1b[33m Warning \x1b[0m \x1b[33m${message}\x1b[0m`)
 
         if (!save) return
@@ -79,3 +79,9 @@ export class PrettyLog {
 }
 
 
+export function drawProgressBar(progress: number, barWidth = 30) {
+    const filledWidth = Math.floor(progress / 100 * barWidth);
+    const emptyWidth = barWidth - filledWidth;
+    const progressBar = '█'.repeat(filledWidth) + '▒'.repeat(emptyWidth);
+    process.stdout.write(`\r[${progressBar}] ${progress.toFixed(0)}%  `)
+}

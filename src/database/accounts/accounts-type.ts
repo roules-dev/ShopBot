@@ -40,8 +40,11 @@ export class AccountsDatabase extends Database {
         const accountsJSON: AccountsDatabaseJSONBody = {}
 
         this.accounts.forEach((account, userId) => {
-            const currencies = Object.fromEntries(Array.from(account.currencies.entries()).map(([id, balance]) => [id, { item: balance.item.id, amount: balance.amount } as Balance<UUID>]))
-            const inventory = Object.fromEntries(Array.from(account.inventory.entries()).map(([id, balance]) => [id, { item: { id: balance.item.id, shopId: balance.item.shopId }, amount: balance.amount } as Balance<ProductId>]))
+            const currencies = Object.fromEntries(Array.from(account.currencies.entries())
+                .map(([id, balance]) => [id, { item: balance.item.id, amount: balance.amount } as Balance<UUID>]))
+
+            const inventory = Object.fromEntries(Array.from(account.inventory.entries())
+                .map(([id, balance]) => [id, { item: { id: balance.item.id, shopId: balance.item.shopId }, amount: balance.amount } as Balance<ProductId>]))
 
             accountsJSON[userId] = { currencies, inventory }
         })
@@ -53,8 +56,13 @@ export class AccountsDatabase extends Database {
         const accounts: Map<Snowflake, Account> = new Map()
 
         for (const [userId, { currencies: currenciesJSON, inventory: inventoryJSON }] of Object.entries(databaseRaw)) {
-            const currenciesArray = Array.from(Object.entries(currenciesJSON)).filter(([id, _]) => getCurrencies().has(id)).map(([id, balance]) => [id, { item: getCurrencies().get(id), amount: balance.amount }] as [UUID, Balance<Currency>])
-            const inventoryArray = Array.from(Object.entries(inventoryJSON)).filter(([id, balance]) => getShops().has(balance.item.shopId) && getProducts(balance.item.shopId).has(id)).map(([id, balance]) => [id, { item: getProducts(balance.item.shopId)!.get(id)!, amount: balance.amount }] as [UUID, Balance<Product>])
+            const currenciesArray = Array.from(Object.entries(currenciesJSON))
+                .filter(([id, _]) => getCurrencies().has(id))
+                .map(([id, balance]) => [id, { item: getCurrencies().get(id), amount: balance.amount }] as [UUID, Balance<Currency>])
+
+            const inventoryArray = Array.from(Object.entries(inventoryJSON))
+                .filter(([id, balance]) => getShops().has(balance.item.shopId) && getProducts(balance.item.shopId).has(id))
+                .map(([id, balance]) => [id, { item: getProducts(balance.item.shopId)!.get(id)!, amount: balance.amount }] as [UUID, Balance<Product>])
 
             accounts.set(userId, { currencies: new Map(currenciesArray), inventory: new Map(inventoryArray) })
         }

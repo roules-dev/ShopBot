@@ -24,7 +24,7 @@
     "ts-node": "^10.9.2"
   },
   "dependencies": {
-    "discord.js": "^14.21.0",
+    "discord.js": "^14.24.2",
     "fs": "^0.0.1-security",
     "luxon": "^3.5.0",
     "uuid": "^11.1.0"

@@ -5,7 +5,7 @@ import { save } from "../database-handler";
 import { DatabaseError, DatabaseErrors } from "../database-types";
 import { Product, ProductOptions, ProductOptionsOptional, Shop, ShopOptionsOptional, ShopsDatabase } from "./shops-types";
 import { Snowflake } from 'discord.js';
-import { NO_VALUE } from '../../user-flows/shops-flows';
+import { getLocale } from '../..';
 
 const shopsDatabase = new ShopsDatabase(shops, 'data/shops.json')
 
@@ -70,7 +70,7 @@ export async function updateShop(shopId: string, options: ShopOptionsOptional) {
     if (description) shop.description = description
     if (emoji) shop.emoji = emoji
     if (reservedTo) shop.reservedTo = reservedTo
-    if (reservedTo === NO_VALUE) shop.reservedTo = undefined
+    if (reservedTo === getLocale().defaultComponents.unset) shop.reservedTo = undefined
 
     await save(shopsDatabase)
 }

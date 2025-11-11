@@ -1,9 +1,10 @@
 import { bold, ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 import { DatabaseError } from "../database/database-types"
 import { CurrencyRemoveFlow, EditCurrencyFlow, EditCurrencyOption } from "../user-flows/currencies-flows"
-import { EMOJI_REGEX, ErrorMessages } from "../utils/constants"
+import { EMOJI_REGEX } from "../utils/constants"
 import { replyErrorMessage, replySuccessMessage } from "../utils/discord"
 import { createCurrency } from "../database/currencies/currencies-database"
+import { replaceTemplates } from "../utils/localisation"
 
 export const data = new SlashCommandBuilder()
     .setName('currencies-manage') 
@@ -75,25 +76,25 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
                 break
             }
 
-            await replyErrorMessage(interaction, ErrorMessages.InvalidSubcommand)
+            await replyErrorMessage(interaction, client.locale.errorMessages.invalidSubcommand)
     }
 }
 
-export async function createCurrencyCommand(_client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
+export async function createCurrencyCommand(client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
     const currencyName = interaction.options.getString('name')?.replaceSpaces()
-    if (!currencyName) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+    if (!currencyName) return replyErrorMessage(interaction, client.locale.errorMessages.insufficientParameters)
 
     const emojiOption = interaction.options.getString('emoji')
     const emojiString = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
 
     try {
-        if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, ErrorMessages.NotOnlyEmojisInName)
+        if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, client.locale.errorMessages.notOnlyEmojisInName)
         
         await createCurrency(currencyName, emojiString)
 
         const currencyNameString = bold(`${emojiString ? `${emojiString} ` : ''}${currencyName}`)
 
-        await replySuccessMessage(interaction, `You successfully created the currency ${currencyNameString}. \n-# Use \`/currencies-manage remove\` to remove it`)    
+        await replySuccessMessage(interaction, replaceTemplates(client.locale.userFlows.currencyCreate.messages.success, { currency: currencyNameString }))    
         return    
     } catch (error) {
         await replyErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)

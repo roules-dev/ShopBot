@@ -3,23 +3,61 @@ import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBu
 import fs from 'node:fs'
 import path from 'node:path'
 import { clientId, token } from '../config/config.json'
-import { PrettyLog } from './utils/pretty-log'
+import { drawProgressBar, PrettyLog } from './utils/pretty-log'
+import { addLocalisationToCommand } from './utils/localisation'
 
 let rest: REST | undefined
 
-const commands: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
-const commandsPath = path.join(__dirname, 'commands')
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
+const commands: { cache: RESTPostAPIChatInputApplicationCommandsJSONBody[], expired: boolean } = { cache: [], expired: true }
 
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file)
-    const command = require(filePath)
-    commands.push((command.data as SlashCommandBuilder).toJSON())
+async function getCommands() {
+    if (!commands.expired) {
+        return commands.cache
+    }
+
+    PrettyLog.info('Loading commands for deployment...')
+
+    const commandsList: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
+    const commandsPath = path.join(__dirname, 'commands')
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
+
+    const commandsCount = commandFiles.length
+
+    if (commandsCount === 0) {
+        PrettyLog.error('No command files found.')
+        process.exit(1)
+    }
+
+    PrettyLog.info(`Found ${commandsCount} command files.`)
+
+    PrettyLog.info('Processing command files...')
+
+    for (const [index, file] of commandFiles.entries()) {
+        const filePath = path.join(commandsPath, file)
+        const command = require(filePath)
+        
+        if (!(command.data instanceof SlashCommandBuilder)) {
+            PrettyLog.warn(`The command at ${filePath} is not a valid SlashCommandBuilder instance.`)
+            continue
+        }
+
+        commandsList.push(await addLocalisationToCommand(command.data))
+            
+        drawProgressBar(((index + 1) / commandsCount) * 100)
+    }
+    drawProgressBar(100)
+    console.log('')
+
+    PrettyLog.info('All command files processed.')
+
+    commands.cache = commandsList
+    commands.expired = false
+    return commandsList
 }
 
 function appDeployCommands() {
-    return new Promise((resolve, reject) => {
-        getRest().put(Routes.applicationCommands(clientId), { body: commands })
+    return new Promise(async (resolve, reject) => {
+        getRest().put(Routes.applicationCommands(clientId), { body: await getCommands() })
             .then(() => {
                 PrettyLog.success('Successfully registered application commands.', false)
                 resolve(true)
@@ -40,8 +78,8 @@ function appDeleteCommands() {
 }
 
 function guildDeployCommands(guildId: Snowflake) {
-    return new Promise((resolve, reject) => {
-        getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+    return new Promise(async (resolve, reject) => {
+        getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: await getCommands() })
             .then(() => {
                 PrettyLog.success('Successfully registered all guild commands.', false)
                 resolve(true)

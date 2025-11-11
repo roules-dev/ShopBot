@@ -6,11 +6,13 @@ import { createDiscountCode, createShop, getShopName, getShops, removeDiscountCo
 import { Shop } from "../database/shops/shops-types"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showEditModal } from "../user-interfaces/extended-components"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
-import { EMOJI_REGEX, ErrorMessages } from "../utils/constants"
+import { EMOJI_REGEX } from "../utils/constants"
 import { PrettyLog } from "../utils/pretty-log"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"
 import { assertNeverReached } from "../utils/utils"
+import { errorMessages, defaultComponents, replaceTemplates } from "../utils/localisation"
+import { getLocale } from ".."
 
 export class ShopCreateFlow extends UserFlow {
     public id = 'shop-create'
@@ -22,9 +24,11 @@ export class ShopCreateFlow extends UserFlow {
     private shopDescription: string | null = null
     private shopReservedTo: Snowflake | undefined = undefined
 
+    protected locale = getLocale().userFlows.shopCreate
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (!currencies.size) return await replyErrorMessage(interaction, `Can't create a new shop. ${ErrorMessages.NoCurrencies}`)
+        if (!currencies.size) return await replyErrorMessage(interaction, `${this.locale.errorMessages.cantCreateShop} ${errorMessages().noCurrencies}`)
 
         const shopName = interaction.options.getString('name')?.replaceSpaces()
         const shopDescription = interaction.options.getString('description')?.replaceSpaces()  || ''
@@ -32,9 +36,9 @@ export class ShopCreateFlow extends UserFlow {
         const shopEmoji = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
         const shopReservedTo = interaction.options.getRole('reserved-to')?.id
 
-        if (!shopName) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!shopName) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
 
-        if (shopName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, ErrorMessages.NotOnlyEmojisInName)
+        if (shopName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, errorMessages().notOnlyEmojisInName)
 
         this.shopName = shopName
         this.shopEmoji = shopEmoji
@@ -50,13 +54,19 @@ export class ShopCreateFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        const shopNameString = bold(`${this.shopEmoji ? `${this.shopEmoji} ` : ''}${this.shopName!}`)
-        return `Create the shop **${shopNameString}** with the Currency **[${getCurrencyName(this.selectedCurrency?.id) || 'Select currency'}]**`
+        const shopNameString = `${this.shopEmoji ? `${this.shopEmoji} ` : ''}${this.shopName!}`
+
+        const message = replaceTemplates(this.locale.messages.default, {
+            shop: bold(shopNameString),
+            currency: bold(getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency)
+        })
+
+        return message
     }
 
     protected override initComponents(): void {
         const selectCurrencyMenu = new ExtendedStringSelectMenuComponent(
-            { customId: `${this.id}+select-currency`, placeholder: 'Select a currency', time: 120_000 },
+            { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
             getCurrencies(),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
@@ -66,7 +76,7 @@ export class ShopCreateFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: 'Submit',
+                label: this.locale.components.submitButton,
                 emoji: '✅',
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -78,13 +88,13 @@ export class ShopCreateFlow extends UserFlow {
         const changeShopNameButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+change-shop-name`,
-                label: 'Change Shop Name',
+                label: this.locale.components.changeShopNameButton,
                 emoji: '📝',
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmit, newShopName] = await showEditModal(interaction, { edit: 'Shop Name', previousValue: this.shopName || undefined })
+                const [modalSubmit, newShopName] = await showEditModal(interaction, { edit: this.locale.components.editNameModalTitle, previousValue: this.shopName || undefined })
                 
                 this.shopName = newShopName
                 this.updateInteraction(modalSubmit)
@@ -94,13 +104,13 @@ export class ShopCreateFlow extends UserFlow {
         const changeShopEmojiButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+change-shop-emoji`,
-                label: 'Change Shop Emoji',
+                label: this.locale.components.changeShopEmojiButton,
                 emoji: '✏️',
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmit, newShopEmoji] = await showEditModal(interaction, { edit: 'Shop Emoji', previousValue: this.shopEmoji || undefined })
+                const [modalSubmit, newShopEmoji] = await showEditModal(interaction, { edit: this.locale.components.editEmojiModalTitle, previousValue: this.shopEmoji || undefined })
                 
                 this.shopEmoji = newShopEmoji?.match(EMOJI_REGEX)?.[0] || this.shopEmoji
                 this.updateInteraction(modalSubmit)
@@ -124,12 +134,17 @@ export class ShopCreateFlow extends UserFlow {
         this.disableComponents()
 
         try {
-            if (!this.shopName) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
-            if (!this.selectedCurrency) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.shopName) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+            if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
             
             const newShop = await createShop(this.shopName, this.shopDescription || '', this.selectedCurrency.id, this.shopEmoji || '', this.shopReservedTo)
 
-            return await updateAsSuccessMessage(interaction, `You successfully created the shop ${bold(getShopName(newShop.id) || '')} with the currency ${bold(getCurrencyName(newShop.currency.id) || '')}. \n-# Use \`/shops-manage remove\` to remove it`)
+            const message = replaceTemplates(this.locale.messages.success, {
+                shop: bold(getShopName(newShop.id)!),
+                currency: bold(getCurrencyName(newShop.currency.id)!)
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
@@ -142,9 +157,11 @@ export class ShopRemoveFlow extends UserFlow {
 
     private selectedShop: Shop | null = null
 
+    protected locale = getLocale().userFlows.shopRemove
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
         this.initComponents()
         this.updateComponents()
@@ -155,13 +172,13 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Remove **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**`
+        return replaceTemplates(this.locale.messages.default, { shop: getShopName(this.selectedShop?.id) || defaultComponents().selectShop })
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
             customId: `${this.id}+select-shop`,
-            placeholder: 'Select a shop',
+            placeholder: defaultComponents().selectShop,
             time: 120_000
         }, getShops(), (interaction: StringSelectMenuInteraction, selected: Shop): void => {
             this.selectedShop = selected
@@ -171,7 +188,7 @@ export class ShopRemoveFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
             time: 120_000,
-            label: 'Remove Shop',
+            label: this.locale.components.submitButton,
             emoji: {name: '⛔'},
             style: ButtonStyle.Danger,
             disabled: true
@@ -193,11 +210,11 @@ export class ShopRemoveFlow extends UserFlow {
         this.disableComponents()
 
         try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
             
             await removeShop(this.selectedShop.id)
 
-            return await updateAsSuccessMessage(interaction, `You successfully removed the shop ${bold(getShopName(this.selectedShop.id) || '')}`)
+            return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, { shop: bold(getShopName(this.selectedShop.id)!) }))
         }
         catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -212,10 +229,11 @@ export class ShopReorderFlow extends UserFlow {
     private selectedShop: Shop | null = null
     private selectedPosition: number | null = null
 
+    protected locale = getLocale().userFlows.shopReorder
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
         this.initComponents()
 
@@ -230,14 +248,19 @@ export class ShopReorderFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Change position of ${bold(`[${getShopName(this.selectedShop?.id) || 'Select Shop'}]`)} to ${bold(`${this.selectedPosition || 'Select Position'}`)}`
+        const message = replaceTemplates(this.locale.messages.default, { 
+            shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop),
+            position: bold(`${this.selectedPosition}` || this.locale.components.selectPosition)
+        })
+
+        return message
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: 'Select a shop',
+                placeholder: defaultComponents().selectShop,
                 time: 120_000,
             },
             getShops(),
@@ -261,7 +284,7 @@ export class ShopReorderFlow extends UserFlow {
                 disabled: this.selectedPosition != null && this.selectedPosition < getShops().size,
             },
             (interaction: ButtonInteraction) => {
-                if (!this.selectedPosition) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+                if (!this.selectedPosition) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
                 this.selectedPosition = Math.max(this.selectedPosition - 1, 1)
                 return this.updateInteraction(interaction)
             }
@@ -277,7 +300,7 @@ export class ShopReorderFlow extends UserFlow {
                 disabled: this.selectedPosition != null && this.selectedPosition > 1,
             },
             (interaction: ButtonInteraction) => {
-                if (!this.selectedPosition) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+                if (!this.selectedPosition) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
                 this.selectedPosition = Math.min(this.selectedPosition + 1, getShops().size)
             
                 return this.updateInteraction(interaction)
@@ -288,7 +311,7 @@ export class ShopReorderFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-new-position`,
                 time: 120_000,
-                label: 'Submit position',
+                label: this.locale.components.submitNewPositionButton,
                 emoji: {name: ''},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -321,20 +344,22 @@ export class ShopReorderFlow extends UserFlow {
 
     protected override async success(interaction: ButtonInteraction) {
         try {
-            if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
             updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
-            await updateAsSuccessMessage(interaction, `You successfully changed the position of ${bold(getShopName(this.selectedShop?.id) || '')} to ${bold(`${this.selectedPosition}`)}`)
-            return
+
+            const message = replaceTemplates(this.locale.messages.success, {
+                shop: bold(getShopName(this.selectedShop?.id)!),
+                position: bold(`${this.selectedPosition}`)
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         }
         catch (error) {
-            await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-            return 
+            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
     }
 }
-
-export const NO_VALUE = 'no-value'
 
 export const EDIT_SHOP_OPTIONS = {
     Name: 'name',
@@ -346,6 +371,7 @@ export const EDIT_SHOP_OPTIONS = {
 type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 
 function isShopOption(subcommand: string): subcommand is EditShopOption { return Object.values(EDIT_SHOP_OPTIONS).includes(subcommand as EditShopOption) }
+
 function getShopOptionName(option: EditShopOption): string { 
     switch (option) {
         case EDIT_SHOP_OPTIONS.Name:
@@ -369,12 +395,14 @@ export class EditShopFlow extends UserFlow {
     private updateOptionValue: string | null = null
     private updateOptionValueDisplay: string | null = null
 
+    protected locale = getLocale().userFlows.shopEdit
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
         const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !isShopOption(subcommand)) return replyErrorMessage(interaction, ErrorMessages.InvalidSubcommand)
+        if (!subcommand || !isShopOption(subcommand)) return replyErrorMessage(interaction, errorMessages().invalidSubcommand)
         this.updateOption = subcommand as EditShopOption
         
         try {
@@ -395,13 +423,19 @@ export class EditShopFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Edit **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.\n**New ${this.updateOption}**: ${bold(`${this.updateOptionValueDisplay}`)}`
+        const message = replaceTemplates(this.locale.messages.default, { 
+            shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop),
+            option: bold(this.getUpdateOptionName(this.updateOption!)),
+            value: bold(`${this.updateOptionValueDisplay}`)
+        })
+
+        return message
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
             customId: `${this.id}+select-shop`,
-            placeholder: 'Select a shop',
+            placeholder: defaultComponents().selectShop,
             time: 120_000,
         },
         getShops(),
@@ -415,7 +449,7 @@ export class EditShopFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 time: 120_000,
-                label: 'Edit Shop',
+                label: this.locale.components.submitButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -438,14 +472,20 @@ export class EditShopFlow extends UserFlow {
         this.disableComponents()
 
         try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
-            if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+            if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
             
             const oldName = getShopName(this.selectedShop?.id) || ''
 
             await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
-            return await updateAsSuccessMessage(interaction, `You successfully edited the shop ${bold(oldName)}.\n New ${bold(this.updateOption)}: ${bold(this.updateOptionValueDisplay)}`)
+            const message = replaceTemplates(this.locale.messages.success, {
+                shop: bold(oldName),
+                option: bold(this.getUpdateOptionName(this.updateOption!)),
+                value: bold(`${this.updateOptionValueDisplay}`)
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         }
         catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -458,32 +498,36 @@ export class EditShopFlow extends UserFlow {
 
         switch (subcommand) {
             case EDIT_SHOP_OPTIONS.Name:
-                updateValue = interaction.options.getString('new-name')?.replaceSpaces()
+                updateValue = interaction.options.getString('new-name')?.replaceSpaces() ?? defaultComponents().unset
                 break
             case EDIT_SHOP_OPTIONS.Description:
-                updateValue = interaction.options.getString('new-description')?.replaceSpaces()
+                updateValue = interaction.options.getString('new-description')?.replaceSpaces() ?? defaultComponents().unset
                 break
             case EDIT_SHOP_OPTIONS.Emoji:
                 const emojiOption = interaction.options.getString('new-emoji')
-                updateValue = emojiOption?.match(EMOJI_REGEX)?.[0] || NO_VALUE
+                updateValue = emojiOption?.match(EMOJI_REGEX)?.[0] ?? defaultComponents().unset
                 break
             case EDIT_SHOP_OPTIONS.ReservedTo:
-                updateValue = interaction.options.getRole('reserved-to-role')?.id || NO_VALUE
+                updateValue = interaction.options.getRole('reserved-to-role')?.id ?? defaultComponents().unset
                 break
             default:
                 assertNeverReached(subcommand)
         }
 
-        if (!updateValue) throw new Error(ErrorMessages.InsufficientParameters)
+        if (!updateValue) throw new Error(errorMessages().insufficientParameters)
 
         return updateValue
+    }
+
+    private getUpdateOptionName(option: EditShopOption): string { 
+        return this.locale.editOptions[option] ?? option
     }
 
     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string | null {
         switch (subcommand) {
             case EDIT_SHOP_OPTIONS.ReservedTo:
                 const role = interaction.options.getRole('reserved-to-role')
-                if (!role) return 'None'
+                if (!role) return defaultComponents().unset
                 return roleMention(role.id)
             
             default:
@@ -509,9 +553,11 @@ export class EditShopCurrencyFlow extends UserFlow {
 
     private response: InteractionCallbackResponse | null = null
 
+    protected locale = getLocale().userFlows.shopChangeCurrency
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
         this.initComponents()
         this.updateComponents()
@@ -523,18 +569,26 @@ export class EditShopCurrencyFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        if (this.stage === EditShopCurrencyStage.SELECT_SHOP) return `Change the currency of **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.`
-        if (this.stage === EditShopCurrencyStage.SELECT_CURRENCY) return `Change the currency of **${getShopName(this.selectedShop?.id)}** to **[${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]**.`
-
-        PrettyLog.warning(`Unknown stage: ${this.stage}`)
-        return ''
+        switch (this.stage) {
+            case EditShopCurrencyStage.SELECT_SHOP:
+                return replaceTemplates(this.locale.messages.shopSelectStage, {
+                    shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop)
+                })
+            case EditShopCurrencyStage.SELECT_CURRENCY:
+                return replaceTemplates(this.locale.messages.currencySelectStage, {
+                    shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop),
+                    currency: bold(getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency)
+                })
+            default:
+                assertNeverReached(this.stage)
+        }
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: 'Select a shop',
+                placeholder: defaultComponents().selectShop,
                 time: 120_000,
             },
             getShops(),
@@ -548,7 +602,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-shop`,
                 time: 120_000,
-                label: 'Submit Shop',
+                label: defaultComponents().submitShopButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -569,7 +623,7 @@ export class EditShopCurrencyFlow extends UserFlow {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
             {
                 customId: `${this.id}+select-currency`,
-                placeholder: 'Select a currency',
+                placeholder: defaultComponents().selectCurrency,
                 time: 120_000,
             },
             getCurrencies(),
@@ -582,7 +636,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-currency`,
                 time: 120_000,
-                label: 'Submit Currency',
+                label: this.locale.components.submitButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true
@@ -594,7 +648,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
-                label: 'Change Shop',
+                label: defaultComponents().changeShopButton,
                 emoji: {name: '📝'},
                 style: ButtonStyle.Secondary
             },
@@ -642,12 +696,17 @@ export class EditShopCurrencyFlow extends UserFlow {
     }
 
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (!this.selectedShop || !this.selectedCurrency) return await updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!this.selectedShop || !this.selectedCurrency) return await updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
         try {
             updateShopCurrency(this.selectedShop.id, this.selectedCurrency.id)
             
-            return await updateAsSuccessMessage(interaction, `You successfully updated the currency for the shop ${bold(getShopName(this.selectedShop.id) || '')} to ${bold(getCurrencyName(this.selectedCurrency.id) || '')}`)
+            const message = replaceTemplates(this.locale.messages.success, { 
+                shop: bold(getShopName(this.selectedShop.id)!), 
+                currency: bold(getCurrencyName(this.selectedCurrency.id)!)
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         }
         catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
@@ -663,14 +722,16 @@ export class DiscountCodeCreateFlow extends UserFlow {
     private discountCode: string | null = null
     private discountAmount: number | null = null
 
+    protected locale = getLocale().userFlows.discountCodeCreate
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
-        const discountCode = interaction.options.getString('code')?.replaceSpaces().replace(/ /g, '').toUpperCase()
+        const discountCode = interaction.options.getString('code')?.replaceSpaces('').toUpperCase()
         const discountAmount = interaction.options.getInteger('amount')
 
-        if (!discountCode || !discountAmount) return replyErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!discountCode || !discountAmount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
 
         this.discountCode = discountCode
         this.discountAmount = discountAmount
@@ -684,13 +745,19 @@ export class DiscountCodeCreateFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Create a discount code for **[${getShopName(this.selectedShop?.id) || 'Select Shop'}]**.\n**Code**: ${bold(`${this.discountCode}\nAmount: ${this.discountAmount}`)}%`
+        const message = replaceTemplates(this.locale.messages.default, {
+            shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop),
+            code: bold(this.discountCode!),
+            amount: bold(`${this.discountAmount}`)
+        })
+
+        return message
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
             customId: `${this.id}+select-shop`,
-            placeholder: 'Select a shop',
+            placeholder: defaultComponents().selectShop,
             time: 120_000,
         },
         getShops(),
@@ -702,7 +769,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: 'Create Discount Code',
+                label: this.locale.components.submitButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -727,12 +794,18 @@ export class DiscountCodeCreateFlow extends UserFlow {
         this.disableComponents()
 
         try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
-            if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+            if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
             await createDiscountCode(this.selectedShop.id, this.discountCode, this.discountAmount)
 
-            return await updateAsSuccessMessage(interaction, `You successfully created the discount code ${bold(this.discountCode)} for ${bold(getShopName(this.selectedShop?.id) || '')}.\n${bold(`Amount: ${this.discountAmount}`)}%`)
+            const message = replaceTemplates(this.locale.messages.success, { 
+                shop: bold(getShopName(this.selectedShop.id)!), 
+                code: bold(this.discountCode), 
+                amount: bold(`${this.discountAmount}`)
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
@@ -756,9 +829,11 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
     private response: InteractionCallbackResponse | null = null
 
+    protected locale = getLocale().userFlows.discountCodeRemove
+
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
         this.initComponents()
         this.updateComponents()
@@ -770,18 +845,26 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        if (this.stage == DiscountCodeRemoveStage.SELECT_SHOP) return `Remove a discount code from ${bold(`[${getShopName(this.selectedShop?.id) || 'Select Shop'}]`)}.`
-        if (this.stage == DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE) return `Remove discount code ${bold(`[${this.selectedDiscountCode || 'Select Discount Code'}]`)} from ${bold(`[${getShopName(this.selectedShop?.id)}]`)}.`
-
-        PrettyLog.warning(`Unknown stage: ${this.stage}`)
-        return ''
+        switch (this.stage) {
+            case DiscountCodeRemoveStage.SELECT_SHOP:
+                return replaceTemplates(this.locale.messages.shopSelectStage, {
+                    shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop)
+                })
+            case DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE:
+                return replaceTemplates(this.locale.messages.codeSelectStage, {
+                    shop: bold(getShopName(this.selectedShop?.id)!),
+                    code: bold(this.selectedDiscountCode || this.locale.components.discountCodeSelect)
+                })
+            default:
+                assertNeverReached(this.stage)
+        }
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: 'Select a shop',
+                placeholder: defaultComponents().selectShop,
                 time: 120_000,
             },
             getShops(),
@@ -795,7 +878,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 time: 120_000,
-                label: 'Submit Shop',
+                label: defaultComponents().submitShopButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -819,7 +902,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
         const discountCodeSelectMenu = new ExtendedStringSelectMenuComponent<string>({
             customId: `${this.id}+select-discount-code`,
-            placeholder: 'Select a discount code',
+            placeholder: this.locale.components.discountCodeSelect,
             time: 120_000,
         },
         new Map(),
@@ -832,7 +915,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             {
                 customId: `${this.id}+remove-discount-code`,
                 time: 120_000,
-                label: 'Remove Discount Code',
+                label: this.locale.components.submitButton,
                 emoji: {name: '⛔'},
                 style: ButtonStyle.Danger,
                 disabled: true
@@ -844,7 +927,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
-                label: 'Change Shop',
+                label: defaultComponents().changeShopButton,
                 emoji: {name: '📝'},
                 style: ButtonStyle.Secondary
             },
@@ -900,12 +983,17 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         this.disableComponents()
 
         try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
-            if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+            if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
             await removeDiscountCode(this.selectedShop.id, this.selectedDiscountCode)
 
-            return await updateAsSuccessMessage(interaction, `You successfully removed the discount code ${bold(this.selectedDiscountCode)} from ${bold(getShopName(this.selectedShop?.id)!)}`)
+            const message = replaceTemplates(this.locale.messages.success, { 
+                shop: bold(getShopName(this.selectedShop.id)!), 
+                code: bold(this.selectedDiscountCode) 
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
