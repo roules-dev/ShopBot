@@ -4,6 +4,9 @@ import { Account } from "../database/accounts/accounts-type"
 import { getCurrencies } from "../database/currencies/currencies-database"
 import { ExtendedButtonComponent, ExtendedComponent } from "./extended-components"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface, UserInterfaceInteraction } from "./user-interfaces"
+import { getLocale } from ".."
+import { replaceTemplates } from "../utils/localisation"
+import { assertNeverReached } from "../utils/utils"
 
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
@@ -27,6 +30,8 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     private user: User
     private account: Account | null = null
 
+    private locale = getLocale().userInterfaces.account
+
     constructor(user: User) {
         super()
         this.user = user
@@ -43,7 +48,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     protected override initEmbeds(interaction: UserInterfaceInteraction): void {
         this.mode = this.modes.CURRENCIES
         const currenciesEmbed = new EmbedBuilder()
-            .setTitle(`💰 _${this.user.displayName}_'s Account`)
+            .setTitle(replaceTemplates(this.locale.embeds.account.title, { user: this.user.displayName }))
             .setColor(Colors.Gold)
             .setFooter({ text: 'ShopBot', iconURL: interaction.client.user.displayAvatarURL()})
             .setFields(this.getPageEmbedFields())
@@ -51,8 +56,8 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
 
         this.mode = this.modes.INVENTORY
         const inventoryEmbed = new EmbedBuilder()
-            .setTitle(`💼 _${this.user.displayName}_'s Inventory`)
-            .setColor(Colors.DarkGreen)
+            .setTitle(replaceTemplates(this.locale.embeds.inventory.title, { user: this.user.displayName }))
+            .setColor(Colors.DarkRed)
             .setFooter({ text: 'ShopBot', iconURL: interaction.client.user.displayAvatarURL()})
             .setFields(this.getPageEmbedFields())
 
@@ -76,7 +81,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         const showAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-account`,
-                label: 'Show account',
+                label: this.locale.components.showAccountButton,
                 emoji: {name: '💰'},
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.CURRENCIES,
@@ -88,7 +93,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         const showInventoryButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-inventory`,
-                label: 'Show inventory',
+                label: this.locale.components.showInventoryButton,
                 emoji: {name: '💼'},
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.INVENTORY,
@@ -123,7 +128,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     private getAccountFields(): APIEmbedField[] {
-        if (!this.account || !this.account.currencies.size) return [{ name: '❌ Account is empty', value: '\u200b' }]
+        if (!this.account || !this.account.currencies.size) return [{ name: this.locale.errors.accountEmpty, value: '\u200b' }]
         const fields: APIEmbedField[] = []
 
         this.account.currencies.forEach(currencyBalance => {
@@ -136,7 +141,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     private getInventoryFields(): APIEmbedField[] { 
-        if (!this.account || !this.account.inventory.size) return [{ name: '❌ Inventory is empty', value: '\u200b' }]
+        if (!this.account || !this.account.inventory.size) return [{ name: this.locale.errors.inventoryEmpty, value: '\u200b' }]
         const fields: APIEmbedField[] = []
 
         this.account.inventory.forEach(productBalance => {
@@ -154,6 +159,8 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
                 return this.getAccountFields()
             case this.modes.INVENTORY:
                 return this.getInventoryFields()
+            default:
+                assertNeverReached(this.mode)
         }
     }
 }

@@ -1,9 +1,8 @@
-import { Locale, MessageFlags, TextChannel } from "discord.js"
+import { MessageFlags, TextChannel } from "discord.js"
 import { getSettings } from "../database/settings/settings-handler"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
 import { PrettyLog } from "./pretty-log"
-import { LocaleStrings } from "./localisation"
-import { getLocale } from ".."
+import { errorMessages } from "./localisation"
 
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
     return await interaction.reply({ content: getErrorMessage(errorMessage), flags: MessageFlags.Ephemeral })
@@ -32,7 +31,7 @@ export async function updateAsSuccessMessage(interaction: UserInterfaceInteracti
 
 
 function getErrorMessage(errorMessage?: string) {
-    return `❌ ${errorMessage ? errorMessage : getLocale().errorMessages.default}`
+    return `❌ ${errorMessage ? errorMessage : errorMessages().default}`
 }
 
 function getSuccessMessage(successMessage: string) {

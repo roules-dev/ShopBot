@@ -1,8 +1,8 @@
-import { BaseInteraction, ChannelType, ChatInputCommandInteraction, InteractionType } from 'discord.js'
+import { BaseInteraction, ChannelType, ChatInputCommandInteraction, Events, InteractionType } from 'discord.js'
 import { PrettyLog } from '../utils/pretty-log'
 import { replyErrorMessage } from '../utils/discord'
 
-export const name = 'interactionCreate'
+export const name = Events.InteractionCreate
 
 export async function execute(interaction: BaseInteraction) {
     if (interaction.type != InteractionType.ApplicationCommand) return

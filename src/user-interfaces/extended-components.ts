@@ -118,7 +118,9 @@ export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Produ
     onCollect(interaction: StringSelectMenuInteraction): void {
         if (!interaction.isStringSelectMenu()) return
 
-        const selected = this.map.get(interaction.values[0])
+        let selected = this.map.get(interaction.values[0])
+        if (typeof selected === 'string') selected = interaction.values[0] as T
+        
         if (selected == undefined) return
 
         this.callback(interaction, selected)    

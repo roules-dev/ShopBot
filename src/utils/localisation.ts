@@ -5,6 +5,7 @@ import './strings'
 import { PrettyLog } from "./pretty-log";
 
 import en_US_locale from '../../locales/en-US.json';
+import { getLocale } from "..";
 
 const defaultLocale = en_US_locale
 export type LocaleStrings = typeof defaultLocale
@@ -101,4 +102,12 @@ export function replaceTemplates(str: string, templates: { [key: string]: string
         result = result.replace(new RegExp(`{${key}}`, 'g'), String(value)) 
     }
     return result
+}
+
+export function errorMessages() {
+	return getLocale().errorMessages
+}
+
+export function defaultComponents() {
+    return getLocale().defaultComponents
 }

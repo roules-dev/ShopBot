@@ -31,6 +31,9 @@ export async function startClient() {
 
 	await registerCommands(client)
 	await registerEvents(client)
+	await setClientLocale()
+	PrettyLog.logLoadStep('Locale set to client')
+
 	await client.login(config.token)
 }
 
@@ -68,18 +71,24 @@ async function registerEvents(client: Client<boolean>) {
 	PrettyLog.logLoadStep('Events registered')
 }
 
-async function setLanguageToClient() {
+export async function setClientLocale() {
 	const locales = await getLocales()
 
 	const languageSetting = getSetting('language')
 
-	client.locale = locales[languageSetting?.value as string] ?? locales['en-US']
+	const locale = locales[languageSetting?.value as string] ?? locales['en-US']
+	if (!locale) throw new Error('Missing locale in locales folder')
+
+	client.locale = locale
 }
 
 export function getLocale(): LocaleStrings {
+	if (!client.locale) {
+		throw new Error('Locale not set')
+	}
+
 	return client.locale
 }
-
 
 process.on('unhandledRejection', (reason: unknown) => PrettyLog.error(`${reason}`, false))
 process.on('uncaughtException', (reason: unknown) => PrettyLog.error(`${reason}`, false))

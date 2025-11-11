@@ -347,11 +347,13 @@
         }
     },
     "defaultComponents": {
-        "selectCurrencyPlaceholder": "Sélectionner une devise",
-        "selectShopPlaceholder": "Sélectionner une boutique",
-        "selectRolePlaceholder": "Sélectionner un rôle",
-        "changeShopButtonLabel": "Changer de boutique",
-        "submitShopButtonLabel": "Soumettre la boutique"
+        "selectCurrency": "Sélectionner une devise",
+        "selectShop": "Sélectionner une boutique",
+        "selectRole": "Sélectionner un rôle",
+        "selectProduct": "Sélectionner un produit",
+        "changeShopButton": "Changer de boutique",
+        "submitShopButton": "Soumettre la boutique",
+        "unset": "Non défini"
     },
     "extendedComponents": {
         "confirmationModal": {
@@ -372,16 +374,16 @@
                 "settings": {
                     "title": "⚙️ Paramètres",
                     "description": "Vous pouvez modifier vos paramètres ici",
-                    "unseSettingPlaceholder": "Non défini"
+                    "unsetSetting": "Non défini"
                 }
             },
 
             "components": {
-                "selectSettingPlaceholder": "Modifier un paramètre",
-                "defaultModifieror": {
+                "selectSetting": "Modifier un paramètre",
+                "defaultEditor": {
                     "title": "Modifier {name}"
                 },
-                "toggleModifieror": {
+                "toggleEditor": {
                     "toggleOn": "Activer",
                     "toggleOff": "Désactiver"
                 },
@@ -394,22 +396,22 @@
                         "option": "une option"
                     }
                 },
-                "resetButtonLabel": "Réinitialiser",
-                "backButtonLabel": "Retour"
+                "resetButton": "Réinitialiser {name}",
+                "backButton": "Retour"
             }
         },
         "account": {
             "embeds": {
                 "account": {
-                    "title": "💰 Compte de _{displayName}_"
+                    "title": "💰 Compte de _{user}_"
                 },
                 "inventory": {
-                    "title": "💼 Inventaire de _{displayName}_"
+                    "title": "💼 Inventaire de _{user}_"
                 }
             },
             "components": {
-                "showAccountButtonLabel": "Afficher le compte",
-                "showInventoryButtonLabel": "Afficher l'inventaire"
+                "showAccountButton": "Afficher le compte",
+                "showInventoryButton": "Afficher l'inventaire"
             },
             "errors": {
                 "accountEmpty": "❌ Le compte est vide",
@@ -419,37 +421,38 @@
         "shop": {
             "embeds": {
                 "shop": {
-                    "products": "Produits",
+                    "products": "Produits :",
                     "reservedTo": "Réservé au {role}",
                     "noProduct": "Aucun produit disponible ici",
                     "xProductsLeft": "restant: {x}",
-                    "noProductLeft": "Plus aucun disponible",
-                    "price": "Prix"
+                    "outOfStock": "En rupture de stock",
+                    "price": "Prix :"
                 }
 
             },
             "components": {
-                "buyButtonLabel": "Acheter un produit",
-                "showAccountButtonLabel": "Mon compte"
+                "buyButton": "Acheter un produit",
+                "showAccountButton": "Mon compte"
             }
         },
         "buy": {
-            "message": {
-                "discountCode": "Code de réduction",
-                "buyMessage": "Acheter {product} de {shop}",
+            "messages": {
+                "default": "Acheter {product} de {shop}",
+                "discountCode": "Code de réduction :",
                 "price": "pour {price}",
-                
+                "success": "Vous avez acheté {product} avec succès dans {shop} pour {price}"
+            },
+            "errorMessages": {
+                "cantBuyHere": "Vous ne pouvez rien acheter dans cette boutique.",
                 "notEnoughMoney": "Vous n'avez pas assez de {currency} pour acheter ce produit.",
-                "productNoLongerAvailable": "Ce produit n'est plus disponible.",
-                "successfullyBought": "Vous avez acheté {product} avec succès dans {shop} pour {price}"
+                "productNoLongerAvailable": "Ce produit n'est plus disponible."
             },
             "components": {
-                "selectProductMenuPlaceholder": "Sélectionnez un produit",
-                "buyButtonLabel": "Acheter",
-                "discountCodeButtonLabel": "J'ai un code promo",
+                "buyButton": "Acheter",
+                "discountCodeButton": "J'ai un code promo",
                 "setDiscountCodeModal": {
                     "title": "Définir le code de réduction",
-                    "inputLabel": "Code de réduction"
+                    "input": "Code de réduction"
                 }
             },
             "actionProducts": {
@@ -457,7 +460,7 @@
                     "message": "Vous avez reçu le rôle {role}"
                 },
                 "giveCurrency": {
-                    "message": "Vous avez reçu {amount} {currency}"
+                    "message": "Vous avez reçu **{amount} {currency}**"
                 }
             }
         }
@@ -475,7 +478,7 @@
                 "bulkGiveSuccess": "Vous avez donné avec succès {amount} {currency} à tous les utilisateurs avec le rôle {role}"
             },
             "components": {
-                "submitButtonLabel": "Valider"
+                "submitButton": "Valider"
             }
         },
         "accountTake": {
@@ -488,9 +491,9 @@
                 "success": "Vous avez pris avec succès {amount} {currency} de {user}"
             },
             "components": {
-                "submitButtonLabel": "Valider",
-                "takeAllButtonLabel": "Tout prendre",
-                "emptyAccountButtonLabel": "Vider le compte"
+                "submitButton": "Valider",
+                "takeAllButton": "Tout prendre",
+                "emptyAccountButton": "Vider le compte"
 
             }
         },
@@ -501,7 +504,7 @@
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveShop": "⚠️ Impossible de supprimer {currency} ! Les boutiques suivantes l'utilisent encore : {shops}.",
+                "cantRemoveCurrency": "⚠️ Impossible de supprimer {currency} ! Les boutiques suivantes l'utilisent encore : {shops}.",
                 "changeShopsCurrencies": "Veuillez les supprimer (`/shops-manage remove`) ou changez leur devise (`/shops-manage change-currency`) avant de supprimer la devise."
             },
             "messages": {
@@ -509,16 +512,16 @@
                 "success": "Vous avez supprimé avec succès la devise {currency}"
             },
             "components": {
-                "submitButtonLabel": "Supprimer la devise"
+                "submitButton": "Supprimer la devise"
             }
         },
-        "currencyModifier": {
+        "currencyEdit": {
             "messages": {
                 "default": "Modifier {currency}.\n**Nouveau {option}**: {value}",
                 "success": "Vous avez modifié avec succès la devise {currency}. \nNouveau {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Modifier la devise"
+                "submitButton": "Modifier la devise"
             },
             "editOptions": {
                 "name": "nom",
@@ -533,14 +536,13 @@
                 "withAction": "avec l'action {action}",
                 "action": "Action :",
                 "actions": {
-                    "valueUnset": "Non défini",
                     "giveRole": "donner le rôle {role}",
                     "giveCurrency": "donner {amount} {currency}"
                 }
             },
             "components": {
-                "submitButtonLabel": "Ajouter le produit",
-                "setAmountButtonLabel": "Définir la quantité",
+                "submitButton": "Ajouter le produit",
+                "setAmountButton": "Définir la quantité",
                 "editAmountModalTitle": "Quantité"
             }
         },
@@ -551,20 +553,21 @@
                 "success": "Vous avez supprimé avec succès le produit {product} de {shop}"
             },
             "components": {
-                "submitButtonLabel": "Supprimer le produit"
+                "submitButton": "Supprimer le produit"
             }
         },
-        "productModifier": {
+        "productEdit": {
             "errorMessages": {
                 "noShopsWithProducts": "Il n'y a aucune boutique avec des produits./n-# Utilisez `/shops-manage create` pour créer une boutique, et `/products-manage add` pour ajouter des produits"
             },
             "messages": {
                 "shopSelectStage": "Modifier un produit de {shop}.\nNouveau {option} : {value}",
                 "productSelectStage": "Modifier le produit : {product} de {shop}. \nNouveau {option} : {value}",
-                "success": "Vous avez modifié avec succès le produit {product} de {shop}. \nNouveau {option}: {value}"
+                "success": "Vous avez modifié avec succès le produit {product} de {shop}. \nNouveau {option}: {value}",
+                "unlimited": "illimité"
             },
             "components": {
-                "submitButtonLabel": "Modifier le produit"
+                "submitButton": "Modifier le produit"
             },
             "editOptions": {
                 "name": "nom",
@@ -584,9 +587,9 @@
                 "success": "Vous avez crée avec succès la boutique {shop} avec la devise {currency}. \n-# Utilisez `/shops-manage remove` pour la supprimer"
             },
             "components": {
-                "submitButtonLabel": "Créer la boutique",
-                "changeShopNameButtonLabel": "Changer de nom",
-                "changeShopEmojiButtonLabel": "Changer d'emoji",
+                "submitButton": "Créer la boutique",
+                "changeShopNameButton": "Changer de nom",
+                "changeShopEmojiButton": "Changer d'emoji",
                 "editNameModalTitle": "Nom de la boutique",
                 "editEmojiModalTitle": "Emoji de la boutique"
             }
@@ -597,7 +600,7 @@
                 "success": "Vous avez supprimé avec succès la boutique {shop}"
             },
             "components": {
-                "submitButtonLabel": "Supprimer la boutique"
+                "submitButton": "Supprimer la boutique"
             }
         },
         "shopReorder": {
@@ -606,22 +609,23 @@
                 "success": "Vous avez placé {shop} à la position {position} avec succès"
             },
             "components": {
-                "submitNouveauPositionLabel": "Valider la position"
+                "submitNewPositionButton": "Valider la position",
+                "selectPosition": "Selectionner la position"
             }
         },
-        "shopModifier": {
+        "shopEdit": {
             "messages": {
-                "default": "Modifier {shop}.\n**Nouveau {option}**: {value}",
+                "default": "Modifier {shop}.\nNouveau {option}: {value}",
                 "success": "Vous avez modifié avec succès la boutique {shop}. \nNouveau {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Modifier la boutique"
+                "submitButton": "Modifier la boutique"
             },
             "editOptions": {
                 "name": "nom",
                 "emoji": "emoji",
                 "description": "description",
-                "reservedToRole": "reservée au role"
+                "reserved-to-role": "reservée au role"
             }
         },
         "shopChangeCurrency": {
@@ -631,7 +635,7 @@
                 "success": "Vous avez modifié la devise de {shop} en {currency} avec succès"
             },
             "components": {
-                "submitButtonLabel": "Changer la deviser"
+                "submitButton": "Changer la devise"
             }
         },
         "discountCodeCreate": {
@@ -640,7 +644,7 @@
                 "success": "Vous avez crée avec succès le code promo {code} pour {shop} avec {amount}% de réduction"
             },
             "components": {
-                "submitButtonLabel": "Créer le code promo"
+                "submitButton": "Créer le code promo"
             }
         },
         "discountCodeRemove": {
@@ -650,8 +654,8 @@
                 "success": "Vous avez supprimé avec succès le code promo {code} de {shop}"
             },
             "components": {
-                "discountCodeSelectPlaceholder": "Sélectionner un code promo",
-                "submitButtonLabel": "Supprimer le code promo"
+                "discountCodeSelect": "Sélectionner un code promo",
+                "submitButton": "Supprimer le code promo"
             }
         }
     }

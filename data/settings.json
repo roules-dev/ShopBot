@@ -27,11 +27,17 @@
     "language": {
         "id": "language",
         "name": "Language",
-        "value": "en-US",
+        "value": "fr",
         "type": "enum",
         "options": [
-            { "value": "en-US", "label": "English (US)" },
-            { "value": "fr", "label": "French" }
+            {
+                "value": "en-US",
+                "label": "English (US)"
+            },
+            {
+                "value": "fr",
+                "label": "French"
+            }
         ]
     }
 }

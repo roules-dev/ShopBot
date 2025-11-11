@@ -112,6 +112,23 @@ npm run start
 
 Then, use your translated language setting to verify messages appear properly.
 
+Another way to test if your locale file is correct is to:
+1. Create a `test.ts` file in the `src` folder
+2. Then, in the `test.ts` file, add the following code:
+```ts
+import { LocaleStrings } from './utils/localisation';
+import fr from '../locales/fr.json'; // replace with your language
+
+console.log(fr as LocaleStrings)
+```
+3. Then, run the following command:
+```bash
+npm run test
+```
+
+4. If the typescript compiler doesn't throw any errors, then your locale file contains all required keys.
+
+
 ---
 
 ## 📥 Submitting Your Contribution

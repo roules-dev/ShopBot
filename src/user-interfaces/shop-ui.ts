@@ -1,4 +1,4 @@
-import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
+import { ActionRowBuilder, APIEmbedField, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "../database/accounts/accounts-database"
 import { getCurrencyName } from "../database/currencies/currencies-database"
 import { DatabaseError } from "../database/database-types"
@@ -9,6 +9,8 @@ import { AccountUserInterface } from "./account-ui"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent } from "./extended-components"
 import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInteraction } from "./user-interfaces"
 import { assertNeverReached } from "../utils/utils"
+import { errorMessages, defaultComponents, replaceTemplates } from "../utils/localisation"
+import { getLocale } from ".."
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'
@@ -22,9 +24,11 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     private member: GuildMember | null = null
 
+    protected locale = getLocale().userInterfaces.shop
+
     protected override async predisplay(interaction: UserInterfaceInteraction): Promise<any> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, ErrorMessages.NoShops)
+        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
         this.selectedShop = shops.entries().next().value?.[1]!
 
@@ -35,7 +39,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override initComponents(): void {
         const selectShopMenu = new ExtendedStringSelectMenuComponent(
-            { customId : `${this.id}+select-shop`, placeholder: 'Select a shop', time: 120_000 },
+            { customId : `${this.id}+select-shop`, placeholder: defaultComponents().selectShop, time: 120_000 },
             getShops(),
             async (interaction: StringSelectMenuInteraction, selected: Shop) => {
                 this.page = 0
@@ -47,14 +51,14 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
-                label: 'Buy a product',
+                label: this.locale.components.buyButton,
                 emoji: {name: '🪙'},
                 style: ButtonStyle.Primary,
                 time: 120_000,
                 disabled: this.isBuyButtonDisabled()
             },
             (interaction: ButtonInteraction) => {
-                if (!this.selectedShop) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+                if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
                 const buyProductUI = new BuyProductUserInterface(this.selectedShop)
                 return buyProductUI.display(interaction)
@@ -64,7 +68,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const showAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-account`,
-                label: 'My account',
+                label: this.locale.components.showAccountButton,
                 emoji: {name: '💰'},
                 style: ButtonStyle.Secondary,
                 time: 120_000,
@@ -87,11 +91,12 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override initEmbeds(_interaction: UserInterfaceInteraction): void {
         if (!this.selectedShop) return
 
-        const reservedToString = this.selectedShop.reservedTo !== undefined ? ` (${roleMention(this.selectedShop.reservedTo)} only)\n` : ''
+        const reservedToString = this.selectedShop.reservedTo !== undefined ? 
+            ` (${replaceTemplates(this.locale.embeds.shop.reservedTo, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ''
 
         const shopEmbed = new EmbedBuilder()
             .setTitle(`${getShopName(this.selectedShop.id)!}`)
-            .setDescription(`${reservedToString}${this.selectedShop.description}\nProducts:`)
+            .setDescription(`${reservedToString}${this.selectedShop.description}\n${this.locale.embeds.shop.products} `)
             .setColor(Colors.Gold)
 
 
@@ -112,10 +117,11 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         if (!shopEmbed || !this.selectedShop) return
 
-        const reservedToString = this.selectedShop.reservedTo !== undefined ? ` (${roleMention(this.selectedShop.reservedTo)} only)\n` : ''
+        const reservedToString = this.selectedShop.reservedTo !== undefined ? 
+            ` (${replaceTemplates(this.locale.embeds.shop.reservedTo, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ''
 
         shopEmbed.setTitle(`${getShopName(this.selectedShop.id)!}`)
-        shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\nProducts: `)
+        shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${this.locale.embeds.shop.products} `)
 
         shopEmbed.setFields(this.getPageEmbedFields())
 
@@ -125,18 +131,19 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override getEmbedFields(): APIEmbedField[] {
         if (!this.selectedShop) return []
-        if (this.selectedShop.products.size == 0) return [{ name: '\u200b', value: '🛒 *There is no product available here*' }]
+        if (this.selectedShop.products.size == 0) return [{ name: '\u200b', value: `🛒 ${italic(this.locale.embeds.shop.noProduct)}` }]
 
         const fields: APIEmbedField[] = []
 
         this.selectedShop.products.forEach(product => {
             const descString = product.description ? product.description : '\u200b'
             const amountString = product.amount == undefined ?  '' : 
-                product.amount == 0 ? ' (None left)' : ` (${product.amount} left)`
+                product.amount == 0 ? ` (${this.locale.embeds.shop.outOfStock})` : 
+                ` (${replaceTemplates(this.locale.embeds.shop.xProductsLeft, { x: product.amount })})`
 
             fields.push({ 
                 name: getProductName(this.selectedShop!.id, product.id)!,
-                value: `Price: **${product.price} ${getCurrencyName(this.selectedShop!.currency.id)}**${amountString}\n${descString}`, 
+                value: `${this.locale.embeds.shop.price} **${product.price} ${getCurrencyName(this.selectedShop!.currency.id)}**${amountString}\n${descString}`, 
                 inline: true 
             })
         })
@@ -158,7 +165,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         if (!this.member) return false
 
         const isUserAuthorized = this.member.roles.cache.has(this.selectedShop.reservedTo!)
-        const isUserAdmin = this.member.permissions.has('Administrator')
+        const isUserAdmin = this.member.permissions.has("Administrator")
 
         return !isUserAuthorized && !isUserAdmin 
     }
@@ -176,26 +183,34 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private discountCode?: string = undefined
     private discount: number = 0
 
+    private locale = getLocale().userInterfaces.buy
+
     constructor (selectedShop: Shop) {
         super()
         this.selectedShop = selectedShop
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction): Promise<any> {
-        if (!this.selectedShop.products.size) return await replyErrorMessage(interaction, ErrorMessages.NoProducts)
+        if (!this.selectedShop.products.size) return await replyErrorMessage(interaction, errorMessages().noProducts)
     }
 
     protected override getMessage(): string {
-        const discountCodeString = this.discountCode ? `\nDiscount code: ${bold(this.discountCode)}` : ''
-        const priceString = this.priceString() != '' ? ` for ${this.priceString()}` : ''
-        return `Buy **[${getProductName(this.selectedShop.id, this.selectedProduct?.id) || 'Select Product'}]** from ${bold(getShopName(this.selectedShop.id)!)}${priceString}.${discountCodeString}`
+        const discountCodeString = this.discountCode ? `\n${this.locale.messages.discountCode} ${bold(this.discountCode)}` : ''
+        const priceString = this.priceString() != '' ? replaceTemplates(this.locale.messages.price, { price: this.priceString() }) : ''
+
+        const message = replaceTemplates(this.locale.messages.default, {
+            product: bold(getProductName(this.selectedShop.id, this.selectedProduct?.id) || defaultComponents().selectProduct),
+            shop: bold(getShopName(this.selectedShop.id)!),
+        })
+
+        return `${message}${priceString}.${discountCodeString}`
     }
 
     protected override initComponents(): void {
         const selectProductMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
-                placeholder: 'Select a product',
+                placeholder: defaultComponents().selectProduct,
                 time: 120_000,
             },
             this.selectedShop.products,
@@ -208,7 +223,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
-                label: 'Buy',
+                label: this.locale.components.buyButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 time: 120_000,
@@ -219,7 +234,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const discountCodeButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+discount-code`,
-                label: 'I have a discount code',
+                label: this.locale.components.discountCodeButton,
                 emoji: {name: '🎁'},
                 style: ButtonStyle.Secondary,
                 time: 120_000,
@@ -244,7 +259,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const modal = new ModalBuilder()
             .setCustomId(modalId)
-            .setTitle('Set Discount Code')
+            .setTitle(this.locale.components.setDiscountCodeModal.title)
 
         const discountCodeInput = new TextInputBuilder()
             .setCustomId('discount-code-input')
@@ -255,7 +270,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             .setMinLength(6)
 
         const label = new LabelBuilder()
-            .setLabel('Discount code')
+            .setLabel(this.locale.components.setDiscountCodeModal.input)
             .setTextInputComponent(discountCodeInput)
 
         modal.addLabelComponents(label)
@@ -263,8 +278,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
         await interaction.showModal(modal)
 
         const filter = (interaction: ModalSubmitInteraction) => interaction.customId === modalId
-        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
+        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 }).catch(() => null)
         
+        if (!modalSubmit) return
+
         const input = modalSubmit.fields.getTextInputValue('discount-code-input')
         if (!input) return this.updateInteraction(modalSubmit)
 
@@ -277,19 +294,24 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private async buyProduct(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (!this.selectedProduct) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+        if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
         try {
-            if (this.selectedShop.reservedTo && interaction.member instanceof GuildMember && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))) return replyErrorMessage(interaction, "You can't buy products from this shop")
+            if (this.selectedShop.reservedTo 
+                && interaction.member instanceof GuildMember 
+                && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
+            ) {
+                return replyErrorMessage(interaction, this.locale.errorMessages.cantBuyHere)
+            }
 
             const user = await getOrCreateAccount(interaction.user.id)
             
             const userCurrencyAmount = user.currencies.get(this.selectedShop.currency.id)?.amount || 0
             const price = this.selectedProduct.price * (1 - this.discount / 100)
 
-            if (userCurrencyAmount < price) return replyErrorMessage(interaction, `You don't have enough **${getCurrencyName(this.selectedShop.currency.id)!}** to buy this product`)
+            if (userCurrencyAmount < price) return replyErrorMessage(interaction, replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) }))
             setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, userCurrencyAmount - price)
             
-            if (this.selectedProduct.amount != undefined && this.selectedProduct.amount <= 0) return replyErrorMessage(interaction, `This product is no longer available`)
+            if (this.selectedProduct.amount != undefined && this.selectedProduct.amount <= 0) return replyErrorMessage(interaction, this.locale.errorMessages.productNoLongerAvailable)
             if (this.selectedProduct.amount != undefined) updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: this.selectedProduct.amount - 1 })
 
             if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
@@ -297,9 +319,15 @@ export class BuyProductUserInterface extends MessageUserInterface {
             const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
             setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + 1)
 
-            await updateAsSuccessMessage(interaction, `You successfully bought ${bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!)} in ${bold(getShopName(this.selectedShop.id)!)} for ${this.priceString()}`)
+            const message = replaceTemplates(this.locale.messages.success, { 
+                product: bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!),
+                shop: bold(getShopName(this.selectedShop.id)!),
+                price: this.priceString()
+            })
 
-            logToDiscord(interaction, `${interaction.member} purchased ${bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!)} from ${bold(getShopName(this.selectedShop.id)!)} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}`)
+            await updateAsSuccessMessage(interaction, message)
+
+            logToDiscord(interaction, `${interaction.member} purchased ${getProductName(this.selectedShop.id, this.selectedProduct.id)!} from ${getShopName(this.selectedShop.id)!} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}`)
             return
         } 
         catch (error) {
@@ -328,7 +356,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 member.roles.add(roleId)
 
-                actionMessage = `You were granted the role ${bold(roleMention(roleId))}`
+                actionMessage = replaceTemplates(this.locale.actionProducts.giveRole.message, { role: bold(roleMention(roleId)) })
                 break
 
             case PRODUCT_ACTION_TYPE.GiveCurrency:
@@ -343,16 +371,22 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 setAccountCurrencyAmount(interaction.user.id, currency, userCurrencyAmount + amount)
 
-                actionMessage = `You were given ${amount} ${getCurrencyName(currency)}`
+                actionMessage = replaceTemplates(this.locale.actionProducts.giveCurrency.message, { currency: getCurrencyName(currency)!, amount })
                 break
             default:
                 break
         }
 
+            const message = replaceTemplates(this.locale.messages.success, { 
+                product: bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!),
+                shop: bold(getShopName(this.selectedShop.id)!),
+                price: this.priceString()
+            })
 
-        await updateAsSuccessMessage(interaction, `You successfully bought ${bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!)} in ${bold(getShopName(this.selectedShop.id)!)} for ${this.priceString()}.\n${actionMessage}`)
 
-        logToDiscord(interaction, `${interaction.member} purchased ${bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!)} from ${bold(getShopName(this.selectedShop.id)!)} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}. Action: ${this.selectedProduct.action?.type || 'none'} ${actionMessage}`)
+        await updateAsSuccessMessage(interaction, `${message}.\n${actionMessage}`)
+
+        logToDiscord(interaction, `${interaction.member} purchased ${getProductName(this.selectedShop.id, this.selectedProduct.id)!} from ${getShopName(this.selectedShop.id)!} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}. Action: ${this.selectedProduct.action?.type || 'none'} ${actionMessage}`)
         return
 
     }

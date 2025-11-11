@@ -348,11 +348,13 @@
         }
     },
     "defaultComponents": {
-        "selectCurrencyPlaceholder": "Select a currency",
-        "selectShopPlaceholder": "Select a shop",
-        "selectRolePlaceholder": "Select a role",
-        "changeShopButtonLabel": "Change shop",
-        "submitShopButtonLabel": "Submit shop"
+        "selectCurrency": "Select a currency",
+        "selectShop": "Select a shop",
+        "selectRole": "Select a role",
+        "selectProduct": "Select a product",
+        "changeShopButton": "Change shop",
+        "submitShopButton": "Submit shop",
+        "unset": "Unset"
     },
     "extendedComponents": {
         "confirmationModal": {
@@ -373,12 +375,12 @@
                 "settings": {
                     "title": "⚙️ Settings",
                     "description": "You can edit your settings here",
-                    "unseSettingPlaceholder": "Not set"
+                    "unsetSetting": "Not set"
                 }
             },
 
             "components": {
-                "selectSettingPlaceholder": "Edit a setting",
+                "selectSetting": "Edit a setting",
                 "defaultEditor": {
                     "title": "Edit {name}"
                 },
@@ -395,22 +397,22 @@
                         "option": "an option"
                     }
                 },
-                "resetButtonLabel": "Reset",
-                "backButtonLabel": "Back"
+                "resetButton": "Reset {name}",
+                "backButton": "Back"
             }
         },
         "account": {
             "embeds": {
                 "account": {
-                    "title": "💰 _{displayName}_'s Account"
+                    "title": "💰 _{user}_'s Account"
                 },
                 "inventory": {
-                    "title": "💼 _{displayName}_'s Inventory"
+                    "title": "💼 _{user}_'s Inventory"
                 }
             },
             "components": {
-                "showAccountButtonLabel": "Show account",
-                "showInventoryButtonLabel": "Show inventory"
+                "showAccountButton": "Show account",
+                "showInventoryButton": "Show inventory"
             },
             "errors": {
                 "accountEmpty": "❌ Account is empty",
@@ -420,37 +422,38 @@
         "shop": {
             "embeds": {
                 "shop": {
-                    "products": "Products",
+                    "products": "Products:",
                     "reservedTo": "{role} only",
                     "noProduct": "There is no product available here",
                     "xProductsLeft": "{x} left",
-                    "noProductLeft": "None left",
-                    "price": "Price"
+                    "outOfStock": "Out of stock",
+                    "price": "Price:"
                 }
 
             },
             "components": {
-                "buyButtonLabel": "Buy a product",
-                "showAccountButtonLabel": "My account"
+                "buyButton": "Buy a product",
+                "showAccountButton": "My account"
             }
         },
         "buy": {
-            "message": {
-                "discountCode": "Discount code",
-                "buyMessage": "Buy {product} from {shop}",
+            "messages": {
+                "default": "Buy {product} from {shop}",
+                "discountCode": "Discount code:",
                 "price": "for {price}",
-                
+                "success": "You successfully bought {product} in {shop} for {price}"
+            },
+            "errorMessages": {
+                "cantBuyHere": "You can't buy products from this shop",
                 "notEnoughMoney": "You don't have enough {currency} to buy this product.",
-                "productNoLongerAvailable": "This product is no longer available.",
-                "successfullyBought": "You successfully bought {product} in {shop} for {price}"
+                "productNoLongerAvailable": "This product is no longer available."
             },
             "components": {
-                "selectProductMenuPlaceholder": "Select a product",
-                "buyButtonLabel": "Buy",
-                "discountCodeButtonLabel": "I have a discount code",
+                "buyButton": "Buy",
+                "discountCodeButton": "I have a discount code",
                 "setDiscountCodeModal": {
                     "title": "Set discount code",
-                    "inputLabel": "Discount Code"
+                    "input": "Discount Code"
                 }
             },
             "actionProducts": {
@@ -458,7 +461,7 @@
                     "message": "You were granted the role {role}"
                 },
                 "giveCurrency": {
-                    "message": "You were given {amount} {currency}"
+                    "message": "You were given **{amount} {currency}**"
                 }
             }
         }
@@ -476,7 +479,7 @@
                 "bulkGiveSuccess": "You successfully gave {amount} {currency} to all users with role {role}"
             },
             "components": {
-                "submitButtonLabel": "Submit"
+                "submitButton": "Submit"
             }
         },
         "accountTake": {
@@ -489,9 +492,9 @@
                 "success": "You successfully took {amount} {currency} from {user}"
             },
             "components": {
-                "submitButtonLabel": "Submit",
-                "takeAllButtonLabel": "Take all",
-                "emptyAccountButtonLabel": "Empty account"
+                "submitButton": "Submit",
+                "takeAllButton": "Take all",
+                "emptyAccountButton": "Empty account"
 
             }
         },
@@ -502,7 +505,7 @@
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveShop": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
+                "cantRemoveCurrency": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
                 "changeShopsCurrencies": "Please consider removing them (`/shops-manage remove`) or changing their currency (`/shops-manage change-currency`) before removing the currency."
             },
             "messages": {
@@ -510,7 +513,7 @@
                 "success": "You successfully removed the currency {currency}"
             },
             "components": {
-                "submitButtonLabel": "Remove currency"
+                "submitButton": "Remove currency"
             }
         },
         "currencyEdit": {
@@ -519,7 +522,7 @@
                 "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Edit currency"
+                "submitButton": "Edit currency"
             },
             "editOptions": {
                 "name": "name",
@@ -534,14 +537,13 @@
                 "withAction": "with the action {action}",
                 "action": "Action:",
                 "actions": {
-                    "valueUnset": "Unset",
                     "giveRole": "give {role} role",
                     "giveCurrency": "give {amount} {currency}"
                 }
             },
             "components": {
-                "submitButtonLabel": "Add product",
-                "setAmountButtonLabel": "Set amount",
+                "submitButton": "Add product",
+                "setAmountButton": "Set amount",
                 "editAmountModalTitle": "Amount"
             }
         },
@@ -552,7 +554,7 @@
                 "success": "You successfully removed the product {product} from the shop {shop}"
             },
             "components": {
-                "submitButtonLabel": "Remove Product"
+                "submitButton": "Remove Product"
             }
         },
         "productEdit": {
@@ -562,10 +564,11 @@
             "messages": {
                 "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
                 "productSelectStage": "Edit product: {product} from {shop}. \nNew {option}: {value}",
-                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}"
+                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}",
+                "unlimited": "unlimited"
             },
             "components": {
-                "submitButtonLabel": "Edit product"
+                "submitButton": "Edit product"
             },
             "editOptions": {
                 "name": "name",
@@ -585,9 +588,9 @@
                 "success": "You successfully created the shop {shop} with currency {currency}. \n-# Use `/shops-manage remove` to remove it"
             },
             "components": {
-                "submitButtonLabel": "Create shop",
-                "changeShopNameButtonLabel": "Change shop name",
-                "changeShopEmojiButtonLabel": "Change shop emoji",
+                "submitButton": "Create shop",
+                "changeShopNameButton": "Change shop name",
+                "changeShopEmojiButton": "Change shop emoji",
                 "editNameModalTitle": "Shop name",
                 "editEmojiModalTitle": "Shop emoji"
             }
@@ -598,7 +601,7 @@
                 "success": "You successfully removed the shop {shop}"
             },
             "components": {
-                "submitButtonLabel": "Remove shop"
+                "submitButton": "Remove shop"
             }
         },
         "shopReorder": {
@@ -607,22 +610,23 @@
                 "success": "You successfully changed the position of {shop} to {position}"
             },
             "components": {
-                "submitNewPositionLabel": "Submit position"
+                "submitNewPositionButton": "Submit position",
+                "selectPosition": "Select position"
             }
         },
         "shopEdit": {
             "messages": {
-                "default": "Edit {shop}.\n**New {option}**: {value}",
+                "default": "Edit {shop}.\nNew {option}: {value}",
                 "success": "You successfully edited the shop {shop}. \nNew {option}: {value}"
             },
             "components": {
-                "submitButtonLabel": "Edit shop"
+                "submitButton": "Edit shop"
             },
             "editOptions": {
                 "name": "name",
                 "emoji": "emoji",
                 "description": "description",
-                "reservedToRole": "reserved to role"
+                "reserved-to-role": "reserved to role"
             }
         },
         "shopChangeCurrency": {
@@ -632,7 +636,7 @@
                 "success": "You successfully updated the currency of {shop} to {currency}"
             },
             "components": {
-                "submitButtonLabel": "Change currency"
+                "submitButton": "Change currency"
             }
         },
         "discountCodeCreate": {
@@ -641,7 +645,7 @@
                 "success": "You successfully created the discount code {code} for {shop} with {amount}% off"
             },
             "components": {
-                "submitButtonLabel": "Create discount code"
+                "submitButton": "Create discount code"
             }
         },
         "discountCodeRemove": {
@@ -651,8 +655,8 @@
                 "success": "You successfully removed the discount code {code} from {shop}"
             },
             "components": {
-                "discountCodeSelectPlaceholder": "Select a discount code",
-                "submitButtonLabel": "Remove discount code"
+                "discountCodeSelect": "Select a discount code",
+                "submitButton": "Remove discount code"
             }
         }
     }

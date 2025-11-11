@@ -53,8 +53,8 @@
     // "declaration": true,                              /* Generate .d.ts files from TypeScript and JavaScript files in your project. */
     // "declarationMap": true,                           /* Create sourcemaps for d.ts files. */
     // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
-    // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
-    "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
+    "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
+    // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
     // "noEmit": true,                                   /* Disable emitting files from a compilation. */
     // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
     "outDir": "dist",                                   /* Specify an output folder for all emitted files. */
@@ -100,7 +100,7 @@
     // "noUncheckedIndexedAccess": true,                 /* Add 'undefined' to a type when accessed using an index. */
     "noImplicitOverride": true,                       /* Ensure overriding members in derived classes are marked with an override modifier. */
     // "noPropertyAccessFromIndexSignature": true,       /* Enforces using indexed accessors for keys declared using an indexed type. */
-    // "allowUnusedLabels": true,                        /* Disable error reporting for unused labels. */
+    // "allowUnuseds": true,                        /* Disable error reporting for unused labels. */
     // "allowUnreachableCode": true,                     /* Disable error reporting for unreachable code. */
 
     /* Completeness */

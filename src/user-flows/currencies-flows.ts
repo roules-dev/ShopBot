@@ -11,6 +11,7 @@ import { PrettyLog } from "../utils/pretty-log"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
 import { UserFlow } from "./user-flow"
 import { assertNeverReached } from "../utils/utils"
+import { defaultComponents, errorMessages, replaceTemplates } from "../utils/localisation"
 import { getLocale } from ".."
 
 
@@ -19,11 +20,11 @@ export class CurrencyRemoveFlow extends UserFlow {
     protected components: Map<string, ExtendedComponent> = new Map()
     private selectedCurrency: Currency | null = null
 
-
+    private locale = getLocale().userFlows.currencyRemove
 
     async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (currencies.size == 0) return replyErrorMessage(interaction, getLocale().errorMessages.noCurrencies)
+        if (currencies.size == 0) return replyErrorMessage(interaction, errorMessages().noCurrencies)
 
         this.selectedCurrency = null
 
@@ -38,7 +39,7 @@ export class CurrencyRemoveFlow extends UserFlow {
     initComponents(): void {
         const currencySelect = new ExtendedStringSelectMenuComponent<Currency>({
             customId: `${this.id}+select-currency`,
-            placeholder: getLocale().defaultComponents.selectCurrencyPlaceholder,
+            placeholder: defaultComponents().selectCurrency,
             time: 120_000
         }, getCurrencies(),
         (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
@@ -48,7 +49,7 @@ export class CurrencyRemoveFlow extends UserFlow {
 
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
-            label: getLocale().userFlows.currencyRemove.components?.submitButtonLabel,
+            label: this.locale.components?.submitButton,
             emoji: {name: '⛔'},
             style: ButtonStyle.Danger,
             disabled: this.selectedCurrency == null,
@@ -73,11 +74,21 @@ export class CurrencyRemoveFlow extends UserFlow {
             if (shopsWithCurrency.size > 0) {
                 const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(getShopName(shop.id) || ''))).join(', ')
 
-                return `⚠️ Can't remove **${getCurrencyName(this.selectedCurrency.id)}** ! The following shops are still using it : ${shopsWithCurrencyNames}. \n-# Please consider removing them (\`/shops-manage remove\`) or changing their currency (\`/shops-manage change-currency\`) before removing the currency.`
+                const errorMessage = replaceTemplates(this.locale.errorMessages.cantRemoveCurrency, {
+                    currency: bold(getCurrencyName(this.selectedCurrency.id) || ''),
+                    shops: shopsWithCurrencyNames
+                })
+                const tipMessage = this.locale.errorMessages.changeShopsCurrencies
+
+                return `${errorMessage}\n${tipMessage}`
             }
         }
 
-        return `Remove **[${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]**, ⚠️ __**it will also take it from user's accounts**__`
+        const message = replaceTemplates(this.locale.messages.default, {
+            currency: bold(getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency)
+        })
+
+        return message
     }
 
     protected updateComponents(): void {
@@ -93,14 +104,14 @@ export class CurrencyRemoveFlow extends UserFlow {
         this.disableComponents()
 
         try {
-            if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
             await takeCurrencyFromAccounts(this.selectedCurrency.id)
 
             const currencyName = getCurrencyName(this.selectedCurrency.id) || ''
 
             await removeCurrency(this.selectedCurrency.id)
-            return await updateAsSuccessMessage(interaction, `You successfully removed the currency ${bold(currencyName)}`)
+            return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, {currency: bold(currencyName)}))
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
@@ -121,12 +132,14 @@ export class EditCurrencyFlow extends UserFlow {
     private updateOption: EditCurrencyOption | null = null
     private updateOptionValue: string | null = null
 
+    protected locale = getLocale().userFlows.currencyEdit
+
     async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (currencies.size == 0) return replyErrorMessage(interaction, ErrorMessages.NoCurrencies)    
+        if (currencies.size == 0) return replyErrorMessage(interaction, errorMessages().noCurrencies)    
 
         const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !Object.values(EditCurrencyOption).includes(subcommand as EditCurrencyOption)) return replyErrorMessage(interaction, ErrorMessages.InvalidSubcommand)
+        if (!subcommand || !Object.values(EditCurrencyOption).includes(subcommand as EditCurrencyOption)) return replyErrorMessage(interaction, errorMessages().invalidSubcommand)
         this.updateOption = subcommand as EditCurrencyOption
 
         this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
@@ -140,12 +153,18 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return `Edit **[${getCurrencyName(this.selectedCurrency?.id) || 'Select Currency'}]**.\n**New ${this.getUpdateOptionName(this.updateOption!)}**: ${bold(`${this.updateOptionValue}`)}`
+        const message = replaceTemplates(this.locale.messages.default, {
+            currency: bold(getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency),
+            option: bold(this.getUpdateOptionName(this.updateOption!)),
+            value: bold(this.updateOptionValue!)
+        })
+
+        return message
     }
 
     protected override initComponents(): void {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
-            { customId: `${this.id}+select-currency`, placeholder: 'Select a currency', time: 120_000 },
+            { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
             getCurrencies(),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
@@ -156,7 +175,7 @@ export class EditCurrencyFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: 'Edit Currency',
+                label: this.locale.components.submitButton,
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: this.selectedCurrency == null,
@@ -179,28 +198,27 @@ export class EditCurrencyFlow extends UserFlow {
 
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         try {
-            if (!this.selectedCurrency) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
-            if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, ErrorMessages.InsufficientParameters)
+            if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+            if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
             
             const oldName = getCurrencyName(this.selectedCurrency.id) || ''
 
             await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
 
-            return await updateAsSuccessMessage(interaction, `You successfully edited the currency ${bold(oldName)}. \nNew ${bold(this.getUpdateOptionName(this.updateOption))}: ${bold(this.updateOptionValue)}`)
+            const message = replaceTemplates(this.locale.messages.success, {
+                currency: bold(oldName),
+                option: bold(this.getUpdateOptionName(this.updateOption)),
+                value: bold(this.updateOptionValue)
+            })
+
+            return await updateAsSuccessMessage(interaction, message)
         } catch (error) {
             return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
         }
     }
 
     private getUpdateOptionName(option: EditCurrencyOption): string {
-        switch (option) {
-            case EditCurrencyOption.NAME:
-                return 'name'
-            case EditCurrencyOption.EMOJI:
-                return 'emoji'
-            default:
-                assertNeverReached(option)
-        }
+        return this.locale.editOptions[option] ?? option
     }
 
     private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption): string {
