@@ -2,7 +2,7 @@
     "logChannelId": {
         "id": "logChannelId",
         "name": "Log Channel",
-        "value": "1332836427238739988",
+        "value": null,
         "type": "channelId"
     },
     "activityMessage": {
