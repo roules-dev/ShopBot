@@ -3,8 +3,6 @@
 First off — thank you for helping make this bot accessible to everyone around the world! 🌍
 Your contributions make a huge difference. This guide explains how to add or improve translations for your language.
 
----
-
 ## 🚀 Getting Started
 
 1. **Fork** this repository to your own GitHub account.
@@ -22,7 +20,6 @@ Your contributions make a huge difference. This guide explains how to add or imp
 
    Example: `add-language-fr` for French.
 
----
 
 ## 🌐 Where Translations Live
 
@@ -47,7 +44,6 @@ If your language doesn’t exist yet, create a new file named after the [Discord
 
 > Example: `de.json` for German, `pt.json` for Portuguese, `ja.json` for Japanese, etc.
 
----
 
 ## 🧩 Translation Format
 
@@ -91,15 +87,12 @@ To add your translation, **keep the same keys** and replace the English text wit
 * Use **UTF-8** encoding.
 * **When translating commands and options** make sure to follow the [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
----
 
 
 ## 🧪 Testing Your Translation
 
 If possible, run the bot locally to make sure everything looks correct.
 It'll also make sure that the name and descriptions of the commands follow discord's [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
-
-Follow the steps from the [bot's README](https://github.com/roules-dev/ShopBot?tab=readme-ov-file#-how-to-use) to install and run the bot locally.
 
 To register commands, run the following command:
 ```bash
@@ -129,7 +122,6 @@ npm run test
 4. If the typescript compiler doesn't throw any errors, then your locale file contains all required keys.
 
 
----
 
 ## 📥 Submitting Your Contribution
 
@@ -149,9 +141,8 @@ npm run test
    * Base repository: `OWNER/PROJECT-NAME`
    * Base branch: `main`
    * Compare: your branch
-     Add a short description of your translation and any notes about regional variations if applicable.
+   * Add a short description of your translation and any notes about regional variations if applicable.
 
----
 
 ## 🗣️ Updating an Existing Translation
 
@@ -161,7 +152,6 @@ If you notice mistakes or missing phrases in an existing translation:
 * Keep consistency with the existing style and phrasing.
 * Open a pull request with your improvements.
 
----
 
 ## ❤️ Tips for Translators
 
@@ -169,7 +159,6 @@ If you notice mistakes or missing phrases in an existing translation:
 * Keep tone and style consistent with the bot’s personality.
 * If unsure about a specific phrase, feel free to open a **GitHub issue** to discuss it first.
 
----
 
 ## 🙌 Thank You
 
