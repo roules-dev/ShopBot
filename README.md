@@ -6,7 +6,7 @@
 - [📝 Documentation](#-documentation)
 - [📸 Screenshots](#-screenshots)
 - [🌟 Road Map](#-road-map)
-- [❓ Q&A]()
+- [❓ Q&A](#-qa)
 - [⚖️ Legal Stuff](#%EF%B8%8F-legal-information)
 
 
