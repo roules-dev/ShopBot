@@ -233,6 +233,7 @@ Implemented ! It is community driven, the currently available languages are : En
 If your language is not mentionned here and you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
 
 <br>
+
 > Any other question ? ask it [here](https://github.com/roules-dev/ShopBot/issues)
 
 ## ⚖️ Legal Information
