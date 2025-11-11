@@ -6,6 +6,7 @@
 - [📝 Documentation](#-documentation)
 - [📸 Screenshots](#-screenshots)
 - [🌟 Road Map](#-road-map)
+- [❓ Q&A]()
 - [⚖️ Legal Stuff](#%EF%B8%8F-legal-information)
 
 
@@ -218,15 +219,21 @@ I will after that add the following features, some of which have been suggested 
 - ❓ API to automate actions like: filling accounts; managing currencies, shops and products 
 - ✅ Automatic action products (e.g. give a certain amount of currency to a user, give a role to a user, if you have more suggestions feel free to [give them here](https://github.com/roules-dev/ShopBot/issues))
 - ✅ Shops reserved for specific roles
+- 
+- Create a release, a precompiled version of the bot, with an easier way of installing it. 
 
 The roadmap is now visible [here](https://github.com/roules-dev/ShopBot/blob/main/roadmap.md).
 <br>
 
-- Create a release, a precompiled version of the bot, with an easier way of installing it. 
-
-All those changes will be made on this branch.
-
 If you have a feature idea you think will fit this bot, feel free to suggest it [here](https://github.com/roules-dev/ShopBot/issues).
+
+## ❓ Q&A
+### Multi language support ?
+Implemented ! It is community driven, the currently available languages are : English, French. <br>
+If your language is not mentionned here and you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
+
+<br>
+> Any other question ? ask it [here](https://github.com/roules-dev/ShopBot/issues)
 
 ## ⚖️ Legal Information
 
