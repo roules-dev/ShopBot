@@ -230,7 +230,7 @@ If you have a feature idea you think will fit this bot, feel free to suggest it 
 ## ❓ Q&A
 ### Multi language support ?
 Implemented ! It is community driven, the currently available languages are : English, French. <br>
-If your language is not mentionned here and you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
+If your language is not mentionned here, you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
 
 <br>
 
