@@ -19,4 +19,5 @@
 ## Roadmap
 1. ~~products with set stock~~
 2. ability to buy a certain amount of a product
+3. removing items for inventories - and bulk removing of an item.
 2. api
