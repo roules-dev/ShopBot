@@ -13,13 +13,13 @@
     "serve": "node dist/index.js",
     "deploy": "npm run build && node ./dist/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
-    "setup": "node ./dist/setup-helper.js"
+    "setup": "node ./dist/setup-helper.js",
+    "nanoid": "node ./dist/tools/migrate-db-to-nanoid.js"
   },
   "license": "GPL-3.0",
   "devDependencies": {
     "@discordjs/rest": "^2.2.0",
     "@types/luxon": "^3.4.2",
-    "@types/uuid": "^10.0.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2"
   },
@@ -27,6 +27,6 @@
     "discord.js": "^14.24.2",
     "fs": "^0.0.1-security",
     "luxon": "^3.5.0",
-    "uuid": "^11.1.0"
+    "nanoid": "^5.1.6"
   }
 }
