@@ -74,7 +74,7 @@ export type ShopOptionsOptional = Partial<ShopOptions>
 export interface ShopsDatabaseJSONBody extends DatabaseJSONBody {
     [shopId: UUID]: Omit<Shop, 'products' | 'currency'> 
         & { 
-            products: { [productId: UUID]: Omit<Product, 'action'> & { action?: ProductActionJSONBody } }
+            products: { [productId: UUID]: Omit<Product, 'action' | 'shopId'> & { action?: ProductActionJSONBody } }
         } 
         & { currencyId: UUID }
 }
@@ -113,7 +113,7 @@ export class ShopsDatabase extends Database {
                             action = createProductAction(product.action.type, product.action.options)
                         }
 
-                        return [id, { ...product, action}]
+                        return [id, { ...product, shopId, action}]
                 })
             )
 

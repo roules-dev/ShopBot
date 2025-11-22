@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import shops from '../../../data/shops.json';
 import { getCurrencies } from "../currencies/currencies-database";
 import { save } from "../database-handler";
@@ -33,7 +33,7 @@ export async function createShop(shopName: string, description: string, currency
     if (shopsDatabase.shops.has(getShopId(shopName) || '')) throw new DatabaseError(DatabaseErrors.ShopAlreadyExists)
     if (!getCurrencies().has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
 
-    const newShopId = uuidv4()    
+    const newShopId = nanoid()    
 
     shopsDatabase.shops.set(newShopId, { 
         id: newShopId, 
@@ -138,7 +138,7 @@ export function getProducts(shopId: string): Map<string, Product> {
 export async function addProduct(shopId: string, options: ProductOptions) {
     if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
 
-    const id = uuidv4()
+    const id = nanoid()
     const product = Object.assign({ id, shopId }, options)
 
     getShops().get(shopId)!.products.set(id, product)

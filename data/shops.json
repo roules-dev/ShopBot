@@ -1,169 +1,135 @@
 {
-    "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441": {
-        "id": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441",
+    "h3G8N_1F2LzI1T29bjdxJ": {
+        "id": "h3G8N_1F2LzI1T29bjdxJ",
         "name": "Bookshop",
         "emoji": "📚",
         "description": "The small bookshop in the downtown. Here you can buy and read books of all types.",
-        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
         "discountCodes": {
             "FUZE50": 50
         },
         "products": {
-            "20d038ab-7dab-4ced-85f2-c38a9076687a": {
-                "id": "20d038ab-7dab-4ced-85f2-c38a9076687a",
-                "shopId": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441",
+            "nxtWWm9IEe3qSLh4fj5qn": {
+                "id": "nxtWWm9IEe3qSLh4fj5qn",
                 "name": "1984",
                 "emoji": "📕",
                 "description": "A splendid novel by George Orwell",
                 "price": 5.49
             },
-            "54940be1-3d10-4ea5-91b6-2e12cc02603a": {
-                "id": "54940be1-3d10-4ea5-91b6-2e12cc02603a",
-                "shopId": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441",
+            "9-fiMoU-faP7vOVhO58Su": {
+                "id": "9-fiMoU-faP7vOVhO58Su",
                 "name": "Between Past and Future",
                 "emoji": "📖",
                 "description": "Hannah Arendt",
                 "price": 5
             },
-            "b6329e22-a10c-4466-879a-90d732440f0e": {
-                "id": "b6329e22-a10c-4466-879a-90d732440f0e",
-                "shopId": "22b6f8dd-3ab7-41eb-9e99-6ba6370e8441",
+            "SQWzMyipYZO3fnCmhAttr": {
+                "id": "SQWzMyipYZO3fnCmhAttr",
                 "name": "Super Expensive Quantum Physics book",
                 "emoji": "📗",
                 "description": "",
                 "price": 770
             }
-        },
-        "currency": {
-            "id": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
-            "name": "Dollar",
-            "emoji": "💵"
         }
     },
-    "fc173cce-9929-48d6-8336-0db1db3c0cc7": {
-        "id": "fc173cce-9929-48d6-8336-0db1db3c0cc7",
+    "TgT-Mhzvj7JPX8Oix_6ru": {
+        "id": "TgT-Mhzvj7JPX8Oix_6ru",
         "name": "Grocery",
         "emoji": "🛒",
         "description": "Buy anything you need here",
-        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
         "discountCodes": {},
-        "products": {},
-        "currency": {
-            "id": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
-            "name": "Dollar",
-            "emoji": "💵"
-        }
+        "products": {}
     },
-    "4783f4bf-da40-468d-94fd-3e80f659a76e": {
-        "id": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+    "-hw7m2WLOmaNKPSbFdajZ": {
+        "id": "-hw7m2WLOmaNKPSbFdajZ",
         "name": "Bakery",
         "emoji": "🍞",
         "description": "The town's best bakery",
-        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
         "discountCodes": {},
         "products": {
-            "869a3fce-4d4a-4bf5-9a98-f704f73c2af8": {
-                "id": "869a3fce-4d4a-4bf5-9a98-f704f73c2af8",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "Uasu0unlCLGnsJNQb_3S0": {
+                "id": "Uasu0unlCLGnsJNQb_3S0",
                 "name": "Baguette",
                 "emoji": "🥖",
                 "description": "A real authentic French Baguette",
                 "price": 0.9
             },
-            "6749e140-3482-4dd2-95b2-528e8ae3165f": {
-                "id": "6749e140-3482-4dd2-95b2-528e8ae3165f",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "w9zcCjKIt-yDjhXi2TLMB": {
+                "id": "w9zcCjKIt-yDjhXi2TLMB",
                 "name": "Basic yet very cool bread",
                 "emoji": "🍞",
                 "description": "A quite basic piece of bread",
                 "price": 2
             },
-            "1602844c-c798-495c-aa5c-e11e28f19a35": {
-                "id": "1602844c-c798-495c-aa5c-e11e28f19a35",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "jREXpbU4e0mrY6K3RzWbY": {
+                "id": "jREXpbU4e0mrY6K3RzWbY",
                 "name": "CROISSANT",
                 "emoji": "🥐",
                 "description": "A delicious tasting Croissant",
                 "price": 1.1
             },
-            "d26c10f6-2214-40a4-934a-50724c016b0f": {
-                "id": "d26c10f6-2214-40a4-934a-50724c016b0f",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "FbZgPJ-aJOkvm1QAB3ucE": {
+                "id": "FbZgPJ-aJOkvm1QAB3ucE",
                 "name": "Pain au chocolat",
                 "emoji": "🍪",
                 "description": "(it's the only correct name)",
                 "price": 1.2
             },
-            "b34faea0-cb8c-4fd1-b123-8c37fec471bb": {
-                "id": "b34faea0-cb8c-4fd1-b123-8c37fec471bb",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "6lb722Z-cvgTL23LeXnyZ": {
+                "id": "6lb722Z-cvgTL23LeXnyZ",
                 "name": "Apple Pie",
                 "emoji": "🥧",
                 "description": "",
                 "price": 4
             },
-            "0ab67041-f719-484b-b8c0-c065c837afbe": {
-                "id": "0ab67041-f719-484b-b8c0-c065c837afbe",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "lfDYxuEIIXzzHQUZfXbPu": {
+                "id": "lfDYxuEIIXzzHQUZfXbPu",
                 "name": "Strawberry Pie",
                 "emoji": "🥧",
                 "description": "",
                 "price": 4
             },
-            "2568e2db-be11-4f09-bdee-1186afebfbed": {
-                "id": "2568e2db-be11-4f09-bdee-1186afebfbed",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "k1nWe7JbqmwirLQ5XLWXE": {
+                "id": "k1nWe7JbqmwirLQ5XLWXE",
                 "name": "Corn Bread",
                 "emoji": "🍞",
                 "description": "This thing is delicious",
                 "price": 4
             },
-            "5e24656f-d4c0-4134-b9e8-a39cbd5ae621": {
-                "id": "5e24656f-d4c0-4134-b9e8-a39cbd5ae621",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "Dfs5AihBk8iBX9by0RL9U": {
+                "id": "Dfs5AihBk8iBX9by0RL9U",
                 "name": "Foccacia",
                 "emoji": "🫓",
                 "description": "",
                 "price": 3
             },
-            "39b7ad2e-5228-43fe-ad87-edcc3bd6ed76": {
-                "id": "39b7ad2e-5228-43fe-ad87-edcc3bd6ed76",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "a8aSYSlPsS9SP5WxNCLq6": {
+                "id": "a8aSYSlPsS9SP5WxNCLq6",
                 "name": "Chouquettes (x12)",
                 "emoji": "<:chouquette:1342277376406716476>",
                 "description": "",
                 "price": 2
             },
-            "66a22b1b-7fa7-4219-82f5-b31490286676": {
-                "id": "66a22b1b-7fa7-4219-82f5-b31490286676",
-                "shopId": "4783f4bf-da40-468d-94fd-3e80f659a76e",
+            "yLs7vNX4Z4j3OFe2VcsmT": {
+                "id": "yLs7vNX4Z4j3OFe2VcsmT",
                 "name": "overcooked baguette",
                 "description": "a little bit burnt baguette, that's why its a bit cheaper",
                 "emoji": "🔥",
                 "price": 0.8
             }
-        },
-        "currency": {
-            "id": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
-            "name": "Dollar",
-            "emoji": "💵"
         }
     },
-    "a9d9627b-dc1f-48c0-8780-2f8aa9f21915": {
-        "id": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915",
+    "1QsK0ayyoze-Ig3-5GG-T": {
+        "id": "1QsK0ayyoze-Ig3-5GG-T",
         "name": "Hardware Shop",
         "emoji": "🛠",
         "description": "",
-        "currency": {
-            "id": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
-            "name": "Dollar",
-            "emoji": "💵"
-        },
         "discountCodes": {},
         "products": {
-            "465e8974-5b9d-4203-93bd-dd6763b86da1": {
-                "id": "465e8974-5b9d-4203-93bd-dd6763b86da1",
-                "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915",
+            "5qpg3DPSth4IG1pAyesc5": {
+                "id": "5qpg3DPSth4IG1pAyesc5",
                 "name": "Boss",
                 "description": "Earn the boss role by buying this !",
                 "emoji": "🧑",
@@ -175,9 +141,8 @@
                     }
                 }
             },
-            "d812a77d-5633-4928-85fe-d2be8a4f826d": {
-                "id": "d812a77d-5633-4928-85fe-d2be8a4f826d",
-                "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915",
+            "iU_U1_JAKqJ1xXj8ePrRf": {
+                "id": "iU_U1_JAKqJ1xXj8ePrRf",
                 "name": "Earn 50 $",
                 "description": "totally not a scam",
                 "emoji": "💵",
@@ -185,14 +150,13 @@
                 "action": {
                     "type": "give-currency",
                     "options": {
-                        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
                         "amount": 50
                     }
                 }
             },
-            "39aaa254-e5be-49e9-865f-26b66383ac89": {
-                "id": "39aaa254-e5be-49e9-865f-26b66383ac89",
-                "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915",
+            "m3AmJIuCmlpXYh89Kf-HZ": {
+                "id": "m3AmJIuCmlpXYh89Kf-HZ",
                 "name": "admin give 10000$",
                 "description": "",
                 "emoji": "💵",
@@ -200,14 +164,13 @@
                 "action": {
                     "type": "give-currency",
                     "options": {
-                        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
                         "amount": 10000
                     }
                 }
             },
-            "06f684ff-f82c-497a-b06b-13f3db9ebc02": {
-                "id": "06f684ff-f82c-497a-b06b-13f3db9ebc02",
-                "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915",
+            "l4b1O42OyoCD1coPstpVx": {
+                "id": "l4b1O42OyoCD1coPstpVx",
                 "name": "Earn Cool Guy Role",
                 "description": "You will be ultra cool",
                 "emoji": "😎",
@@ -219,9 +182,8 @@
                     }
                 }
             },
-            "796c67ab-e505-4324-ab5e-34311c3dad64": {
-                "id": "796c67ab-e505-4324-ab5e-34311c3dad64",
-                "shopId": "a9d9627b-dc1f-48c0-8780-2f8aa9f21915",
+            "XNOw9i0NJGzCbXqSLAWOo": {
+                "id": "XNOw9i0NJGzCbXqSLAWOo",
                 "name": "earn 1 $ but it's very expensive",
                 "description": "if u can, do it",
                 "emoji": "🤑",
@@ -229,13 +191,13 @@
                 "action": {
                     "type": "give-currency",
                     "options": {
-                        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
                         "amount": 1000001
                     }
                 }
             }
         },
-        "currencyId": "d9997bc7-ce3b-491b-92de-cfa5afd7e955",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
         "reservedTo": "1197195793191420035"
     }
 }

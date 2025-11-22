@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 import currencies from '../../../data/currencies.json';
 import { save } from "../database-handler";
 import { DatabaseError, DatabaseErrors } from "../database-types";
@@ -30,7 +30,7 @@ export function getCurrencyName(currencyId: string | undefined): string | undefi
 export async function createCurrency(currencyName: string, emoji: string) {
     if (currenciesDatabase.currencies.has(getCurrencyId(currencyName) || '')) throw new DatabaseError(DatabaseErrors.CurrencyAlreadyExists)
     
-    const newCurrencyId = uuidv4()
+    const newCurrencyId = nanoid()
 
     currenciesDatabase.currencies.set(newCurrencyId, { id: newCurrencyId, name: currencyName, emoji })
     save(currenciesDatabase)
