@@ -5,7 +5,7 @@ import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder
 import config from '../config/config.json'
 import { PrettyLog } from './utils/pretty-log'
 import './utils/strings'
-import { addLocalisationToCommand, getLocales, LocaleStrings } from './utils/localisation'
+import { getLocales, LocaleStrings } from './utils/localisation'
 import { getSetting } from './database/settings/settings-handler'
 
 

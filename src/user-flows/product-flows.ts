@@ -285,7 +285,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 break
 
             default:
-                break
+                break   
         }
 
         const submitButton = new ExtendedButtonComponent(
@@ -623,12 +623,6 @@ export class EditProductFlow extends UserFlow {
     }
 
     protected getMessage(): string {
-        // if (this.stage == EditProductFlowStage.SELECT_SHOP) return `Edit product from ${bold(`[${getShopName(this.selectedShop?.id) || defaultComponents().selectShop}]`)}.\nNew ${bold(`${this.getUpdateOptionName(this.updateOption!)}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
-        // if (this.stage == EditProductFlowStage.SELECT_PRODUCT) return `Edit Product: ${bold(`[${getProductName(this.selectedShop?.id, this.selectedProduct?.id) || defaultComponents().selectProduct}]`)} from ${bold(getShopName(this.selectedShop?.id) || '')}. \nNew ${bold(`${this.getUpdateOptionName(this.updateOption!)}`)}: ${bold(this.getUpdateValueString(this.updateOption))}`
-
-        // PrettyLog.warn(`Unknown stage: ${this.stage}`)
-        // return ''
-
         switch (this.stage) {
             case EditProductFlowStage.SELECT_SHOP:
                 return replaceTemplates(this.locale.messages.shopSelectStage, {
