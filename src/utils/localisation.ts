@@ -7,7 +7,6 @@ import './strings.js';
 import en_US_locale from '../../locales/en-US.json' with { type: 'json' };
 
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { getSetting } from "../database/settings/settings-handler.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -111,12 +110,10 @@ export function replaceTemplates(str: string, templates: { [key: string]: string
 }
 
 
-export async function setCurrentLocale() {
+export async function setCurrentLocale(localeCode: string) {
 	const locales = await getLocales()
 
-	const languageSetting = getSetting('language')
-
-	const locale = locales[languageSetting?.value as string] ?? locales['en-US']
+	const locale = locales[localeCode] ?? locales['en-US']
 	if (!locale) throw new Error('Missing locale in locales folder')
 
 	currentLocale = locale

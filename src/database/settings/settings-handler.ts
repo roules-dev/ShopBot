@@ -3,6 +3,7 @@ import { Setting, Settings, SettingsDatabase } from "./settings-types.js"
 
 import settings from '../../../data/settings.json' with { type: 'json' }
 import { setCurrentLocale } from "../../utils/localisation.js"
+import { ActivityType } from "discord.js"
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 
@@ -32,6 +33,11 @@ export async function setSetting(id: string, value: any): Promise<Setting> {
 export async function onSettingUpdate(setting: Setting) {
     switch (setting.id) {
         case "language":
-            await setCurrentLocale()  // this is a circular dependency, should be fixed
+            await setCurrentLocale(setting.value as string)  
+            break
+        case "activityMessage":
+        case "activityType":
+            // TODO: Update activity
+            break
     }
 }
