@@ -1,7 +1,7 @@
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
-import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "../user-flows/accounts-flows"
-import { AccountUserInterface } from "../user-interfaces/account-ui"
-import { replyErrorMessage } from "../utils/discord"
+import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "../user-flows/accounts-flows.js"
+import { AccountUserInterface } from "../user-interfaces/account-ui.js"
+import { replyErrorMessage } from "../utils/discord.js"
 
 export const data = new SlashCommandBuilder()
     .setName('accounts-manage') 

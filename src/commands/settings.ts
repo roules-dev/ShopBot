@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, Client, ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
-import { SettingsInterface } from "../user-interfaces/settings-ui"
+import { SettingsInterface } from "../user-interfaces/settings-ui.js"
 
 export const data = new SlashCommandBuilder()
     .setName('settings')

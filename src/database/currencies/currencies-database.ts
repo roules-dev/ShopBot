@@ -1,8 +1,8 @@
 import { nanoid } from 'nanoid';
-import currencies from '../../../data/currencies.json';
-import { save } from "../database-handler";
-import { DatabaseError, DatabaseErrors } from "../database-types";
-import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "./currencies-types";
+import currencies from '../../../data/currencies.json' with { type: 'json' };
+import { save } from "../database-handler.js";
+import { DatabaseError, DatabaseErrors } from "../database-types.js";
+import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "./currencies-types.js";
 
 const currenciesDatabase = new CurrenciesDatabase(currencies, 'data/currencies.json')
 

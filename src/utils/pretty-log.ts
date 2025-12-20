@@ -2,6 +2,10 @@ import fs from 'fs/promises'
 import { DateTime } from 'luxon'
 import path from 'path'
 
+import { fileURLToPath } from 'node:url'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export class PrettyLog {
     private static loadStepCount = 1
     static logLoadStep(message: string, more?: string) {

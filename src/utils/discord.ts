@@ -1,8 +1,8 @@
 import { MessageFlags, TextChannel } from "discord.js"
-import { getSettings } from "../database/settings/settings-handler"
-import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces"
-import { PrettyLog } from "./pretty-log"
-import { errorMessages } from "./localisation"
+import { getSettings } from "../database/settings/settings-handler.js"
+import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces.js"
+import { PrettyLog } from "./pretty-log.js"
+import { errorMessages } from "./localisation.js"
 
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
     return await interaction.reply({ content: getErrorMessage(errorMessage), flags: MessageFlags.Ephemeral })

@@ -2,9 +2,11 @@ import { REST } from '@discordjs/rest'
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from 'discord.js'
 import fs from 'node:fs'
 import path from 'node:path'
-import { clientId, token } from '../config/config.json'
-import { drawProgressBar, PrettyLog } from './utils/pretty-log'
-import { addLocalisationToCommand } from './utils/localisation'
+import config from '../config/config.json' with { type: 'json' }
+import { drawProgressBar, PrettyLog } from './utils/pretty-log.js'
+import { addLocalisationToCommand } from './utils/localisation.js'
+
+const { clientId, token } = config
 
 let rest: REST | undefined
 

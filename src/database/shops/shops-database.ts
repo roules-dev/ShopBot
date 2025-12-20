@@ -1,11 +1,11 @@
 import { nanoid } from 'nanoid';
-import shops from '../../../data/shops.json';
-import { getCurrencies } from "../currencies/currencies-database";
-import { save } from "../database-handler";
-import { DatabaseError, DatabaseErrors } from "../database-types";
-import { Product, ProductOptions, ProductOptionsOptional, Shop, ShopOptionsOptional, ShopsDatabase } from "./shops-types";
+import shops from '../../../data/shops.json' with { type: 'json' };
+import { getCurrencies } from "../currencies/currencies-database.js";
+import { save } from "../database-handler.js";
+import { DatabaseError, DatabaseErrors } from "../database-types.js";
+import { Product, ProductOptions, ProductOptionsOptional, Shop, ShopOptionsOptional, ShopsDatabase } from "./shops-types.js";
 import { Snowflake } from 'discord.js';
-import { getLocale } from '../..';
+import { getLocale } from '../../index.js';
 
 const shopsDatabase = new ShopsDatabase(shops, 'data/shops.json')
 

@@ -1,6 +1,6 @@
 import { Snowflake } from "discord.js";
-import { assertNeverReached } from "../../utils/utils";
-import { Database, DatabaseError, DatabaseErrors } from "../database-types";
+import { assertNeverReached } from "../../utils/utils.js";
+import { Database, DatabaseError, DatabaseErrors } from "../database-types.js";
 
 
 const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId", "enum"] as const

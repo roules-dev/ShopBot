@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises'
-import { Database } from "./database-types"
+import { Database } from "./database-types.js"
 
 
 export const save = (database: Database) => new Promise<boolean>(async (resolve, _reject) => {

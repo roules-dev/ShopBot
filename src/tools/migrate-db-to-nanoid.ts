@@ -1,6 +1,6 @@
-import currencies from '../../data/currencies.json'
-import shops from '../../data/shops.json'
-import accounts from '../../data/accounts.json'
+import currencies from '../../data/currencies.json' with { type: 'json' }
+import shops from '../../data/shops.json' with { type: 'json' }
+import accounts from '../../data/accounts.json' with { type: 'json' }
 
 import { nanoid } from 'nanoid'
 import fs from 'fs/promises'

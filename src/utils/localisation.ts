@@ -1,16 +1,20 @@
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js";
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import './strings'
-import { PrettyLog } from "./pretty-log";
+import './strings.js'
+import { PrettyLog } from "./pretty-log.js";
 
-import en_US_locale from '../../locales/en-US.json';
-import { getLocale } from "..";
+import en_US_locale from '../../locales/en-US.json' with { type: 'json' };
+import { getLocale } from "../index.js";
+
+import { fileURLToPath, pathToFileURL } from 'node:url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const defaultLocale = en_US_locale
 export type LocaleStrings = typeof defaultLocale
 
-const localsPath = path.join(__dirname, '..', '..','locales');
+const localsPath = path.join(__dirname, '../../locales');
 
 const locales: { cache: { [code: string]: LocaleStrings }, expired: boolean } = { cache: {}, expired: true };
 
@@ -23,8 +27,8 @@ export async function getLocales() {
 
     for (const file of localesFiles) {
         const filePath = path.join(localsPath, file)
-        const localeContent = require(filePath);
-        locales.cache[file.replace('.json', '')] = localeContent
+        const localeContentImport = await import(pathToFileURL(filePath).href, { with: { type: "json" } })
+        locales.cache[file.replace('.json', '')] = localeContentImport.default
     }
 
     locales.expired = false
