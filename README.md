@@ -2,10 +2,10 @@
 
 ### Contents
 - [👋 Introduction](#introduction)
+- [🌟 Features](#-features)
 - [🚀 How to use](#-how-to-use)
 - [📝 Documentation](#-documentation)
 - [📸 Screenshots](#-screenshots)
-- [🌟 Road Map](#-road-map)
 - [❓ Q&A](#-qa)
 - [⚖️ Legal Stuff](#%EF%B8%8F-legal-information)
 
@@ -14,52 +14,82 @@
 
 ### Hi 👋 <br>
 I created a cool bot for you !
-Let me introduce you **ShopBot**, this bot aims at helping to you create your own shops and currencies to fit the needs of your community, your RP server, or anything you need.  
+Let me introduce you **ShopBot**, a bot aiming at helping you create your own shops and currencies to fit the needs of your community, your RP server, or anything you need.  
 <sub><sup>(See [screenshots](#-screenshots))</sup></sub>
 <br>
 
-### Here is what the bot can do:
 
-This bot uses the power of ***Slash Commands*** to let you interact with it with the **best UI** as possible (Embeds, Buttons, Select Menu). So you will **not have to worry** about remembering complex commands, the **bot does everything** for you, and prevents you from accidentally making errors.
+<div style="display:inline-flex; align-items:center; gap:0.7rem;">
+  <span style="height:30px">If you love the bot, feel free to support me on ko-fi : </span>
+  <a href="https://ko-fi.com/roules_" target="_blank">
+    <img src="https://storage.ko-fi.com/cdn/kofi1.png?v=6" height="34" alt="Buy Me a Coffee at ko-fi.com" style="border:0; height:34px;">
+  </a>
+</div>
 
-
-You can **create** **currencies**, then use them in **shops** you created, in which you can add **products**, with a name, a description and a price.
-
-Of course, you can **manage** these currencies, shops and products. You can **delete** and **edit** them, if you want to change their name, description.. or get rid of them !
-
-Admins can **give** and **take** money to users and even **empty** an account, they can also **see** the account and inventory of anyone.
-They can see logs (for purchase, give and take) by setting a log channel on your server.
-
-Users can **see** their own account and inventory, and **buy** in shops.
+And don't forget to leave a **⭐Star**
 
 <br>
 
-Thanks to **Discord**'s features, you can customize the permissions for each command in the settings of your server.
+## 🌟 Features
 
 You can check [screenshots](#-screenshots) of the bot's commands to see how cool it is :D
 
+#### ✅ Easy to use
+This bot uses the power of ***Slash Commands*** to let you interact with it with the **best UI** as possible (Embeds, Buttons, Select Menu). So you will **not have to worry** about remembering complex commands, the **bot does everything** for you, and prevents you from accidentally making errors.
+
+Thanks to **Discord**'s features, you can customize the permissions for each command in the settings of your server.
+
+
+#### ✅ Fully customizable shops, currencies, products. 
+You can **create** **currencies**, then use them in **shops** you created, in which you can add **products**, with a name, an emoji, a description and a price.
+
+Of course, you can **manage** these currencies, shops and products. You can **delete** and **edit** them, if you want to change their name, description.. or get rid of them !
+
+#### ✅ Shop features
+You can **create** **discount codes** for your shops.
+
+You can set a product to be in **limited stock** or **unlimited stock**
+
+You can have products that **trigger an action** when bought (such as: give money to a user, give a role to a user, *[any other ideas?](https://github.com/roules-dev/ShopBot/issues)*)
+
+You can create shops **reserved for specific roles**
+
+
+#### ✅ Inventory system (for items and currencies)
+Users can **see** their own account and inventory, and **buy** in shops.
+
+Admins can **give** and **take** money to users and even **empty** an account, they can also **see** the account and inventory of anyone.
+
+
+#### ✅ Logs
+You can setup a **log channel** to see logs about purchases, gives and takes.
+
+#### ✅ Multi language support
+The bot supports **English** and **French**. You can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
+
 <br>
 
-If you love the bot, feel free to support me: 
+### To be added
+- ❓ API to automate actions like: filling accounts; managing currencies, shops and products 
+- Create a release, a precompiled version of the bot, with an easier way of installing it. 
 
-<a href='https://ko-fi.com/B0B5L20B6' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-
-And don't forget to leave a ⭐ Star
-
+See the detailed roadmap [here](https://github.com/roules-dev/ShopBot/blob/main/roadmap.md).
 <br>
 
-It's now time to [configure the bot](#-how-to-use) !
+If you have a feature idea you think will fit this bot, feel free to suggest it [here](https://github.com/roules-dev/ShopBot/issues).
+
+<br>
 
 ## 🚀 How to use
 This repo is the bot's source code, not a bot itself. <br>
 To use it, you must host it yourself. There are several methods to do this, some are free, some are paid (Be careful that your hosting solution allows file editing, sometimes called local database, otherwise all the bot's data will be lost if the server restarts). <br>
 Once you found the hoster for your bot, here are the steps to follow: <br>
-### Installing the bot
-#### Creating the bot
+### 🔧 Installing the bot
+#### 🤖 Creating the bot
 1. Go on [Discord Developer Portal](https://discord.com/developers/applications) and login
 2. Click **New Application**, give your bot a name, accept the ToS and developer policy
-3. In the **Installation** tab, untick **User Install**, and in **Install Link** select **None**
-4. Copy the **Application ID** from the **General Information** tab, save it for later.
+3. Copy the **Application ID** from the **General Information** tab, save it for later.
+4. In the **Installation** tab, untick **User Install**, and in **Install Link** select **None**, then save changes.
 5. Select tab **Bot**, click **Reset Token**, copy the token, save it for later.
 6. Cutomize the bot as you want (Profile picture, banner, name...). Below **Authorization Flow**, untick **Public Bot**, tick **Presence Intent** and **Server Members Intent** 
 7. Save changes.
@@ -70,7 +100,7 @@ Once you found the hoster for your bot, here are the steps to follow: <br>
 9. Select **Guild Install** and copy the generated URL
 10. Follow this URL and add the bot to the server you want, accept everything, the bot should be added to your server !
 
-#### Uploading the bot
+#### 📡 Uploading the bot
 Now, we'll link the code to the bot, and upload it on the server.
 1. You need to have [Node.js](https://nodejs.org/en) installed on the machine where you want to host the bot.
 2. Download the code from the [latest release](https://github.com/roules-dev/ShopBot/releases) and extract it from the ZIP file, open the folder where it's located, and open a terminal from here.
@@ -84,13 +114,16 @@ npm run setup
 ```
 npm run serve
 ```
-(Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background) <br>
-(You can also create a routine such that this command is executed from the bot's folder each time the server is restarted)
+> Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background 
+
+> You can also create a routine such that this command is executed from the bot's folder each time the server is restarted
+
+
 
 All done ! You did it, your bot should be working perfectly ! 
 If you have any problem with it, feel free to message me on Discord, or open an [issue on Github](https://github.com/roules-dev/ShopBot/issues)
 
----
+<br>
 
 ## 📝 Documentation
 
@@ -204,33 +237,22 @@ And you can do [many more things](#-documentation)... Create discount codes, add
 #### Configuring bot's commands permissions
 <img src="./readme/assets/bot-perms1.png" width="500px"/>
 
-<sub><sup>The screenshots come from the tests I'm doing for the bot. (latest images update: 06.04.2025)</sup></sub>
+<sub><sup>The screenshots are coming from the tests I'm doing for the bot. (last screenshots update: 06 April 2025)</sup></sub>
 
-
-## 🌟 Road Map
-I plan to refactor the whole code base to migrate it to typescript and make it easier to update.
-I will after that add the following features, some of which have been suggested by users :
-- ✅ Inventory system
-- ✅ Discount codes 
-- ✅ Pagination system in shops
-- ✅ emojis for products, currencies and products
-- ✅ New commands system, for easier use
-- ✅ Editable shops, products and currencies
-- ❓ API to automate actions like: filling accounts; managing currencies, shops and products 
-- ✅ Automatic action products (e.g. give a certain amount of currency to a user, give a role to a user, if you have more suggestions feel free to [give them here](https://github.com/roules-dev/ShopBot/issues))
-- ✅ Shops reserved for specific roles
-- 
-- Create a release, a precompiled version of the bot, with an easier way of installing it. 
-
-The roadmap is now visible [here](https://github.com/roules-dev/ShopBot/blob/main/roadmap.md).
 <br>
-
-If you have a feature idea you think will fit this bot, feel free to suggest it [here](https://github.com/roules-dev/ShopBot/issues).
 
 ## ❓ Q&A
 ### Multi language support ?
 Implemented ! It is community driven, the currently available languages are : English, French. <br>
 If your language is not mentionned here, you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
+
+### New features ?
+If you have any suggestions for new features, [open an issue](https://github.com/roules-dev/ShopBot/issues) <br>
+I'm working on this project when I have time for it, but I'm also happy to accept pull requests for new features.
+
+### Report a bug ?
+If you find a bug, [open an issue](https://github.com/roules-dev/ShopBot/issues)
+
 
 <br>
 
@@ -271,7 +293,7 @@ This project is **not affiliated with, endorsed by, or associated with Discord I
  </picture>
 </a>
 
-Don't forget to leave a star, it helps a lot !
+Don't forget to leave a **🌟Star**, it helps a lot !
 
 ---
 
