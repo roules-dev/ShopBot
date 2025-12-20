@@ -19,15 +19,11 @@ Let me introduce you **ShopBot**, a bot aiming at helping you create your own sh
 <br>
 
 
-<div style="display:inline-flex; align-items:center; gap:0.7rem;">
-  <span style="height:30px">If you love the bot, feel free to support me on ko-fi : </span>
-  <a href="https://ko-fi.com/roules_" target="_blank">
-    <img src="https://storage.ko-fi.com/cdn/kofi1.png?v=6" height="34" alt="Buy Me a Coffee at ko-fi.com" style="border:0; height:34px;">
-  </a>
-</div>
+If you love the bot, feel free to support me on ko-fi :
+
+<a href='https://ko-fi.com/B0B5L20B6' target='_blank'><img height='36' style='border:0px;height:34px;' src='https://storage.ko-fi.com/cdn/kofi1.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 And don't forget to leave a **⭐Star**
-
 <br>
 
 ## 🌟 Features
