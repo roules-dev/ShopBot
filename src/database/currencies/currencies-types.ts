@@ -1,4 +1,4 @@
-import { Database, DatabaseJSONBody, UUID } from "../database-types"
+import { Database, DatabaseJSONBody, UUID } from "../database-types.js"
 
 export interface Currency {
     id: UUID

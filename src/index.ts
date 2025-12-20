@@ -2,11 +2,15 @@ import fs from 'fs/promises'
 import path from 'node:path'
 
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from 'discord.js'
-import config from '../config/config.json'
-import { PrettyLog } from './utils/pretty-log'
-import './utils/strings'
-import { getLocales, LocaleStrings } from './utils/localisation'
-import { getSetting } from './database/settings/settings-handler'
+import config from '../config/config.json' with { type: 'json' }
+import { PrettyLog } from './utils/pretty-log.js'
+import './utils/strings.js'
+import { errorMessages, getLocales, LocaleStrings } from './utils/localisation.js'
+import { getSetting } from './database/settings/settings-handler.js'
+
+import { pathToFileURL, fileURLToPath } from 'node:url'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 
 interface Command {
@@ -46,7 +50,7 @@ async function registerCommands(client: Client) {
 
 	for (const file of commandFiles) {
 		const filePath = path.join(commandsPath, file)
-		const command: Command = require(filePath)
+		const command: Command = await import(pathToFileURL(filePath).href)
 
 		client.commands.set(command.data.name, command)
 	}
@@ -60,7 +64,7 @@ async function registerEvents(client: Client<boolean>) {
 
 	for (const file of eventFiles) {
 		const filePath = path.join(eventsPath, file)
-		const event = require(filePath)
+		const event = await import(pathToFileURL(filePath).href)
 		if (event.once) {
 			client.once(event.name, (...args) => event.execute(...args))
 		} else {

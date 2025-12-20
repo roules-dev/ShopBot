@@ -1,7 +1,9 @@
-interface String {
-    ellipsis(max: number) : string
-    removeCustomEmojis() : string
-    replaceSpaces(by?: string) : string
+declare global {
+    interface String {
+        ellipsis(max: number) : string
+        removeCustomEmojis() : string
+        replaceSpaces(by?: string) : string
+    }
 }
 
 String.prototype.ellipsis = function (this : string, max: number) {

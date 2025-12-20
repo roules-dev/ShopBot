@@ -1,10 +1,10 @@
 import { Snowflake } from "discord.js"
-import accounts from '../../../data/accounts.json'
-import { getCurrencies } from "../currencies/currencies-database"
-import { save } from "../database-handler"
-import { DatabaseError, DatabaseErrors } from "../database-types"
-import { Product } from "../shops/shops-types"
-import { Account, AccountsDatabase } from "./accounts-type"
+import accounts from '../../../data/accounts.json' with { type: 'json' }
+import { getCurrencies } from "../currencies/currencies-database.js"
+import { save } from "../database-handler.js"
+import { DatabaseError, DatabaseErrors } from "../database-types.js"
+import { Product } from "../shops/shops-types.js"
+import { Account, AccountsDatabase } from "./accounts-type.js"
 
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
 

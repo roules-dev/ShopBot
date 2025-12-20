@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js"
-import { AccountUserInterface } from "../user-interfaces/account-ui"
+import { AccountUserInterface } from "../user-interfaces/account-ui.js"
 
 export const data = new SlashCommandBuilder()
     .setName('account')

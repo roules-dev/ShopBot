@@ -1,13 +1,13 @@
 import { APIRole, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, roleMention, StringSelectMenuInteraction, User, userMention } from "discord.js"
-import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts/accounts-database"
-import { getCurrencies, getCurrencyName } from "../database/currencies/currencies-database"
-import { Currency } from "../database/currencies/currencies-types"
-import { DatabaseError } from "../database/database-types"
-import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "../user-interfaces/extended-components"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord"
-import { UserFlow } from "./user-flow"
-import { defaultComponents, errorMessages, LocaleStrings, replaceTemplates } from "../utils/localisation"
-import { getLocale } from ".."
+import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts/accounts-database.js"
+import { getCurrencies, getCurrencyName } from "../database/currencies/currencies-database.js"
+import { Currency } from "../database/currencies/currencies-types.js"
+import { DatabaseError } from "../database/database-types.js"
+import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "../user-interfaces/extended-components.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord.js"
+import { UserFlow } from "./user-flow.js"
+import { defaultComponents, errorMessages, LocaleStrings, replaceTemplates } from "../utils/localisation.js"
+import { getLocale } from "../index.js"
 
 export class AccountGiveFlow extends UserFlow {
     public id = 'account-give'

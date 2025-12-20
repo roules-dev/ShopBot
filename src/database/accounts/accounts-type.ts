@@ -1,9 +1,9 @@
 import { Snowflake } from "discord.js"
-import { getCurrencies } from "../currencies/currencies-database"
-import { Currency } from "../currencies/currencies-types"
-import { Database, DatabaseJSONBody, UUID } from "../database-types"
-import { getProducts, getShops } from "../shops/shops-database"
-import { Product } from "../shops/shops-types"
+import { getCurrencies } from "../currencies/currencies-database.js"
+import { Currency } from "../currencies/currencies-types.js"
+import { Database, DatabaseJSONBody, UUID } from "../database-types.js"
+import { getProducts, getShops } from "../shops/shops-database.js"
+import { Product } from "../shops/shops-types.js"
 
 export interface Balance<Item> {
     item: Item

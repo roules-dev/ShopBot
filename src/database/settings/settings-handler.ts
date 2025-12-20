@@ -1,8 +1,8 @@
-import { save } from "../database-handler"
-import { Setting, Settings, SettingsDatabase } from "./settings-types"
+import { save } from "../database-handler.js"
+import { Setting, Settings, SettingsDatabase } from "./settings-types.js"
 
-import settings from '../../../data/settings.json'
-import { setClientLocale } from "../.."
+import settings from '../../../data/settings.json' with { type: 'json' }
+import { setClientLocale } from "../../index.js"
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 
