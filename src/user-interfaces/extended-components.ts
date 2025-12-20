@@ -1,9 +1,9 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, LabelBuilder, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
+import { ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, LabelBuilder, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { Currency } from "../database/currencies/currencies-types.js"
 import { Setting } from "../database/settings/settings-types.js"
 import { Product, Shop } from "../database/shops/shops-types.js"
-import { UserInterfaceComponentBuilder } from "./user-interfaces.js"
 import { replaceTemplates } from "../utils/localisation.js"
+import { UserInterfaceComponentBuilder } from "./user-interfaces.js"
 
 export abstract class ExtendedComponent {
     abstract componentType: ComponentType

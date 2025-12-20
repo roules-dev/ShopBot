@@ -1,8 +1,8 @@
-import fs from 'fs/promises'
-import { DateTime } from 'luxon'
-import path from 'path'
+import fs from 'fs/promises';
+import { DateTime } from 'luxon';
+import path from 'path';
 
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

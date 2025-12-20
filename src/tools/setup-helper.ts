@@ -1,16 +1,12 @@
-import readline from 'node:readline'
-import config from '../config/config.json' with { type: 'json' }
-import fs from 'node:fs'
-import { appDeployCommands } from './deploy-commands.js';
-import { PrettyLog } from './utils/pretty-log.js';
+import fs from 'node:fs/promises';
+import readline from 'node:readline';
+import config from '../../config/config.json' with { type: 'json' };
+import { appDeployCommands } from '../deploy-commands.js';
+import { PrettyLog } from '../utils/pretty-log.js';
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-});
-
-rl.on('close', () => {
-    fs.writeFileSync('./config/config.json', JSON.stringify(config, null, 2))
 });
 
 
@@ -26,10 +22,13 @@ async function setup() {
 
     const resetData = await questionWithCondition('\nReset data? (y/n): ', answer => answer === 'y' || answer === 'n')
     if (resetData === 'y') {
-        fs.writeFileSync('./data/shops.json', JSON.stringify({}, null, 2))
-        fs.writeFileSync('./data/accounts.json', JSON.stringify({}, null, 2))
-        fs.writeFileSync('./data/currencies.json', JSON.stringify({}, null, 2))
+        await fs.writeFile('./data/shops.json', JSON.stringify({}, null, 2))
+        await fs.writeFile('./data/accounts.json', JSON.stringify({}, null, 2))
+        await fs.writeFile('./data/currencies.json', JSON.stringify({}, null, 2))
     }
+
+    await saveConfig()
+    PrettyLog.success('Configuration saved', false)
 
     rl.close()
     
@@ -53,8 +52,16 @@ function questionWithCondition(question: string, condition: (answer: string) => 
                 resolve(answer)
             } else {
                 PrettyLog.warn(errorMessage ?? 'Answer not valid', false)
-                resolve(questionWithCondition(question, condition))
+                resolve(questionWithCondition(question, condition, errorMessage))
             }
         })
     })
+}
+
+
+async function saveConfig() {
+
+    console.dir(config)
+
+    await fs.writeFile('./config/config.json', JSON.stringify(config, null, 4))
 }

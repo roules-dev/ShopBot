@@ -7,12 +7,10 @@ import { Shop } from "../database/shops/shops-types.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showEditModal } from "../user-interfaces/extended-components.js"
 import { UserInterfaceInteraction } from "../user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "../utils/constants.js"
-import { PrettyLog } from "../utils/pretty-log.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord.js"
-import { UserFlow } from "./user-flow.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "../utils/localisation.js"
 import { assertNeverReached } from "../utils/utils.js"
-import { errorMessages, defaultComponents, replaceTemplates } from "../utils/localisation.js"
-import { getLocale } from "../index.js"
+import { UserFlow } from "./user-flow.js"
 
 export class ShopCreateFlow extends UserFlow {
     public id = 'shop-create'

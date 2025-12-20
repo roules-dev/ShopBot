@@ -1,7 +1,7 @@
 import { Snowflake } from "discord.js";
 import { getCurrencies } from "../currencies/currencies-database.js";
 import { Currency } from "../currencies/currencies-types.js";
-import { UUID, DatabaseJSONBody, Database } from "../database-types.js";
+import { Database, DatabaseJSONBody, UUID } from "../database-types.js";
 
 export const PRODUCT_ACTION_TYPE = {
     GiveRole: 'give-role',

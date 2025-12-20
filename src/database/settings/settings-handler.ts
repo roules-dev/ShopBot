@@ -2,7 +2,7 @@ import { save } from "../database-handler.js"
 import { Setting, Settings, SettingsDatabase } from "./settings-types.js"
 
 import settings from '../../../data/settings.json' with { type: 'json' }
-import { setClientLocale } from "../../index.js"
+import { setCurrentLocale } from "../../utils/localisation.js"
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 
@@ -32,6 +32,6 @@ export async function setSetting(id: string, value: any): Promise<Setting> {
 export async function onSettingUpdate(setting: Setting) {
     switch (setting.id) {
         case "language":
-            await setClientLocale()
+            await setCurrentLocale()  // this is a circular dependency, should be fixed
     }
 }

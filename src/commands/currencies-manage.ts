@@ -1,9 +1,9 @@
 import { bold, ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
+import { createCurrency } from "../database/currencies/currencies-database.js"
 import { DatabaseError } from "../database/database-types.js"
 import { CurrencyRemoveFlow, EditCurrencyFlow, EditCurrencyOption } from "../user-flows/currencies-flows.js"
 import { EMOJI_REGEX } from "../utils/constants.js"
 import { replyErrorMessage, replySuccessMessage } from "../utils/discord.js"
-import { createCurrency } from "../database/currencies/currencies-database.js"
 import { replaceTemplates } from "../utils/localisation.js"
 
 export const data = new SlashCommandBuilder()

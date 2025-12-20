@@ -1,6 +1,6 @@
 import { ActivityType, Client, Events } from 'discord.js'
-import { PrettyLog } from '../utils/pretty-log.js'
 import { getSetting } from '../database/settings/settings-handler.js'
+import { PrettyLog } from '../utils/pretty-log.js'
 
 export const name = Events.ClientReady
 export const once = true

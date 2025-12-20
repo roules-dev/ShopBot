@@ -7,13 +7,14 @@
   "scripts": {
     "build": "tsc",
     "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
-    "cleanbuild": "npm run clean:dist --silent && tsc",
+    "cleanbuild": "npm run clean:dist --silent && npm run build",
+    "prodbuild": "npm run clean:dist --silent && tsc --build --sourceMap false",
     "dev": "nodemon src/index.ts",
     "start": "npm run build && npm run serve",
     "serve": "node dist/index.js",
-    "deploy": "npm run build && node ./dist/deploy-commands.js",
+    "deploy": "node ./dist/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
-    "setup": "node ./dist/setup-helper.js",
+    "setup": "npm i && node ./dist/tools/setup-helper.js",
     "nanoid": "node ./dist/tools/migrate-db-to-nanoid.js"
   },
   "license": "GPL-3.0",

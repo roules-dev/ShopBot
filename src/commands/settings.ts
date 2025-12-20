@@ -1,4 +1,4 @@
-import { SlashCommandBuilder, Client, ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js"
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 import { SettingsInterface } from "../user-interfaces/settings-ui.js"
 
 export const data = new SlashCommandBuilder()

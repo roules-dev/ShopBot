@@ -3,12 +3,11 @@ import path from 'node:path'
 
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from 'discord.js'
 import config from '../config/config.json' with { type: 'json' }
+import { LocaleStrings } from './utils/localisation.js'
 import { PrettyLog } from './utils/pretty-log.js'
 import './utils/strings.js'
-import { errorMessages, getLocales, LocaleStrings } from './utils/localisation.js'
-import { getSetting } from './database/settings/settings-handler.js'
 
-import { pathToFileURL, fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -35,13 +34,12 @@ export async function startClient() {
 
 	await registerCommands(client)
 	await registerEvents(client)
-	await setClientLocale()
-	PrettyLog.logLoadStep('Locale set to client')
 
 	await client.login(config.token)
 }
 
 startClient()
+
 
 async function registerCommands(client: Client) {
 	client.commands = new Collection()
@@ -73,25 +71,6 @@ async function registerEvents(client: Client<boolean>) {
 	}
 
 	PrettyLog.logLoadStep('Events registered')
-}
-
-export async function setClientLocale() {
-	const locales = await getLocales()
-
-	const languageSetting = getSetting('language')
-
-	const locale = locales[languageSetting?.value as string] ?? locales['en-US']
-	if (!locale) throw new Error('Missing locale in locales folder')
-
-	client.locale = locale
-}
-
-export function getLocale(): LocaleStrings {
-	if (!client.locale) {
-		throw new Error('Locale not set')
-	}
-
-	return client.locale
 }
 
 process.on('unhandledRejection', (reason: unknown) => PrettyLog.error(`${reason}`, false))

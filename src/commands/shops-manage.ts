@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
-import { DiscountCodeCreateFlow, DiscountCodeRemoveFlow, EditShopCurrencyFlow, EditShopFlow, EDIT_SHOP_OPTIONS, ShopCreateFlow, ShopRemoveFlow, ShopReorderFlow } from "../user-flows/shops-flows.js"
+import { DiscountCodeCreateFlow, DiscountCodeRemoveFlow, EDIT_SHOP_OPTIONS, EditShopCurrencyFlow, EditShopFlow, ShopCreateFlow, ShopRemoveFlow, ShopReorderFlow } from "../user-flows/shops-flows.js"
 import { replyErrorMessage } from "../utils/discord.js"
 
 export const data = new SlashCommandBuilder()

@@ -1,34 +1,36 @@
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js";
-import path from 'node:path';
 import fs from 'node:fs/promises';
-import './strings.js'
+import path from 'node:path';
 import { PrettyLog } from "./pretty-log.js";
+import './strings.js';
 
 import en_US_locale from '../../locales/en-US.json' with { type: 'json' };
-import { getLocale } from "../index.js";
 
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { getSetting } from "../database/settings/settings-handler.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const defaultLocale = en_US_locale
 export type LocaleStrings = typeof defaultLocale
 
-const localsPath = path.join(__dirname, '../../locales');
+const localesPath = path.join(__dirname, '../../locales');
 
 const locales: { cache: { [code: string]: LocaleStrings }, expired: boolean } = { cache: {}, expired: true };
+
+let currentLocale = defaultLocale
 
 export async function getLocales() {
     if (!locales.expired) {
         return locales.cache
     }
 
-    const localesFiles = (await fs.readdir(localsPath)).filter((file) => file.endsWith('.json'))
+    const localesFiles = (await fs.readdir(localesPath)).filter((file) => file.endsWith('.json'))
 
     for (const file of localesFiles) {
-        const filePath = path.join(localsPath, file)
-        const localeContentImport = await import(pathToFileURL(filePath).href, { with: { type: "json" } })
-        locales.cache[file.replace('.json', '')] = localeContentImport.default
+        const filePath = path.join(localesPath, file)
+        const localeContentimport = await import(pathToFileURL(filePath).href, { with: { type: "json" } })
+        locales.cache[file.replace('.json', '')] = localeContentimport.default
     }
 
     locales.expired = false
@@ -108,10 +110,28 @@ export function replaceTemplates(str: string, templates: { [key: string]: string
     return result
 }
 
+
+export async function setCurrentLocale() {
+	const locales = await getLocales()
+
+	const languageSetting = getSetting('language')
+
+	const locale = locales[languageSetting?.value as string] ?? locales['en-US']
+	if (!locale) throw new Error('Missing locale in locales folder')
+
+	currentLocale = locale
+}
+
+export function getLocale(): LocaleStrings {
+	if (!currentLocale) {
+		throw new Error('Locale not set')
+	}
+
+	return currentLocale
+}
 export function errorMessages() {
 	return getLocale().errorMessages
 }
-
 export function defaultComponents() {
     return getLocale().defaultComponents
 }

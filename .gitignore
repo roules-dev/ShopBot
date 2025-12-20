@@ -5,3 +5,4 @@ src/test.ts
 logs.txt
 .temp
 *.zip
+tsconfig.tsbuildinfo

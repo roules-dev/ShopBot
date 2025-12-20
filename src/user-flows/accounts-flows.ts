@@ -5,9 +5,8 @@ import { Currency } from "../database/currencies/currencies-types.js"
 import { DatabaseError } from "../database/database-types.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "../user-interfaces/extended-components.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "../utils/localisation.js"
 import { UserFlow } from "./user-flow.js"
-import { defaultComponents, errorMessages, LocaleStrings, replaceTemplates } from "../utils/localisation.js"
-import { getLocale } from "../index.js"
 
 export class AccountGiveFlow extends UserFlow {
     public id = 'account-give'

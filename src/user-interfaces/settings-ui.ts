@@ -1,11 +1,10 @@
 import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
 import { getSettings, setSetting } from "../database/settings/settings-handler.js"
 import { Setting } from "../database/settings/settings-types.js"
+import { getLocale, replaceTemplates } from "../utils/localisation.js"
 import { assertNeverReached, toStringOrUndefined } from "../utils/utils.js"
 import { ExtendedButtonComponent, ExtendedChannelSelectMenuComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, ExtendedUserSelectMenuComponent, showEditModal } from "./extended-components.js"
 import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "./user-interfaces.js"
-import { getLocale } from "../index.js"
-import { replaceTemplates } from "../utils/localisation.js"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {

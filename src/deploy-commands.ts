@@ -2,11 +2,15 @@ import { REST } from '@discordjs/rest'
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from 'discord.js'
 import fs from 'node:fs'
 import path from 'node:path'
-import config from '../config/config.json' with { type: 'json' }
-import { drawProgressBar, PrettyLog } from './utils/pretty-log.js'
 import { addLocalisationToCommand } from './utils/localisation.js'
+import { drawProgressBar, PrettyLog } from './utils/pretty-log.js'
 
-const { clientId, token } = config
+import { fileURLToPath, pathToFileURL } from 'node:url'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const configFilePath = path.join(__dirname, '../config/config.json')
+let config: { clientId: string, token: string } | undefined
 
 let rest: REST | undefined
 
@@ -36,7 +40,7 @@ async function getCommands() {
 
     for (const [index, file] of commandFiles.entries()) {
         const filePath = path.join(commandsPath, file)
-        const command = require(filePath)
+        const command = await import(pathToFileURL(filePath).href)
         
         if (!(command.data instanceof SlashCommandBuilder)) {
             PrettyLog.warn(`The command at ${filePath} is not a valid SlashCommandBuilder instance.`)
@@ -59,7 +63,7 @@ async function getCommands() {
 
 function appDeployCommands() {
     return new Promise(async (resolve, reject) => {
-        getRest().put(Routes.applicationCommands(clientId), { body: await getCommands() })
+        getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
             .then(() => {
                 PrettyLog.success('Successfully registered application commands.', false)
                 resolve(true)
@@ -70,7 +74,7 @@ function appDeployCommands() {
 }
 function appDeleteCommands() {
     return new Promise((resolve, reject) => {
-        getRest().put(Routes.applicationCommands(clientId), { body: [] })
+        getRest().put(Routes.applicationCommands(getClientId()), { body: [] })
             .then(() => {
                 PrettyLog.success('Successfully deleted application commands.', false)
                 resolve(true)
@@ -81,7 +85,7 @@ function appDeleteCommands() {
 
 function guildDeployCommands(guildId: Snowflake) {
     return new Promise(async (resolve, reject) => {
-        getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: await getCommands() })
+        getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: await getCommands() })
             .then(() => {
                 PrettyLog.success('Successfully registered all guild commands.', false)
                 resolve(true)
@@ -92,7 +96,7 @@ function guildDeployCommands(guildId: Snowflake) {
 
 function guildDeleteCommands(guildId: Snowflake) {
     return new Promise((resolve, reject) => {
-        getRest().put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
+        getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: [] })
             .then(() => {
                 PrettyLog.success('Successfully deleted all guild commands.', false)
                 resolve(true)
@@ -105,7 +109,7 @@ export {
     appDeleteCommands, appDeployCommands, guildDeleteCommands, guildDeployCommands
 }
 
-if (require.main === module) {
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const flag = process.argv[2]
     const guildId = process.argv[3]
 
@@ -142,13 +146,62 @@ if (require.main === module) {
 
 
 function getRest() {
-    if (!clientId || !token) {
+    if (rest !== undefined) return rest
+
+    const token = getToken()
+
+    if (!getClientId() || !token) {
         PrettyLog.error('Missing clientId or token in config.json')
         process.exit(1)
     }
 
-    if (!rest) {
-        rest = new REST({ version: '10' }).setToken(token)
-    }
+    rest = new REST({ version: '10' }).setToken(token)
+    
     return rest
+}
+
+function getConfig() {
+    if (config !== undefined 
+        && config.token !== undefined && config.token !== ''
+        && config.clientId !== undefined && config.clientId !== '') {
+        return config
+    }
+
+    const _config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+
+    config = _config
+    return _config
+}
+
+
+function getClientId() {
+    const config = getConfig()
+
+    if (!config) {
+        PrettyLog.error('Missing config.json')
+        process.exit(1)
+    }
+
+    if (!config.clientId) {
+        PrettyLog.error('Missing clientId in config.json')
+        process.exit(1)
+    }
+
+    return getConfig().clientId
+}
+
+function getToken() {
+    const config = getConfig()
+
+    if (!config) {
+        PrettyLog.error('Missing config.json')
+        process.exit(1)
+    }
+
+    if (!config.token) {
+        PrettyLog.error('Missing token in config.json')
+        process.exit(1)
+    }
+
+    return getConfig().token
 }

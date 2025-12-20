@@ -5,11 +5,10 @@ import { DatabaseError } from "../database/database-types.js"
 import { getProductName, getShopName, getShops, updateProduct } from "../database/shops/shops-database.js"
 import { Product, PRODUCT_ACTION_TYPE, Shop } from "../database/shops/shops-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "../utils/discord.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "../utils/localisation.js"
 import { AccountUserInterface } from "./account-ui.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent } from "./extended-components.js"
 import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInteraction } from "./user-interfaces.js"
-import { errorMessages, defaultComponents, replaceTemplates } from "../utils/localisation.js"
-import { getLocale } from "../index.js"
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'
