@@ -2,7 +2,7 @@ import { ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder
 import { Currency } from "../database/currencies/currencies-types.js"
 import { Setting } from "../database/settings/settings-types.js"
 import { Product, Shop } from "../database/shops/shops-types.js"
-import { replaceTemplates } from "../utils/localisation.js"
+import { getLocale, replaceTemplates } from "../utils/localisation.js"
 import { UserInterfaceComponentBuilder } from "./user-interfaces.js"
 
 export abstract class ExtendedComponent {
@@ -257,7 +257,7 @@ export class ExtendedUserSelectMenuComponent extends ExtendedSelectMenuComponent
 }
 
 export async function showConfirmationModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction): Promise<[ModalSubmitInteraction, boolean]> {
-    const strings = interaction.client.locale.extendedComponents.confirmationModal
+    const strings = getLocale().extendedComponents.confirmationModal
 
     const modalId = 'confirmation-modal'
 
@@ -306,7 +306,7 @@ export type EditModalOptions = {
 export async function showEditModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     { edit, previousValue, required, minLength, maxLength }: EditModalOptions
 ): Promise<[ModalSubmitInteraction, string]> {
-    const strings = interaction.client.locale.extendedComponents.editModal
+    const strings = getLocale().extendedComponents.editModal
 
     const editNormalized = `${edit.toLocaleLowerCase().replaceSpaces('-')}`
     const modalId = `edit-${editNormalized}-modal`

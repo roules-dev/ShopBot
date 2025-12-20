@@ -150,7 +150,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
                 break
             }
 
-            await replyErrorMessage(interaction, client.locale.errorMessages.invalidSubcommand)
+            await replyErrorMessage(interaction, errorMessages().invalidSubcommand)
     }
 
 }

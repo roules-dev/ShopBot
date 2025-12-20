@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandB
 import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "../user-flows/accounts-flows.js"
 import { AccountUserInterface } from "../user-interfaces/account-ui.js"
 import { replyErrorMessage } from "../utils/discord.js"
+import { errorMessages } from "../utils/localisation.js"
 
 export const data = new SlashCommandBuilder()
     .setName('accounts-manage') 
@@ -71,7 +72,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
         case 'view-account':
             const user = interaction.options.getUser('target')
             if (!user) {
-                replyErrorMessage(interaction, client.locale.errorMessages.insufficientParameters)
+                replyErrorMessage(interaction, errorMessages().insufficientParameters)
                 break
             }
     
@@ -97,7 +98,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
             
             break
         default:
-            await replyErrorMessage(interaction, client.locale.errorMessages.invalidSubcommand)
+            await replyErrorMessage(interaction, errorMessages().invalidSubcommand)
             break
     }
 }

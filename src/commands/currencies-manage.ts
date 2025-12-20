@@ -4,7 +4,8 @@ import { DatabaseError } from "../database/database-types.js"
 import { CurrencyRemoveFlow, EditCurrencyFlow, EditCurrencyOption } from "../user-flows/currencies-flows.js"
 import { EMOJI_REGEX } from "../utils/constants.js"
 import { replyErrorMessage, replySuccessMessage } from "../utils/discord.js"
-import { replaceTemplates } from "../utils/localisation.js"
+import { errorMessages, getLocale, replaceTemplates } from "../utils/localisation.js"
+import { get } from "node:http"
 
 export const data = new SlashCommandBuilder()
     .setName('currencies-manage') 
@@ -76,25 +77,25 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
                 break
             }
 
-            await replyErrorMessage(interaction, client.locale.errorMessages.invalidSubcommand)
+            await replyErrorMessage(interaction, errorMessages().invalidSubcommand)
     }
 }
 
 export async function createCurrencyCommand(client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
     const currencyName = interaction.options.getString('name')?.replaceSpaces()
-    if (!currencyName) return replyErrorMessage(interaction, client.locale.errorMessages.insufficientParameters)
+    if (!currencyName) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
 
     const emojiOption = interaction.options.getString('emoji')
     const emojiString = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
 
     try {
-        if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, client.locale.errorMessages.notOnlyEmojisInName)
+        if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, errorMessages().notOnlyEmojisInName)
         
         await createCurrency(currencyName, emojiString)
 
         const currencyNameString = bold(`${emojiString ? `${emojiString} ` : ''}${currencyName}`)
 
-        await replySuccessMessage(interaction, replaceTemplates(client.locale.userFlows.currencyCreate.messages.success, { currency: currencyNameString }))    
+        await replySuccessMessage(interaction, replaceTemplates(getLocale().userFlows.currencyCreate.messages.success, { currency: currencyNameString }))    
         return    
     } catch (error) {
         await replyErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
