@@ -9,12 +9,18 @@
 - [x] Products with a set stock
 - [ ] ability to buy a set amount
 - [x] multi language support 
+- [ ] permanently displayed shops
+- [ ] allowing users to display inventory publicly
+- [ ] separate logging channel for admin actions
+
 
 ### Code refactoring
 - [x] Add pagination at the level of user interface class
 - [x] Improve UI Implementation
 - [ ] improve db implementation
-- [ ] switching from uuid to nanoid, for performance improvement 
+- [x] switching from uuid to nanoid, for performance improvement 
+- [ ] docker container
+- [ ] improve internationalisation
 
 ## Roadmap
 1. ~~products with set stock~~
