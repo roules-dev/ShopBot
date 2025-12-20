@@ -2,6 +2,7 @@ import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandB
 import { PRODUCT_ACTION_TYPE } from "../database/shops/shops-types.js"
 import { AddActionProductFlow, AddProductFlow, EditProductFlow, EditProductOption, RemoveProductFlow } from "../user-flows/product-flows.js"
 import { replyErrorMessage } from "../utils/discord.js"
+import { errorMessages } from "../utils/localisation.js"
 
 export const data = new SlashCommandBuilder()
     .setName('products-manage') 

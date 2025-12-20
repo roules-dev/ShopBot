@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 import { DiscountCodeCreateFlow, DiscountCodeRemoveFlow, EDIT_SHOP_OPTIONS, EditShopCurrencyFlow, EditShopFlow, ShopCreateFlow, ShopRemoveFlow, ShopReorderFlow } from "../user-flows/shops-flows.js"
 import { replyErrorMessage } from "../utils/discord.js"
+import { errorMessages } from "../utils/localisation.js"
 
 export const data = new SlashCommandBuilder()
     .setName('shops-manage') 
