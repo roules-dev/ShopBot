@@ -1,5 +1,13 @@
 # RoadMap and planned features
 
+## Roadmap
+1. ~~products with a set stock~~
+2. ability to buy a certain amount of a product
+3. removing items for inventories - and bulk removing of an item.
+4. separate channel logging
+5. item/currency limit option
+4. api
+
 ## Planned features
 
 ### Features
@@ -12,18 +20,16 @@
 - [ ] permanently displayed shops
 - [ ] allowing users to display inventory publicly
 - [ ] separate logging channel for admin actions
+- [ ] multi-currency items (and thus no more shop-wide currency / leave it optional ?)
+- [ ] item/currency limit option
 
 
 ### Code refactoring
 - [x] Add pagination at the level of user interface class
-- [x] Improve UI Implementation
+- [ ] Improve UI Implementation (no more "start" function - check feasibility first)
 - [ ] improve db implementation
 - [x] switching from uuid to nanoid, for performance improvement 
 - [ ] docker container
-- [ ] improve internationalisation
+- [ ] improve internationalisation (add fallback for missing translations ...)
+- [ ] more verbose logging for debugging purposes
 
-## Roadmap
-1. ~~products with set stock~~
-2. ability to buy a certain amount of a product
-3. removing items for inventories - and bulk removing of an item.
-2. api

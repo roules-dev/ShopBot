@@ -29,20 +29,20 @@ All translation files are stored in:
 /locales/
 ```
 
-Each language has its own folder or JSON file, depending on the project structure.
+Each language has its own JSON file
 For example:
 
 ```
 /locales/
-├── en.json
+├── en-US.json
 ├── fr.json
-├── es.json
+├── es-ES.json
 └── ...
 ```
 
 If your language doesn’t exist yet, create a new file named after the [Discord locales codes](https://discord.com/developers/docs/reference#locales):
 
-> Example: `de.json` for German, `pt.json` for Portuguese, `ja.json` for Japanese, etc.
+> Example: `de.json` for German, `ja.json` for Japanese, etc.
 
 
 ## 🧩 Translation Format

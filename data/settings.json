@@ -37,6 +37,10 @@
             {
                 "value": "fr",
                 "label": "French"
+            },
+            {
+                "value": "es-ES",
+                "label": "Spanish (Spain)"
             }
         ]
     }
