@@ -61,7 +61,7 @@ Admins can **give** and **take** money to users and even **empty** an account, t
 You can setup a **log channel** to see logs about purchases, gives and takes.
 
 #### ✅ Multi language support
-The bot supports **English** and **French**. You can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
+The bot currently supports **English**, **Spanish** and **French**. You can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
 
 <br>
 
