@@ -1,4 +1,4 @@
-import { save } from "../database-handler.js"
+
 import { Setting, Settings, SettingsDatabase } from "./settings-types.js"
 
 import settings from '../../../data/settings.json' with { type: 'json' }
@@ -23,7 +23,7 @@ export async function setSetting(id: string, value: any): Promise<Setting> {
 
     settingsDatabase.settings.set(id, updatedSetting)
 
-    await save(settingsDatabase)
+    await settingsDatabase.save()
 
     await onSettingUpdate(updatedSetting)
 

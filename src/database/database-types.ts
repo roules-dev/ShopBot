@@ -1,3 +1,5 @@
+import fs from 'node:fs/promises'
+
 export type UUID = string
 
 export enum DatabaseErrors {
@@ -36,6 +38,16 @@ export abstract class Database {
     public abstract toJSON(): DatabaseJSONBody 
     
     protected abstract parseRaw(databaseRaw: DatabaseJSONBody): unknown 
+    
+    public save = () => new Promise<boolean>(async (resolve, _reject) => {
+        try {
+            await fs.writeFile(this.path, JSON.stringify(this.toJSON(), null, 4))
+    
+            resolve(true)
+        } catch (error) {
+            resolve(false)
+        }
+    })  
 }
 
 

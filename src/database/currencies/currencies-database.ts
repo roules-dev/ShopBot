@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid';
-import currencies from '../../../data/currencies.json' with { type: 'json' };
-import { save } from "../database-handler.js";
+import currencies from '../../../data/currencies.json' with { type: 'json' };;
 import { DatabaseError, DatabaseErrors } from "../database-types.js";
 import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "./currencies-types.js";
 
@@ -33,14 +32,14 @@ export async function createCurrency(currencyName: string, emoji: string) {
     const newCurrencyId = nanoid()
 
     currenciesDatabase.currencies.set(newCurrencyId, { id: newCurrencyId, name: currencyName, emoji })
-    save(currenciesDatabase)
+    currenciesDatabase.save()
 }
 
 export async function removeCurrency(currencyId: string) {
     if (!currenciesDatabase.currencies.has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
 
     currenciesDatabase.currencies.delete(currencyId)
-    save(currenciesDatabase)
+    currenciesDatabase.save()
 }
 
 export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {
@@ -53,6 +52,6 @@ export async function updateCurrency(currencyId: string, options: CurrencyOption
     if (name) currency.name = name
     if (emoji) currency.emoji = emoji
 
-    await save(currenciesDatabase)
+    await currenciesDatabase.save()
 }
 

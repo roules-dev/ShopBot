@@ -1,7 +1,6 @@
 import { Snowflake } from "discord.js"
 import accounts from '../../../data/accounts.json' with { type: 'json' }
 import { getCurrencies } from "../currencies/currencies-database.js"
-import { save } from "../database-handler.js"
 import { DatabaseError, DatabaseErrors } from "../database-types.js"
 import { Product } from "../shops/shops-types.js"
 import { Account, AccountsDatabase } from "./accounts-type.js"
@@ -13,7 +12,7 @@ export async function getOrCreateAccount(id: Snowflake): Promise<Account> {
 
     if (!account) {
         accountsDatabase.accounts.set(id, { currencies: new Map(), inventory: new Map() })
-        await save(accountsDatabase)
+        await accountsDatabase.save()
         account = accountsDatabase.accounts.get(id)!
     }
 
@@ -43,7 +42,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
         currencyBalance.amount = +amount.toFixed(2)
     }
 
-    await save(accountsDatabase)
+    await accountsDatabase.save()
 }
 
 export async function setAccountItemAmount(id: Snowflake, product: Product, amount: number) {
@@ -62,7 +61,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
         productBalance.amount = amount
     }
 
-    await save(accountsDatabase)
+    await accountsDatabase.save()
 }
 
 export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'inventory' | 'all') {
@@ -72,7 +71,7 @@ export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'invento
     if (empty === 'currencies' || empty === 'all') account.currencies.clear()
     if (empty === 'inventory' || empty === 'all') account.inventory.clear()
 
-    await save(accountsDatabase)
+    await accountsDatabase.save()
 }
 
 export async function getAccountsWithCurrency(currencyId: string) {
@@ -90,6 +89,6 @@ export async function takeCurrencyFromAccounts(currencyId: string) {
         account.currencies.delete(currencyId)
     })
 
-    await save(accountsDatabase)
+    await accountsDatabase.save()
     return accountsWithCurrency
 }

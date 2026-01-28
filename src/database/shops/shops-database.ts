@@ -2,8 +2,7 @@ import { Snowflake } from 'discord.js';
 import { nanoid } from 'nanoid';
 import shops from '../../../data/shops.json' with { type: 'json' };
 import { getLocale } from '../../utils/localisation.js';
-import { getCurrencies } from "../currencies/currencies-database.js";
-import { save } from "../database-handler.js";
+import { getCurrencies } from "../currencies/currencies-database.js";;
 import { DatabaseError, DatabaseErrors } from "../database-types.js";
 import { Product, ProductOptions, ProductOptionsOptional, Shop, ShopOptionsOptional, ShopsDatabase } from "./shops-types.js";
 
@@ -46,7 +45,7 @@ export async function createShop(shopName: string, description: string, currency
         products: new Map()
     })
 
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 
     return shopsDatabase.shops.get(newShopId)!
 }
@@ -55,7 +54,7 @@ export async function removeShop(shopId: string) {
     if (!shopsDatabase.shops.has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
 
     shopsDatabase.shops.delete(shopId)
-    save(shopsDatabase)
+    shopsDatabase.save()
 }
 
 
@@ -72,7 +71,7 @@ export async function updateShop(shopId: string, options: ShopOptionsOptional) {
     if (reservedTo) shop.reservedTo = reservedTo
     if (reservedTo === getLocale().defaultComponents.unset) shop.reservedTo = undefined
 
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 }
 
 export async function updateShopCurrency(shopId: string, currencyId: string) {
@@ -83,7 +82,7 @@ export async function updateShopCurrency(shopId: string, currencyId: string) {
 
     shop.currency = getCurrencies().get(currencyId)!
 
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 }
 
 export function getShopsWithCurrency(currencyId: string) {
@@ -110,21 +109,21 @@ export function updateShopPosition(shopId: string, index: number) {
     shopsArray.splice(index, 0, shopsArray.splice(shopIndex, 1)[0]);
     
     shopsDatabase.shops = new Map(shopsArray)
-    save(shopsDatabase)
+    shopsDatabase.save()
 }
 
 export async function createDiscountCode(shopId: string, discountCode: string, discountAmount: number) {
     if (!shopsDatabase.shops.has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
 
     shopsDatabase.shops.get(shopId)!.discountCodes[discountCode] = discountAmount
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 }
 
 export async function removeDiscountCode(shopId: string, discountCode: string) {
     if (!shopsDatabase.shops.has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
 
     delete shopsDatabase.shops.get(shopId)!.discountCodes[discountCode]
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 }
 // #endregion
 
@@ -142,7 +141,7 @@ export async function addProduct(shopId: string, options: ProductOptions) {
     const product = Object.assign({ id, shopId }, options)
 
     getShops().get(shopId)!.products.set(id, product)
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 
     return getShops().get(shopId)!.products.get(id)!
 }
@@ -151,7 +150,7 @@ export async function removeProduct(shopId: string, productId: string) {
     if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
 
     getShops().get(shopId)!.products.delete(productId)
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 }
 export async function updateProduct(shopId: string, productId: string, options: ProductOptionsOptional) {
     if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
@@ -171,7 +170,7 @@ export async function updateProduct(shopId: string, productId: string, options: 
         else product.amount = amount
     }
 
-    await save(shopsDatabase)
+    await shopsDatabase.save()
 }
 
 export function getProductName(shopId: string | undefined, productId: string | undefined): string | undefined {
