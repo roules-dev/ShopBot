@@ -21,7 +21,7 @@ async function getCommands() {
         return commands.cache
     }
 
-    PrettyLog.info('Loading commands for deployment...')
+    PrettyLog.info('Loading commands for deployment...', false)
 
     const commandsList: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
     const commandsPath = path.join(__dirname, 'commands')
@@ -30,20 +30,20 @@ async function getCommands() {
     const commandsCount = commandFiles.length
 
     if (commandsCount === 0) {
-        PrettyLog.error('No command files found.')
+        PrettyLog.error('No command files found.', false)
         process.exit(1)
     }
 
-    PrettyLog.info(`Found ${commandsCount} command files.`)
+    PrettyLog.info(`Found ${commandsCount} command files.`, false)
 
-    PrettyLog.info('Processing command files...')
+    PrettyLog.info('Processing command files...', false)
 
     for (const [index, file] of commandFiles.entries()) {
         const filePath = path.join(commandsPath, file)
         const command = await import(pathToFileURL(filePath).href)
         
         if (!(command.data instanceof SlashCommandBuilder)) {
-            PrettyLog.warn(`The command at ${filePath} is not a valid SlashCommandBuilder instance.`)
+            PrettyLog.warn(`The command at ${filePath} is not a valid SlashCommandBuilder instance.`, false)
             continue
         }
 
@@ -54,7 +54,7 @@ async function getCommands() {
     drawProgressBar(100)
     console.log('')
 
-    PrettyLog.info('All command files processed.')
+    PrettyLog.info('All command files processed.', false)
 
     commands.cache = commandsList
     commands.expired = false
@@ -124,7 +124,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 
         case '/g':
             if (!guildId) {
-                PrettyLog.error('Please specify a guild id')
+                PrettyLog.error('Please specify a guild id', false)
                 break
             }
             guildDeployCommands(guildId)
@@ -132,14 +132,14 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
             
         case '/gd':
             if (!guildId) {
-                PrettyLog.error('Please specify a guild id')
+                PrettyLog.error('Please specify a guild id', false)
                 break
             }
             guildDeleteCommands(guildId)
             break 
 
         default:
-            PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n')
+            PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n', false)
     }
 }
 
@@ -151,7 +151,7 @@ function getRest() {
     const token = getToken()
 
     if (!getClientId() || !token) {
-        PrettyLog.error('Missing clientId or token in config.json')
+        PrettyLog.error('Missing clientId or token in config.json', false)
         process.exit(1)
     }
 
