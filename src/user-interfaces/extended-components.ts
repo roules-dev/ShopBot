@@ -95,6 +95,7 @@ interface ExtendedSelectMenuOptions {
     time: number
 }
 
+// TODO: Replace T extends string with T extends Labelled & Emojiable
 export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Product | Setting | string> extends ExtendedComponent {
     componentType = ComponentType.StringSelect
     customId: string
@@ -137,7 +138,10 @@ export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Produ
         return selectMenu
     }
 
-    private getStringSelectOptions(map: Map<string, T>): StringSelectMenuOptionBuilder[] {
+    private getStringSelectOptions(map: Map<string, T>): StringSelectMenuOptionBuilder[] { 
+        
+        // TODO: correctly handle select menu limitation of 25 options
+        
         const options: StringSelectMenuOptionBuilder[] = []
         map.forEach((value, key) => {
             const label = (typeof value === 'string') ? value : value.name.removeCustomEmojis().ellipsis(100)

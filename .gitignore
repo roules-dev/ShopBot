@@ -6,3 +6,4 @@ logs.txt
 .temp
 *.zip
 tsconfig.tsbuildinfo
+.env

@@ -1,0 +1,203 @@
+{
+    "h3G8N_1F2LzI1T29bjdxJ": {
+        "id": "h3G8N_1F2LzI1T29bjdxJ",
+        "name": "Bookshop",
+        "emoji": "📚",
+        "description": "The small bookshop in the downtown. Here you can buy and read books of all types.",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+        "discountCodes": {
+            "FUZE50": 50
+        },
+        "products": {
+            "nxtWWm9IEe3qSLh4fj5qn": {
+                "id": "nxtWWm9IEe3qSLh4fj5qn",
+                "name": "1984",
+                "emoji": "📕",
+                "description": "A splendid novel by George Orwell",
+                "price": 5.49
+            },
+            "9-fiMoU-faP7vOVhO58Su": {
+                "id": "9-fiMoU-faP7vOVhO58Su",
+                "name": "Between Past and Future",
+                "emoji": "📖",
+                "description": "Hannah Arendt",
+                "price": 5
+            },
+            "SQWzMyipYZO3fnCmhAttr": {
+                "id": "SQWzMyipYZO3fnCmhAttr",
+                "name": "Super Expensive Quantum Physics book",
+                "emoji": "📗",
+                "description": "",
+                "price": 770
+            }
+        }
+    },
+    "TgT-Mhzvj7JPX8Oix_6ru": {
+        "id": "TgT-Mhzvj7JPX8Oix_6ru",
+        "name": "Grocery",
+        "emoji": "🛒",
+        "description": "Buy anything you need here",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+        "discountCodes": {},
+        "products": {}
+    },
+    "-hw7m2WLOmaNKPSbFdajZ": {
+        "id": "-hw7m2WLOmaNKPSbFdajZ",
+        "name": "Bakery",
+        "emoji": "🍞",
+        "description": "The town's best bakery",
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+        "discountCodes": {},
+        "products": {
+            "Uasu0unlCLGnsJNQb_3S0": {
+                "id": "Uasu0unlCLGnsJNQb_3S0",
+                "name": "Baguette",
+                "emoji": "🥖",
+                "description": "A real authentic French Baguette",
+                "price": 0.9
+            },
+            "w9zcCjKIt-yDjhXi2TLMB": {
+                "id": "w9zcCjKIt-yDjhXi2TLMB",
+                "name": "Basic yet very cool bread",
+                "emoji": "🍞",
+                "description": "A quite basic piece of bread",
+                "price": 2
+            },
+            "jREXpbU4e0mrY6K3RzWbY": {
+                "id": "jREXpbU4e0mrY6K3RzWbY",
+                "name": "CROISSANT",
+                "emoji": "🥐",
+                "description": "A delicious tasting Croissant",
+                "price": 1.1
+            },
+            "FbZgPJ-aJOkvm1QAB3ucE": {
+                "id": "FbZgPJ-aJOkvm1QAB3ucE",
+                "name": "Pain au chocolat",
+                "emoji": "🍪",
+                "description": "(it's the only correct name)",
+                "price": 1.2
+            },
+            "6lb722Z-cvgTL23LeXnyZ": {
+                "id": "6lb722Z-cvgTL23LeXnyZ",
+                "name": "Apple Pie",
+                "emoji": "🥧",
+                "description": "",
+                "price": 4
+            },
+            "lfDYxuEIIXzzHQUZfXbPu": {
+                "id": "lfDYxuEIIXzzHQUZfXbPu",
+                "name": "Strawberry Pie",
+                "emoji": "🥧",
+                "description": "",
+                "price": 4
+            },
+            "k1nWe7JbqmwirLQ5XLWXE": {
+                "id": "k1nWe7JbqmwirLQ5XLWXE",
+                "name": "Corn Bread",
+                "emoji": "🍞",
+                "description": "This thing is delicious",
+                "price": 4
+            },
+            "Dfs5AihBk8iBX9by0RL9U": {
+                "id": "Dfs5AihBk8iBX9by0RL9U",
+                "name": "Foccacia",
+                "emoji": "🫓",
+                "description": "",
+                "price": 3
+            },
+            "a8aSYSlPsS9SP5WxNCLq6": {
+                "id": "a8aSYSlPsS9SP5WxNCLq6",
+                "name": "Chouquettes (x12)",
+                "emoji": "<:chouquette:1342277376406716476>",
+                "description": "",
+                "price": 2
+            },
+            "yLs7vNX4Z4j3OFe2VcsmT": {
+                "id": "yLs7vNX4Z4j3OFe2VcsmT",
+                "name": "overcooked baguette",
+                "description": "a little bit burnt baguette, that's why its a bit cheaper",
+                "emoji": "🔥",
+                "price": 0.8
+            }
+        }
+    },
+    "1QsK0ayyoze-Ig3-5GG-T": {
+        "id": "1QsK0ayyoze-Ig3-5GG-T",
+        "name": "Hardware Shop",
+        "emoji": "🛠",
+        "description": "",
+        "discountCodes": {},
+        "products": {
+            "5qpg3DPSth4IG1pAyesc5": {
+                "id": "5qpg3DPSth4IG1pAyesc5",
+                "name": "Boss",
+                "description": "Earn the boss role by buying this !",
+                "emoji": "🧑",
+                "price": 5400,
+                "action": {
+                    "type": "give-role",
+                    "options": {
+                        "roleId": "1197195793191420035"
+                    }
+                }
+            },
+            "iU_U1_JAKqJ1xXj8ePrRf": {
+                "id": "iU_U1_JAKqJ1xXj8ePrRf",
+                "name": "Earn 50 $",
+                "description": "totally not a scam",
+                "emoji": "💵",
+                "price": 51,
+                "action": {
+                    "type": "give-currency",
+                    "options": {
+                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+                        "amount": 50
+                    }
+                }
+            },
+            "m3AmJIuCmlpXYh89Kf-HZ": {
+                "id": "m3AmJIuCmlpXYh89Kf-HZ",
+                "name": "admin give 10000$",
+                "description": "",
+                "emoji": "💵",
+                "price": 0,
+                "action": {
+                    "type": "give-currency",
+                    "options": {
+                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+                        "amount": 10000
+                    }
+                }
+            },
+            "l4b1O42OyoCD1coPstpVx": {
+                "id": "l4b1O42OyoCD1coPstpVx",
+                "name": "Earn Cool Guy Role",
+                "description": "You will be ultra cool",
+                "emoji": "😎",
+                "price": 500,
+                "action": {
+                    "type": "give-role",
+                    "options": {
+                        "roleId": "1358489735542341683"
+                    }
+                }
+            },
+            "XNOw9i0NJGzCbXqSLAWOo": {
+                "id": "XNOw9i0NJGzCbXqSLAWOo",
+                "name": "earn 1 $ but it's very expensive",
+                "description": "if u can, do it",
+                "emoji": "🤑",
+                "price": 1000000,
+                "action": {
+                    "type": "give-currency",
+                    "options": {
+                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+                        "amount": 1000001
+                    }
+                }
+            }
+        },
+        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
+        "reservedTo": "1197195793191420035"
+    }
+}

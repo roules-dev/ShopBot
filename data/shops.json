@@ -1,203 +1,272 @@
 {
-    "h3G8N_1F2LzI1T29bjdxJ": {
-        "id": "h3G8N_1F2LzI1T29bjdxJ",
-        "name": "Bookshop",
-        "emoji": "📚",
-        "description": "The small bookshop in the downtown. Here you can buy and read books of all types.",
-        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-        "discountCodes": {
-            "FUZE50": 50
+    "hr8PKrSqpw588Kw-1ZcgV": {
+        "id": "hr8PKrSqpw588Kw-1ZcgV",
+        "name": "Armor Features",
+        "emoji": "",
+        "description": "",
+        "currency": {
+            "id": "MspWaKdIwc8QwWHi6yRKE",
+            "name": "Sigils",
+            "emoji": ""
         },
+        "discountCodes": {},
         "products": {
-            "nxtWWm9IEe3qSLh4fj5qn": {
-                "id": "nxtWWm9IEe3qSLh4fj5qn",
-                "name": "1984",
-                "emoji": "📕",
-                "description": "A splendid novel by George Orwell",
-                "price": 5.49
-            },
-            "9-fiMoU-faP7vOVhO58Su": {
-                "id": "9-fiMoU-faP7vOVhO58Su",
-                "name": "Between Past and Future",
-                "emoji": "📖",
-                "description": "Hannah Arendt",
-                "price": 5
-            },
-            "SQWzMyipYZO3fnCmhAttr": {
-                "id": "SQWzMyipYZO3fnCmhAttr",
-                "name": "Super Expensive Quantum Physics book",
-                "emoji": "📗",
+            "Eosi5BInNdOlYUHc1RWYs": {
+                "id": "Eosi5BInNdOlYUHc1RWYs",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "Unarmored Defense - Barbarian",
                 "description": "",
-                "price": 770
-            }
-        }
-    },
-    "TgT-Mhzvj7JPX8Oix_6ru": {
-        "id": "TgT-Mhzvj7JPX8Oix_6ru",
-        "name": "Grocery",
-        "emoji": "🛒",
-        "description": "Buy anything you need here",
-        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-        "discountCodes": {},
-        "products": {}
-    },
-    "-hw7m2WLOmaNKPSbFdajZ": {
-        "id": "-hw7m2WLOmaNKPSbFdajZ",
-        "name": "Bakery",
-        "emoji": "🍞",
-        "description": "The town's best bakery",
-        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-        "discountCodes": {},
-        "products": {
-            "Uasu0unlCLGnsJNQb_3S0": {
-                "id": "Uasu0unlCLGnsJNQb_3S0",
-                "name": "Baguette",
-                "emoji": "🥖",
-                "description": "A real authentic French Baguette",
-                "price": 0.9
+                "emoji": "",
+                "price": 1
             },
-            "w9zcCjKIt-yDjhXi2TLMB": {
-                "id": "w9zcCjKIt-yDjhXi2TLMB",
-                "name": "Basic yet very cool bread",
-                "emoji": "🍞",
-                "description": "A quite basic piece of bread",
+            "Cmed6nhCdhDHp6jPScZD3": {
+                "id": "Cmed6nhCdhDHp6jPScZD3",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Bardic Inspiration I\"",
+                "description": "",
+                "emoji": "",
+                "price": 1
+            },
+            "xTLQ23AJIsV-66gq1AVv5": {
+                "id": "xTLQ23AJIsV-66gq1AVv5",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Divine Sense\"",
+                "description": "",
+                "emoji": "",
+                "price": 1
+            },
+            "7Wy8V7FuGm0hpWKsMJThm": {
+                "id": "7Wy8V7FuGm0hpWKsMJThm",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Second Wind\"",
+                "description": "",
+                "emoji": "",
+                "price": 1
+            },
+            "xJHBE0OanexGbN_aLmVRq": {
+                "id": "xJHBE0OanexGbN_aLmVRq",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Defensive and Utility Cleric Domains I\"",
+                "description": "Choose 1 Domain at the start of each new Dive.",
+                "emoji": "",
+                "price": 1
+            },
+            "FOkxBmlQ1EZcXrro42orx": {
+                "id": "FOkxBmlQ1EZcXrro42orx",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Lay on Hands\"",
+                "description": "",
+                "emoji": "",
+                "price": 1
+            },
+            "b6ocD9dkCdQeRnLO9XjiY": {
+                "id": "b6ocD9dkCdQeRnLO9XjiY",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Otherworldly Patron I\"",
+                "description": "Choose 1 Patron at the start of each new Dive.",
+                "emoji": "",
+                "price": 1
+            },
+            "-co3aMZmqQ07ZYxFfH1u0": {
+                "id": "-co3aMZmqQ07ZYxFfH1u0",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Danger Sense\"",
+                "description": "",
+                "emoji": "",
                 "price": 2
             },
-            "jREXpbU4e0mrY6K3RzWbY": {
-                "id": "jREXpbU4e0mrY6K3RzWbY",
-                "name": "CROISSANT",
-                "emoji": "🥐",
-                "description": "A delicious tasting Croissant",
-                "price": 1.1
-            },
-            "FbZgPJ-aJOkvm1QAB3ucE": {
-                "id": "FbZgPJ-aJOkvm1QAB3ucE",
-                "name": "Pain au chocolat",
-                "emoji": "🍪",
-                "description": "(it's the only correct name)",
-                "price": 1.2
-            },
-            "6lb722Z-cvgTL23LeXnyZ": {
-                "id": "6lb722Z-cvgTL23LeXnyZ",
-                "name": "Apple Pie",
-                "emoji": "🥧",
+            "QqTn49ia3lvb8NwpWFC2N": {
+                "id": "QqTn49ia3lvb8NwpWFC2N",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Jack of All Trades\"",
                 "description": "",
-                "price": 4
+                "emoji": "",
+                "price": 2
             },
-            "lfDYxuEIIXzzHQUZfXbPu": {
-                "id": "lfDYxuEIIXzzHQUZfXbPu",
-                "name": "Strawberry Pie",
-                "emoji": "🥧",
+            "j5H3DpVL_WQ44QJhY6a5E": {
+                "id": "j5H3DpVL_WQ44QJhY6a5E",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Song of Rest\"",
                 "description": "",
-                "price": 4
+                "emoji": "",
+                "price": 2
             },
-            "k1nWe7JbqmwirLQ5XLWXE": {
-                "id": "k1nWe7JbqmwirLQ5XLWXE",
-                "name": "Corn Bread",
-                "emoji": "🍞",
-                "description": "This thing is delicious",
-                "price": 4
-            },
-            "Dfs5AihBk8iBX9by0RL9U": {
-                "id": "Dfs5AihBk8iBX9by0RL9U",
-                "name": "Foccacia",
-                "emoji": "🫓",
+            "MJ77UaZvd6y1x7dC5rBB3": {
+                "id": "MJ77UaZvd6y1x7dC5rBB3",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Action Surge\"",
                 "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "DgsjFpdblPgRbF1VMMrbf": {
+                "id": "DgsjFpdblPgRbF1VMMrbf",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Unarmored Movement\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "4t8aD8i-flIXNmfVLhiz2": {
+                "id": "4t8aD8i-flIXNmfVLhiz2",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Cunning Action\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "xW6JvZnLj5HJ06caIgJzQ": {
+                "id": "xW6JvZnLj5HJ06caIgJzQ",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Channel Divinity I + Turn Undead\"",
+                "description": "This can be Purchased as either a Weapon or Armor Feature, additional purchases provide no benefit.",
+                "emoji": "",
+                "price": 2
+            },
+            "-6TkJUXoCfQAhxO2muqs6": {
+                "id": "-6TkJUXoCfQAhxO2muqs6",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Defensive or Utility Cleric Domains II\"",
+                "description": "*Refunds 1 Sigil automatically* Choose 1 Domain at the start of each new Dive. **Requires BOTH Defensive and Utility Cleric Domains I AND Channel Divinity I (from Armor or Weapon)**",
+                "emoji": "",
+                "price": 1,
+                "action": {
+                    "type": "give-currency",
+                    "options": {
+                        "currencyId": "MspWaKdIwc8QwWHi6yRKE",
+                        "amount": 1
+                    }
+                }
+            },
+            "dg5b7BUlMtHIi7xvYcCc0": {
+                "id": "dg5b7BUlMtHIi7xvYcCc0",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Sculpt Spells\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "IWe4vAu6sbLb3vm9Ra62p": {
+                "id": "IWe4vAu6sbLb3vm9Ra62p",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Grim Harvest\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "bM2vxFsUNLtuHiBgH89jC": {
+                "id": "bM2vxFsUNLtuHiBgH89jC",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Eldritch Invocations I\"",
+                "description": "Choose 2 Invocations at the start of each new Dive.",
+                "emoji": "",
+                "price": 2
+            },
+            "XlX29p1ocpqwE6AWMgK9Y": {
+                "id": "XlX29p1ocpqwE6AWMgK9Y",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Arcane Ward\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "doUjFlHzCiwrcHfR2clfy": {
+                "id": "doUjFlHzCiwrcHfR2clfy",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Tactical Wit\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "RNqngCCmdYxQwqoroY1Ky": {
+                "id": "RNqngCCmdYxQwqoroY1Ky",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Portent\"",
+                "description": "",
+                "emoji": "",
+                "price": 2
+            },
+            "beNg4u2I3Drjgk7yFCltU": {
+                "id": "beNg4u2I3Drjgk7yFCltU",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"College of Lore I\"",
+                "description": "**Requires Bardic Inspiration I** Gives Cutting Words",
+                "emoji": "",
                 "price": 3
             },
-            "a8aSYSlPsS9SP5WxNCLq6": {
-                "id": "a8aSYSlPsS9SP5WxNCLq6",
-                "name": "Chouquettes (x12)",
-                "emoji": "<:chouquette:1342277376406716476>",
+            "s_P9kPnFBHo_pE4LaUOSb": {
+                "id": "s_P9kPnFBHo_pE4LaUOSb",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"College of Valor I\"",
+                "description": "**Requires Bardic Inspiration I** Gives Combat Inspiration",
+                "emoji": "",
+                "price": 3
+            },
+            "5uzTwFVUb9x7yf8-t-ywH": {
+                "id": "5uzTwFVUb9x7yf8-t-ywH",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Divine Health\"",
                 "description": "",
-                "price": 2
+                "emoji": "",
+                "price": 3
             },
-            "yLs7vNX4Z4j3OFe2VcsmT": {
-                "id": "yLs7vNX4Z4j3OFe2VcsmT",
-                "name": "overcooked baguette",
-                "description": "a little bit burnt baguette, that's why its a bit cheaper",
-                "emoji": "🔥",
-                "price": 0.8
-            }
-        }
-    },
-    "1QsK0ayyoze-Ig3-5GG-T": {
-        "id": "1QsK0ayyoze-Ig3-5GG-T",
-        "name": "Hardware Shop",
-        "emoji": "🛠",
-        "description": "",
-        "discountCodes": {},
-        "products": {
-            "5qpg3DPSth4IG1pAyesc5": {
-                "id": "5qpg3DPSth4IG1pAyesc5",
-                "name": "Boss",
-                "description": "Earn the boss role by buying this !",
-                "emoji": "🧑",
-                "price": 5400,
-                "action": {
-                    "type": "give-role",
-                    "options": {
-                        "roleId": "1197195793191420035"
-                    }
-                }
+            "_cSxXXJsjEP4tq0KZQzER": {
+                "id": "_cSxXXJsjEP4tq0KZQzER",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Beast Master I\"",
+                "description": "Gives Ranger's Companion",
+                "emoji": "",
+                "price": 3
             },
-            "iU_U1_JAKqJ1xXj8ePrRf": {
-                "id": "iU_U1_JAKqJ1xXj8ePrRf",
-                "name": "Earn 50 $",
-                "description": "totally not a scam",
-                "emoji": "💵",
-                "price": 51,
-                "action": {
-                    "type": "give-currency",
-                    "options": {
-                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-                        "amount": 50
-                    }
-                }
+            "58RJu7QZvJ3l0unNOPHtl": {
+                "id": "58RJu7QZvJ3l0unNOPHtl",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Thief I\"",
+                "description": "Gives Fast Hands + Second-Story Work",
+                "emoji": "",
+                "price": 3
             },
-            "m3AmJIuCmlpXYh89Kf-HZ": {
-                "id": "m3AmJIuCmlpXYh89Kf-HZ",
-                "name": "admin give 10000$",
+            "aGcGAITYqzZ4mhUPRfv6o": {
+                "id": "aGcGAITYqzZ4mhUPRfv6o",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Expertise I\"",
                 "description": "",
-                "emoji": "💵",
-                "price": 0,
-                "action": {
-                    "type": "give-currency",
-                    "options": {
-                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-                        "amount": 10000
-                    }
-                }
+                "emoji": "",
+                "price": 3
             },
-            "l4b1O42OyoCD1coPstpVx": {
-                "id": "l4b1O42OyoCD1coPstpVx",
-                "name": "Earn Cool Guy Role",
-                "description": "You will be ultra cool",
-                "emoji": "😎",
-                "price": 500,
-                "action": {
-                    "type": "give-role",
-                    "options": {
-                        "roleId": "1358489735542341683"
-                    }
-                }
+            "l5dDbb1-KFoK7iNFzHZCh": {
+                "id": "l5dDbb1-KFoK7iNFzHZCh",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Tier 1 Ability Score Improvement\"",
+                "description": "You may spend 2 points to improve your Ability Scores before every Dive. Max 20.",
+                "emoji": "",
+                "price": 4
             },
-            "XNOw9i0NJGzCbXqSLAWOo": {
-                "id": "XNOw9i0NJGzCbXqSLAWOo",
-                "name": "earn 1 $ but it's very expensive",
-                "description": "if u can, do it",
-                "emoji": "🤑",
-                "price": 1000000,
-                "action": {
-                    "type": "give-currency",
-                    "options": {
-                        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-                        "amount": 1000001
-                    }
-                }
+            "SUdMCZyf7HKD31mkiErTY": {
+                "id": "SUdMCZyf7HKD31mkiErTY",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Fast Movement\"",
+                "description": "",
+                "emoji": "",
+                "price": 5
+            },
+            "rKRz0eS0UxF2AKuiuDwwv": {
+                "id": "rKRz0eS0UxF2AKuiuDwwv",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Bardic Inspiration II\"",
+                "description": "**Requires Bardic Inspiration I** Gives Font of Inspiration",
+                "emoji": "",
+                "price": 5
+            },
+            "NiCS6o6ZRkeOxxX3lw8Tw": {
+                "id": "NiCS6o6ZRkeOxxX3lw8Tw",
+                "shopId": "hr8PKrSqpw588Kw-1ZcgV",
+                "name": "\"Uncanny Dodge\"",
+                "description": "",
+                "emoji": "",
+                "price": 5
             }
         },
-        "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-        "reservedTo": "1197195793191420035"
+        "currencyId": "MspWaKdIwc8QwWHi6yRKE"
     }
 }
