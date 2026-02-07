@@ -48,3 +48,5 @@ features
     ├── user-flows
     └── user-interfaces
 ```
+-> use this to segment a little more the code
+-> TODO : add eslint config to enforce this and prevent cross feature implementation
