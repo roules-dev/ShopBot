@@ -27,7 +27,6 @@
 ### Code refactoring
 - [x] Add pagination at the level of user interface class
 - [ ] Improve UI Implementation (no more "start" function - check feasibility first)
-- [ ] improve db implementation
 - [x] switching from uuid to nanoid, for performance improvement 
 - [ ] docker container
 - [ ] improve internationalisation (add fallback for missing translations ...)

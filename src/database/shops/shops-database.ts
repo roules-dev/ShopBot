@@ -58,7 +58,7 @@ export async function removeShop(shopId: string) {
 }
 
 
-export async function updateShop(shopId: string, options: ShopOptionsOptional) {
+export async function updateShop(shopId: string, options: ShopOptionsOptional) { // TODO: to be refactored (if elses are horrible)
     if (!shopsDatabase.shops.has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
     
     const { name, description, emoji, reservedTo } = options
@@ -152,7 +152,7 @@ export async function removeProduct(shopId: string, productId: string) {
     getShops().get(shopId)!.products.delete(productId)
     await shopsDatabase.save()
 }
-export async function updateProduct(shopId: string, productId: string, options: ProductOptionsOptional) {
+export async function updateProduct(shopId: string, productId: string, options: ProductOptionsOptional) { // TODO: to be refactored (if elses are horrible)
     if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist)
     
     const { name, description, price, emoji, action, amount } = options

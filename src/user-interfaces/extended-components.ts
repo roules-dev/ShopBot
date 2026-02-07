@@ -5,6 +5,18 @@ import { Product, Shop } from "../database/shops/shops-types.js"
 import { getLocale, replaceTemplates } from "../utils/localisation.js"
 import { UserInterfaceComponentBuilder } from "./user-interfaces.js"
 
+type Identifiable = {
+    id: string
+}
+
+type Labelled = {
+    name: string
+}
+
+type Emojiable = {
+    emoji?: string
+}
+
 export abstract class ExtendedComponent {
     abstract componentType: ComponentType
     abstract customId: string
@@ -95,8 +107,7 @@ interface ExtendedSelectMenuOptions {
     time: number
 }
 
-// TODO: Replace T extends string with T extends Labelled & Emojiable
-export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Product | Setting | string> extends ExtendedComponent {
+export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Product | Setting & Emojiable | Identifiable & Labelled & Emojiable> extends ExtendedComponent {
     componentType = ComponentType.StringSelect
     customId: string
     component: StringSelectMenuBuilder
@@ -120,7 +131,6 @@ export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Produ
         if (!interaction.isStringSelectMenu()) return
 
         let selected = this.map.get(interaction.values[0])
-        if (typeof selected === 'string') selected = interaction.values[0] as T
         
         if (selected == undefined) return
 
@@ -144,13 +154,13 @@ export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Produ
         
         const options: StringSelectMenuOptionBuilder[] = []
         map.forEach((value, key) => {
-            const label = (typeof value === 'string') ? value : value.name.removeCustomEmojis().ellipsis(100)
+            const label = value.name.removeCustomEmojis().ellipsis(100)
 
             const option = new StringSelectMenuOptionBuilder()
                 .setLabel(label)
                 .setValue(key)
 
-            if (typeof value === 'object' && 'emoji' in value && typeof value.emoji === 'string' && value.emoji.length > 0) {
+            if (value.emoji != undefined && value.emoji.length > 0) {
                 option.setEmoji(value.emoji)
             }
 
@@ -168,34 +178,40 @@ export class ExtendedStringSelectMenuComponent<T extends Currency | Shop | Produ
 
 
 
+type SelectMenuComponentTypes = ComponentType.RoleSelect | ComponentType.ChannelSelect | ComponentType.UserSelect
 
-type SelectMenuBuilders<T extends MessageComponentType> = 
+type SelectMenuBuilders<T extends SelectMenuComponentTypes> = 
     T extends ComponentType.RoleSelect ? RoleSelectMenuBuilder : 
     T extends ComponentType.ChannelSelect ? ChannelSelectMenuBuilder :
     T extends ComponentType.UserSelect ? UserSelectMenuBuilder : 
     never
 
-type SelectMenuInteractions<T extends MessageComponentType> = 
+type SelectMenuInteractions<T extends SelectMenuComponentTypes> = 
     T extends ComponentType.RoleSelect ? RoleSelectMenuInteraction : 
     T extends ComponentType.ChannelSelect ? ChannelSelectMenuInteraction :
     T extends ComponentType.UserSelect ? UserSelectMenuInteraction : 
     never
 
-export abstract class ExtendedSelectMenuComponent<T extends MessageComponentType> extends ExtendedComponent {
+abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> extends ExtendedComponent {
     override customId: string
-    abstract override component: SelectMenuBuilders<T>
+    override component: SelectMenuBuilders<T>
 
     callback: (interaction: SelectMenuInteractions<T>, selected: Snowflake) => void
     time: number
 
-    constructor({ customId, time }: Omit<ExtendedSelectMenuOptions, 'placeholder'>, 
-        callback: (interaction: SelectMenuInteractions<T>, selected: Snowflake) => void
+    constructor(options: ExtendedSelectMenuOptions, 
+        callback: (interaction: SelectMenuInteractions<T>, selected: Snowflake) => void,
+        componentBuilder: SelectMenuBuilders<T>
     ) {
         super()
-        this.customId = customId
+        this.customId = options.customId
+        this.component = componentBuilder
+            .setCustomId(options.customId)
+            .setPlaceholder(options.placeholder) as SelectMenuBuilders<T>
         
         this.callback = callback
-        this.time = time
+        this.time = options.time
+
     }
 
     onCollect(interaction: SelectMenuInteractions<T>): void {
@@ -206,64 +222,53 @@ export abstract class ExtendedSelectMenuComponent<T extends MessageComponentType
     }
 
     onEnd(collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+
 }
 
 interface ExtendedChannelSelectOptions extends ExtendedSelectMenuOptions {
     channelTypes?: ChannelType[]
 }
 
+
 export class ExtendedChannelSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.ChannelSelect> {
     override componentType = ComponentType.ChannelSelect
-    override component: ChannelSelectMenuBuilder
     
     constructor({ customId, placeholder, time, channelTypes }: ExtendedChannelSelectOptions, 
         callback: (interaction: ChannelSelectMenuInteraction, selectedChannelId: Snowflake) => void
     ) {
-        super({ customId, time }, callback)
+        super({ customId, time, placeholder}, callback, new ChannelSelectMenuBuilder())
 
-        this.component = new ChannelSelectMenuBuilder()
-            .setCustomId(customId)
-            .setPlaceholder(placeholder)
-        
         if (channelTypes) this.component.setChannelTypes(channelTypes)
     }
 }
 
 export class ExtendedRoleSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.RoleSelect> {
     override componentType = ComponentType.RoleSelect
-    override component: RoleSelectMenuBuilder
-    
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
         callback: (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => void
     ) {
-        super({ customId, time }, callback)
-
-        this.component = new RoleSelectMenuBuilder()
-            .setCustomId(customId)
-            .setPlaceholder(placeholder)
+        super({ customId, time, placeholder }, callback, new RoleSelectMenuBuilder())
     }
 }
 
 
 export class ExtendedUserSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.UserSelect> {
     override componentType = ComponentType.UserSelect
-    override component: UserSelectMenuBuilder
-    
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
         callback: (interaction: UserSelectMenuInteraction, selectedUserId: Snowflake) => void
     ) {
-        super({ customId, time }, callback)
-
-        this.component = new UserSelectMenuBuilder()
-            .setCustomId(customId)
-            .setPlaceholder(placeholder)
+        super({ customId, time, placeholder }, callback, new UserSelectMenuBuilder())
     }
 }
+
+const YES = 'yes'
+const NO = 'no'
 
 export async function showConfirmationModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction): Promise<[ModalSubmitInteraction, boolean]> {
     const strings = getLocale().extendedComponents.confirmationModal
 
     const modalId = 'confirmation-modal'
+    const labelId = 'confirm-select-menu'
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
@@ -272,17 +277,17 @@ export async function showConfirmationModal(interaction: MessageComponentInterac
     const label = new LabelBuilder()
         .setLabel(strings.cantBeUndone)
         .setStringSelectMenuComponent(new StringSelectMenuBuilder()
-            .setCustomId('confirm-select-menu')
+            .setCustomId(labelId)
             .setPlaceholder(strings.selectYes)
             .addOptions(
                 new StringSelectMenuOptionBuilder()
                     .setLabel(strings.yes)
-                    .setValue('yes')
+                    .setValue(YES)
             )
             .addOptions(
                 new StringSelectMenuOptionBuilder()
                     .setLabel(strings.no)
-                    .setValue('no')
+                    .setValue(NO)
             )
         )
 
@@ -296,7 +301,7 @@ export async function showConfirmationModal(interaction: MessageComponentInterac
     if (!modalSubmit.isFromMessage()) return [modalSubmit, false]
     await modalSubmit.deferUpdate()
 
-    return [modalSubmit, modalSubmit.fields.getStringSelectValues('confirm-select-menu')[0] == 'yes']
+    return [modalSubmit, modalSubmit.fields.getStringSelectValues(labelId)[0] == YES]
 }
 
 export type EditModalOptions = {

@@ -246,8 +246,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             case 'enum':
                 const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === 'object'
                 const optionsMap = optionsAreObjects
-                    ? new Map((setting.options as Record<string, string>[]).map(option => [option.value, option.label]))
-                    : new Map((setting.options as string[]).map(option => [option, option]))
+                    ? new Map((setting.options as Record<string, string>[]).map(option => [option.value, {id: option.value, name: option.label}]))
+                    : new Map((setting.options as string[]).map(option => [option, {id: option, name: option}]))
 
                 const optionSelectMenu = new ExtendedStringSelectMenuComponent(
                     {
@@ -259,8 +259,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                         time: 120_000
                     },
                     optionsMap,
-                    async (interaction: StringSelectMenuInteraction, selectedOption: string) => {
-                        this.selectedSetting = await setSetting(setting.id, selectedOption)
+                    async (interaction: StringSelectMenuInteraction, selectedOption: {id: string, name: string}) => {
+                        this.selectedSetting = await setSetting(setting.id, selectedOption.id)
                         this.updateInteraction(interaction)
                     }
                 )

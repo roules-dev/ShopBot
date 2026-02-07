@@ -42,7 +42,7 @@ export async function removeCurrency(currencyId: string) {
     currenciesDatabase.save()
 }
 
-export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {
+export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {  // TODO: to be refactored (if elses are horrible)
     if (!currenciesDatabase.currencies.has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
     
     const { name, emoji } = options

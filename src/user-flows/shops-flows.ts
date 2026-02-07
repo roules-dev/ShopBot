@@ -178,7 +178,8 @@ export class ShopRemoveFlow extends UserFlow {
             customId: `${this.id}+select-shop`,
             placeholder: defaultComponents().selectShop,
             time: 120_000
-        }, getShops(), (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+        }, getShops(), 
+            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
             this.selectedShop = selected
             this.updateInteraction(interaction)
         })
@@ -432,15 +433,15 @@ export class EditShopFlow extends UserFlow {
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
-            customId: `${this.id}+select-shop`,
-            placeholder: defaultComponents().selectShop,
-            time: 120_000,
-        },
-        getShops(),
-        (interaction: StringSelectMenuInteraction, selected: Shop): void => {
-            this.selectedShop = selected
-            this.updateInteraction(interaction)
-        },
+                customId: `${this.id}+select-shop`,
+                placeholder: defaultComponents().selectShop,
+                time: 120_000,
+            },
+            getShops(),
+            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+                this.selectedShop = selected
+                this.updateInteraction(interaction)
+            },
         )
 
         const submitButton = new ExtendedButtonComponent(
@@ -898,7 +899,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)    
         this.components.set(submitButton.customId, submitButton)
 
-        const discountCodeSelectMenu = new ExtendedStringSelectMenuComponent<string>({
+        const discountCodeSelectMenu = new ExtendedStringSelectMenuComponent({
             customId: `${this.id}+select-discount-code`,
             placeholder: this.locale.components.discountCodeSelect,
             time: 120_000,
@@ -960,7 +961,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
             const selectDiscountCodeMenu = this.components.get(`${this.id}+select-discount-code`)
             if (selectDiscountCodeMenu instanceof ExtendedStringSelectMenuComponent) {
-                selectDiscountCodeMenu.updateMap(new Map(Object.keys(this.selectedShop?.discountCodes || {}).map(code => [code, code])))
+                selectDiscountCodeMenu.updateMap(new Map(Object.keys(this.selectedShop?.discountCodes || {}).map(code => [code, {id: code, name: code}])))
             }
         }
     }
