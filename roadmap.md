@@ -32,4 +32,8 @@
 - [ ] docker container
 - [ ] improve internationalisation (add fallback for missing translations ...)
 - [ ] more verbose logging for debugging purposes
+- [ ] improve error handling (implement result pattern)
+- [ ] improve data access, add abstraction to avoid errors and repeated code
+- [ ] branded IDs ? 
+- [ ] improve folder structure (implement feature base folder structure)
 
