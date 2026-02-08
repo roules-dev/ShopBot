@@ -1,4 +1,4 @@
-import { PRODUCT_ACTION_TYPE } from "@/features/shops/database/shops-types.js"
+import { PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
 import { EditProductOption, AddActionProductFlow, AddProductFlow, RemoveProductFlow, EditProductFlow } from "@/features/shops/user-flows/product-flows.js"
 import { replyErrorMessage } from "@/utils/discord.js"
 import { errorMessages } from "@/utils/localisation.js"
@@ -129,13 +129,11 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
                 break
             }
 
-            const addProductFlow = new AddProductFlow()
-            addProductFlow.start(interaction)
+            new AddProductFlow().start(interaction)
             break
 
         case 'remove':
-            const removeProductFlow = new RemoveProductFlow()
-            removeProductFlow.start(interaction)
+            new RemoveProductFlow().start(interaction)
 
             break
             

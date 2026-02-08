@@ -503,10 +503,11 @@ export class EditShopFlow extends UserFlow {
             case EDIT_SHOP_OPTIONS.Description:
                 updateValue = interaction.options.getString('new-description')?.replaceSpaces() ?? defaultComponents().unset
                 break
-            case EDIT_SHOP_OPTIONS.Emoji:
+            case EDIT_SHOP_OPTIONS.Emoji: {
                 const emojiOption = interaction.options.getString('new-emoji')
                 updateValue = emojiOption?.match(EMOJI_REGEX)?.[0] ?? defaultComponents().unset
                 break
+            }
             case EDIT_SHOP_OPTIONS.ReservedTo:
                 updateValue = interaction.options.getRole('reserved-to-role')?.id ?? defaultComponents().unset
                 break
@@ -525,11 +526,11 @@ export class EditShopFlow extends UserFlow {
 
     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string | null {
         switch (subcommand) {
-            case EDIT_SHOP_OPTIONS.ReservedTo:
+            case EDIT_SHOP_OPTIONS.ReservedTo: {
                 const role = interaction.options.getRole('reserved-to-role')
                 if (!role) return defaultComponents().unset
                 return roleMention(role.id)
-            
+            }
             default:
                 return null
         }

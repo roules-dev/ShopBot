@@ -12,6 +12,10 @@ export function getSetting(id: string): Setting | undefined {
     return settingsDatabase.settings.get(id)
 }
 
+
+// TODO : get rid of this value: any for a more type safe way of doing it
+// -> no idea of how yet
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function setSetting(id: string, value: any): Promise<Setting> {
     if (!settingsDatabase.settings.has(id)) throw new Error("Setting does not exist")
 

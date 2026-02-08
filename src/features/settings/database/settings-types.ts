@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Database, DatabaseError, DatabaseErrors } from "@/database/database-types.js";
 import { assertNeverReached } from "@/utils/utils.js";
 import { Snowflake } from "discord.js";
@@ -25,9 +26,8 @@ export type Setting = { id: string, name: string } & ({
     value: string | undefined
     options: string[] | { label: string, value: string }[]
     type: "enum"
-}) 
+})
 
-    
 function isSettingType(type: unknown): type is SettingType {
     return settingTypes.includes(type as SettingType)
 }
@@ -78,7 +78,6 @@ export class SettingsDatabase extends Database {
         for (const [id, setting] of Object.entries(databaseRaw)) {
             if (!(isSettingType(setting.type))) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
             
-            const name = setting.name
             const value = setting.value
 
             if(settings.has(id)) throw new DatabaseError(DatabaseErrors.DuplicateSettingName)
@@ -105,7 +104,7 @@ export class SettingsDatabase extends Database {
                     settings.set(id, { ...setting, value: value as boolean, type: setting.type })
                     break
 
-                case "number":
+                case "number": {
                     if (!(typeof value === "number")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
 
                     let clampedvalue = value as number
@@ -114,7 +113,7 @@ export class SettingsDatabase extends Database {
 
                     settings.set(id, { ...setting, value: value as number, type: setting.type })
                     break
-
+                }
                 case "enum":
                     if (!(typeof value === "string")) throw new DatabaseError(DatabaseErrors.InvalidSettingType)
                     if (setting.options === undefined) throw new DatabaseError(DatabaseErrors.InvalidSettingType)

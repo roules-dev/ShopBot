@@ -26,7 +26,11 @@ export class DatabaseError extends Error {
     }
 }
 
-export interface DatabaseJSONBody {}
+
+export interface DatabaseJSONBody {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any
+}
 
 export abstract class Database {
     public path: string
@@ -39,15 +43,13 @@ export abstract class Database {
     
     protected abstract parseRaw(databaseRaw: DatabaseJSONBody): unknown 
     
-    public save = () => new Promise<boolean>(async (resolve, _reject) => {
+    public async save () {
         try {
             await fs.writeFile(this.path, JSON.stringify(this.toJSON(), null, 4))
     
-            resolve(true)
-        } catch (error) {
-            resolve(false)
+            return true
+        } catch {
+            return false
         }
-    })  
+    }
 }
-
-

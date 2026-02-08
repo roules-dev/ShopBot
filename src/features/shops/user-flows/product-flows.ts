@@ -9,8 +9,11 @@ import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from 
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
 import { assertNeverReached } from "@/utils/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
-import { addProduct, getProductName, getShopName, getShops, removeProduct, updateProduct } from "../database/shops-database.js"
-import { createProductAction, isProductActionType, Product, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType, Shop } from "../database/shops-types.js"
+import { addProduct, getProductName, removeProduct, updateProduct } from "../database/products-database.js";
+import { ProductActionType, ProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductActionOptions, createProductAction, Product } from "../database/products-types.js";
+import { getShops, getShopName } from "../database/shops-database.js";
+import { Shop } from "../database/shops-types.js";
+
 
 export class AddProductFlow extends UserFlow {
     public id = "add-product"
@@ -118,7 +121,7 @@ export class AddProductFlow extends UserFlow {
         try {
             if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            const newProduct = await addProduct(this.selectedShop.id, { 
+            await addProduct(this.selectedShop.id, { 
                 name: this.productName, 
                 description: this.productDescription || '', 
                 emoji: this.productEmoji || '', 
@@ -170,7 +173,7 @@ export class AddActionProductFlow extends AddProductFlow {
             case AddActionProductFlowStage.SELECT_SHOP:
                 return super.getMessage()
 
-            case AddActionProductFlowStage.SETUP_ACTION: 
+            case AddActionProductFlowStage.SETUP_ACTION: {
                 const descString = (this.productDescription) ? `. ${this.locale.messages.description} ${bold(this.productDescription.replaceSpaces())}` : ''
                 const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ''}${this.productName}`)
 
@@ -185,7 +188,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 let actionString = ''
 
                 switch (this.productActionType) {
-                    case PRODUCT_ACTION_TYPE.GiveRole:
+                    case PRODUCT_ACTION_TYPE.GiveRole: {
                         const roleMentionString = 
                             (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole> | undefined)?.roleId ? 
                             roleMention((this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole>).roleId) : 
@@ -193,8 +196,9 @@ export class AddActionProductFlow extends AddProductFlow {
 
                         actionString = replaceTemplates(this.locale.messages.actions.giveRole, { role: roleMentionString })
                         break
+                    }
 
-                    case PRODUCT_ACTION_TYPE.GiveCurrency:
+                    case PRODUCT_ACTION_TYPE.GiveCurrency: {
                         const productActionAsGiveCurrency = (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>)
                         const isProductActionGiveCurrency = this.productAction != null 
                             && this.productAction?.options != undefined 
@@ -208,11 +212,13 @@ export class AddActionProductFlow extends AddProductFlow {
 
                         actionString = replaceTemplates(this.locale.messages.actions.giveCurrency, { amount: amountString, currency: currencyString })
                         break
+                    }
                     default:
                         break
                 }
 
-                return `${productString}\n${this.locale.messages.action} ${actionString}`
+                return `${productString}\n${this.locale.messages.action} ${actionString}`}
+
         }
     }
 
@@ -223,7 +229,7 @@ export class AddActionProductFlow extends AddProductFlow {
 
         this.componentsByStage.set(AddActionProductFlowStage.SETUP_ACTION, new Map())
         switch (this.productActionType) {
-            case PRODUCT_ACTION_TYPE.GiveRole:
+            case PRODUCT_ACTION_TYPE.GiveRole: {
                 const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
                     {
                         customId: `${this.id}+select-role`,
@@ -239,8 +245,8 @@ export class AddActionProductFlow extends AddProductFlow {
 
                 this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(roleSelectMenu.customId, roleSelectMenu)
                 break;
-        
-            case PRODUCT_ACTION_TYPE.GiveCurrency:
+            }
+            case PRODUCT_ACTION_TYPE.GiveCurrency: {
                 const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
                     {
                         customId: `${this.id}+select-currency`,
@@ -281,7 +287,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(currencySelectMenu.customId, currencySelectMenu)
                 this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(setAmountButton.customId, setAmountButton)
                 break
-
+            }
             default:
                 break   
         }
@@ -357,7 +363,7 @@ export class AddActionProductFlow extends AddProductFlow {
         try {
             if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            const newProduct = await addProduct(this.selectedShop.id, { 
+            await addProduct(this.selectedShop.id, { 
                 name: this.productName, 
                 description: this.productDescription || '', 
                 emoji: this.productEmoji || '', 
@@ -796,13 +802,15 @@ export class EditProductFlow extends UserFlow {
             case EditProductOption.NAME:
             case EditProductOption.DESCRIPTION:
                 return interaction.options.getString(interactionOption)?.replaceSpaces() ?? null
-            case EditProductOption.PRICE:
+            case EditProductOption.PRICE: {
                 const priceString = interaction.options.getNumber(interactionOption)?.toFixed(2)
                 if (priceString == undefined) return null
                 return +priceString
-            case EditProductOption.EMOJI:
+            }
+            case EditProductOption.EMOJI: {
                 const emojiOption = interaction.options.getString(interactionOption)
                 return emojiOption?.match(EMOJI_REGEX)?.[0] ?? null
+            }
             case EditProductOption.AMOUNT:
                 return interaction.options.getInteger(interactionOption)
             default:

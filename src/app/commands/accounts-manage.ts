@@ -70,33 +70,27 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
     const subCommand = interaction.options.getSubcommand()
 
     switch (subCommand) {
-        case 'view-account':
+        case 'view-account': {
             const user = interaction.options.getUser('target')
             if (!user) {
                 replyErrorMessage(interaction, errorMessages().insufficientParameters)
                 break
             }
     
-            const accountUI = new AccountUserInterface(user)
-            accountUI.display(interaction)
+            new AccountUserInterface(user).display(interaction)
             
             break
+        }
         case 'give':
-            const accountGiveFlow = new AccountGiveFlow()
-            accountGiveFlow.start(interaction)    
-
+            new AccountGiveFlow().start(interaction)    
             break
 
         case 'bulk-give':
-            const accountBulkGiveFlow = new BulkAccountGiveFlow()
-            accountBulkGiveFlow.start(interaction)
-            
+            new BulkAccountGiveFlow().start(interaction)
             break
 
         case 'take':
-            const accountTakeFlow = new AccountTakeFlow()
-            accountTakeFlow.start(interaction)
-            
+            new AccountTakeFlow().start(interaction)
             break
         default:
             await replyErrorMessage(interaction, errorMessages().invalidSubcommand)

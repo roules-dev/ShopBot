@@ -66,9 +66,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
             await createCurrencyCommand(client, interaction)
             break
         case 'remove':
-            const currencyRemoveFlow = new CurrencyRemoveFlow()
-            currencyRemoveFlow.start(interaction)
-
+            new CurrencyRemoveFlow().start(interaction)
             break 
         default:
             if (subCommandGroup == 'edit') {

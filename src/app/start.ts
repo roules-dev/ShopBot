@@ -11,6 +11,7 @@ const __dirname = path.dirname(__filename);
 
 interface Command {
     data: SlashCommandBuilder,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     execute: (client: Client, interaction: Interaction, ...args: any) => Promise<void>
 }
 

@@ -224,9 +224,10 @@ export class EditCurrencyFlow extends UserFlow {
         switch (option) {
             case EditCurrencyOption.NAME:
                 return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ''
-            case EditCurrencyOption.EMOJI:
+            case EditCurrencyOption.EMOJI: {
                 const emojiOption = interaction.options.getString(`new-${option}`)
                 return emojiOption?.match(EMOJI_REGEX)?.[0] || ''
+            }
             default:
                 assertNeverReached(option)
         }

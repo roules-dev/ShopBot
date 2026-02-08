@@ -1,6 +1,7 @@
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js"
 import { replyErrorMessage, updateAsErrorMessage } from "../utils/discord.js"
 import { ExtendedButtonComponent, ExtendedComponent } from "./extended-components.js"
+import { PrettyLog } from "@/utils/pretty-log.js"
 
 export type UserInterfaceInteraction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction
 export type UserInterfaceComponentBuilder = ButtonBuilder | StringSelectMenuBuilder | RoleSelectMenuBuilder | ChannelSelectMenuBuilder | UserSelectMenuBuilder
@@ -75,6 +76,7 @@ export abstract class UserInterface {
             else {
                 replyErrorMessage(interaction)
             }
+            PrettyLog.error(`${error}`)
         }
     }
 
@@ -98,7 +100,7 @@ export abstract class UserInterface {
 }
 
 export abstract class MessageUserInterface extends UserInterface {
-    protected async predisplay(interaction: UserInterfaceInteraction): Promise<any> {}
+    protected predisplay(_interaction: UserInterfaceInteraction) {}
 
     protected setup(_interaction: UserInterfaceInteraction): void {
         this.initComponents()
@@ -160,7 +162,9 @@ export abstract class EmbedUserInterface extends MessageUserInterface {
     protected abstract updateEmbeds(): void
 }
 
-type AbstractConstructor<T = {}> = abstract new (...args: any[]) => T
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AbstractConstructor<T = unknown> = abstract new (...args: any[]) => T
 
 function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: TBase) {
     abstract class Paginated extends Base {

@@ -36,7 +36,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.user = user
     }
 
-    protected override async predisplay(interaction: UserInterfaceInteraction) {
+    protected override async predisplay(_interaction: UserInterfaceInteraction) {
         this.account = await getOrCreateAccount(this.user.id)
     }
 

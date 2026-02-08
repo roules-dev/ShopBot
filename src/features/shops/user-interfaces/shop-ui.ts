@@ -4,11 +4,13 @@ import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInterac
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
 import { APIEmbedField, bold, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
-import { getProductName, getShopName, getShops, updateProduct } from "../database/shops-database.js"
-import { Product, PRODUCT_ACTION_TYPE, Shop } from "../database/shops-types.js"
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js" // external dependency, should be refactored
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js" // external dependency, should be refactored
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js" // external dependency, should be refactored
+import { getProductName, updateProduct } from "../database/products-database.js"
+import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
+import { getShops, getShopName } from "../database/shops-database.js"
+import { Shop } from "../database/shops-types.js"
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'
@@ -24,11 +26,11 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected locale = getLocale().userInterfaces.shop
 
-    protected override async predisplay(interaction: UserInterfaceInteraction): Promise<any> {
+    protected override async predisplay(interaction: UserInterfaceInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
 
-        this.selectedShop = shops.entries().next().value?.[1]!
+        this.selectedShop = shops.values().next().value!
 
         this.member = interaction.member as GuildMember ?? null
     }
@@ -188,7 +190,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.selectedShop = selectedShop
     }
 
-    protected override async predisplay(interaction: UserInterfaceInteraction): Promise<any> {
+    protected override async predisplay(interaction: UserInterfaceInteraction) {
         if (!this.selectedShop.products.size) return await replyErrorMessage(interaction, errorMessages().noProducts)
     }
 
@@ -345,7 +347,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         let actionMessage = ''
 
         switch (this.selectedProduct.action?.type) {
-            case PRODUCT_ACTION_TYPE.GiveRole:
+            case PRODUCT_ACTION_TYPE.GiveRole: {
                 const roleId = this.selectedProduct.action.options.roleId
                 if (!roleId) return
 
@@ -356,8 +358,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 actionMessage = replaceTemplates(this.locale.actionProducts.giveRole.message, { role: bold(roleMention(roleId)) })
                 break
-
-            case PRODUCT_ACTION_TYPE.GiveCurrency:
+            }
+            case PRODUCT_ACTION_TYPE.GiveCurrency: {
                 const currency = this.selectedProduct.action.options.currencyId
                 if (!currency) return
 
@@ -371,6 +373,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 actionMessage = replaceTemplates(this.locale.actionProducts.giveCurrency.message, { currency: getCurrencyName(currency)!, amount })
                 break
+            }
             default:
                 break
         }

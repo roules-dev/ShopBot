@@ -71,9 +71,16 @@ async function getLocaleStrings(path: string[], maxLength?: number): Promise<{ [
     const result: { [key: string]: string | undefined } = {}
 
     for (const localeCode in locales) {
-        const locale = locales[localeCode] as any
-        let current = locale
+        const locale = locales[localeCode]
+        
+        // TODO: check if this can be done otherwise
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let current = locale as any
+
         for (const key of path) {
+            if (!(key in current)) {
+                break
+            }
             current = current[key]
             if (!current) break
         }

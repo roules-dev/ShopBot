@@ -66,7 +66,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return
     }
 
-    protected override initEmbeds(interaction: UserInterfaceInteraction) {
+    protected override initEmbeds(_interaction: UserInterfaceInteraction) {
         const settingsEmbed = new EmbedBuilder()
             .setTitle(this.locale.embeds.settings.title)
             .setDescription(this.locale.embeds.settings.description)
@@ -123,10 +123,10 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     private getSettingEditorComponents(setting: Setting): ExtendedComponent[] {
-        let components: ExtendedComponent[] = []
+        const components: ExtendedComponent[] = []
 
         switch (setting.type) {
-            case 'string':
+            case 'string': {
                 const showStringEditModalButton = new ExtendedButtonComponent(
                     {
                         customId: 'edit-setting+string',
@@ -144,8 +144,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
                 components.push(showStringEditModalButton)
                 break
-
-            case 'bool':
+            }
+            case 'bool': {
                 const [toggleOn, toggleOff] = [this.locale.components.toggleEditor.toggleOn, this.locale.components.toggleEditor.toggleOff]
 
                 const toggleButton = new ExtendedButtonComponent(
@@ -164,8 +164,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
                 components.push(toggleButton)
                 break
-
-            case 'number':
+            }
+            case 'number': {
                 const showNumberEditModalButton = new ExtendedButtonComponent(
                     {
                         customId: 'edit-setting+number',
@@ -188,8 +188,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
                 components.push(showNumberEditModalButton)
                 break
-
-            case 'channelId':
+            }
+            case 'channelId': {
                 const channelSelectMenu = new ExtendedChannelSelectMenuComponent(
                     { 
                         customId: 'edit-setting+channel', 
@@ -207,8 +207,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             
                 components.push(channelSelectMenu)
                 break
-
-            case 'roleId':
+            }
+            case 'roleId': {
                 const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
                     { 
                         customId: 'edit-setting+role', 
@@ -225,8 +225,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             
                 components.push(roleSelectMenu)
                 break
-
-            case 'userId':
+            }
+            case 'userId': {
                 const userSelectMenu = new ExtendedUserSelectMenuComponent(
                     { 
                         customId: 'edit-setting+user', 
@@ -243,8 +243,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             
                 components.push(userSelectMenu)
                 break
-
-            case 'enum':
+            }
+            case 'enum': {
                 const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === 'object'
                 const optionsMap = optionsAreObjects
                     ? new Map((setting.options as Record<string, string>[]).map(option => [option.value, {id: option.value, name: option.label}]))
@@ -268,6 +268,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
                 components.push(optionSelectMenu)
                 break
+            }
                 
             default:
                 assertNeverReached(setting)

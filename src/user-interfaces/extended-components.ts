@@ -18,6 +18,7 @@ export abstract class ExtendedComponent {
     abstract componentType: ComponentType
     abstract customId: string
     protected abstract component: UserInterfaceComponentBuilder
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     protected abstract callback: (...args: any[]) => void
     abstract time: number
 
@@ -95,7 +96,7 @@ export class ExtendedButtonComponent extends ExtendedComponent {
         this.callback(interaction)
     }
 
-    onEnd(collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 }
 
 interface ExtendedSelectMenuOptions {
@@ -127,14 +128,14 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     onCollect(interaction: StringSelectMenuInteraction): void {
         if (!interaction.isStringSelectMenu()) return
 
-        let selected = this.map.get(interaction.values[0])
+        const selected = this.map.get(interaction.values[0])
         
         if (selected == undefined) return
 
         this.callback(interaction, selected)    
     }
 
-    onEnd(collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 
     private createSelectMenu(id: string, placeholder: string, map: Map<string, T>): StringSelectMenuBuilder {
         const selectMenu = new StringSelectMenuBuilder()
@@ -218,7 +219,7 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
         this.callback(interaction, selected)    
     }
 
-    onEnd(collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 
 }
 

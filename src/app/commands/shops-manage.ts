@@ -118,26 +118,19 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
 
     switch (subCommand) {
         case 'create':
-            const createShopFlow = new ShopCreateFlow()
-            createShopFlow.start(interaction)
+            new ShopCreateFlow().start(interaction)
             break
         case 'remove':
-            const removeShopFlow = new ShopRemoveFlow()
-            removeShopFlow.start(interaction)
+            new ShopRemoveFlow().start(interaction)
             break
         case 'reorder':
-            const reorderShopsFlow = new ShopReorderFlow()
-            reorderShopsFlow.start(interaction)
+            new ShopReorderFlow().start(interaction)
             break
         case 'create-discount-code':
-            const createDiscountCodeFlow = new DiscountCodeCreateFlow()
-            createDiscountCodeFlow.start(interaction)    
-
+            new DiscountCodeCreateFlow().start(interaction)
             break
         case 'remove-discount-code':
-            const removeDiscountCodeFlow = new DiscountCodeRemoveFlow()
-            removeDiscountCodeFlow.start(interaction)
-
+            new DiscountCodeRemoveFlow().start(interaction)
             break
         default:
             if (subCommandGroup == 'edit') {

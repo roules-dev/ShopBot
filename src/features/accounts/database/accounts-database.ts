@@ -1,9 +1,9 @@
 import accounts from '@/../data/accounts.json' with { type: 'json' }; // maybe to be refactored (absolute path or something, alias ??)
 import { DatabaseError, DatabaseErrors } from '@/database/database-types.js';
 import { getCurrencies } from '@/features/currencies/database/currencies-database.js';
-import { Product } from '@/features/shops/database/shops-types.js';
 import { Snowflake } from "discord.js";
 import { Account, AccountsDatabase } from "./accounts-type.js";
+import { Product } from '@/features/shops/database/products-types.js';
 
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
 
@@ -47,7 +47,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
 
 export async function setAccountItemAmount(id: Snowflake, product: Product, amount: number) {
     const account = await getOrCreateAccount(id)
-    let productBalance = account.inventory.get(product.id)
+    const productBalance = account.inventory.get(product.id)
 
     if (!productBalance) {
         account.inventory.set(product.id, 

@@ -61,48 +61,51 @@ async function getCommands() {
     return commandsList
 }
 
-function appDeployCommands() {
-    return new Promise(async (resolve, reject) => {
-        getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
-            .then(() => {
-                PrettyLog.success('Successfully registered application commands.', false)
-                resolve(true)
-            })
-            .catch(reject)
-        })
-
-}
-function appDeleteCommands() {
-    return new Promise((resolve, reject) => {
-        getRest().put(Routes.applicationCommands(getClientId()), { body: [] })
-            .then(() => {
-                PrettyLog.success('Successfully deleted application commands.', false)
-                resolve(true)
-            })
-            .catch(reject)
-    })
+async function appDeployCommands() { 
+    try {
+        await  getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
+        PrettyLog.success('Successfully registered application commands.', false)
+        return true
+    } catch {
+        return false
+    }
 }
 
-function guildDeployCommands(guildId: Snowflake) {
-    return new Promise(async (resolve, reject) => {
-        getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: await getCommands() })
-            .then(() => {
-                PrettyLog.success('Successfully registered all guild commands.', false)
-                resolve(true)
-            })
-            .catch(reject)
-    })
+
+async function appDeleteCommands() {
+    try {    
+        await getRest().put(Routes.applicationCommands(getClientId()), { body: [] })
+        
+        PrettyLog.success('Successfully deleted application commands.', false)
+        return true
+    }
+    catch {
+        return false
+    }   
 }
 
-function guildDeleteCommands(guildId: Snowflake) {
-    return new Promise((resolve, reject) => {
-        getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: [] })
-            .then(() => {
-                PrettyLog.success('Successfully deleted all guild commands.', false)
-                resolve(true)
-            })
-            .catch(reject)
-    })
+async function guildDeployCommands(guildId: Snowflake) {
+    try {
+        await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: await getCommands() })
+
+        PrettyLog.success('Successfully registered all guild commands.', false)
+        return true       
+    }
+    catch {
+        return false
+    }
+}
+
+async function guildDeleteCommands(guildId: Snowflake) {
+    try {    
+        await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: [] })
+        
+        PrettyLog.success('Successfully deleted all guild commands.', false)
+        return true
+    }
+    catch {
+        return false
+    }
 }
 
 export {

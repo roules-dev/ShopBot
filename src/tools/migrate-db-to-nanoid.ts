@@ -8,15 +8,14 @@ import { nanoid } from 'nanoid'
 
 const UUID_REGEXP = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g
 
-const save = (path: string, content: object) => new Promise<boolean>(async (resolve, _reject) => {
+const save = async (path: string, content: object): Promise<boolean> => {
     try {
         await fs.writeFile(path, JSON.stringify(content, null, 4))
-
-        resolve(true)
-    } catch (error) {
-        resolve(false)
+        return true
+    } catch {
+        return false
     }
-})  
+}
 
 
 
