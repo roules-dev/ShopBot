@@ -14,6 +14,8 @@
 feature based folder structure
 
 ```
+data
+locales
 src
 ├── app
 │   ├── commands
@@ -22,20 +24,19 @@ src
 │   ├── events
 │   │   ├── ...
 │   │   └── ...
-│   └── deploy-commands.ts
+│   ├── deploy-commands.ts
+│   └── start.ts
 ├── database
 ├── utils
 ├── tools
-├── components
-├── user-flows         (not sure)
-├── user-interfaces    (not sure)
+├── user-flows         
+├── user-interfaces    
 ├── features
 │   ├── currencies
 │   ├── accounts
 │   ├── shops
 │   ├── products
 │   └── settings
-├── locales
 └── index.ts
 ```
 
@@ -45,7 +46,6 @@ inside the features folders:
 features
 └─── feature
     ├── database
-    ├── components
     ├── utils
     ├── user-flows
     └── user-interfaces

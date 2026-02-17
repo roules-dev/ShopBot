@@ -1,10 +1,11 @@
 import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent, showEditModal, ExtendedChannelSelectMenuComponent, ExtendedRoleSelectMenuComponent, ExtendedUserSelectMenuComponent } from "@/user-interfaces/extended-components.js"
 import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { getLocale, replaceTemplates } from "@/utils/localisation.js"
-import { assertNeverReached, toStringOrUndefined } from "@/utils/utils.js"
 import { EmbedBuilder, InteractionCallbackResponse, StringSelectMenuInteraction, Colors, APIEmbedField, channelMention, roleMention, userMention, ButtonStyle, MessageComponentInteraction, ChannelType, ChannelSelectMenuInteraction, Snowflake, RoleSelectMenuInteraction, UserSelectMenuInteraction } from "discord.js"
-import { getSettings, setSetting } from "../database/settings-handler.js"
-import { Setting } from "../database/settings-types.js"
+import { getSettings, setSetting } from "@/features/settings/database/settings-handler.js"
+import { Setting } from "@/features/settings/database/settings-types.js"
+import { assertNeverReached } from "@/lib/error-handling.js"
+import { toStringOrUndefined } from "@/utils/strings.js"
 
 
 

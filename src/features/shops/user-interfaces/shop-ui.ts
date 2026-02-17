@@ -4,13 +4,13 @@ import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInterac
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
 import { APIEmbedField, bold, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
-import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js" // external dependency, should be refactored
-import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js" // external dependency, should be refactored
-import { getCurrencyName } from "@/features/currencies/database/currencies-database.js" // external dependency, should be refactored
-import { getProductName, updateProduct } from "../database/products-database.js"
-import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
-import { getShops, getShopName } from "../database/shops-database.js"
-import { Shop } from "../database/shops-types.js"
+import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js" 
+import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js" 
+import { getCurrencyName } from "@/features/currencies/database/currencies-database.js" 
+import { getProductName, updateProduct } from "@/features/shops/database/products-database.js"
+import { Product, PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
+import { getShops, getShopName } from "@/features/shops/database/shops-database.js"
+import { Shop } from "@/features/shops/database/shops-types.js"
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'

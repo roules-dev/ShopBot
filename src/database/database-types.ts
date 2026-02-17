@@ -28,8 +28,7 @@ export class DatabaseError extends Error {
 
 
 export interface DatabaseJSONBody {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [key: string]: any
+    [key: string]: unknown
 }
 
 export abstract class Database {

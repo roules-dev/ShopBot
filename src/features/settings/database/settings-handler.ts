@@ -1,6 +1,6 @@
 import settings from '@/../data/settings.json' with { type: 'json' }
 import { setCurrentLocale } from '@/utils/localisation.js'
-import { Setting, Settings, SettingsDatabase } from './settings-types.js'
+import { Setting, Settings, SettingsDatabase } from '@/features/settings/database/settings-types.js'
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 

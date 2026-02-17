@@ -2,10 +2,10 @@ import { getCurrencies } from "@/features/currencies/database/currencies-databas
 import { ExtendedComponent, ExtendedButtonComponent } from "@/user-interfaces/extended-components.js";
 import { PaginatedMultipleEmbedUserInterface, ObjectValues, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
 import { getLocale, replaceTemplates } from "@/utils/localisation.js";
-import { assertNeverReached } from "@/utils/utils.js";
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
-import { getOrCreateAccount } from "../database/accounts-database.js";
-import { Account } from "../database/accounts-type.js";
+import { getOrCreateAccount } from "@/features/accounts/database/accounts-database.js";
+import { Account } from "@/features/accounts/database/accounts-type.js";
+import { assertNeverReached } from "@/lib/error-handling.js";
 
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {

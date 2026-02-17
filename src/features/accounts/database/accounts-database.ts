@@ -2,7 +2,7 @@ import accounts from '@/../data/accounts.json' with { type: 'json' }; // maybe t
 import { DatabaseError, DatabaseErrors } from '@/database/database-types.js';
 import { getCurrencies } from '@/features/currencies/database/currencies-database.js';
 import { Snowflake } from "discord.js";
-import { Account, AccountsDatabase } from "./accounts-type.js";
+import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type.js";
 import { Product } from '@/features/shops/database/products-types.js';
 
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')

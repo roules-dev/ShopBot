@@ -1,7 +1,7 @@
 import currencies from '@/../data/currencies.json' with { type: 'json' };
 import { DatabaseError, DatabaseErrors } from '@/database/database-types.js';
 import { nanoid } from 'nanoid';
-import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "./currencies-types.js";
+import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "@/features/currencies/database/currencies-types.js";
 ;
 
 const currenciesDatabase = new CurrenciesDatabase(currencies, 'data/currencies.json')

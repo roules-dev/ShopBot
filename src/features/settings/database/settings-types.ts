@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Database, DatabaseError, DatabaseErrors } from "@/database/database-types.js";
-import { assertNeverReached } from "@/utils/utils.js";
+import { assertNeverReached } from "@/lib/error-handling.js";
 import { Snowflake } from "discord.js";
 
 

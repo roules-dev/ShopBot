@@ -22,3 +22,8 @@ String.prototype.replaceSpaces = function (this: string, by: string = ' '): stri
     // eslint-disable-next-line no-irregular-whitespace
     return this.replace(/[\s ]/g, by)
 } 
+
+export function toStringOrUndefined(value: unknown) {
+    if (value === undefined) return undefined
+    return `${value}`
+}

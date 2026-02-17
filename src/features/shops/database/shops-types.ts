@@ -8,7 +8,7 @@ import {
   ProductAction,
   isProductActionType,
   createProductAction,
-} from "./products-types.js";
+} from "@/features/shops/database/products-types.js";
 
 export interface Shop {
     id: UUID

@@ -4,8 +4,8 @@ import {
     Product,
     ProductOptions,
     ProductOptionsOptional,
-} from "./products-types.js";
-import { getShops, shopsDatabase } from "./shops-database.js";
+} from "@/features/shops/database/products-types.js";
+import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js";
 
 export function getProducts(shopId: string): Map<string, Product> {
     if (!getShops().has(shopId))

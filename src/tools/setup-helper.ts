@@ -1,8 +1,8 @@
 import config from '@/../config/config.json' with { type: 'json' };
 import fs from 'node:fs/promises';
 import readline from 'node:readline';
-import { appDeployCommands } from '../app/deploy-commands.js';
-import { PrettyLog } from '../utils/pretty-log.js';
+import { appDeployCommands } from '@/app/deploy-commands.js';
+import { PrettyLog } from '@/utils/pretty-log.js';
 
 const rl = readline.createInterface({
     input: process.stdin,

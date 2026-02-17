@@ -1,6 +1,6 @@
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js"
-import { replyErrorMessage, updateAsErrorMessage } from "../utils/discord.js"
-import { ExtendedButtonComponent, ExtendedComponent } from "./extended-components.js"
+import { replyErrorMessage, updateAsErrorMessage } from "@/utils/discord.js"
+import { ExtendedButtonComponent, ExtendedComponent } from "@/user-interfaces/extended-components.js"
 import { PrettyLog } from "@/utils/pretty-log.js"
 
 export type UserInterfaceInteraction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction

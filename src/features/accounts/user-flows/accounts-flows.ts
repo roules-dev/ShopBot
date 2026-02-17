@@ -6,7 +6,7 @@ import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonCom
 import { replyErrorMessage, updateAsSuccessMessage, updateAsErrorMessage } from "@/utils/discord.js"
 import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/utils/localisation.js"
 import { APIRole, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, roleMention, StringSelectMenuInteraction, User, userMention } from "discord.js"
-import { getOrCreateAccount, setAccountCurrencyAmount, emptyAccount } from "../database/accounts-database.js"
+import { getOrCreateAccount, setAccountCurrencyAmount, emptyAccount } from "@/features/accounts/database/accounts-database.js"
 
 
 export class AccountGiveFlow extends UserFlow {

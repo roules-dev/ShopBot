@@ -1,10 +1,10 @@
 import shops from "@/../data/shops.json" with { type: "json" };
 import { DatabaseError, DatabaseErrors } from "@/database/database-types.js";
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { getLocale } from '@/utils/localisation.js';
 import { Snowflake } from 'discord.js';
 import { nanoid } from 'nanoid';
-import { ShopsDatabase, Shop, ShopOptionsOptional } from "./shops-types.js";
+import { ShopsDatabase, Shop, ShopOptionsOptional } from "@/features/shops/database/shops-types.js";
 
 export const shopsDatabase = new ShopsDatabase(shops, "data/shops.json");
 
@@ -33,14 +33,14 @@ export async function createShop(shopName: string, description: string, currency
 
     const newShopId = nanoid()    
 
-  shopsDatabase.shops.set(newShopId, {
-    id: newShopId,
-    name: shopName,
-    emoji,
-    description,
-    currency: getCurrencies().get(currencyId)!,
-    discountCodes: {},
-    reservedTo,
+    shopsDatabase.shops.set(newShopId, {
+        id: newShopId,
+        name: shopName,
+        emoji,
+        description,
+        currency: getCurrencies().get(currencyId)!,
+        discountCodes: {},
+        reservedTo,
         products: new Map()
     })
 

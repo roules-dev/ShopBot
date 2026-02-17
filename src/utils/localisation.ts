@@ -1,14 +1,12 @@
+import { PrettyLog } from "@/utils/pretty-log.js";
+import '@/utils/strings.js';
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js";
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { PrettyLog } from "./pretty-log.js";
-import './strings.js';
+import { pathToFileURL } from 'node:url';
 
 import en_US_locale from '@/../locales/en-US.json' with { type: 'json' };
 
-import { fileURLToPath, pathToFileURL } from 'node:url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const defaultLocale = en_US_locale
 export type LocaleStrings = typeof defaultLocale

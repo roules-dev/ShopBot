@@ -5,13 +5,13 @@ import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
-import { assertNeverReached } from "@/utils/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
-import { createDiscountCode, createShop, getShopName, getShops, removeDiscountCode, removeShop, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
-import { Shop } from "../database/shops-types.js"
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js" // external dependency, should be refactored
-import { Currency } from "@/features/currencies/database/currencies-types.js" // external dependency, should be refactored
+import { createDiscountCode, createShop, getShopName, getShops, removeDiscountCode, removeShop, updateShop, updateShopCurrency, updateShopPosition } from "@/features/shops/database/shops-database.js"
+import { Shop } from "@/features/shops/database/shops-types.js"
+import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js" 
+import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { assertNeverReached } from "@/lib/error-handling.js"
 
 export class ShopCreateFlow extends UserFlow {
     public id = 'shop-create'

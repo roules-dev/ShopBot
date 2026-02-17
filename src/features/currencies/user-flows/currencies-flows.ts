@@ -5,13 +5,13 @@ import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
-import { assertNeverReached } from "@/utils/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
-import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "../database/currencies-database.js"
-import { Currency } from "../database/currencies-types.js"
+import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "@/features/currencies/database/currencies-database.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { DatabaseError } from "@/database/database-types.js"
 import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js" // external dependency, should be refactored
 import { getShopsWithCurrency, getShopName } from "@/features/shops/database/shops-database.js" // external dependency, should be refactored
+import { assertNeverReached } from "@/lib/error-handling.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {

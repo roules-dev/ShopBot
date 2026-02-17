@@ -1,18 +1,18 @@
-import { DatabaseError } from "@/database/database-types.js"
+import { DatabaseError } from "@/database/database-types.js";
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
 import { Currency } from "@/features/currencies/database/currencies-types.js"; // external dependency, should be refactored
-import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedButtonComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js"
-import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
-import { assertNeverReached } from "@/utils/utils.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
-import { addProduct, getProductName, removeProduct, updateProduct } from "../database/products-database.js";
-import { ProductActionType, ProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductActionOptions, createProductAction, Product } from "../database/products-types.js";
-import { getShops, getShopName } from "../database/shops-database.js";
-import { Shop } from "../database/shops-types.js";
+import { addProduct, getProductName, removeProduct, updateProduct } from "@/features/shops/database/products-database.js";
+import { createProductAction, isProductActionType, Product, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "@/features/shops/database/products-types.js";
+import { getShopName, getShops } from "@/features/shops/database/shops-database.js";
+import { Shop } from "@/features/shops/database/shops-types.js";
+import { assertNeverReached } from "@/lib/error-handling.js";
+import { UserFlow } from "@/user-flows/user-flow.js";
+import { ExtendedButtonComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js";
+import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
+import { EMOJI_REGEX } from "@/utils/constants.js";
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js";
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js";
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
 
 
 export class AddProductFlow extends UserFlow {
