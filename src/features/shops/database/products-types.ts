@@ -1,4 +1,4 @@
-import { UUID } from "@/database/database-types.js";
+import { NanoId } from "@/database/database-types.js";
 import { Snowflake } from "discord.js";
 
 export const PRODUCT_ACTION_TYPE = {
@@ -13,7 +13,7 @@ export type ProductActionOptions<Type extends ProductActionType> =
     Type extends typeof PRODUCT_ACTION_TYPE.GiveRole
     ? { roleId: Snowflake }
     : Type extends typeof PRODUCT_ACTION_TYPE.GiveCurrency
-    ? { currencyId: UUID; amount: number }
+    ? { currencyId: NanoId; amount: number }
     : never;
 
 export type ProductAction = {
@@ -49,8 +49,8 @@ export function isProductActionType(
 }
 
 export interface Product {
-    id: UUID;
-    shopId: UUID;
+    id: NanoId;
+    shopId: NanoId;
     name: string;
     emoji: string;
     description: string;

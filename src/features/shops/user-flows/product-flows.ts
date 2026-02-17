@@ -1,4 +1,3 @@
-import { DatabaseError } from "@/database/database-types.js";
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
 import { Currency } from "@/features/currencies/database/currencies-types.js"; // external dependency, should be refactored
 import { addProduct, getProductName, removeProduct, updateProduct } from "@/features/shops/database/products-database.js";
@@ -6,12 +5,12 @@ import { createProductAction, isProductActionType, Product, PRODUCT_ACTION_TYPE,
 import { getShopName, getShops } from "@/features/shops/database/shops-database.js";
 import { Shop } from "@/features/shops/database/shops-types.js";
 import { assertNeverReached } from "@/lib/error-handling.js";
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js";
 import { UserFlow } from "@/user-flows/user-flow.js";
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js";
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
 import { EMOJI_REGEX } from "@/utils/constants.js";
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js";
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
 
 
@@ -118,27 +117,23 @@ export class AddProductFlow extends UserFlow {
     }
 
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        try {
-            if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            await addProduct(this.selectedShop.id, { 
-                name: this.productName, 
-                description: this.productDescription || '', 
-                emoji: this.productEmoji || '', 
-                price: this.productPrice,
-                amount: this.productAmount ?? undefined
-            })
+        const [error, product] = await addProduct(this.selectedShop.id, { 
+            name: this.productName, 
+            description: this.productDescription || '', 
+            emoji: this.productEmoji || '', 
+            price: this.productPrice,
+            amount: this.productAmount ?? undefined
+        })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                product: this.productName,
-                shop: bold(getShopName(this.selectedShop.id)!)
-            })
+        const message = replaceTemplates(this.locale.messages.success, {
+            product: product.name,
+            shop: bold(getShopName(this.selectedShop.id)!)
+        })
 
-            return await updateAsSuccessMessage(interaction, message)
-
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        return await updateAsSuccessMessage(interaction, message)
     }
 }
 
@@ -360,29 +355,26 @@ export class AddActionProductFlow extends AddProductFlow {
             return this.updateInteraction(interaction)
         }
         
-        try {
-            if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            await addProduct(this.selectedShop.id, { 
-                name: this.productName, 
-                description: this.productDescription || '', 
-                emoji: this.productEmoji || '', 
-                price: this.productPrice,
-                action: this.productAction 
-            })
+        const [error, product] = await addProduct(this.selectedShop.id, { 
+            name: this.productName, 
+            description: this.productDescription || '', 
+            emoji: this.productEmoji || '', 
+            price: this.productPrice,
+            action: this.productAction 
+        })
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                product: this.productName,
-                shop: bold(getShopName(this.selectedShop.id)!)
-            })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
 
-            const withActionMessage = replaceTemplates(this.locale.messages.withAction, { action: bold(`${this.productActionType}`) })
+        const message = replaceTemplates(this.locale.messages.success, {
+            product: product.name,
+            shop: bold(getShopName(this.selectedShop.id)!)
+        })
 
-            return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}`)
+        const withActionMessage = replaceTemplates(this.locale.messages.withAction, { action: bold(`${this.productActionType}`) })
 
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}`)
 
     }
 }
@@ -554,24 +546,21 @@ export class RemoveProductFlow extends UserFlow {
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            const oldProductName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
+        const oldProductName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
 
-            await removeProduct(this.selectedShop.id, this.selectedProduct.id)
+        const [error, _] =await removeProduct(this.selectedShop.id, this.selectedProduct.id)
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                product: bold(oldProductName),
-                shop: bold(getShopName(this.selectedShop.id)!)
-            })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
+        const message = replaceTemplates(this.locale.messages.success, {
+            product: bold(oldProductName),
+            shop: bold(getShopName(this.selectedShop.id)!)
+        })
 
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        return await updateAsSuccessMessage(interaction, message)
     }
 }
 
@@ -764,31 +753,27 @@ export class EditProductFlow extends UserFlow {
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const updateOption: Record<string, string | number> = {}
-            updateOption[this.updateOption.toString()] = this.updateOptionValue
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const updateOption: Record<string, string | number> = {}
+        updateOption[this.updateOption.toString()] = this.updateOptionValue
 
-            const oldName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
+        const oldName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
 
-            await updateProduct(this.selectedShop.id, this.selectedProduct.id, updateOption)
+        const [error] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, updateOption)
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                product: bold(oldName),
-                shop: bold(getShopName(this.selectedShop.id)!),
-                option: bold(this.getUpdateOptionName(this.updateOption)),
-                value: bold(this.getUpdateValueString(this.updateOption))
-            })
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
+        const message = replaceTemplates(this.locale.messages.success, {
+            product: bold(oldName),
+            shop: bold(getShopName(this.selectedShop.id)!),
+            option: bold(this.getUpdateOptionName(this.updateOption)),
+            value: bold(this.getUpdateValueString(this.updateOption))
+        })
 
-        } catch (error) {
-            await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-            return
-        }
+        return await updateAsSuccessMessage(interaction, message)
     }
 
     private getUpdateOptionName(option: EditProductOption): string {

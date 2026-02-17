@@ -1,5 +1,5 @@
 import config from '@/../config/config.json' with { type: 'json' }
-import { LocaleStrings } from "@/utils/localisation.js"
+import { LocaleStrings } from "@/lib/localisation.js"
 import { PrettyLog } from "@/utils/pretty-log.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from 'fs/promises'

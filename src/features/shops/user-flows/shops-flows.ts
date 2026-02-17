@@ -1,17 +1,16 @@
-import { DatabaseError } from "@/database/database-types.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
+import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { createDiscountCode, createShop, getShopName, getShops, removeDiscountCode, removeShop, updateShop, updateShopCurrency, updateShopPosition } from "@/features/shops/database/shops-database.js"
 import { Shop } from "@/features/shops/database/shops-types.js"
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js" 
-import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { assertNeverReached } from "@/lib/error-handling.js"
+import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 
 export class ShopCreateFlow extends UserFlow {
     public id = 'shop-create'
@@ -132,21 +131,20 @@ export class ShopCreateFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (!this.shopName) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const newShop = await createShop(this.shopName, this.shopDescription || '', this.selectedCurrency.id, this.shopEmoji || '', this.shopReservedTo)
+        if (!this.shopName) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const [error, newShop] = await createShop(this.shopName, this.shopDescription || '', this.selectedCurrency.id, this.shopEmoji || '', this.shopReservedTo)
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                shop: bold(getShopName(newShop.id)!),
-                currency: bold(getCurrencyName(newShop.currency.id)!)
-            })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const message = replaceTemplates(this.locale.messages.success, {
+            shop: bold(getShopName(newShop.id)!),
+            currency: bold(getCurrencyName(newShop.currency.id)!)
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
+
     }
 }
 
@@ -209,16 +207,14 @@ export class ShopRemoveFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            await removeShop(this.selectedShop.id)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const [error] = await removeShop(this.selectedShop.id)
 
-            return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, { shop: bold(getShopName(this.selectedShop.id)!) }))
-        }
-        catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        if (error) return await updateAsErrorMessage(interaction, error.message)
+
+        return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, { shop: bold(getShopName(this.selectedShop.id)!) }))
+
     }
 }
 
@@ -343,21 +339,17 @@ export class ShopReorderFlow extends UserFlow {
     }
 
     protected override async success(interaction: ButtonInteraction) {
-        try {
-            if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
+        const [error] = updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                shop: bold(getShopName(this.selectedShop?.id)!),
-                position: bold(`${this.selectedPosition}`)
-            })
+        const message = replaceTemplates(this.locale.messages.success, {
+            shop: bold(getShopName(this.selectedShop?.id)!),
+            position: bold(`${this.selectedPosition}`)
+        })
 
-            return await updateAsSuccessMessage(interaction, message)
-        }
-        catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        return await updateAsSuccessMessage(interaction, message)
     }
 }
 
@@ -405,13 +397,11 @@ export class EditShopFlow extends UserFlow {
         if (!subcommand || !isShopOption(subcommand)) return replyErrorMessage(interaction, errorMessages().invalidSubcommand)
         this.updateOption = subcommand as EditShopOption
         
-        try {
-            this.updateOptionValue = this.getUpdateValue(interaction, subcommand) 
-        }
-        catch (error) {
-            return replyErrorMessage(interaction, (error instanceof Error) ? error.message : undefined)
-        }
-        
+        const [error, updateValue] = this.getUpdateValue(interaction, subcommand)
+
+        if (error) return replyErrorMessage(interaction, error.message)
+        this.updateOptionValue = updateValue
+
         this.updateOptionValueDisplay = this.getUpdateValueDisplay(interaction, subcommand) || this.updateOptionValue
 
         this.initComponents()
@@ -471,29 +461,26 @@ export class EditShopFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const oldName = getShopName(this.selectedShop?.id) || ''
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const oldName = getShopName(this.selectedShop?.id) || ''
 
-            await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
+        const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                shop: bold(oldName),
-                option: bold(this.getUpdateOptionName(this.updateOption!)),
-                value: bold(`${this.updateOptionValueDisplay}`)
-            })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
-        }
-        catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const message = replaceTemplates(this.locale.messages.success, {
+            shop: bold(oldName),
+            option: bold(this.getUpdateOptionName(this.updateOption!)),
+            value: bold(`${this.updateOptionValueDisplay}`)
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
     }
 
 
-    private getUpdateValue(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string {
+    private getUpdateValue(interaction: ChatInputCommandInteraction, subcommand: EditShopOption){
         let updateValue: string | undefined
 
         switch (subcommand) {
@@ -515,9 +502,9 @@ export class EditShopFlow extends UserFlow {
                 assertNeverReached(subcommand)
         }
 
-        if (!updateValue) throw new Error(errorMessages().insufficientParameters)
+        if (!updateValue) return err({ message: errorMessages().insufficientParameters })
 
-        return updateValue
+        return ok(updateValue)
     }
 
     private getUpdateOptionName(option: EditShopOption): string { 
@@ -699,19 +686,16 @@ export class EditShopCurrencyFlow extends UserFlow {
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         if (!this.selectedShop || !this.selectedCurrency) return await updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-        try {
-            updateShopCurrency(this.selectedShop.id, this.selectedCurrency.id)
-            
-            const message = replaceTemplates(this.locale.messages.success, { 
-                shop: bold(getShopName(this.selectedShop.id)!), 
-                currency: bold(getCurrencyName(this.selectedCurrency.id)!)
-            })
+        const [error, shop] = await updateShopCurrency(this.selectedShop.id, this.selectedCurrency.id)
+        
+        if (error) return await updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
-        }
-        catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const message = replaceTemplates(this.locale.messages.success, { 
+            shop: bold(shop.name), 
+            currency: bold(getCurrencyName(this.selectedCurrency.id)!)
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
     }
 }
 
@@ -794,22 +778,21 @@ export class DiscountCodeCreateFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            await createDiscountCode(this.selectedShop.id, this.discountCode, this.discountAmount)
+        const [error] = await createDiscountCode(this.selectedShop.id, this.discountCode, this.discountAmount)
 
-            const message = replaceTemplates(this.locale.messages.success, { 
-                shop: bold(getShopName(this.selectedShop.id)!), 
-                code: bold(this.discountCode), 
-                amount: bold(`${this.discountAmount}`)
-            })
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const message = replaceTemplates(this.locale.messages.success, { 
+            shop: bold(getShopName(this.selectedShop.id)!), 
+            code: bold(this.discountCode), 
+            amount: bold(`${this.discountAmount}`)
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
+
     }
 }
 
@@ -983,20 +966,19 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
-        try {
-            if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            await removeDiscountCode(this.selectedShop.id, this.selectedDiscountCode)
+        const [error] = await removeDiscountCode(this.selectedShop.id, this.selectedDiscountCode)
 
-            const message = replaceTemplates(this.locale.messages.success, { 
-                shop: bold(getShopName(this.selectedShop.id)!), 
-                code: bold(this.selectedDiscountCode) 
-            })
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const message = replaceTemplates(this.locale.messages.success, { 
+            shop: bold(getShopName(this.selectedShop.id)!), 
+            code: bold(this.selectedDiscountCode) 
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
+
     }
 }

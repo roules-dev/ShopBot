@@ -1,21 +1,19 @@
-import { DatabaseError, DatabaseErrors } from "@/database/database-types.js";
-import { nanoid } from "nanoid";
-import {
-    Product,
-    ProductOptions,
-    ProductOptionsOptional,
-} from "@/features/shops/database/products-types.js";
+import { DatabaseError } from "@/database/database-types.js";
+import { ProductOptions, ProductOptionsOptional } from "@/features/shops/database/products-types.js";
 import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js";
+import { err, ok } from "@/lib/error-handling.js";
+import { nanoid } from "nanoid";
 
-export function getProducts(shopId: string): Map<string, Product> {
-    if (!getShops().has(shopId))
-        throw new DatabaseError(DatabaseErrors.ShopDoesNotExist);
+export function getProducts(shopId: string){
+    if (!getShops().has(shopId)) {
+        return err(new DatabaseError("ShopDoesNotExist"))
+    }
 
-    return getShops().get(shopId)!.products;
+    return ok(getShops().get(shopId)!.products)
 }
 
 export async function addProduct(shopId: string, options: ProductOptions) {
-    if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist);
+    if (!getShops().has(shopId)) return err(new DatabaseError("ShopDoesNotExist"));
 
     const id = nanoid();
     const product = Object.assign({ id, shopId }, options);
@@ -23,28 +21,29 @@ export async function addProduct(shopId: string, options: ProductOptions) {
     getShops().get(shopId)!.products.set(id, product);
     await shopsDatabase.save();
 
-    return getShops().get(shopId)!.products.get(id)!;
+    return ok(getShops().get(shopId)!.products.get(id)!);
 }
 
 export async function removeProduct(shopId: string, productId: string) {
-    if (!getShops().has(shopId))throw new DatabaseError(DatabaseErrors.ShopDoesNotExist);
+    if (!getShops().has(shopId))return err(new DatabaseError("ShopDoesNotExist"));
 
     getShops().get(shopId)!.products.delete(productId);
     await shopsDatabase.save();
+    return ok(true);
 }
 export async function updateProduct(
     shopId: string,
     productId: string,
     options: ProductOptionsOptional,
 ) {
-    // TODO: to be refactored (if elses are horrible)
-    if (!getShops().has(shopId)) throw new DatabaseError(DatabaseErrors.ShopDoesNotExist);
+    if (!getShops().has(shopId)) return err(new DatabaseError("ShopDoesNotExist"));
 
     const { name, description, price, emoji, action, amount } = options;
     const product = getShops().get(shopId)!.products.get(productId);
 
-    if (!product) throw new DatabaseError(DatabaseErrors.ProductDoesNotExist);
+    if (!product) return err(new DatabaseError("ProductDoesNotExist"));
 
+    // TODO: to be refactored (if elses are horrible)
     if (name) product.name = name;
     if (description) product.description = description;
     if (price != undefined) product.price = price;
@@ -56,12 +55,10 @@ export async function updateProduct(
     }
 
     await shopsDatabase.save();
+    return ok(product);
 }
 
-export function getProductName(
-    shopId: string | undefined,
-    productId: string | undefined,
-): string | undefined {
+export function getProductName( shopId: string | undefined, productId: string | undefined) {
     if (!shopId || !productId) return undefined;
 
     const product = getShops().get(shopId)?.products.get(productId);

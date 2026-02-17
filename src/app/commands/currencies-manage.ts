@@ -1,9 +1,8 @@
-import { DatabaseError } from "@/database/database-types.js"
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
-import { EditCurrencyOption, CurrencyRemoveFlow, EditCurrencyFlow } from "@/features/currencies/user-flows/currencies-flows.js"
+import { CurrencyRemoveFlow, EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currencies-flows.js"
+import { errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { replyErrorMessage, replySuccessMessage } from "@/utils/discord.js"
-import { errorMessages, replaceTemplates, getLocale } from "@/utils/localisation.js"
 import { bold, ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 
@@ -86,19 +85,17 @@ export async function createCurrencyCommand(client: Client, interaction: ChatInp
     const emojiOption = interaction.options.getString('emoji')
     const emojiString = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
 
-    try {
-        if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, errorMessages().notOnlyEmojisInName)
-        
-        await createCurrency(currencyName, emojiString)
-
+    if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, errorMessages().notOnlyEmojisInName)
+    
+    const [error, _] = await createCurrency(currencyName, emojiString)
+    if (!error) {
         const currencyNameString = bold(`${emojiString ? `${emojiString} ` : ''}${currencyName}`)
-
         await replySuccessMessage(interaction, replaceTemplates(getLocale().userFlows.currencyCreate.messages.success, { currency: currencyNameString }))    
-        return    
-    } catch (error) {
-        await replyErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
+
         return
     }
+    
+    await replyErrorMessage(interaction, error.message)
 
 }
 

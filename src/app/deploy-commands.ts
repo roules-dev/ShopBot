@@ -1,4 +1,4 @@
-import { addLocalisationToCommand } from '@/utils/localisation.js'
+import { addLocalisationToCommand } from '@/lib/localisation.js'
 import { PrettyLog, drawProgressBar } from '@/utils/pretty-log.js'
 import { REST } from '@discordjs/rest'
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from 'discord.js'
@@ -63,7 +63,7 @@ async function getCommands() {
 
 async function appDeployCommands() { 
     try {
-        await  getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
+        await getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
         PrettyLog.success('Successfully registered application commands.', false)
         return true
     } catch {

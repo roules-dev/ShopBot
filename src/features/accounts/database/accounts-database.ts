@@ -1,9 +1,10 @@
 import accounts from '@/../data/accounts.json' with { type: 'json' }; // maybe to be refactored (absolute path or something, alias ??)
-import { DatabaseError, DatabaseErrors } from '@/database/database-types.js';
+import { DatabaseError } from '@/database/database-types.js';
 import { getCurrencies } from '@/features/currencies/database/currencies-database.js';
 import { Snowflake } from "discord.js";
 import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type.js";
 import { Product } from '@/features/shops/database/products-types.js';
+import { err, ok } from '@/lib/error-handling.js';
 
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
 
@@ -22,7 +23,7 @@ export async function getOrCreateAccount(id: Snowflake): Promise<Account> {
 export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
     const account = await getOrCreateAccount(id)
     
-    if (!getCurrencies().has(currencyId)) throw new DatabaseError(DatabaseErrors.CurrencyDoesNotExist)
+    if (!getCurrencies().has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
 
     const currencyBalance = account.currencies.get(currencyId)
 
@@ -43,6 +44,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
     }
 
     await accountsDatabase.save()
+    return ok(account)
 }
 
 export async function setAccountItemAmount(id: Snowflake, product: Product, amount: number) {
@@ -66,12 +68,13 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
 
 export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'inventory' | 'all') {
     const account = accountsDatabase.accounts.get(id)
-    if (!account) throw new DatabaseError(DatabaseErrors.AccountDoesNotExist)
+    if (!account) return err(new DatabaseError("AccountDoesNotExist"))
 
     if (empty === 'currencies' || empty === 'all') account.currencies.clear()
     if (empty === 'inventory' || empty === 'all') account.inventory.clear()
 
     await accountsDatabase.save()
+    return ok(account) // could be ok(true) ?
 }
 
 export async function getAccountsWithCurrency(currencyId: string) {

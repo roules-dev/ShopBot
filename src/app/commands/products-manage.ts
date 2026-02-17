@@ -1,7 +1,7 @@
 import { PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
-import { EditProductOption, AddActionProductFlow, AddProductFlow, RemoveProductFlow, EditProductFlow } from "@/features/shops/user-flows/product-flows.js"
+import { AddActionProductFlow, AddProductFlow, EditProductFlow, EditProductOption, RemoveProductFlow } from "@/features/shops/user-flows/product-flows.js"
+import { errorMessages } from "@/lib/localisation.js"
 import { replyErrorMessage } from "@/utils/discord.js"
-import { errorMessages } from "@/utils/localisation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 

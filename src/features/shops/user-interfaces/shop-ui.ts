@@ -1,16 +1,15 @@
-import { DatabaseError } from "@/database/database-types.js"
+import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
+import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
+import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { getProductName, updateProduct } from "@/features/shops/database/products-database.js"
+import { Product, PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
+import { getShopName, getShops } from "@/features/shops/database/shops-database.js"
+import { Shop } from "@/features/shops/database/shops-types.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent } from "@/user-interfaces/extended-components.js"
 import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
 import { APIEmbedField, bold, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
-import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js" 
-import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js" 
-import { getCurrencyName } from "@/features/currencies/database/currencies-database.js" 
-import { getProductName, updateProduct } from "@/features/shops/database/products-database.js"
-import { Product, PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
-import { getShops, getShopName } from "@/features/shops/database/shops-database.js"
-import { Shop } from "@/features/shops/database/shops-types.js"
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'
@@ -293,46 +292,46 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.updateInteraction(modalSubmit)
     }
 
-    private async buyProduct(interaction: UserInterfaceInteraction): Promise<unknown> {
+    private async buyProduct(interaction: UserInterfaceInteraction): Promise<unknown> { // TODO: split this method into smaller methods
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        try {
-            if (this.selectedShop.reservedTo 
-                && interaction.member instanceof GuildMember 
-                && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
-            ) {
-                return replyErrorMessage(interaction, this.locale.errorMessages.cantBuyHere)
-            }
-
-            const user = await getOrCreateAccount(interaction.user.id)
-            
-            const userCurrencyAmount = user.currencies.get(this.selectedShop.currency.id)?.amount || 0
-            const price = this.selectedProduct.price * (1 - this.discount / 100)
-
-            if (userCurrencyAmount < price) return replyErrorMessage(interaction, replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) }))
-            setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, userCurrencyAmount - price)
-            
-            if (this.selectedProduct.amount != undefined && this.selectedProduct.amount <= 0) return replyErrorMessage(interaction, this.locale.errorMessages.productNoLongerAvailable)
-            if (this.selectedProduct.amount != undefined) updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: this.selectedProduct.amount - 1 })
-
-            if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
-
-            const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
-            setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + 1)
-
-            const message = replaceTemplates(this.locale.messages.success, { 
-                product: bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!),
-                shop: bold(getShopName(this.selectedShop.id)!),
-                price: this.priceString()
-            })
-
-            await updateAsSuccessMessage(interaction, message)
-
-            logToDiscord(interaction, `${interaction.member} purchased ${getProductName(this.selectedShop.id, this.selectedProduct.id)!} from ${getShopName(this.selectedShop.id)!} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}`)
-            return
-        } 
-        catch (error) {
-            return await replyErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
+        
+        if (this.selectedShop.reservedTo 
+            && interaction.member instanceof GuildMember 
+            && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
+        ) {
+            return replyErrorMessage(interaction, this.locale.errorMessages.cantBuyHere)
         }
+
+        const user = await getOrCreateAccount(interaction.user.id)
+        
+        const userCurrencyAmount = user.currencies.get(this.selectedShop.currency.id)?.amount || 0
+        const price = this.selectedProduct.price * (1 - this.discount / 100)
+
+        if (userCurrencyAmount < price) return replyErrorMessage(interaction, replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) }))
+        
+        const [error] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, userCurrencyAmount - price)
+        if (error) return replyErrorMessage(interaction, error.message)
+
+        if (this.selectedProduct.amount != undefined && this.selectedProduct.amount <= 0) return replyErrorMessage(interaction, this.locale.errorMessages.productNoLongerAvailable)
+        if (this.selectedProduct.amount != undefined) updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: this.selectedProduct.amount - 1 })
+
+        if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
+
+        const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
+        
+        await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + 1)
+
+        const message = replaceTemplates(this.locale.messages.success, { 
+            product: bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!),
+            shop: bold(getShopName(this.selectedShop.id)!),
+            price: this.priceString()
+        })
+
+        await updateAsSuccessMessage(interaction, message)
+
+        logToDiscord(interaction, `${interaction.member} purchased ${getProductName(this.selectedShop.id, this.selectedProduct.id)!} from ${getShopName(this.selectedShop.id)!} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}`)
+        return
+         
     }
 
     private priceString(): string {

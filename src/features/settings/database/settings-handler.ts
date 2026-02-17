@@ -1,6 +1,7 @@
 import settings from '@/../data/settings.json' with { type: 'json' }
-import { setCurrentLocale } from '@/utils/localisation.js'
 import { Setting, Settings, SettingsDatabase } from '@/features/settings/database/settings-types.js'
+import { err, ok } from '@/lib/error-handling.js'
+import { setCurrentLocale } from '@/lib/localisation.js'
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 
@@ -16,8 +17,8 @@ export function getSetting(id: string): Setting | undefined {
 // TODO : get rid of this value: any for a more type safe way of doing it
 // -> no idea of how yet
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function setSetting(id: string, value: any): Promise<Setting> {
-    if (!settingsDatabase.settings.has(id)) throw new Error("Setting does not exist")
+export async function setSetting(id: string, value: any) {
+    if (!settingsDatabase.settings.has(id)) return err({ message: "Setting does not exist" })
 
     const setting = settingsDatabase.settings.get(id)!
     const updatedSetting = {...setting, value: value}
@@ -25,10 +26,9 @@ export async function setSetting(id: string, value: any): Promise<Setting> {
     settingsDatabase.settings.set(id, updatedSetting)
 
     await settingsDatabase.save()
-
     await onSettingUpdate(updatedSetting)
 
-    return settingsDatabase.settings.get(id)!
+    return ok(settingsDatabase.settings.get(id)!)
 }
 
 export async function onSettingUpdate(setting: Setting) { // this is horrible, should find a better way to do this, maybe with events

@@ -1,12 +1,11 @@
-import { DatabaseError } from "@/database/database-types.js"
+import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "@/features/accounts/database/accounts-database.js"
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js"
-import { replyErrorMessage, updateAsSuccessMessage, updateAsErrorMessage } from "@/utils/discord.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/utils/localisation.js"
+import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js"
+import { replyErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { APIRole, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, roleMention, StringSelectMenuInteraction, User, userMention } from "discord.js"
-import { getOrCreateAccount, setAccountCurrencyAmount, emptyAccount } from "@/features/accounts/database/accounts-database.js"
 
 
 export class AccountGiveFlow extends UserFlow {
@@ -87,26 +86,24 @@ export class AccountGiveFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
         
-        try {
-            if (!this.selectedCurrency || !this.target || !this.amount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
-            await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, currentBalance + this.amount)
+        if (!this.selectedCurrency || !this.target || !this.amount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
+        const [error, _] = await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, currentBalance + this.amount)
 
-            const successMessage = replaceTemplates(
-                this.locale.messages?.success, 
-                { 
-                    amount: bold(`${this.amount}`), 
-                    currency: getCurrencyName(this.selectedCurrency.id)!, 
-                    user: userMention(this.target.id) 
-                }
-            )
+        if (error) return replyErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, successMessage)
-            
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        
+        const successMessage = replaceTemplates(
+            this.locale.messages?.success, 
+            { 
+                amount: bold(`${this.amount}`), 
+                currency: getCurrencyName(this.selectedCurrency.id)!, 
+                user: userMention(this.target.id) 
+            }
+        )
+
+        return await updateAsSuccessMessage(interaction, successMessage)
     }
 }
 
@@ -150,30 +147,27 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
         
-        try {
-            if (!this.selectedCurrency || !this.targetRole || !this.amount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
+        if (!this.selectedCurrency || !this.targetRole || !this.amount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
 
-            for (const userId of targetUsersIds) {
-                const currentBalance = (await getOrCreateAccount(userId)).currencies.get(this.selectedCurrency.id)?.amount || 0
-                await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
-            }
+        for (const userId of targetUsersIds) {
+            const currentBalance = (await getOrCreateAccount(userId)).currencies.get(this.selectedCurrency.id)?.amount || 0
+            const [error, _] = await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
 
-            const message = replaceTemplates(
-                this.locale.messages.bulkGiveSuccess, 
-                { 
-                    amount: bold(`${this.amount}`), 
-                    currency: getCurrencyName(this.selectedCurrency.id)!, 
-                    role: roleMention(this.targetRole.id) 
-                }
-            )
-
-            return await updateAsSuccessMessage(interaction, message)
-            
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
+            if (error) return replyErrorMessage(interaction, error.message)
         }
+
+        const message = replaceTemplates(
+            this.locale.messages.bulkGiveSuccess, 
+            { 
+                amount: bold(`${this.amount}`), 
+                currency: getCurrencyName(this.selectedCurrency.id)!, 
+                role: roleMention(this.targetRole.id) 
+            }
+        )
+
+        return await updateAsSuccessMessage(interaction, message)
     }
 }
 
@@ -297,26 +291,25 @@ export class AccountTakeFlow extends UserFlow {
 
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
-        try {
-            if (!this.selectedCurrency) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
-            const newBalance = Math.max(currentBalance - this.amount!, 0)
-            
-            await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, newBalance)
 
-            const successMessage = replaceTemplates(
-                this.locale.messages?.success, 
-                { 
-                    amount: bold(`${this.amount}`), 
-                    currency: getCurrencyName(this.selectedCurrency.id)!, 
-                    user: userMention(this.target!.id) 
-                }
-            )
+        if (!this.selectedCurrency) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
+        const newBalance = Math.max(currentBalance - this.amount!, 0)
+        
+        const [error, _] = await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, newBalance)
+        if (error) return replyErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, successMessage)
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const successMessage = replaceTemplates(
+            this.locale.messages?.success, 
+            { 
+                amount: bold(`${this.amount}`), 
+                currency: getCurrencyName(this.selectedCurrency.id)!, 
+                user: userMention(this.target!.id) 
+            }
+        )
+
+        return await updateAsSuccessMessage(interaction, successMessage)
+
     }
 }

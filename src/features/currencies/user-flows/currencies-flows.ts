@@ -1,17 +1,16 @@
 
-import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js"
-import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/utils/localisation.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
-import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "@/features/currencies/database/currencies-database.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { DatabaseError } from "@/database/database-types.js"
-import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js" // external dependency, should be refactored
-import { getShopsWithCurrency, getShopName } from "@/features/shops/database/shops-database.js" // external dependency, should be refactored
-import { assertNeverReached } from "@/lib/error-handling.js"
+import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js"; // external dependency, should be refactored
+import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "@/features/currencies/database/currencies-database.js";
+import { Currency } from "@/features/currencies/database/currencies-types.js";
+import { getShopName, getShopsWithCurrency } from "@/features/shops/database/shops-database.js"; // external dependency, should be refactored
+import { assertNeverReached } from "@/lib/error-handling.js";
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js";
+import { UserFlow } from "@/user-flows/user-flow.js";
+import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js";
+import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
+import { EMOJI_REGEX } from "@/utils/constants.js";
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js";
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -102,19 +101,14 @@ export class CurrencyRemoveFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<unknown> {
         this.disableComponents()
 
-        try {
-            if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
 
-            await takeCurrencyFromAccounts(this.selectedCurrency.id)
+        await takeCurrencyFromAccounts(this.selectedCurrency.id)
 
-            const currencyName = getCurrencyName(this.selectedCurrency.id) || ''
+        const currencyName = getCurrencyName(this.selectedCurrency.id) || ''
 
-            await removeCurrency(this.selectedCurrency.id)
-            return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, {currency: bold(currencyName)}))
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
-        
+        await removeCurrency(this.selectedCurrency.id)
+        return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, {currency: bold(currencyName)}))
     }
 }
 
@@ -196,24 +190,22 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        try {
-            if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-            
-            const oldName = getCurrencyName(this.selectedCurrency.id) || ''
+        if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        
+        const oldName = getCurrencyName(this.selectedCurrency.id) || ''
 
-            await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
+        const [error, _] = await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
 
-            const message = replaceTemplates(this.locale.messages.success, {
-                currency: bold(oldName),
-                option: bold(this.getUpdateOptionName(this.updateOption)),
-                value: bold(this.updateOptionValue)
-            })
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-            return await updateAsSuccessMessage(interaction, message)
-        } catch (error) {
-            return await updateAsErrorMessage(interaction, (error instanceof DatabaseError) ? error.message : undefined)
-        }
+        const message = replaceTemplates(this.locale.messages.success, {
+            currency: bold(oldName),
+            option: bold(this.getUpdateOptionName(this.updateOption)),
+            value: bold(this.updateOptionValue)
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
     }
 
     private getUpdateOptionName(option: EditCurrencyOption): string {
