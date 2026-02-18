@@ -10,6 +10,7 @@ import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuCom
 import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { APIEmbedField, bold, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
+import { Account } from "../../accounts/database/accounts-type.js"
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'
@@ -293,48 +294,42 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.updateInteraction(modalSubmit)
     }
 
-    private async buyProduct(interaction: UserInterfaceInteraction): Promise<unknown> { 
-        // TODO: split this method into smaller methods
-        
+    private async buyProduct(interaction: UserInterfaceInteraction) {
+
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
         
-        if (this.selectedShop.reservedTo 
-            && interaction.member instanceof GuildMember 
-            && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
-        ) {
+        if (!this.isAllowedToBuy(interaction)) {
             return replyErrorMessage(interaction, this.locale.errorMessages.cantBuyHere)
         }
 
         const user = await getOrCreateAccount(interaction.user.id)
         
-        const userCurrencyAmount = user.currencies.get(this.selectedShop.currency.id)?.amount || 0
-        const price = this.selectedProduct.price * (1 - this.discount / 100)
+        const balanceAfterBuy = this.balanceAfterBuy(user, this.selectedProduct, this.selectedShop.currency.id)
+        if (balanceAfterBuy < 0) {
+            return replyErrorMessage(
+                interaction, 
+                replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) })
+            )
+        }
 
-        if (userCurrencyAmount < price) return replyErrorMessage(interaction, replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) }))
-        
-        const [error] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, userCurrencyAmount - price)
+        const itemStockAfterBuy = this.itemStockAfterBuy(this.selectedProduct, 1)
+        if (itemStockAfterBuy != undefined && itemStockAfterBuy < 0) {
+            return replyErrorMessage(interaction, this.locale.errorMessages.productNoLongerAvailable)
+        }
+
+        if (itemStockAfterBuy != undefined) {
+            updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: itemStockAfterBuy })
+        }
+
+        const [error] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, balanceAfterBuy)
         if (error) return replyErrorMessage(interaction, error.message)
-
-        if (this.selectedProduct.amount != undefined && this.selectedProduct.amount <= 0) return replyErrorMessage(interaction, this.locale.errorMessages.productNoLongerAvailable)
-        if (this.selectedProduct.amount != undefined) updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: this.selectedProduct.amount - 1 })
-
+        
         if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
 
         const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
-        
         await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + 1)
 
-        const message = replaceTemplates(this.locale.messages.success, { 
-            product: bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!),
-            shop: bold(getShopName(this.selectedShop.id)!),
-            price: this.priceString()
-        })
-
-        await updateAsSuccessMessage(interaction, message)
-
-        logToDiscord(interaction, `${interaction.member} purchased ${getProductName(this.selectedShop.id, this.selectedProduct.id)!} from ${getShopName(this.selectedShop.id)!} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}`)
-        return
-         
+        await this.printAndLogPurchase(interaction, this.selectedProduct)
     }
 
     private priceString(): string {
@@ -358,7 +353,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 member.roles.add(roleId)
 
-                actionMessage = replaceTemplates(this.locale.actionProducts.giveRole.message, { role: bold(roleMention(roleId)) })
+                actionMessage = replaceTemplates(
+                    this.locale.actionProducts.giveRole.message, 
+                    { role: bold(roleMention(roleId)) }
+                )
                 break
             }
             case PRODUCT_ACTION_TYPE.GiveCurrency: {
@@ -373,24 +371,59 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 setAccountCurrencyAmount(interaction.user.id, currency, userCurrencyAmount + amount)
 
-                actionMessage = replaceTemplates(this.locale.actionProducts.giveCurrency.message, { currency: getCurrencyName(currency)!, amount })
+                actionMessage = replaceTemplates(
+                    this.locale.actionProducts.giveCurrency.message, 
+                    { currency: getCurrencyName(currency)!, amount }
+                )
+
                 break
             }
             default:
                 break
         }
 
-            const message = replaceTemplates(this.locale.messages.success, { 
-                product: bold(getProductName(this.selectedShop.id, this.selectedProduct.id)!),
-                shop: bold(getShopName(this.selectedShop.id)!),
-                price: this.priceString()
-            })
+        await this.printAndLogPurchase(interaction, this.selectedProduct, actionMessage)
+    }
 
+    private balanceAfterBuy(user: Account, selectedProduct: Product, currencyId: string) {
+        const userCurrencyAmount = user.currencies.get(currencyId)?.amount || 0
+        const price = selectedProduct.price * (1 - this.discount / 100)
 
-        await updateAsSuccessMessage(interaction, `${message}.\n${actionMessage}`)
+        return userCurrencyAmount - price
+    }
 
-        logToDiscord(interaction, `${interaction.member} purchased ${getProductName(this.selectedShop.id, this.selectedProduct.id)!} from ${getShopName(this.selectedShop.id)!} for ${this.priceString()} with discount code ${this.discountCode ? this.discountCode : 'none'}. Action: ${this.selectedProduct.action?.type || 'none'} ${actionMessage}`)
-        return
+    private itemStockAfterBuy(product: Product, amountToBuy: number) {
+        if (product.amount == undefined) {
+            return undefined
+        }
 
+        return product.amount - amountToBuy
+    }
+
+    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product, appendix?: string) {
+        const productName = getProductName(this.selectedShop.id, product.id) || 'unknown product'
+        const shopName = getShopName(this.selectedShop.id) || 'unknown shop'
+        const priceString = this.priceString()
+        const discountCodeString = this.discountCode ? this.discountCode : 'none'
+
+        const message = replaceTemplates(this.locale.messages.success, { 
+            product: bold(productName),
+            shop: bold(shopName),
+            price: priceString
+        })
+
+        const appendixString = appendix ? `\n${appendix}` : ''
+
+        await updateAsSuccessMessage(interaction, `${message}${appendixString}`)
+
+        logToDiscord(interaction, 
+            `${interaction.member} purchased ${productName} from ${shopName} for ${priceString} with discount code ${discountCodeString}. Action: ${product.action?.type || 'none'} ${appendixString}`
+        )
+    }
+
+    private isAllowedToBuy(interaction: UserInterfaceInteraction) {
+        return this.selectedShop.reservedTo 
+            && interaction.member instanceof GuildMember 
+            && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
     }
 }
