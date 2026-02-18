@@ -4,6 +4,9 @@
   "author": "@roules_",
   "type": "module",
   "main": "dist/index.js",
+  "imports": {
+    "#root/*": "./*"
+  },
   "scripts": {
     "build": "tsc && npx tsc-alias",
     "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
@@ -15,7 +18,8 @@
     "deploy": "node ./dist/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
     "setup": "npm i && node ./dist/tools/setup-helper.js",
-    "nanoid": "node ./dist/tools/migrate-db-to-nanoid.js"
+    "nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
+    "verify-translation": "node ./dist/tools/verify-translation.js"
   },
   "license": "GPL-3.0",
   "devDependencies": {

@@ -4,8 +4,8 @@ import { REST } from '@discordjs/rest'
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from 'discord.js'
 import fs from 'node:fs'
 import path from 'node:path'
-
 import { fileURLToPath, pathToFileURL } from 'node:url'
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -16,6 +16,8 @@ let rest: REST | undefined
 
 const commands: { cache: RESTPostAPIChatInputApplicationCommandsJSONBody[], expired: boolean } = { cache: [], expired: true }
 
+
+// TODO: To be refactored, should not mix functionnalities and printing
 async function getCommands() {
     if (!commands.expired) {
         return commands.cache
@@ -61,7 +63,7 @@ async function getCommands() {
     return commandsList
 }
 
-async function appDeployCommands() { 
+export async function appDeployCommands() { 
     try {
         await getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
         PrettyLog.success('Successfully registered application commands.', false)
@@ -72,7 +74,7 @@ async function appDeployCommands() {
 }
 
 
-async function appDeleteCommands() {
+export async function appDeleteCommands() {
     try {    
         await getRest().put(Routes.applicationCommands(getClientId()), { body: [] })
         
@@ -84,7 +86,7 @@ async function appDeleteCommands() {
     }   
 }
 
-async function guildDeployCommands(guildId: Snowflake) {
+export async function guildDeployCommands(guildId: Snowflake) {
     try {
         await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: await getCommands() })
 
@@ -96,7 +98,7 @@ async function guildDeployCommands(guildId: Snowflake) {
     }
 }
 
-async function guildDeleteCommands(guildId: Snowflake) {
+export async function guildDeleteCommands(guildId: Snowflake) {
     try {    
         await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: [] })
         
@@ -108,11 +110,8 @@ async function guildDeleteCommands(guildId: Snowflake) {
     }
 }
 
-export {
-    appDeleteCommands, appDeployCommands, guildDeleteCommands, guildDeployCommands
-}
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+function main() {
     const flag = process.argv[2]
     const guildId = process.argv[3]
 
@@ -144,6 +143,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         default:
             PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n', false)
     }
+}
+
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    main()
 }
 
 

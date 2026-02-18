@@ -254,6 +254,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private async handleSetDiscountCodeInteraction(interaction: ButtonInteraction) {
+        // Could be abstracted
         const modalId = `${this.id}+set-discount-code-modal`
 
         const modal = new ModalBuilder()
@@ -292,7 +293,9 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.updateInteraction(modalSubmit)
     }
 
-    private async buyProduct(interaction: UserInterfaceInteraction): Promise<unknown> { // TODO: split this method into smaller methods
+    private async buyProduct(interaction: UserInterfaceInteraction): Promise<unknown> { 
+        // TODO: split this method into smaller methods
+        
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
         
         if (this.selectedShop.reservedTo 

@@ -3,10 +3,10 @@
 ## Planned features - this branch
 
 - [ ] more verbose logging for debugging purposes
-- [ ] improve error handling (implement result pattern)
+- [x] improve error handling (implement result pattern)
 - [ ] improve data access, add abstraction to avoid errors and repeated code
 - [ ] branded IDs ?
-- [ ] improve [folder structure](#folder-structure)
+- [x] improve [folder structure](#folder-structure)
 - [ ] Improve UI Implementation (no more "start" function - check feasibility first)
 
 ### folder structure

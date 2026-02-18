@@ -8,7 +8,7 @@ import { pathToFileURL } from 'node:url';
 import en_US_locale from '@/../locales/en-US.json' with { type: 'json' };
 
 
-const defaultLocale = en_US_locale
+export const defaultLocale = en_US_locale
 export type LocaleStrings = typeof defaultLocale
 
 // absolute path from the project root to the locales folder
@@ -47,8 +47,8 @@ export function getLocaleCodes() {
 export async function addLocalisationToCommand(commandData: SlashCommandBuilder) {
     const commandDataJSON = commandData.toJSON()
 
-    commandDataJSON.name_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'name'])
-    commandDataJSON.description_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'description'])
+    commandDataJSON.name_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'name'], 32)
+    commandDataJSON.description_localizations = await getLocaleStrings(['commands', commandDataJSON.name, 'description'], 100)
     await addLocalisationToOptions(commandDataJSON.options || [], ['commands', commandDataJSON.name, 'options'])
 
     return commandDataJSON
@@ -71,7 +71,6 @@ async function getLocaleStrings(path: string[], maxLength?: number): Promise<{ [
     for (const localeCode in locales) {
         const locale = locales[localeCode]
         
-        // TODO: check if this can be done otherwise
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let current = locale as any
 
