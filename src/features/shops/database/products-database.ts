@@ -1,5 +1,6 @@
 import { DatabaseError } from "@/database/database-types.js";
-import { ProductOptions, ProductOptionsOptional } from "@/features/shops/database/products-types.js";
+import { update } from "@/database/helpers.js";
+import { Product, ProductOptions, ProductOptionsOptional } from "@/features/shops/database/products-types.js";
 import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js";
 import { err, ok } from "@/lib/error-handling.js";
 import { nanoid } from "nanoid";
@@ -31,6 +32,16 @@ export async function removeProduct(shopId: string, productId: string) {
     await shopsDatabase.save();
     return ok(true);
 }
+
+
+const PRODUCT_FIELD_HANDLERS = {
+    amount: (product: Product, amount: number) => {
+        if (amount == -1) product.amount = undefined
+        else product.amount = amount
+    }
+}
+
+
 export async function updateProduct(
     shopId: string,
     productId: string,
@@ -38,21 +49,11 @@ export async function updateProduct(
 ) {
     if (!getShops().has(shopId)) return err(new DatabaseError("ShopDoesNotExist"));
 
-    const { name, description, price, emoji, action, amount } = options;
     const product = getShops().get(shopId)!.products.get(productId);
 
     if (!product) return err(new DatabaseError("ProductDoesNotExist"));
 
-    // TODO: to be refactored (if elses are horrible)
-    if (name) product.name = name;
-    if (description) product.description = description;
-    if (price != undefined) product.price = price;
-    if (emoji) product.emoji = emoji;
-    if (action) product.action = action;
-    if (amount != undefined) {
-        if (amount == -1) product.amount = undefined;
-        else product.amount = amount;
-    }
+    update(product, options, PRODUCT_FIELD_HANDLERS)
 
     await shopsDatabase.save();
     return ok(product);

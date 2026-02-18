@@ -3,30 +3,6 @@ import fs from 'node:fs/promises'
 
 export type NanoId = string
 
-// export enum DatabaseErrors {
-//     ShopDoesNotExist = 'Shop does not exist',
-//     ShopAlreadyExists = 'Shop already exists',
-//     InvalidPosition = 'Invalid position',
-
-//     CurrencyDoesNotExist = 'Currency does not exist',
-//     CurrencyAlreadyExists = 'Currency already exists',
-
-//     ProductDoesNotExist = 'Product does not exist',
-
-//     AccountDoesNotExist = 'Account does not exist',
-
-//     InvalidSettingType = "Provided setting type is invalid",
-//     DuplicateSettingName = "Provided setting name already exists"
-// }
-
-// export class DatabaseError extends Error {
-//     constructor(message: DatabaseErrors) {
-//         super(message)
-//         this.name = "DatabaseError"
-//         Object.setPrototypeOf(this, DatabaseError.prototype);
-//     }
-// }
-
 const DATABASE_ERRORS = {
     ShopDoesNotExist: {
         message: 'Shop does not exist',
@@ -88,16 +64,23 @@ export interface DatabaseJSONBody {
     [key: string]: unknown
 }
 
-export abstract class Database {
+export abstract class Database<IdType extends string, DataType> {
     public path: string
+    public data: Map<IdType, DataType>
+
 
     public constructor (databaseRaw: DatabaseJSONBody, path: string) {
         this.path = path
+
+        const [error, data] = this.parseRaw(databaseRaw)
+        if (error) throw error
+
+        this.data = data
     }
     
     public abstract toJSON(): DatabaseJSONBody 
     
-    protected abstract parseRaw(databaseRaw: DatabaseJSONBody): Result<unknown, DatabaseError> 
+    protected abstract parseRaw(databaseRaw: DatabaseJSONBody): Result<Map<IdType, DataType>, DatabaseError> 
     
     public async save () {
         try {

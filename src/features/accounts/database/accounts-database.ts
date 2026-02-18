@@ -1,4 +1,4 @@
-import accounts from '@/../data/accounts.json' with { type: 'json' }; // maybe to be refactored (absolute path or something, alias ??)
+import accounts from '@/../data/accounts.json' with { type: 'json' }; 
 import { DatabaseError } from '@/database/database-types.js';
 import { getCurrencies } from '@/features/currencies/database/currencies-database.js';
 import { Snowflake } from "discord.js";
@@ -9,12 +9,12 @@ import { err, ok } from '@/lib/error-handling.js';
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
 
 export async function getOrCreateAccount(id: Snowflake): Promise<Account> {
-    let account = accountsDatabase.accounts.get(id)
+    let account = accountsDatabase.data.get(id)
 
     if (!account) {
-        accountsDatabase.accounts.set(id, { currencies: new Map(), inventory: new Map() })
+        accountsDatabase.data.set(id, { currencies: new Map(), inventory: new Map() })
         await accountsDatabase.save()
-        account = accountsDatabase.accounts.get(id)!
+        account = accountsDatabase.data.get(id)!
     }
 
     return account
@@ -67,7 +67,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
 }
 
 export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'inventory' | 'all') {
-    const account = accountsDatabase.accounts.get(id)
+    const account = accountsDatabase.data.get(id)
     if (!account) return err(new DatabaseError("AccountDoesNotExist"))
 
     if (empty === 'currencies' || empty === 'all') account.currencies.clear()
@@ -79,7 +79,7 @@ export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'invento
 
 export async function getAccountsWithCurrency(currencyId: string) {
     const accountsWithCurrency = new Map<Snowflake, Account>()
-    accountsDatabase.accounts.forEach((account: Account, id: Snowflake) => {
+    accountsDatabase.data.forEach((account: Account, id: Snowflake) => {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
     })
     return accountsWithCurrency

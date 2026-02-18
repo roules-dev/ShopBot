@@ -52,8 +52,7 @@ export type SettingsJSONBody = {
     [id: string]: SettingJSONBody
 }
 
-export class SettingsDatabase extends Database {
-    public settings: Settings = new Map()
+export class SettingsDatabase extends Database<string, Setting> {
 
     public constructor (databaseRaw: SettingsJSONBody, path: string) {
         super(databaseRaw, path)
@@ -61,13 +60,13 @@ export class SettingsDatabase extends Database {
         const [error, settings] = this.parseRaw(databaseRaw)
         if (error) throw error
 
-        this.settings = settings
+        this.data = settings
     }
     
     public override toJSON(): SettingsJSONBody {
         const settingsJSON: SettingsJSONBody = {}
 
-        this.settings.forEach((setting) => {
+        this.data.forEach((setting) => {
             settingsJSON[setting.id] = { ...setting, type: setting.type as string, 
                 value: (setting.value === undefined) ? null : setting.value
             }

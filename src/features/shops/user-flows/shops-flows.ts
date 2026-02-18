@@ -496,7 +496,7 @@ export class EditShopFlow extends UserFlow {
                 break
             }
             case EDIT_SHOP_OPTIONS.ReservedTo:
-                updateValue = interaction.options.getRole('reserved-to-role')?.id ?? defaultComponents().unset
+                updateValue = interaction.options.getRole('new-role')?.id ?? defaultComponents().unset
                 break
             default:
                 assertNeverReached(subcommand)
@@ -514,7 +514,7 @@ export class EditShopFlow extends UserFlow {
     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string | null {
         switch (subcommand) {
             case EDIT_SHOP_OPTIONS.ReservedTo: {
-                const role = interaction.options.getRole('reserved-to-role')
+                const role = interaction.options.getRole('new-role')
                 if (!role) return defaultComponents().unset
                 return roleMention(role.id)
             }

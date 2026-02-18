@@ -10,10 +10,8 @@ export type ProductActionType =
     (typeof PRODUCT_ACTION_TYPE)[keyof typeof PRODUCT_ACTION_TYPE];
 
 export type ProductActionOptions<Type extends ProductActionType> =
-    Type extends typeof PRODUCT_ACTION_TYPE.GiveRole
-    ? { roleId: Snowflake }
-    : Type extends typeof PRODUCT_ACTION_TYPE.GiveCurrency
-    ? { currencyId: NanoId; amount: number }
+    Type extends typeof PRODUCT_ACTION_TYPE.GiveRole ? { roleId: Snowflake }
+    : Type extends typeof PRODUCT_ACTION_TYPE.GiveCurrency ? { currencyId: NanoId; amount: number }
     : never;
 
 export type ProductAction = {

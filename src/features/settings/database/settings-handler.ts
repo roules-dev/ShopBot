@@ -6,11 +6,11 @@ import { setCurrentLocale } from '@/lib/localisation.js'
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 
 export function getSettings(): Settings {
-    return settingsDatabase.settings
+    return settingsDatabase.data
 }
 
 export function getSetting(id: string): Setting | undefined {
-    return settingsDatabase.settings.get(id)
+    return settingsDatabase.data.get(id)
 }
 
 
@@ -18,20 +18,20 @@ export function getSetting(id: string): Setting | undefined {
 // -> no idea of how yet
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function setSetting(id: string, value: any) {
-    if (!settingsDatabase.settings.has(id)) return err({ message: "Setting does not exist" })
+    if (!settingsDatabase.data.has(id)) return err({ message: "Setting does not exist" })
 
-    const setting = settingsDatabase.settings.get(id)!
+    const setting = settingsDatabase.data.get(id)!
     const updatedSetting = {...setting, value: value}
 
-    settingsDatabase.settings.set(id, updatedSetting)
+    settingsDatabase.data.set(id, updatedSetting)
 
     await settingsDatabase.save()
     await onSettingUpdate(updatedSetting)
 
-    return ok(settingsDatabase.settings.get(id)!)
+    return ok(settingsDatabase.data.get(id)!)
 }
 
-export async function onSettingUpdate(setting: Setting) { // this is horrible, should find a better way to do this, maybe with events
+export async function onSettingUpdate(setting: Setting) { // TODO this is horrible, should find a better way to do this, maybe with events
     switch (setting.id) {
         case "language":
             await setCurrentLocale(setting.value as string)  

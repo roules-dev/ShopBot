@@ -30,22 +30,11 @@ export interface AccountsDatabaseJSONBody extends DatabaseJSONBody {
     }
 }
 
-export class AccountsDatabase extends Database {
-    public accounts: Map<Snowflake, Account>
-
-    public constructor (databaseRaw: AccountsDatabaseJSONBody, path: string) {
-        super(databaseRaw, path)
-
-        const [error, accounts] = this.parseRaw(databaseRaw)
-        if (error) throw error
-
-        this.accounts = accounts
-    }
-
+export class AccountsDatabase extends Database<Snowflake, Account> {
     public toJSON(): AccountsDatabaseJSONBody {
         const accountsJSON: AccountsDatabaseJSONBody = {}
 
-        this.accounts.forEach((account, userId) => {
+        this.data.forEach((account, userId) => {
             const currencies = Object.fromEntries(Array.from(account.currencies.entries())
                 .map(([id, balance]) => [id, { item: balance.item.id, amount: balance.amount } as Balance<NanoId>]))
 

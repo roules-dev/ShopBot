@@ -34,26 +34,16 @@ export interface ShopsDatabaseJSONBody extends DatabaseJSONBody {
         & { currencyId: NanoId }
 }
 
-export class ShopsDatabase extends Database {
-    public shops: Map<NanoId, Shop>
-
-    public constructor (databaseRaw: ShopsDatabaseJSONBody, path: string) {
-        super(databaseRaw, path)
-
-        const [error, shops] = this.parseRaw(databaseRaw)
-        if (error) throw error
-
-        this.shops = shops
-}
-
+export class ShopsDatabase extends Database<NanoId, Shop> {
     public toJSON(): ShopsDatabaseJSONBody {
-            const shopsJSON: ShopsDatabaseJSONBody = {}
+        const shopsJSON: ShopsDatabaseJSONBody = {}
 
-        this.shops.forEach((shop, shopId) => {
-                shopsJSON[shopId] = { ...shop, products: Object.fromEntries(shop.products), currencyId: shop.currency.id }
-            })
+        this.data.forEach((shop, shopId) => {
+            const { currency: _, ...shopWithoutCurrency } = shop
+            shopsJSON[shopId] = { ...shopWithoutCurrency, products: Object.fromEntries(shop.products), currencyId: shop.currency.id }
+        })
 
-            return shopsJSON
+        return shopsJSON
     }
 
     protected parseRaw(databaseRaw: ShopsDatabaseJSONBody) {
@@ -67,7 +57,7 @@ export class ShopsDatabase extends Database {
                         let action: ProductAction | undefined = undefined
 
                         if (product.action && isProductActionType(product.action.type)) {
-                                            action = createProductAction(product.action.type, product.action.options)
+                            action = createProductAction(product.action.type, product.action.options)
                         }
 
                         return [id, { ...product, shopId, action}]

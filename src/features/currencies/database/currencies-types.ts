@@ -16,20 +16,9 @@ export interface CurrenciesDatabaseJSONBody extends DatabaseJSONBody {
 }
 
 
-export class CurrenciesDatabase extends Database {
-    public currencies: Map<NanoId, Currency>
-
-    public constructor (databaseRaw: CurrenciesDatabaseJSONBody, path: string) {
-        super(databaseRaw, path)
-
-        const [error, currencies] = this.parseRaw(databaseRaw)
-        if (error) throw error
-
-        this.currencies = currencies
-    }
-
+export class CurrenciesDatabase extends Database<NanoId, Currency> {
     public toJSON(): CurrenciesDatabaseJSONBody {
-        const currencies: CurrenciesDatabaseJSONBody = Object.fromEntries(this.currencies)
+        const currencies: CurrenciesDatabaseJSONBody = Object.fromEntries(this.data)
         return currencies
     }
 
