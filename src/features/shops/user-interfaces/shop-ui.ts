@@ -1,3 +1,4 @@
+import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js"
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
@@ -8,7 +9,6 @@ import { Shop } from "@/features/shops/database/shops-types.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent } from "@/user-interfaces/extended-components.js"
 import { MessageUserInterface, PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { APIEmbedField, bold, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, LabelBuilder, ModalBuilder, ModalSubmitInteraction, roleMention, StringSelectMenuInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
 import { Account } from "../../accounts/database/accounts-type.js"
 

@@ -1,6 +1,6 @@
+import { PrettyLog } from "#root/src/lib/pretty-log.js"
 import config from '@/../config/config.json' with { type: 'json' }
 import { LocaleStrings } from "@/lib/localisation.js"
-import { PrettyLog } from "@/utils/pretty-log.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from 'fs/promises'
 import path from "path"

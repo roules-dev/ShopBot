@@ -1,5 +1,5 @@
+import { PrettyLog, drawProgressBar } from '#root/src/lib/pretty-log.js'
 import { addLocalisationToCommand } from '@/lib/localisation.js'
-import { PrettyLog, drawProgressBar } from '@/utils/pretty-log.js'
 import { REST } from '@discordjs/rest'
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from 'discord.js'
 import fs from 'node:fs'

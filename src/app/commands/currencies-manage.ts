@@ -1,8 +1,8 @@
+import { replyErrorMessage, replySuccessMessage } from "#root/src/lib/discord.js"
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
 import { CurrencyRemoveFlow, EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currencies-flows.js"
 import { errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { replyErrorMessage, replySuccessMessage } from "@/utils/discord.js"
 import { bold, ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 

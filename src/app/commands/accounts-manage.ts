@@ -1,7 +1,7 @@
+import { replyErrorMessage } from "#root/src/lib/discord.js"
 import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "@/features/accounts/user-flows/accounts-flows.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { errorMessages } from "@/lib/localisation.js"
-import { replyErrorMessage } from "@/utils/discord.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 

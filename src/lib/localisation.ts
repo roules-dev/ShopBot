@@ -1,4 +1,4 @@
-import { PrettyLog } from "@/utils/pretty-log.js";
+import { PrettyLog } from "#root/src/lib/pretty-log.js";
 import '@/utils/strings.js';
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js";
 import fs from 'node:fs/promises';

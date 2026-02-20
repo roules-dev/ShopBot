@@ -1,4 +1,5 @@
 
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js";
 import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js"; // external dependency, should be refactored
 import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "@/features/currencies/database/currencies-database.js";
 import { Currency } from "@/features/currencies/database/currencies-types.js";
@@ -9,7 +10,6 @@ import { UserFlow } from "@/user-flows/user-flow.js";
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js";
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
 import { EMOJI_REGEX } from "@/utils/constants.js";
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
 
 

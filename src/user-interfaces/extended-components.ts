@@ -3,7 +3,7 @@ import { UserInterfaceComponentBuilder } from "@/user-interfaces/user-interfaces
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, LabelBuilder, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 
 type Identifiable = {
-    id: string
+    id: string // will be branded when Zod validation is implemented
 }
 
 type Labelled = {
@@ -11,7 +11,7 @@ type Labelled = {
 }
 
 type Emojiable = {
-    emoji?: string
+    emoji?: string // will be branded when Zod validation is implemented
 }
 
 export abstract class ExtendedComponent {
@@ -149,6 +149,8 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     private getStringSelectOptions(map: Map<string, T>): StringSelectMenuOptionBuilder[] { 
         
         // TODO: correctly handle select menu limitation of 25 options
+        // If there are + 25 options, only display the first 24 and the last one is 'next page'
+        // on select it displays the next options (with first option being 'before' and last being 'next', if once again there are too much options)
         
         const options: StringSelectMenuOptionBuilder[] = []
         map.forEach((value, key) => {

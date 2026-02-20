@@ -1,10 +1,10 @@
+import { replyErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js"
 import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "@/features/accounts/database/accounts-database.js"
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js"
-import { replyErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { APIRole, bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, roleMention, StringSelectMenuInteraction, User, userMention } from "discord.js"
 
 

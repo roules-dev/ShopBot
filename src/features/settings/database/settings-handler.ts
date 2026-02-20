@@ -15,7 +15,7 @@ export function getSetting(id: string): Setting | undefined {
 
 
 // TODO : get rid of this value: any for a more type safe way of doing it
-// -> no idea of how yet
+// -> probably with some Zod validation
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function setSetting(id: string, value: any) {
     if (!settingsDatabase.data.has(id)) return err({ message: "Setting does not exist" })
@@ -31,7 +31,7 @@ export async function setSetting(id: string, value: any) {
     return ok(settingsDatabase.data.get(id)!)
 }
 
-export async function onSettingUpdate(setting: Setting) { // TODO this is horrible, should find a better way to do this, maybe with events
+export async function onSettingUpdate(setting: Setting) { // TODO this is horrible, should find a better way to do this, maybe with events (event bus ?)
     switch (setting.id) {
         case "language":
             await setCurrentLocale(setting.value as string)  

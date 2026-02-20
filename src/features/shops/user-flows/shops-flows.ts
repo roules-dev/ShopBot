@@ -1,9 +1,9 @@
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/utils/discord.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
