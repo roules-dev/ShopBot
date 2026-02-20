@@ -1,14 +1,14 @@
-import shops from "@/../data/shops.json" with { type: "json" };
-import { DatabaseError } from "@/database/database-types.js";
-import { update } from "@/database/helpers.js";
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js";
-import { Shop, ShopOptionsOptional, ShopsDatabase } from "@/features/shops/database/shops-types.js";
-import { err, ok } from "@/lib/error-handling.js";
-import { getLocale } from '@/lib/localisation.js';
-import { Snowflake } from 'discord.js';
-import { nanoid } from 'nanoid';
+import shops from "@/../data/shops.json" with { type: "json" }
+import { DatabaseError } from "@/database/database-types.js"
+import { update } from "@/database/helpers.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { Shop, ShopOptionsOptional, ShopsDatabase } from "@/features/shops/database/shops-types.js"
+import { err, ok } from "@/lib/error-handling.js"
+import { getLocale } from '@/lib/localisation.js'
+import { Snowflake } from 'discord.js'
+import { nanoid } from 'nanoid'
 
-export const shopsDatabase = new ShopsDatabase(shops, "data/shops.json");
+export const shopsDatabase = new ShopsDatabase(shops, "data/shops.json")
 
 export function getShops(): Map<string, Shop> {
     return shopsDatabase.data
@@ -115,7 +115,7 @@ export function updateShopPosition(shopId: string, index: number) {
 
     if (shopIndex === -1) return err(new DatabaseError("ShopDoesNotExist"))
 
-    shopsArray.splice(index, 0, shopsArray.splice(shopIndex, 1)[0]);
+    shopsArray.splice(index, 0, shopsArray.splice(shopIndex, 1)[0])
 
     shopsDatabase.data = new Map(shopsArray)
     shopsDatabase.save()

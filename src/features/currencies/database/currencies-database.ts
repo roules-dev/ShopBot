@@ -1,10 +1,10 @@
-import currencies from '@/../data/currencies.json' with { type: 'json' };
-import { DatabaseError } from '@/database/database-types.js';
-import { update } from '@/database/helpers.js';
-import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "@/features/currencies/database/currencies-types.js";
-import { err, ok } from '@/lib/error-handling.js';
-import { nanoid } from 'nanoid';
-;
+import currencies from '@/../data/currencies.json' with { type: 'json' }
+import { DatabaseError } from '@/database/database-types.js'
+import { update } from '@/database/helpers.js'
+import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "@/features/currencies/database/currencies-types.js"
+import { err, ok } from '@/lib/error-handling.js'
+import { nanoid } from 'nanoid'
+
 
 const currenciesDatabase = new CurrenciesDatabase(currencies, 'data/currencies.json')
 

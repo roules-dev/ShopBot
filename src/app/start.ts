@@ -1,13 +1,13 @@
-import { PrettyLog } from "#root/src/lib/pretty-log.js"
 import config from '@/../config/config.json' with { type: 'json' }
+import { PrettyLog } from "@//lib/pretty-log.js"
 import { LocaleStrings } from "@/lib/localisation.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from 'fs/promises'
 import path from "path"
 
 import { fileURLToPath, pathToFileURL } from 'node:url'
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 interface Command {
     data: SlashCommandBuilder,

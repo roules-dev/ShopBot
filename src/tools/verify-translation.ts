@@ -1,6 +1,7 @@
-import { PrettyLog } from '#root/src/lib/pretty-log.js';
-import { defaultLocale } from '@/lib/localisation.js';
-import { fileURLToPath } from 'node:url';
+import { PrettyLog } from '@//lib/pretty-log.js'
+import { defaultLocale } from '@/lib/localisation.js'
+import { fileURLToPath } from 'node:url'
+import fs from 'node:fs/promises'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean, string[]] {
@@ -45,9 +46,10 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
 
 async function loadLocaleFile(localeCode: string) {
     try {
-        const locale = await import(`#root/locales/${localeCode}.json`, {
-            with: { type: 'json' }
-        })
+        const localeFile = await fs.readFile(`./locales/${localeCode}.json`, 'utf-8')
+        const locale = JSON.parse(localeFile)
+
+        if (typeof locale !== 'object') throw new Error(`Locale ${localeCode} is not an object.`)
     
         if (!locale) throw new Error(`Locale ${localeCode} is empty or not found.`)
         return locale
@@ -70,7 +72,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         process.exit(1)
     }
 
-    const locale = (await loadLocaleFile(localeCode)).default
+    const locale = await loadLocaleFile(localeCode)
 
     const [same, errors] = sameStructure(defaultLocale, locale)
 

@@ -35,6 +35,7 @@ export default defineConfig(
                     "varsIgnorePattern": "^_"
                 }
             ],
+            "semi": ["error", "never"],
             
         }
     },

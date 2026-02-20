@@ -1,5 +1,5 @@
-import { replyErrorMessage } from '#root/src/lib/discord.js'
-import { PrettyLog } from '#root/src/lib/pretty-log.js'
+import { replyErrorMessage } from '@//lib/discord.js'
+import { PrettyLog } from '@//lib/pretty-log.js'
 import { BaseInteraction, ChannelType, ChatInputCommandInteraction, Events, InteractionType } from 'discord.js'
 
 

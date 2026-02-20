@@ -1,11 +1,11 @@
-import { PrettyLog } from "#root/src/lib/pretty-log.js";
-import '@/utils/strings.js';
-import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js";
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { PrettyLog } from "@//lib/pretty-log.js"
+import '@/utils/strings.js'
+import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js"
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 
-import en_US_locale from '@/../locales/en-US.json' with { type: 'json' };
+import en_US_locale from '@/../locales/en-US.json' with { type: 'json' }
 
 
 export const defaultLocale = en_US_locale
@@ -14,7 +14,7 @@ export type LocaleStrings = typeof defaultLocale
 // absolute path from the project root to the locales folder
 const localesPath = './locales'
 
-const locales: { cache: { [code: string]: LocaleStrings }, expired: boolean } = { cache: {}, expired: true };
+const locales: { cache: { [code: string]: LocaleStrings }, expired: boolean } = { cache: {}, expired: true }
 
 let currentLocale = defaultLocale
 

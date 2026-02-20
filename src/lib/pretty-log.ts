@@ -1,10 +1,10 @@
-import fs from 'fs/promises';
-import { DateTime } from 'luxon';
-import path from 'path';
+import fs from 'fs/promises'
+import { DateTime } from 'luxon'
+import path from 'path'
 
-import { fileURLToPath } from 'node:url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { fileURLToPath } from 'node:url'
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 export class PrettyLog {
     private static loadStepCount = 1
@@ -84,8 +84,8 @@ export class PrettyLog {
 
 
 export function drawProgressBar(progress: number, barWidth = 30) {
-    const filledWidth = Math.floor(progress / 100 * barWidth);
-    const emptyWidth = barWidth - filledWidth;
-    const progressBar = '█'.repeat(filledWidth) + '▒'.repeat(emptyWidth);
+    const filledWidth = Math.floor(progress / 100 * barWidth)
+    const emptyWidth = barWidth - filledWidth
+    const progressBar = '█'.repeat(filledWidth) + '▒'.repeat(emptyWidth)
     process.stdout.write(`\r[${progressBar}] ${progress.toFixed(0)}%  `)
 }

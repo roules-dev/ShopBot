@@ -1,6 +1,7 @@
 import { getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { UserInterfaceComponentBuilder } from "@/user-interfaces/user-interfaces.js"
 import { ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ChatInputCommandInteraction, ComponentEmojiResolvable, ComponentType, InteractionCallbackResponse, InteractionCollector, LabelBuilder, MessageComponentInteraction, MessageComponentType, ModalBuilder, ModalSubmitInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, Snowflake, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
+import { subMap } from "../utils/maps.js"
 
 type Identifiable = {
     id: string // will be branded when Zod validation is implemented
@@ -99,6 +100,14 @@ export class ExtendedButtonComponent extends ExtendedComponent {
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 }
 
+const API_MAX_SELECT_MENU_OPTIONS = 25
+const MAX_OPTIONS_PER_PAGE = API_MAX_SELECT_MENU_OPTIONS - 2
+
+const SELECT_PAGE_OPTIONS = {
+    previous: 'previous',
+    next: 'next'
+}
+
 interface ExtendedSelectMenuOptions {
     customId: string
     placeholder: string
@@ -110,29 +119,59 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     customId: string
     component: StringSelectMenuBuilder
     map: Map<string, T>
+    placeholder: string
+
+    update: (interaction: StringSelectMenuInteraction) => void
     callback: (interaction: StringSelectMenuInteraction, selected: T) => void
     time: number
 
-    constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
-        map: Map<string, T>, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+    selectPage: number = 0
+    pageCount: number = 1
+
+    constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions,
+        map: Map<string, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
     ) {
         super()
         this.customId = customId
         this.map = map
-        this.component = this.createSelectMenu(customId, placeholder, map)
+        this.placeholder = placeholder
 
+        this.update = update
         this.callback = callback
         this.time = time
+
+        if (map.size > API_MAX_SELECT_MENU_OPTIONS) {
+            this.pageCount = Math.ceil(map.size / (MAX_OPTIONS_PER_PAGE - 2))
+        }
+
+        this.component = this.createSelectMenu(customId, placeholder, map)
     }
 
     onCollect(interaction: StringSelectMenuInteraction): void {
         if (!interaction.isStringSelectMenu()) return
 
-        const selected = this.map.get(interaction.values[0])
-        
+        const selectedValue = interaction.values[0]
+
+        if (this.pageCount > 1 && selectedValue in SELECT_PAGE_OPTIONS) {
+            switch (selectedValue) {
+                case SELECT_PAGE_OPTIONS.next:
+                    this.selectPage = Math.min(this.selectPage + 1, this.pageCount - 1)
+                    break
+                case SELECT_PAGE_OPTIONS.previous:
+                    this.selectPage = Math.max(this.selectPage - 1, 0)
+                    break
+            }
+
+            this.component = this.createSelectMenu(this.customId, this.placeholder, this.map)
+            return this.update(interaction)
+        }
+
+
+        const selected = this.map.get(selectedValue)
         if (selected == undefined) return
 
         this.callback(interaction, selected)    
+
     }
 
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
@@ -148,10 +187,31 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
 
     private getStringSelectOptions(map: Map<string, T>): StringSelectMenuOptionBuilder[] { 
         
-        // TODO: correctly handle select menu limitation of 25 options
-        // If there are + 25 options, only display the first 24 and the last one is 'next page'
-        // on select it displays the next options (with first option being 'before' and last being 'next', if once again there are too much options)
-        
+        const pageSwitchOptions = []
+
+        if (this.pageCount > 1) {
+            
+            const start = this.selectPage * MAX_OPTIONS_PER_PAGE
+            map = subMap(map, start, MAX_OPTIONS_PER_PAGE)
+
+            if (this.selectPage > 0) {
+                pageSwitchOptions.push(
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(`Previous page (${this.selectPage}/${this.pageCount})`)
+                        .setValue(SELECT_PAGE_OPTIONS.previous)
+                        .setEmoji("⬅️")
+                )
+            }
+            if (this.selectPage < this.pageCount - 1) {                
+                pageSwitchOptions.push(
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(`Next page (${this.selectPage+2}/${this.pageCount})`)
+                        .setValue(SELECT_PAGE_OPTIONS.next)
+                        .setEmoji("➡️")
+                )
+            }
+        }
+
         const options: StringSelectMenuOptionBuilder[] = []
         map.forEach((value, key) => {
             const label = value.name.removeCustomEmojis().ellipsis(100)
@@ -166,6 +226,8 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
 
             options.push(option)
         })
+
+        options.push(...pageSwitchOptions)
         
         return options
     }

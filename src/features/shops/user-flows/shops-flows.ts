@@ -1,4 +1,4 @@
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@//lib/discord.js"
 import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js"
@@ -66,6 +66,7 @@ export class ShopCreateFlow extends UserFlow {
         const selectCurrencyMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
             getCurrencies(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
@@ -173,15 +174,19 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
-            customId: `${this.id}+select-shop`,
-            placeholder: defaultComponents().selectShop,
-            time: 120_000
-        }, getShops(), 
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
-            this.selectedShop = selected
-            this.updateInteraction(interaction)
-        })
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+            {
+                customId: `${this.id}+select-shop`,
+                placeholder: defaultComponents().selectShop,
+                time: 120_000
+            }, 
+            getShops(), 
+            (interaction) => this.updateInteraction(interaction),
+                (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+                this.selectedShop = selected
+                this.updateInteraction(interaction)
+            }
+        )
 
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
@@ -260,6 +265,7 @@ export class ShopReorderFlow extends UserFlow {
                 time: 120_000,
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 const shopsArray = Array.from(getShops().keys())
@@ -358,7 +364,7 @@ export const EDIT_SHOP_OPTIONS = {
     Description: 'description',
     Emoji: 'emoji',
     ReservedTo: 'reserved-to-role'
-} as const;
+} as const
 
 type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 
@@ -429,6 +435,7 @@ export class EditShopFlow extends UserFlow {
                 time: 120_000,
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
@@ -580,6 +587,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 time: 120_000,
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
@@ -615,6 +623,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 time: 120_000,
             },
             getCurrencies(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
@@ -740,16 +749,19 @@ export class DiscountCodeCreateFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
-            customId: `${this.id}+select-shop`,
-            placeholder: defaultComponents().selectShop,
-            time: 120_000,
-        },
-        getShops(),
-        (interaction: StringSelectMenuInteraction, selected: Shop): void => {
-            this.selectedShop = selected
-            this.updateInteraction(interaction)
-        })
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+            {
+                customId: `${this.id}+select-shop`,
+                placeholder: defaultComponents().selectShop,
+                time: 120_000,
+            },
+            getShops(),
+            (interaction) => this.updateInteraction(interaction),
+            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+                this.selectedShop = selected
+                this.updateInteraction(interaction)
+            }
+        )
 
         const submitButton = new ExtendedButtonComponent(
             {
@@ -852,6 +864,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
                 time: 120_000,
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
@@ -884,16 +897,19 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)    
         this.components.set(submitButton.customId, submitButton)
 
-        const discountCodeSelectMenu = new ExtendedStringSelectMenuComponent({
-            customId: `${this.id}+select-discount-code`,
-            placeholder: this.locale.components.discountCodeSelect,
-            time: 120_000,
-        },
-        new Map(),
-        (interaction: StringSelectMenuInteraction, selected: string): void => {
-            this.selectedDiscountCode = selected
-            this.updateInteraction(interaction)
-        })
+        const discountCodeSelectMenu = new ExtendedStringSelectMenuComponent(
+            {
+                customId: `${this.id}+select-discount-code`,
+                placeholder: this.locale.components.discountCodeSelect,
+                time: 120_000,
+            },
+            new Map(),
+            (interaction) => this.updateInteraction(interaction),
+            (interaction: StringSelectMenuInteraction, selected: string): void => {
+                this.selectedDiscountCode = selected
+                this.updateInteraction(interaction)
+            }
+        )
 
         const submitRemoveButton = new ExtendedButtonComponent(
             {

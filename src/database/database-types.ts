@@ -55,7 +55,7 @@ export class DatabaseError extends Error {
         this.name = "DatabaseError"
         this.status = DATABASE_ERRORS[error].status
 
-        Object.setPrototypeOf(this, DatabaseError.prototype);
+        Object.setPrototypeOf(this, DatabaseError.prototype)
     }
 }
 

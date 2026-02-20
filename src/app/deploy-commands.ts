@@ -1,4 +1,4 @@
-import { PrettyLog, drawProgressBar } from '#root/src/lib/pretty-log.js'
+import { PrettyLog, drawProgressBar } from '@//lib/pretty-log.js'
 import { addLocalisationToCommand } from '@/lib/localisation.js'
 import { REST } from '@discordjs/rest'
 import { RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from 'discord.js'
@@ -6,8 +6,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const configFilePath = path.join(__dirname, '../config/config.json')
 let config: { clientId: string, token: string } | undefined

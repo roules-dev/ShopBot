@@ -1,4 +1,4 @@
-import { replyErrorMessage, replySuccessMessage } from "#root/src/lib/discord.js"
+import { replyErrorMessage, replySuccessMessage } from "@//lib/discord.js"
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
 import { CurrencyRemoveFlow, EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currencies-flows.js"
 import { errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"

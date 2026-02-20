@@ -1,4 +1,4 @@
-import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js"
+import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@//lib/discord.js"
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
@@ -41,6 +41,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const selectShopMenu = new ExtendedStringSelectMenuComponent(
             { customId : `${this.id}+select-shop`, placeholder: defaultComponents().selectShop, time: 120_000 },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             async (interaction: StringSelectMenuInteraction, selected: Shop) => {
                 this.page = 0
                 this.selectedShop = selected
@@ -214,6 +215,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 time: 120_000,
             },
             this.selectedShop.products,
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Product): void => {
                 this.selectedProduct = selected
                 this.updateInteraction(interaction)
@@ -298,7 +300,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
         
-        if (!this.isAllowedToBuy(interaction)) {
+        if (this.isNotAllowedToBuy(interaction)) {
             return replyErrorMessage(interaction, this.locale.errorMessages.cantBuyHere)
         }
 
@@ -306,6 +308,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         
         const balanceAfterBuy = this.balanceAfterBuy(user, this.selectedProduct, this.selectedShop.currency.id)
         if (balanceAfterBuy < 0) {
+            console.log(`not enough money`)
             return replyErrorMessage(
                 interaction, 
                 replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) })
@@ -421,8 +424,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
         )
     }
 
-    private isAllowedToBuy(interaction: UserInterfaceInteraction) {
-        return this.selectedShop.reservedTo 
+    private isNotAllowedToBuy(interaction: UserInterfaceInteraction) {
+        console.log(`reservedTo: ${this.selectedShop.reservedTo}`)
+
+        return this.selectedShop.reservedTo != undefined
             && interaction.member instanceof GuildMember 
             && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
     }

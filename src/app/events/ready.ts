@@ -1,4 +1,4 @@
-import { PrettyLog } from '#root/src/lib/pretty-log.js'
+import { PrettyLog } from '@//lib/pretty-log.js'
 import { getSetting } from '@/features/settings/database/settings-handler.js'
 import { ActivityType, Client, Events } from 'discord.js'
 

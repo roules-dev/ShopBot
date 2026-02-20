@@ -1,4 +1,4 @@
-import { replyErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js"
+import { replyErrorMessage, updateAsSuccessMessage } from "@//lib/discord.js"
 import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "@/features/accounts/database/accounts-database.js"
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
@@ -54,6 +54,7 @@ export class AccountGiveFlow extends UserFlow {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
             getCurrencies(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
@@ -218,6 +219,7 @@ export class AccountTakeFlow extends UserFlow {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
             getCurrencies(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)

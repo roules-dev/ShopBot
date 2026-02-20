@@ -1,4 +1,4 @@
-import { replyErrorMessage } from "#root/src/lib/discord.js"
+import { replyErrorMessage } from "@//lib/discord.js"
 import { AccountGiveFlow, AccountTakeFlow, BulkAccountGiveFlow } from "@/features/accounts/user-flows/accounts-flows.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { errorMessages } from "@/lib/localisation.js"

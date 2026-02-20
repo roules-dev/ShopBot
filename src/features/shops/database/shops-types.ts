@@ -1,15 +1,15 @@
-import { Database, DatabaseJSONBody, NanoId } from "@/database/database-types.js";
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js";
-import { Currency } from "@/features/currencies/database/currencies-types.js";
+import { Database, DatabaseJSONBody, NanoId } from "@/database/database-types.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
 import {
     Product,
     ProductAction,
     ProductActionJSONBody,
     createProductAction,
     isProductActionType,
-} from "@/features/shops/database/products-types.js";
-import { ok } from "@/lib/error-handling.js";
-import { Snowflake } from "discord.js";
+} from "@/features/shops/database/products-types.js"
+import { ok } from "@/lib/error-handling.js"
+import { Snowflake } from "discord.js"
 
 export interface Shop {
     id: NanoId

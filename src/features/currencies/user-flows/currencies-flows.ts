@@ -1,16 +1,16 @@
 
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js";
-import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js"; // external dependency, should be refactored
-import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "@/features/currencies/database/currencies-database.js";
-import { Currency } from "@/features/currencies/database/currencies-types.js";
-import { getShopName, getShopsWithCurrency } from "@/features/shops/database/shops-database.js"; // external dependency, should be refactored
-import { assertNeverReached } from "@/lib/error-handling.js";
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js";
-import { UserFlow } from "@/user-flows/user-flow.js";
-import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js";
-import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
-import { EMOJI_REGEX } from "@/utils/constants.js";
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js";
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@//lib/discord.js"
+import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js" // external dependency, should be refactored
+import { getCurrencies, getCurrencyName, removeCurrency, updateCurrency } from "@/features/currencies/database/currencies-database.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { getShopName, getShopsWithCurrency } from "@/features/shops/database/shops-database.js" // external dependency, should be refactored
+import { assertNeverReached } from "@/lib/error-handling.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
+import { UserFlow } from "@/user-flows/user-flow.js"
+import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js"
+import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
+import { EMOJI_REGEX } from "@/utils/constants.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -40,6 +40,7 @@ export class CurrencyRemoveFlow extends UserFlow {
             placeholder: defaultComponents().selectCurrency,
             time: 120_000
         }, getCurrencies(),
+        (interaction) => this.updateInteraction(interaction),
         (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
             this.selectedCurrency = selectedCurrency
             this.updateInteraction(interaction)
@@ -159,6 +160,7 @@ export class EditCurrencyFlow extends UserFlow {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
             { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
             getCurrencies(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)

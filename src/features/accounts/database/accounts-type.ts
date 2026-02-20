@@ -1,9 +1,9 @@
 import { Database, DatabaseJSONBody, NanoId } from "@/database/database-types.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
-import { Currency } from "@/features/currencies/database/currencies-types.js"; // external dependency, should be refactored
-import { getProducts } from "@/features/shops/database/products-database.js"; // external dependency, should be refactored
-import { Product } from "@/features/shops/database/products-types.js"; // external dependency, should be refactored
-import { getShops } from "@/features/shops/database/shops-database.js"; // external dependency, should be refactored
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js" // external dependency, should be refactored
+import { Currency } from "@/features/currencies/database/currencies-types.js" // external dependency, should be refactored
+import { getProducts } from "@/features/shops/database/products-database.js" // external dependency, should be refactored
+import { Product } from "@/features/shops/database/products-types.js" // external dependency, should be refactored
+import { getShops } from "@/features/shops/database/shops-database.js" // external dependency, should be refactored
 import { ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
 

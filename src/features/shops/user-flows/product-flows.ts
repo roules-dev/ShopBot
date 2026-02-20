@@ -1,17 +1,17 @@
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "#root/src/lib/discord.js";
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
-import { Currency } from "@/features/currencies/database/currencies-types.js"; // external dependency, should be refactored
-import { addProduct, getProductName, removeProduct, updateProduct } from "@/features/shops/database/products-database.js";
-import { createProductAction, isProductActionType, Product, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "@/features/shops/database/products-types.js";
-import { getShopName, getShops } from "@/features/shops/database/shops-database.js";
-import { Shop } from "@/features/shops/database/shops-types.js";
-import { assertNeverReached } from "@/lib/error-handling.js";
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js";
-import { UserFlow } from "@/user-flows/user-flow.js";
-import { ExtendedButtonComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js";
-import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js";
-import { EMOJI_REGEX } from "@/utils/constants.js";
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@//lib/discord.js"
+import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js" // external dependency, should be refactored
+import { Currency } from "@/features/currencies/database/currencies-types.js" // external dependency, should be refactored
+import { addProduct, getProductName, removeProduct, updateProduct } from "@/features/shops/database/products-database.js"
+import { createProductAction, isProductActionType, Product, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "@/features/shops/database/products-types.js"
+import { getShopName, getShops } from "@/features/shops/database/shops-database.js"
+import { Shop } from "@/features/shops/database/shops-types.js"
+import { assertNeverReached } from "@/lib/error-handling.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
+import { UserFlow } from "@/user-flows/user-flow.js"
+import { ExtendedButtonComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js"
+import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
+import { EMOJI_REGEX } from "@/utils/constants.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
 
 export class AddProductFlow extends UserFlow {
@@ -87,6 +87,7 @@ export class AddProductFlow extends UserFlow {
                 time: 120_000
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
@@ -239,7 +240,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 )
 
                 this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(roleSelectMenu.customId, roleSelectMenu)
-                break;
+                break
             }
             case PRODUCT_ACTION_TYPE.GiveCurrency: {
                 const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
@@ -249,6 +250,7 @@ export class AddActionProductFlow extends AddProductFlow {
                         time: 120_000
                     },
                     getCurrencies(),
+                    (interaction) => this.updateInteraction(interaction),
                     (interaction: StringSelectMenuInteraction, selected: Currency): void => {
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, { currencyId: selected.id, amount: -1 })
                         this.updateInteraction(interaction)
@@ -436,6 +438,7 @@ export class RemoveProductFlow extends UserFlow {
                 time: 120_000
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
@@ -466,14 +469,19 @@ export class RemoveProductFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
 
-        const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>({
-            customId: `${this.id}+select-product`,
-            placeholder: defaultComponents().selectProduct,
-            time: 120_000
-        }, new Map(), (interaction: StringSelectMenuInteraction, selected: Product): void => {
-            this.selectedProduct = selected
-            this.updateInteraction(interaction)
-        })
+        const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>(
+            {
+                customId: `${this.id}+select-product`,
+                placeholder: defaultComponents().selectProduct,
+                time: 120_000
+            }, 
+            new Map(), 
+            (interaction) => this.updateInteraction(interaction),
+            (interaction: StringSelectMenuInteraction, selected: Product): void => {
+                this.selectedProduct = selected
+                this.updateInteraction(interaction)
+            }
+        )
 
         const submitRemoveButton = new ExtendedButtonComponent(
             {
@@ -643,6 +651,7 @@ export class EditProductFlow extends UserFlow {
                 time: 120_000
             },
             getShops(),
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Shop): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
@@ -673,14 +682,18 @@ export class EditProductFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
 
-        const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>({
-            customId: `${this.id}+select-product`,
-            placeholder: defaultComponents().selectProduct,
-            time: 120_000
-        }, new Map(), (interaction: StringSelectMenuInteraction, selected: Product): void => {
-            this.selectedProduct = selected
-            this.updateInteraction(interaction)
-        })
+        const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>(
+            {
+                customId: `${this.id}+select-product`,
+                placeholder: defaultComponents().selectProduct,
+                time: 120_000
+            }, new Map(), 
+            (interaction) => this.updateInteraction(interaction),
+            (interaction: StringSelectMenuInteraction, selected: Product): void => {
+                this.selectedProduct = selected
+                this.updateInteraction(interaction)
+            }
+        )
 
         const submitEditButton = new ExtendedButtonComponent(
             {

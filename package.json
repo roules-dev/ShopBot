@@ -4,9 +4,6 @@
   "author": "@roules_",
   "type": "module",
   "main": "dist/index.js",
-  "imports": {
-    "#root/*": "./*"
-  },
   "scripts": {
     "build": "tsc && npx tsc-alias",
     "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
@@ -14,7 +11,7 @@
     "prodbuild": "npm run clean:dist --silent && tsc --build --sourceMap false && npx tsc-alias",
     "dev": "nodemon src/index.ts",
     "start": "npm run build && npm run serve",
-    "serve": "node dist/index.js",
+    "serve": "node --enable-source-maps dist/index.js",
     "deploy": "node ./dist/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
     "setup": "npm i && node ./dist/tools/setup-helper.js",

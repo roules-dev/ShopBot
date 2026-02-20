@@ -1,4 +1,4 @@
-import { PrettyLog } from "#root/src/lib/pretty-log.js"
+import { PrettyLog } from "@//lib/pretty-log.js"
 import { getSettings } from "@/features/settings/database/settings-handler.js"
 import { errorMessages } from "@/lib/localisation.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"

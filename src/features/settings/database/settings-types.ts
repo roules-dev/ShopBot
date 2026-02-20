@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Database, DatabaseError } from "@/database/database-types.js";
-import { assertNeverReached, err, ok } from "@/lib/error-handling.js";
-import { Snowflake } from "discord.js";
+import { Database, DatabaseError } from "@/database/database-types.js"
+import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
+import { Snowflake } from "discord.js"
 
 
 const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId", "enum"] as const

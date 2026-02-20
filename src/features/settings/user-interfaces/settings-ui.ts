@@ -1,4 +1,4 @@
-import { replyErrorMessage } from "#root/src/lib/discord.js"
+import { replyErrorMessage } from "@//lib/discord.js"
 import { getSettings, setSetting } from "@/features/settings/database/settings-handler.js"
 import { Setting } from "@/features/settings/database/settings-types.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
@@ -37,6 +37,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         const settingSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: 'settings-select-menu', placeholder: this.locale.components.selectSetting, time: 120_000 }, 
             getSettings(), 
+            (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Setting) => {
                 this.selectedSetting = selected
                 this.updateInteraction(interaction)
@@ -279,6 +280,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                         time: 120_000
                     },
                     optionsMap,
+                    (interaction) => this.updateInteraction(interaction),
                     async (interaction: StringSelectMenuInteraction, selectedOption: {id: string, name: string}) => {
                         const [error, updatedSetting] = await setSetting(setting.id, selectedOption.id)
                         if (error) return replyErrorMessage(interaction, error.message)

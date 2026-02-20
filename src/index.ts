@@ -1,4 +1,4 @@
-import { PrettyLog } from '#root/src/lib/pretty-log.js'
+import { PrettyLog } from '@/lib/pretty-log.js'
 import { startClient } from '@/app/start.js'
 import '@/utils/strings.js'
 import 'dotenv/config'
