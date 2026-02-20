@@ -34,7 +34,7 @@ export async function setSetting(id: string, value: any) {
 export async function onSettingUpdate(setting: Setting) { // TODO this is horrible, should find a better way to do this, maybe with events (event bus ?)
     switch (setting.id) {
         case "language":
-            await setCurrentLocale(setting.value as string)  
+            await setCurrentLocale(setting.value as string | undefined)  
             break
         case "activityMessage":
         case "activityType":

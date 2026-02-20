@@ -115,10 +115,10 @@ export function replaceTemplates(str: string, templates: { [key: string]: string
 }
 
 
-export async function setCurrentLocale(localeCode: string) {
+export async function setCurrentLocale(localeCode: string | undefined) {
 	const locales = await getLocales()
 
-	const locale = locales[localeCode] ?? locales['en-US']
+	const locale = localeCode ? locales[localeCode] ?? locales['en-US'] : locales['en-US']
 	if (!locale) throw new Error('Missing locale in locales folder')
 
 	currentLocale = locale

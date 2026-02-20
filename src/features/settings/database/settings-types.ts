@@ -21,7 +21,13 @@ export type Setting = { id: string, name: string } & ({
     max?: number
 } | {
     value: Snowflake | undefined
-    type: "channelId" | "roleId" | "userId"
+    type: "channelId"
+} | {
+    value: Snowflake | undefined
+    type: "roleId"
+} | {
+    value: Snowflake | undefined
+    type: "userId"
 } | {
     value: string | undefined
     options: string[] | { label: string, value: string }[]

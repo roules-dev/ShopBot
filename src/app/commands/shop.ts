@@ -1,4 +1,4 @@
-import { ShopUserInterface } from '@/features/shops/user-interfaces/shop-ui.js'
+import { ShopUserInterface } from '@/features/shops/user-interfaces/shop.js'
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from 'discord.js'
 
 

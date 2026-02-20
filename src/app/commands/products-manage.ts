@@ -1,6 +1,8 @@
 import { replyErrorMessage } from "@//lib/discord.js"
 import { PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
-import { AddActionProductFlow, AddProductFlow, EditProductFlow, EditProductOption, RemoveProductFlow } from "@/features/shops/user-flows/product-flows.js"
+import { AddActionProductFlow, AddProductFlow } from "@/features/shops/user-flows/product-add.js"
+import { EditProductOption, EditProductFlow } from "@/features/shops/user-flows/product-edit.js"
+import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { errorMessages } from "@/lib/localisation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 

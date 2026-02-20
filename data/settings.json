@@ -27,7 +27,7 @@
     "language": {
         "id": "language",
         "name": "Language",
-        "value": "es-ES",
+        "value": null,
         "type": "enum",
         "options": [
             {
