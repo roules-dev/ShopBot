@@ -1,13 +1,14 @@
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
 import { Account } from "@/features/accounts/database/accounts-type.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage, logToDiscord } from "@/lib/discord.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { showSingleInputModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, ModalSubmitInteraction, GuildMember, roleMention } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, GuildMember, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getProductName, updateProduct } from "../database/products-database.js"
 import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
 import { getShopName } from "../database/shops-database.js"
@@ -114,36 +115,17 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private async handleSetDiscountCodeInteraction(interaction: ButtonInteraction) {
-        // TODO: Must be abstracted
         const modalId = `${this.id}+set-discount-code-modal`
 
-        const modal = new ModalBuilder()
-            .setCustomId(modalId)
-            .setTitle(this.locale.components.setDiscountCodeModal.title)
-
-        const discountCodeInput = new TextInputBuilder()
-            .setCustomId('discount-code-input')
-            .setPlaceholder('XXXXXXX')
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true)
-            .setMaxLength(8)
-            .setMinLength(6)
-
-        const label = new LabelBuilder()
-            .setLabel(this.locale.components.setDiscountCodeModal.input)
-            .setTextInputComponent(discountCodeInput)
-
-        modal.addLabelComponents(label)
-
-        await interaction.showModal(modal)
-
-        const filter = (interaction: ModalSubmitInteraction) => interaction.customId === modalId
-        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 }).catch(() => null)
-        
-        if (!modalSubmit) return
-
-        const input = modalSubmit.fields.getTextInputValue('discount-code-input')
-        if (!input) return this.updateInteraction(modalSubmit)
+        const [modalSubmit, input] = await showSingleInputModal(interaction, {
+            id: modalId,
+            title: this.locale.components.setDiscountCodeModal.title,
+            inputLabel: this.locale.components.setDiscountCodeModal.input,
+            placeholder: 'XXXXXXX',
+            required: true,
+            minLength: 6,
+            maxLength: 8
+        })
 
         const shopDiscountCodes = this.selectedShop.discountCodes
         if (!shopDiscountCodes[input]) return this.updateInteraction(modalSubmit)
@@ -193,8 +175,14 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     private priceString(): string {
         if (!this.selectedProduct) return ''
+
         const price = this.selectedProduct.price * (1 - this.discount / 100)
-        return (this.discount == 0) ? `**${price} ${getCurrencyName(this.selectedShop.currency.id)!}**` : `~~${this.selectedProduct.price}~~ **${price} ${getCurrencyName(this.selectedShop.currency.id)!}**`
+        const priceAsString = price.toFixed(2)
+
+        const originalPriceAsString = this.selectedProduct.price.toFixed(2)
+        if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${getCurrencyName(this.selectedShop.currency.id)!}**`
+
+        return `**${priceAsString} ${getCurrencyName(this.selectedShop.currency.id)!}**`
     }
 
     private async buyActionProduct(interaction: UserInterfaceInteraction): Promise<unknown> {

@@ -3,7 +3,7 @@
         "currencies": {
             "0f2SNbp60vAwWjhKjRR0u": {
                 "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 9994.51
+                "amount": 9991.76
             }
         },
         "inventory": {
@@ -12,7 +12,7 @@
                     "id": "nxtWWm9IEe3qSLh4fj5qn",
                     "shopId": "h3G8N_1F2LzI1T29bjdxJ"
                 },
-                "amount": 1
+                "amount": 2
             }
         }
     },
