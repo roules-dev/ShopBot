@@ -2,6 +2,7 @@ import settings from '@/../data/settings.json' with { type: 'json' }
 import { Setting, Settings, SettingsDatabase } from '@/features/settings/database/settings-types.js'
 import { err, ok } from '@/lib/error-handling.js'
 import { setCurrentLocale } from '@/lib/localisation.js'
+import { EVENTS } from '@/middleware.js'
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 
@@ -14,7 +15,7 @@ export function getSetting(id: string): Setting | undefined {
 }
 
 
-// TODO : get rid of this value: any for a more type safe way of doing it
+// TODO : get rid of this "value: any" for a more type safe way of doing it
 // -> probably with some Zod validation
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function setSetting(id: string, value: any) {
@@ -27,6 +28,7 @@ export async function setSetting(id: string, value: any) {
 
     await settingsDatabase.save()
     await onSettingUpdate(updatedSetting)
+    EVENTS.emit("settingUpdated", id, updatedSetting)
 
     return ok(settingsDatabase.data.get(id)!)
 }

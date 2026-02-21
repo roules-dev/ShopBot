@@ -3,11 +3,11 @@
 ## Roadmap
 
 1. ~~products with a set stock~~
-2. ability to buy a certain amount of a product
-3. removing items for inventories - and bulk removing of an item.
-4. separate channel logging
-5. item/currency limit option
-6. api
+1. ability to buy a certain amount of a product
+1. removing items for inventories - and bulk removing of an item.
+1. separate channel logging
+1. item/currency limit option
+1. api
 
 ## Planned features
 
@@ -31,9 +31,9 @@
 - [ ] Improve UI Implementation (no more "start" function - check feasibility first)
 - [x] switching from uuid to nanoid, for performance improvement
 - [ ] docker container
-- [ ] improve internationalisation (add fallback for missing translations ...)
+- [ ] improve internationalisation (reimplement in a more modular way,add fallback for missing translations)
 - [ ] more verbose logging for debugging purposes
-- [ ] improve error handling (implement result pattern)
+- [x] improve error handling (implement result pattern)
 - [ ] improve data access, add abstraction to avoid errors and repeated code
 - [ ] branded IDs ?
-- [ ] improve folder structure (implement feature base folder structure)
+- [x] improve folder structure (implement feature base folder structure)

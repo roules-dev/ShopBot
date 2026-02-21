@@ -95,14 +95,15 @@ export class AccountGiveFlow extends UserFlow {
 
         
         const successMessage = replaceTemplates(
-            this.locale.messages?.success, 
+            this.locale.messages.success, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: getCurrencyName(this.selectedCurrency.id)!, 
                 user: userMention(this.target.id) 
             }
         )
-
+        // TODO : log to log channel
+        //? user suggestion #18
         return await updateAsSuccessMessage(interaction, successMessage)
     }
 }
@@ -166,6 +167,9 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
                 role: roleMention(this.targetRole.id) 
             }
         )
+
+        // TODO : log to log channel
+        //? user suggestion #18
 
         return await updateAsSuccessMessage(interaction, message)
     }

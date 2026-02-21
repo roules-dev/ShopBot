@@ -59,6 +59,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
             }
         )
 
+        // TODO : select number of items to buy (modal and/or buttons)
+        //? user suggestion #17
+
+
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
@@ -94,7 +98,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private async handleSetDiscountCodeInteraction(interaction: ButtonInteraction) {
-        // Could be abstracted
+        // TODO: Must be abstracted
         const modalId = `${this.id}+set-discount-code-modal`
 
         const modal = new ModalBuilder()
@@ -145,7 +149,6 @@ export class BuyProductUserInterface extends MessageUserInterface {
         
         const balanceAfterBuy = this.balanceAfterBuy(user, this.selectedProduct, this.selectedShop.currency.id)
         if (balanceAfterBuy < 0) {
-            console.log(`not enough money`)
             return replyErrorMessage(
                 interaction, 
                 replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) })

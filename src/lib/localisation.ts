@@ -6,8 +6,9 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import en_US_locale from '@/../locales/en-US.json' with { type: 'json' }
+import { EVENTS } from "@/middleware.js"
 
-
+const DEFAULT_LOCALE_CODE = 'en-US'
 export const defaultLocale = en_US_locale
 export type LocaleStrings = typeof defaultLocale
 
@@ -137,3 +138,12 @@ export function errorMessages() {
 export function defaultComponents() {
     return getLocale().defaultComponents
 }
+
+
+EVENTS.on('settingUpdated', async (settingId, setting) => {
+    if (settingId !== 'language') return
+    if (setting.value === undefined) return await setCurrentLocale(DEFAULT_LOCALE_CODE)
+    if (typeof setting.value !== 'string') return
+
+    await setCurrentLocale(setting.value)
+})
