@@ -1,6 +1,5 @@
-import { Setting } from "./features/settings/database/settings-types.js";
-import { EventBus } from "./lib/events.js";
-
+import { Setting } from "./features/settings/database/settings-types.js"
+import { EventBus } from "./lib/events.js"
 
 
 export const EVENTS = new EventBus<{

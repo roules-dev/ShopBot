@@ -1,9 +1,9 @@
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
 
-
-
-
+import "@/lib/localisation.js"
+import "@/utils/strings.js"
+import "dotenv/config"
 
 
 if (process.env["NODE_ENV"] && process.env.NODE_ENV === 'development') {
