@@ -2,12 +2,10 @@
 
 ## Planned features - this branch
 
-- [ ] more verbose logging for debugging purposes
 - [x] improve error handling (implement result pattern)
-- [ ] improve data access, add abstraction to avoid errors and repeated code
-- [ ] branded IDs ?
+- [x] improve data access, add abstraction to avoid errors and repeated code
+- [ ] branded IDs ? -> will be made once Zod validation is implemented
 - [x] improve [folder structure](#folder-structure)
-- [ ] Improve UI Implementation (no more "start" function - check feasibility first)
 
 ### folder structure
 

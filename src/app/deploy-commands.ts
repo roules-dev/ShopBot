@@ -16,7 +16,6 @@ let rest: REST | undefined
 const commands: { cache: RESTPostAPIChatInputApplicationCommandsJSONBody[], expired: boolean } = { cache: [], expired: true }
 
 
-// TODO: To be refactored, should not mix functionnalities and printing
 async function getCommands() {
     if (!commands.expired) {
         return commands.cache
