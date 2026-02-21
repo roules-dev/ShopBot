@@ -1,8 +1,10 @@
-import { PrettyLog } from '@/lib/pretty-log.js'
-import '@/utils/strings.js'
-import '@/lib/localisation.js'
-import 'dotenv/config'
-import { startClient } from './app/client/client.js'
+import { startClient } from "./app/client/client.js"
+import { PrettyLog } from "./lib/pretty-log.js"
+
+
+
+
+
 
 if (process.env["NODE_ENV"] && process.env.NODE_ENV === 'development') {
 	PrettyLog.warn('Development mode enabled')

@@ -1,6 +1,5 @@
-import { ShopUserInterface } from '@/features/shops/user-interfaces/shop.js'
-import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from 'discord.js'
-
+import { ShopUserInterface } from "@/features/shops/user-interfaces/shop.js"
+import { SlashCommandBuilder, Client, ChatInputCommandInteraction } from "discord.js"
 
 export const data = new SlashCommandBuilder()
     .setName('shop')

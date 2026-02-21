@@ -1,6 +1,9 @@
-import { replyErrorMessage } from '@//lib/discord.js'
-import { PrettyLog } from '@//lib/pretty-log.js'
-import { BaseInteraction, ChannelType, ChatInputCommandInteraction, Events, InteractionType } from 'discord.js'
+import { replyErrorMessage } from "@/lib/discord.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { Events, BaseInteraction, InteractionType, ChatInputCommandInteraction, ChannelType } from "discord.js"
+
+
+
 
 
 export const name = Events.InteractionCreate

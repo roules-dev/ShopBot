@@ -1,11 +1,21 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent } from "@/user-interfaces/extended-components.js"
 import { ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, InteractionCallbackResponse } from "discord.js"
 import { getShops, getShopName, createDiscountCode, removeDiscountCode } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+
+
+
+
+
+
+
+
 
 export class DiscountCodeCreateFlow extends UserFlow {
     public override id: string = 'discount-code-create'

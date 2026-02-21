@@ -1,14 +1,27 @@
-import { replyErrorMessage, updateAsErrorMessage } from "@//lib/discord.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
-import { getProductName } from "@/features/shops/database/products-database.js"
-import { getShopName, getShops } from "@/features/shops/database/shops-database.js"
-import { Shop } from "@/features/shops/database/shops-types.js"
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
-import { ExtendedButtonComponent, ExtendedComponent, ExtendedStringSelectMenuComponent } from "@/user-interfaces/extended-components.js"
+import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
+import { getLocale, errorMessages, defaultComponents, replaceTemplates } from "@/lib/localisation.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
+import { EmbedBuilder, InteractionCallbackResponse, GuildMember, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, roleMention, Colors, APIEmbedField, italic } from "discord.js"
+import { getProductName } from "../database/products-database.js"
+import { getShops, getShopName } from "../database/shops-database.js"
+import { Shop } from "../database/shops-types.js"
 import { BuyProductUserInterface } from "./buy.js"
+
+
+
+
+
+
+
+
+
+
+
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
     public override id = 'shop-ui'

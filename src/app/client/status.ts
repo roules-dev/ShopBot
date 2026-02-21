@@ -1,5 +1,7 @@
 import { getSetting } from "@/features/settings/database/settings-handler.js"
-import { ActivityOptions, ActivityType, Client } from "discord.js"
+import { ActivityType, Client, ActivityOptions } from "discord.js"
+
+
 
 
 function getActivity() {

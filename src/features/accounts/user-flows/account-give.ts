@@ -2,10 +2,13 @@ import { getCurrencies, getCurrencyName } from "@/features/currencies/database/c
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent } from "@/user-interfaces/extended-components.js"
 import { User, ChatInputCommandInteraction, MessageFlags, bold, userMention, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, Role, APIRole, roleMention } from "discord.js"
 import { getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts-database.js"
+
 
 export class AccountGiveFlow extends UserFlow {
     public id = 'account-give'

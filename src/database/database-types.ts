@@ -1,5 +1,5 @@
-import { Result } from '@/lib/error-handling.js'
-import fs from 'node:fs/promises'
+import { Result } from "@/lib/error-handling.js"
+import fs from "fs/promises"
 
 export type NanoId = string
 

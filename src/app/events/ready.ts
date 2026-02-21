@@ -1,7 +1,10 @@
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { Events, Client } from "discord.js"
+import { setActivity } from "../client/status.js"
 
-import { PrettyLog } from '@//lib/pretty-log.js'
-import { Events, Client } from 'discord.js'
-import { setActivity } from '../client/status.js'
+
+
+
 
 
 

@@ -1,16 +1,16 @@
 {
     "628298729405022216": {
         "currencies": {
-            "MspWaKdIwc8QwWHi6yRKE": {
-                "item": "MspWaKdIwc8QwWHi6yRKE",
-                "amount": 4999999
+            "0f2SNbp60vAwWjhKjRR0u": {
+                "item": "0f2SNbp60vAwWjhKjRR0u",
+                "amount": 9994.51
             }
         },
         "inventory": {
-            "7Wy8V7FuGm0hpWKsMJThm": {
+            "nxtWWm9IEe3qSLh4fj5qn": {
                 "item": {
-                    "id": "7Wy8V7FuGm0hpWKsMJThm",
-                    "shopId": "hr8PKrSqpw588Kw-1ZcgV"
+                    "id": "nxtWWm9IEe3qSLh4fj5qn",
+                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
                 },
                 "amount": 1
             }

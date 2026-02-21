@@ -1,7 +1,7 @@
 import { PrettyLog } from '@//lib/pretty-log.js'
 import { defaultLocale } from '@/lib/localisation.js'
-import { fileURLToPath } from 'node:url'
 import fs from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean, string[]] {

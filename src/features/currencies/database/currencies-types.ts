@@ -1,7 +1,6 @@
 import { Database, DatabaseJSONBody, NanoId } from "@/database/database-types.js"
 import { ok } from "@/lib/error-handling.js"
 
-
 export interface Currency {
     id: NanoId
     name: string

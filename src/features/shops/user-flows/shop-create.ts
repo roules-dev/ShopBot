@@ -2,11 +2,23 @@ import { getCurrencies, getCurrencyName } from "@/features/currencies/database/c
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { showEditModal } from "@/ui-components/modals.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent, showEditModal } from "@/user-interfaces/extended-components.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { Snowflake, ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction } from "discord.js"
 import { createShop, getShopName } from "../database/shops-database.js"
+
+
+
+
+
+
+
+
+
 
 export class ShopCreateFlow extends UserFlow {
     public id = 'shop-create'

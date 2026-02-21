@@ -2,11 +2,23 @@ import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-
 import { getShopsWithCurrency, getShopName } from "@/features/shops/database/shops-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { getLocale, errorMessages, defaultComponents, replaceTemplates } from "@/lib/localisation.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { showConfirmationModal } from "@/ui-components/modals.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent, showConfirmationModal } from "@/user-interfaces/extended-components.js"
 import { ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, bold, italic, ModalSubmitInteraction } from "discord.js"
 import { getCurrencies, getCurrencyName, removeCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
+
+
+
+
+
+
+
+
+
 
 export class CurrencyRemoveFlow extends UserFlow {
     id = 'currency-remove'

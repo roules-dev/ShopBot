@@ -1,12 +1,25 @@
-import { replyErrorMessage } from "@//lib/discord.js"
-import { getSettings, setSetting } from "@/features/settings/database/settings-handler.js"
-import { Setting } from "@/features/settings/database/settings-types.js"
+import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { getLocale, replaceTemplates } from "@/lib/localisation.js"
-import { ExtendedButtonComponent, ExtendedChannelSelectMenuComponent, ExtendedComponent, ExtendedRoleSelectMenuComponent, ExtendedStringSelectMenuComponent, ExtendedUserSelectMenuComponent, showEditModal } from "@/user-interfaces/extended-components.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { showEditModal } from "@/ui-components/modals.js"
+import { ExtendedChannelSelectMenuComponent, ExtendedRoleSelectMenuComponent, ExtendedUserSelectMenuComponent } from "@/ui-components/select-menus.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { toStringOrUndefined } from "@/utils/strings.js"
-import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
+import { EmbedBuilder, InteractionCallbackResponse, StringSelectMenuInteraction, Colors, APIEmbedField, channelMention, roleMention, userMention, ButtonStyle, MessageComponentInteraction, ChannelType, ChannelSelectMenuInteraction, Snowflake, RoleSelectMenuInteraction, UserSelectMenuInteraction } from "discord.js"
+import { getSettings, setSetting } from "../database/settings-handler.js"
+import { Setting } from "../database/settings-types.js"
+
+
+
+
+
+
+
+
+
 
 
 

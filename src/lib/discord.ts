@@ -1,8 +1,13 @@
-import { PrettyLog } from "@//lib/pretty-log.js"
 import { getSettings } from "@/features/settings/database/settings-handler.js"
-import { errorMessages } from "@/lib/localisation.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { MessageFlags, TextChannel } from "discord.js"
+import { errorMessages } from "./localisation.js"
+import { PrettyLog } from "./pretty-log.js"
+
+
+
+
+
 
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
     return await interaction.reply({ content: getErrorMessage(errorMessage), flags: MessageFlags.Ephemeral })

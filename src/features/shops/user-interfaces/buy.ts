@@ -3,13 +3,29 @@ import { Account } from "@/features/accounts/database/accounts-type.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage, logToDiscord } from "@/lib/discord.js"
 import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
-import { ExtendedComponent, ExtendedStringSelectMenuComponent, ExtendedButtonComponent } from "@/user-interfaces/extended-components.js"
+import { ExtendedButtonComponent } from "@/ui-components/button.js"
+import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, ModalBuilder, TextInputBuilder, TextInputStyle, LabelBuilder, ModalSubmitInteraction, GuildMember, roleMention } from "discord.js"
 import { getProductName, updateProduct } from "../database/products-database.js"
 import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
 import { getShopName } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export class BuyProductUserInterface extends MessageUserInterface {
     public override id = 'buy-product-ui'
