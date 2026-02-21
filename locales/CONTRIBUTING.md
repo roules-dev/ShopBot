@@ -12,6 +12,7 @@ Your contributions make a huge difference. This guide explains how to add or imp
    git clone https://github.com/YOUR-USERNAME/PROJECT-NAME.git
    cd PROJECT-NAME
    ```
+
 3. **Create a new branch** for your translation:
 
    ```bash
@@ -19,7 +20,6 @@ Your contributions make a huge difference. This guide explains how to add or imp
    ```
 
    Example: `add-language-fr` for French.
-
 
 ## 🌐 Where Translations Live
 
@@ -43,7 +43,6 @@ For example:
 If your language doesn’t exist yet, create a new file named after the [Discord locales codes](https://discord.com/developers/docs/reference#locales):
 
 > Example: `de.json` for German, `ja.json` for Japanese, etc.
-
 
 ## 🧩 Translation Format
 
@@ -69,11 +68,11 @@ To add your translation, **keep the same keys** and replace the English text wit
 
 ✅ **Important Notes:**
 
-* **Do not change keys** — only translate the values.
-* **Preserve case (uppercase/lowercase)** as in the original English text.
-* **Don't remove markdown formatting** such as `**`, `__`, `~~`, `#`, etc
-* **Don't remove special characters** such as `\n`
-* **Keep placeholders intact.** For example:
+- **Do not change keys** — only translate the values.
+- **Preserve case (uppercase/lowercase)** as in the original English text.
+- **Don't remove markdown formatting** such as `**`, `__`, `~~`, `#`, etc
+- **Don't remove special characters** such as `\n`
+- **Keep placeholders intact.** For example:
 
   ```json
   "welcomeUser": "Welcome, {username}!"
@@ -84,43 +83,37 @@ To add your translation, **keep the same keys** and replace the English text wit
   ```json
   "welcomeUser": "Bienvenue, {username} !"
   ```
-* Use **UTF-8** encoding.
-* **When translating commands and options** make sure to follow the [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
-
+- Use **UTF-8** encoding.
+- **When translating commands and options** make sure to follow the [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
 ## 🧪 Testing Your Translation
 
-If possible, run the bot locally to make sure everything looks correct.
+Firstly, you should make sure your not missing any translations.
+For this, you can use the utility command 
+
+```bash
+npm run verify-translation <language-code>
+```
+
+It will print any missing key.
+
+Then you should run the bot locally to make sure everything looks correct.
 It'll also make sure that the name and descriptions of the commands follow discord's [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
 To register commands, run the following command:
+
 ```bash
 npm run deploy /a
 ```
+
 And to start the bot, run the following command:
+
 ```bash
 npm run start
 ```
 
 Then, use your translated language setting to verify messages appear properly.
-
-Another way to test if your locale file is correct is to:
-1. Create a `test.ts` file in the `src` folder
-2. Then, in the `test.ts` file, add the following code:
-```ts
-import { LocaleStrings } from './utils/localisation';
-import fr from '../locales/fr.json'; // replace with your language
-
-console.log(fr as LocaleStrings)
-```
-3. Then, run the following command:
-```bash
-npm run test
-```
-
-4. If the typescript compiler doesn't throw any errors, then your locale file contains all required keys.
-
 
 
 ## 📥 Submitting Your Contribution
@@ -131,34 +124,32 @@ npm run test
    git add locales/<your-language>.json
    git commit -m "Add <Language> translation"
    ```
+
 2. **Push your branch** to your fork:
 
    ```bash
    git push origin add-language-<language-code>
    ```
+
 3. **Open a Pull Request** on GitHub:
-
-   * Base repository: `OWNER/PROJECT-NAME`
-   * Base branch: `main`
-   * Compare: your branch
-   * Add a short description of your translation and any notes about regional variations if applicable.
-
+   - Base repository: `OWNER/PROJECT-NAME`
+   - Base branch: `main`
+   - Compare: your branch
+   - Add a short description of your translation and any notes about regional variations if applicable.
 
 ## 🗣️ Updating an Existing Translation
 
 If you notice mistakes or missing phrases in an existing translation:
 
-* Edit the relevant file (e.g., `fr.json`).
-* Keep consistency with the existing style and phrasing.
-* Open a pull request with your improvements.
-
+- Edit the relevant file (e.g., `fr.json`).
+- Keep consistency with the existing style and phrasing.
+- Open a pull request with your improvements.
 
 ## ❤️ Tips for Translators
 
-* Aim for **clarity and natural language** — not literal word-for-word translations.
-* Keep tone and style consistent with the bot’s personality.
-* If unsure about a specific phrase, feel free to open a **GitHub issue** to discuss it first.
-
+- Aim for **clarity and natural language** — not literal word-for-word translations.
+- Keep tone and style consistent with the bot’s personality.
+- If unsure about a specific phrase, feel free to open a **GitHub issue** to discuss it first.
 
 ## 🙌 Thank You
 

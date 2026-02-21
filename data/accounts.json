@@ -3,15 +3,7 @@
         "currencies": {
             "0f2SNbp60vAwWjhKjRR0u": {
                 "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 44946.61
-            },
-            "w3OuB15nMZBWTm33SvVfr": {
-                "item": "w3OuB15nMZBWTm33SvVfr",
-                "amount": 235
-            },
-            "7kiuf_CPO2ocrr75mTXuV": {
-                "item": "7kiuf_CPO2ocrr75mTXuV",
-                "amount": 50
+                "amount": 9991.76
             }
         },
         "inventory": {
@@ -20,98 +12,20 @@
                     "id": "nxtWWm9IEe3qSLh4fj5qn",
                     "shopId": "h3G8N_1F2LzI1T29bjdxJ"
                 },
-                "amount": 5
-            },
-            "6lb722Z-cvgTL23LeXnyZ": {
-                "item": {
-                    "id": "6lb722Z-cvgTL23LeXnyZ",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 3
-            },
-            "FbZgPJ-aJOkvm1QAB3ucE": {
-                "item": {
-                    "id": "FbZgPJ-aJOkvm1QAB3ucE",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 19
-            },
-            "w9zcCjKIt-yDjhXi2TLMB": {
-                "item": {
-                    "id": "w9zcCjKIt-yDjhXi2TLMB",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 1
-            },
-            "Uasu0unlCLGnsJNQb_3S0": {
-                "item": {
-                    "id": "Uasu0unlCLGnsJNQb_3S0",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 1
-            },
-            "SQWzMyipYZO3fnCmhAttr": {
-                "item": {
-                    "id": "SQWzMyipYZO3fnCmhAttr",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 1
-            },
-            "9-fiMoU-faP7vOVhO58Su": {
-                "item": {
-                    "id": "9-fiMoU-faP7vOVhO58Su",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 1
-            },
-            "a8aSYSlPsS9SP5WxNCLq6": {
-                "item": {
-                    "id": "a8aSYSlPsS9SP5WxNCLq6",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 1
-            },
-            "jREXpbU4e0mrY6K3RzWbY": {
-                "item": {
-                    "id": "jREXpbU4e0mrY6K3RzWbY",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 1
-            },
-            "yLs7vNX4Z4j3OFe2VcsmT": {
-                "item": {
-                    "id": "yLs7vNX4Z4j3OFe2VcsmT",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 1
+                "amount": 2
             }
         }
     },
     "1109842206832988272": {
-        "currencies": {
-            "0f2SNbp60vAwWjhKjRR0u": {
-                "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 0
-            }
-        },
+        "currencies": {},
         "inventory": {}
     },
     "665849503978618891": {
-        "currencies": {
-            "7kiuf_CPO2ocrr75mTXuV": {
-                "item": "7kiuf_CPO2ocrr75mTXuV",
-                "amount": 50
-            }
-        },
+        "currencies": {},
         "inventory": {}
     },
     "650585321729425448": {
-        "currencies": {
-            "w3OuB15nMZBWTm33SvVfr": {
-                "item": "w3OuB15nMZBWTm33SvVfr",
-                "amount": 10
-            }
-        },
+        "currencies": {},
         "inventory": {}
     }
 }

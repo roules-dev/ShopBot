@@ -1,13 +1,13 @@
-import fs from 'node:fs/promises';
-import readline from 'node:readline';
-import config from '../../config/config.json' with { type: 'json' };
-import { appDeployCommands } from '../deploy-commands.js';
-import { PrettyLog } from '../utils/pretty-log.js';
+import config from '@/../config/config.json' with { type: 'json' }
+import { PrettyLog } from '@//lib/pretty-log.js'
+import { appDeployCommands } from '@/app/deploy-commands.js'
+import fs from 'node:fs/promises'
+import readline from 'node:readline'
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-});
+})
 
 
 async function setup() {

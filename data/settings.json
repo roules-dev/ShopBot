@@ -8,13 +8,13 @@
     "activityMessage": {
         "id": "activityMessage",
         "name": "Activity Message",
-        "value": "free market",
+        "value": "tv",
         "type": "string"
     },
     "activityType": {
         "id": "activityType",
         "name": "Activity Type",
-        "value": "Competing",
+        "value": "Watching",
         "options": [
             "Playing",
             "Streaming",
@@ -27,7 +27,7 @@
     "language": {
         "id": "language",
         "name": "Language",
-        "value": "en-US",
+        "value": null,
         "type": "enum",
         "options": [
             {

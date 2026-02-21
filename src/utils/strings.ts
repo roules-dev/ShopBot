@@ -7,18 +7,23 @@ declare global {
 }
 
 String.prototype.ellipsis = function (this : string, max: number) {
-    const str = this
-    if (str.length > max) return `${str.substring(0, max - 1)}…`
+    
+    if (this.length > max) return `${this.substring(0, max - 1)}…`
 
-    return str
+    return this
 }
 
 String.prototype.removeCustomEmojis = function (this: string): string {
-    const str = this
-    return str.replace(/<:[a-zA-Z0-9_]{2,32}:[0-9]{17,19}>/g, '')
+    
+    return this.replace(/<:[a-zA-Z0-9_]{2,32}:[0-9]{17,19}>/g, '')
 }
 
-String.prototype.replaceSpaces = function (this: string, by: ' '): string{
-    const str = this
-    return str.replace(/[\s ]/g, ' ')
+String.prototype.replaceSpaces = function (this: string, by: string = ' '): string{
+    // eslint-disable-next-line no-irregular-whitespace
+    return this.replace(/[\s ]/g, by)
 } 
+
+export function toStringOrUndefined(value: unknown) {
+    if (value === undefined) return undefined
+    return `${value}`
+}
