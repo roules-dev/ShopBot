@@ -1,7 +1,6 @@
 import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js"
 import { getShopName, getShopsWithCurrency } from "@/features/shops/database/shops-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/ui-components/modals.js"
@@ -10,7 +9,7 @@ import { UserFlow } from "@/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
 import { getCurrencies, getCurrencyName, removeCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
+import { t } from "@/index.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -18,11 +17,11 @@ export class CurrencyRemoveFlow extends UserFlow {
     protected components: Map<string, ExtendedComponent> = new Map()
     private selectedCurrency: Currency | null = null
 
-    private locale = getLocale().userFlows.currencyRemove
+    private locale = "userFlows.currencyRemove" as const
 
     async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (currencies.size == 0) return replyErrorMessage(interaction, errorMessages().noCurrencies)
+        if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))
 
         this.selectedCurrency = null
 
@@ -37,7 +36,7 @@ export class CurrencyRemoveFlow extends UserFlow {
     initComponents(): void {
         const currencySelect = new ExtendedStringSelectMenuComponent<Currency>({
             customId: `${this.id}+select-currency`,
-            placeholder: defaultComponents().selectCurrency,
+            placeholder: t("defaultComponents.selectCurrency"),
             time: 120_000
         }, getCurrencies(),
         (interaction) => this.updateInteraction(interaction),
@@ -48,7 +47,7 @@ export class CurrencyRemoveFlow extends UserFlow {
 
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
-            label: this.locale.components?.submitButton,
+            label: t(`${this.locale}.components.submitButton`),
             emoji: {name: '⛔'},
             style: ButtonStyle.Danger,
             disabled: this.selectedCurrency == null,
@@ -73,18 +72,18 @@ export class CurrencyRemoveFlow extends UserFlow {
             if (shopsWithCurrency.size > 0) {
                 const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(getShopName(shop.id) || ''))).join(', ')
 
-                const errorMessage = replaceTemplates(this.locale.errorMessages.cantRemoveCurrency, {
+                const errorMessage = t(`${this.locale}.errorMessages.cantRemoveCurrency`, {
                     currency: bold(getCurrencyName(this.selectedCurrency.id) || ''),
                     shops: shopsWithCurrencyNames
                 })
-                const tipMessage = this.locale.errorMessages.changeShopsCurrencies
+                const tipMessage = t(`${this.locale}.errorMessages.changeShopsCurrencies`)
 
                 return `${errorMessage}\n${tipMessage}`
             }
         }
 
-        const message = replaceTemplates(this.locale.messages.default, {
-            currency: bold(getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency)
+        const message = t(`${this.locale}.messages.default`, {
+            currency: bold(getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency"))
         })
 
         return message
@@ -102,13 +101,13 @@ export class CurrencyRemoveFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         await takeCurrencyFromAccounts(this.selectedCurrency.id)
 
         const currencyName = getCurrencyName(this.selectedCurrency.id) || ''
 
         await removeCurrency(this.selectedCurrency.id)
-        return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, {currency: bold(currencyName)}))
+        return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))
     }
 }

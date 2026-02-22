@@ -1,18 +1,14 @@
-// import { RegisteredTranslations } from "./localization.js"
-
 import { Register } from "./translations.js"
 
 export type RegisteredTranslations = Register extends { translations: infer T }
   ? T 
   : LanguageMessages
 
-
 type I18nMessage = string
 
 export type LanguageMessages = {
     [key: string]: I18nMessage | LanguageMessages
 }
-
 
 type Join<K, P> = K extends string
     ? P extends string
@@ -53,11 +49,8 @@ type PathsWithNoParams = {
 }[DotPathsFor]
 
 
-        
 type Params<S extends DotPathsFor> = ExtractParamArgs<TranslationAtKeyWithParams<RegisteredTranslations, S>>
         
-
-
 export function initI18n({
     locale,
     fallbackLocale,
@@ -67,12 +60,14 @@ export function initI18n({
     fallbackLocale: string | string[]
     translations: Record<string, LanguageMessages>
 }) {
+    let currentLocale = locale
+
     const fallbackLocales = Array.isArray(fallbackLocale)
         ? fallbackLocale
         : [fallbackLocale]
 
-    const orderedLocales = new Set([
-        locale,
+    const orderedLocales = () => new Set([
+        currentLocale,
         ...fallbackLocales.flat(),
     ])
 
@@ -80,7 +75,7 @@ export function initI18n({
     function translate<S extends PathsWithParams, A extends Params<S>>(key: S, args: A): string
 
     function translate<S extends DotPathsFor, A extends Params<S>>(key: S, args?: A): string {
-        for (const locale of orderedLocales) {
+        for (const locale of orderedLocales()) {
             const translationFile = translations[locale]
             if (translationFile == null) continue
             const translation = getTranslation(locale, translationFile, key, args)
@@ -89,12 +84,16 @@ export function initI18n({
         return key
     }
 
+    function setLocale(newLocale: string) {
+        currentLocale = newLocale
+    }
 
     return {
-        t: translate
+        t: translate,
+        setLocale,
+        getLocale: () => currentLocale
     }
 }
-
 
 function getTranslation<S extends DotPathsFor, A extends Params<S>>(
     locale: string,
@@ -107,7 +106,7 @@ function getTranslation<S extends DotPathsFor, A extends Params<S>>(
 
 
     if (typeof translation === "string") {
-        return replaceTemplates(translation, argObj)
+        return t(translation, argObj)
     }
 
     return undefined
@@ -134,7 +133,7 @@ function getTranslationByKey(obj: LanguageMessages, key: string) {
 }
 
 
-export function replaceTemplates(str: string, templates: { [key: string]: string | number }): string {
+function t(str: string, templates: { [key: string]: string | number }): string {
     let result = str
     for (const key in templates) {
         const value = templates[key]

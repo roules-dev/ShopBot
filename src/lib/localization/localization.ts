@@ -119,19 +119,19 @@ export async function setCurrentLocale(localeCode: string | undefined) {
 	currentLocale = locale
 }
 
-export function getLocale(): RegisteredTranslations {
-	if (!currentLocale) {
-		throw new Error('Locale not set')
-	}
+// export function getLocale(): RegisteredTranslations {
+// 	if (!currentLocale) {
+// 		throw new Error('Locale not set')
+// 	}
 
-	return currentLocale
-}
-export function errorMessages() {
-	return getLocale().errorMessages
-}
-export function defaultComponents() {
-    return getLocale().defaultComponents
-}
+// 	return currentLocale
+// }
+// export function errorMessages() {
+// 	return getLocale().errorMessages
+// }
+// export function defaultComponents() {
+//     return getLocale().defaultComponents
+// }
 
 
 EVENTS.on('settingUpdated', async (settingId, setting) => {

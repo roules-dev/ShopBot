@@ -1,6 +1,5 @@
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { getLocale } from "@/lib/localization/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showEditModal } from "@/ui-components/modals.js"
@@ -11,7 +10,7 @@ import { toStringOrUndefined } from "@/utils/strings.js"
 import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
 import { getSettings, setSetting } from "../database/settings-handler.js"
 import { Setting } from "../database/settings-types.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
+import { t } from "@/index.js"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {
@@ -27,7 +26,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected override readonly MAX_FIELDS_PER_PAGE = 12
 
-    protected locale = getLocale().userInterfaces.settings
+    protected locale = "userInterfaces.settings" as const
 
     protected override getMessage(): string {
         return ''
@@ -39,7 +38,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected override initComponents(): unknown {
         const settingSelectMenu = new ExtendedStringSelectMenuComponent(
-            { customId: 'settings-select-menu', placeholder: this.locale.components.selectSetting, time: 120_000 }, 
+            { customId: 'settings-select-menu', placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
             getSettings(), 
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Setting) => {
@@ -75,8 +74,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected override initEmbeds(_interaction: UserInterfaceInteraction) {
         const settingsEmbed = new EmbedBuilder()
-            .setTitle(this.locale.embeds.settings.title)
-            .setDescription(this.locale.embeds.settings.description)
+            .setTitle(t(`${this.locale}.embeds.settings.title`))
+            .setDescription(t(`${this.locale}.embeds.settings.description`))
             .setColor(Colors.DarkButNotBlack)
 
         settingsEmbed.addFields(this.getPageEmbedFields())
@@ -99,7 +98,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             const { name, type, value } = setting
 
             if (value === undefined || value === "") {
-                fields.push({ name, value: this.locale.embeds.settings.unsetSetting, inline: true })
+                fields.push({ name, value: t(`${this.locale}.embeds.settings.unsetSetting`), inline: true })
                 return
             }
 
@@ -126,7 +125,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             (setting.options as { label: string, value: string }[]).find(option => option.value === setting.value)?.label : 
             setting.value
 
-        return displayValue ?? setting.value ?? this.locale.embeds.settings.unsetSetting
+        return displayValue ?? setting.value ?? t(`${this.locale}.embeds.settings.unsetSetting`)
     }
 
     private getSettingEditorComponents(setting: Setting): ExtendedComponent[] {
@@ -161,7 +160,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         const resetSettingButton = new ExtendedButtonComponent(
             {
                 customId: 'edit-setting+reset-button',
-                label: replaceTemplates(this.locale.components.resetButton, { name: setting.name }),
+                label: t(`${this.locale}.components.resetButton`, { name: setting.name }),
                 emoji: '🗑️',
                 style: ButtonStyle.Danger,
                 time: 120_000
@@ -178,7 +177,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         const backButton = new ExtendedButtonComponent(
             {
                 customId: 'edit-setting+back-button',
-                label: this.locale.components.backButton,
+                label: t(`${this.locale}.components.backButton`),
                 emoji: '⬅️',
                 style: ButtonStyle.Secondary,
                 time: 120_000
@@ -208,7 +207,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return new ExtendedButtonComponent(
             {
                 customId: 'edit-setting+string',
-                label: replaceTemplates(this.locale.components.defaultEditor.title, { name: setting.name }),
+                label: t(`${this.locale}.components.defaultEditor.title`, { name: setting.name }),
                 emoji: '📝',
                 style: ButtonStyle.Primary,
                 time: 120000
@@ -225,7 +224,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     private getBoolEditorComponent(setting: Setting & { type: "bool"}) {
-        const [toggleOn, toggleOff] = [this.locale.components.toggleEditor.toggleOn, this.locale.components.toggleEditor.toggleOff]
+        const [toggleOn, toggleOff] = [t(`${this.locale}.components.toggleEditor.toggleOn`), t(`${this.locale}.components.toggleEditor.toggleOff`)]
 
         return new ExtendedButtonComponent(
             {
@@ -248,7 +247,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return new ExtendedButtonComponent(
             {
                 customId: 'edit-setting+number',
-                label: replaceTemplates(this.locale.components.defaultEditor.title, { name: setting.name }),
+                label: t(`${this.locale}.components.defaultEditor.title`, { name: setting.name }),
                 emoji: '📝',
                 style: ButtonStyle.Primary,
                 time: 120_000
@@ -273,9 +272,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return new ExtendedChannelSelectMenuComponent(
             { 
                 customId: 'edit-setting+channel', 
-                placeholder: replaceTemplates(this.locale.components.selector.title, { 
+                placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
-                    type: this.locale.components.selector.types.channel
+                    type: t(`${this.locale}.components.selector.types.channel`)
                 }),
                 time: 120_000,
                 channelTypes: [ChannelType.GuildText]
@@ -293,9 +292,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return new ExtendedRoleSelectMenuComponent(
             { 
                 customId: 'edit-setting+role', 
-                placeholder: replaceTemplates(this.locale.components.selector.title, { 
+                placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
-                    type: this.locale.components.selector.types.role
+                    type: t(`${this.locale}.components.selector.types.role`)
                 }), 
                 time: 120_000 
             }, async (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => {
@@ -312,9 +311,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return new ExtendedUserSelectMenuComponent(
             { 
                 customId: 'edit-setting+user', 
-                placeholder: replaceTemplates(this.locale.components.selector.title, { 
+                placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
-                    type: this.locale.components.selector.types.user
+                    type: t(`${this.locale}.components.selector.types.user`)
                 }), 
                 time: 120_000 
             }, async (interaction: UserSelectMenuInteraction, selectedUserId: Snowflake) => {
@@ -336,9 +335,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         const optionSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: 'edit-setting+enum',
-                placeholder: replaceTemplates(this.locale.components.selector.title, { 
+                placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
-                    type: this.locale.components.selector.types.option
+                    type:t(`${this.locale}.components.selector.types.option`)
                 }),
                 time: 120_000
             },

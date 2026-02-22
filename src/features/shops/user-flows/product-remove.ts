@@ -1,7 +1,6 @@
+import { t } from "@/index.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -31,11 +30,11 @@ export class RemoveProductFlow extends UserFlow {
 
     private response: InteractionCallbackResponse | null = null
 
-    protected locale = getLocale().userFlows.productRemove
+    protected locale = "userFlows.productRemove" as const
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
+        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
         this.initComponents()
         this.updateComponents()
@@ -49,12 +48,12 @@ export class RemoveProductFlow extends UserFlow {
     protected getMessage(): string {
         switch (this.stage) {
             case RemoveProductFlowStage.SELECT_SHOP:
-                return replaceTemplates(this.locale.messages.shopSelectStage, {
-                    shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop)
+                return t(`${this.locale}.messages.shopSelectStage`, {
+                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"))
                 })
             case RemoveProductFlowStage.SELECT_PRODUCT:
-                return replaceTemplates(this.locale.messages.productSelectStage, {
-                    product: bold(getProductName(this.selectedShop?.id, this.selectedProduct?.id) || defaultComponents().selectProduct),
+                return t(`${this.locale}.messages.productSelectStage`, {
+                    product: bold(getProductName(this.selectedShop?.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
                     shop: bold(getShopName(this.selectedShop?.id)!)
                 })
 
@@ -67,7 +66,7 @@ export class RemoveProductFlow extends UserFlow {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: defaultComponents().selectShop,
+                placeholder: t("defaultComponents.selectShop"),
                 time: 120_000
             },
             getShops(),
@@ -82,13 +81,13 @@ export class RemoveProductFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-shop`,
                 time: 120_000,
-                label: defaultComponents().submitShopButton,
+                label: t("defaultComponents.submitShopButton"),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
             (interaction: ButtonInteraction) => {
-                if (this.selectedShop!.products.size == 0) return updateAsErrorMessage(interaction, errorMessages().noProducts)
+                if (this.selectedShop!.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
                 this.changeStage(RemoveProductFlowStage.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
@@ -105,7 +104,7 @@ export class RemoveProductFlow extends UserFlow {
         const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>(
             {
                 customId: `${this.id}+select-product`,
-                placeholder: defaultComponents().selectProduct,
+                placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000
             }, 
             new Map(), 
@@ -119,7 +118,7 @@ export class RemoveProductFlow extends UserFlow {
         const submitRemoveButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+remove-product`,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: {name: '⛔'},
                 style: ButtonStyle.Danger,
                 disabled: true,
@@ -131,7 +130,7 @@ export class RemoveProductFlow extends UserFlow {
         const changeShopButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+change-shop`,
-                label: defaultComponents().changeShopButton,
+                label: t("defaultComponents.changeShopButton"),
                 emoji: {name: '📝'},
                 style: ButtonStyle.Secondary,
                 time: 120_000
@@ -187,8 +186,8 @@ export class RemoveProductFlow extends UserFlow {
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const oldProductName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
 
@@ -196,7 +195,7 @@ export class RemoveProductFlow extends UserFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, {
+        const message = t(`${this.locale}.messages.success`, {
             product: bold(oldProductName),
             shop: bold(getShopName(this.selectedShop.id)!)
         })

@@ -1,6 +1,5 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -10,7 +9,7 @@ import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { getCurrencies, getCurrencyName, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
+import { t } from "@/index.js"
 
 export enum EditCurrencyOption {
     NAME = 'name',
@@ -25,14 +24,14 @@ export class EditCurrencyFlow extends UserFlow {
     private updateOption: EditCurrencyOption | null = null
     private updateOptionValue: string | null = null
 
-    protected locale = getLocale().userFlows.currencyEdit
+    protected locale = "userFlows.currencyEdit" as const
 
     async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()
-        if (currencies.size == 0) return replyErrorMessage(interaction, errorMessages().noCurrencies)    
+        if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))    
 
         const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !Object.values(EditCurrencyOption).includes(subcommand as EditCurrencyOption)) return replyErrorMessage(interaction, errorMessages().invalidSubcommand)
+        if (!subcommand || !Object.values(EditCurrencyOption).includes(subcommand as EditCurrencyOption)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
         this.updateOption = subcommand as EditCurrencyOption
 
         this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
@@ -46,8 +45,8 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        const message = replaceTemplates(this.locale.messages.default, {
-            currency: bold(getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency),
+        const message = t(`${this.locale}.messages.default`, {
+            currency: bold(getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
             value: bold(this.updateOptionValue!)
         })
@@ -57,7 +56,7 @@ export class EditCurrencyFlow extends UserFlow {
 
     protected override initComponents(): void {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
-            { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
+            { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
             getCurrencies(),
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
@@ -69,7 +68,7 @@ export class EditCurrencyFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: this.selectedCurrency == null,
@@ -91,8 +90,8 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (!this.selectedCurrency) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const oldName = getCurrencyName(this.selectedCurrency.id) || ''
 
@@ -100,7 +99,7 @@ export class EditCurrencyFlow extends UserFlow {
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, {
+        const message = t(`${this.locale}.messages.success`, {
             currency: bold(oldName),
             option: bold(this.getUpdateOptionName(this.updateOption)),
             value: bold(this.updateOptionValue)
@@ -110,7 +109,7 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     private getUpdateOptionName(option: EditCurrencyOption): string {
-        return this.locale.editOptions[option] ?? option
+        return t(`${this.locale}.editOptions.${option}`)
     }
 
     private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption): string {

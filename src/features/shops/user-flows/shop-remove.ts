@@ -1,6 +1,4 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -8,6 +6,7 @@ import { UserFlow } from "@/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, bold } from "discord.js"
 import { getShopName, getShops, removeShop } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { t } from "@/index.js"
 
 
 export class ShopRemoveFlow extends UserFlow {
@@ -16,11 +15,11 @@ export class ShopRemoveFlow extends UserFlow {
 
     private selectedShop: Shop | null = null
 
-    protected locale = getLocale().userFlows.shopRemove
+    protected locale = "userFlows.shopRemove" as const
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
+        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
         this.initComponents()
         this.updateComponents()
@@ -31,14 +30,14 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return replaceTemplates(this.locale.messages.default, { shop: getShopName(this.selectedShop?.id) || defaultComponents().selectShop })
+        return t(`${this.locale}.messages.default`, { shop: getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")})
     }
 
     protected override initComponents(): void {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: defaultComponents().selectShop,
+                placeholder: t("defaultComponents.selectShop"),
                 time: 120_000
             }, 
             getShops(), 
@@ -52,7 +51,7 @@ export class ShopRemoveFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
             time: 120_000,
-            label: this.locale.components.submitButton,
+            label: t(`${this.locale}.components.submitButton`),
             emoji: {name: '⛔'},
             style: ButtonStyle.Danger,
             disabled: true
@@ -73,13 +72,13 @@ export class ShopRemoveFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const [error] = await removeShop(this.selectedShop.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        return await updateAsSuccessMessage(interaction, replaceTemplates(this.locale.messages.success, { shop: bold(getShopName(this.selectedShop.id)!) }))
+        return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, { shop: bold(getShopName(this.selectedShop.id)!) }))
 
     }
 }

@@ -1,8 +1,8 @@
 import { getSettings } from "@/features/settings/database/settings-handler.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { MessageFlags, TextChannel } from "discord.js"
-import { errorMessages } from "./localization/localization.js"
 import { PrettyLog } from "./pretty-log.js"
+import { t } from "@/index.js"
 
 
 
@@ -36,7 +36,7 @@ export async function updateAsSuccessMessage(interaction: UserInterfaceInteracti
 
 
 function getErrorMessage(errorMessage?: string) {
-    return `❌ ${errorMessage ? errorMessage : errorMessages().default}`
+    return `❌ ${errorMessage ? errorMessage : t("errorMessages.default")}`
 }
 
 function getSuccessMessage(successMessage: string) {

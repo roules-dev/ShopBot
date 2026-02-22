@@ -1,9 +1,8 @@
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
 import { EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
+import { t } from "@/index.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
-import { errorMessages, getLocale } from "@/lib/localization/localization.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
 
@@ -76,23 +75,23 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
                 break
             }
 
-            await replyErrorMessage(interaction, errorMessages().invalidSubcommand)
+            await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
     }
 }
 
 export async function createCurrencyCommand(client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
     const currencyName = interaction.options.getString('name')?.replaceSpaces()
-    if (!currencyName) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+    if (!currencyName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
     const emojiOption = interaction.options.getString('emoji')
     const emojiString = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
 
-    if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, errorMessages().notOnlyEmojisInName)
+    if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
     
     const [error, _] = await createCurrency(currencyName, emojiString)
     if (!error) {
         const currencyNameString = bold(`${emojiString ? `${emojiString} ` : ''}${currencyName}`)
-        await replySuccessMessage(interaction, replaceTemplates(getLocale().userFlows.currencyCreate.messages.success, { currency: currencyNameString }))    
+        await replySuccessMessage(interaction, t("userFlows.currencyCreate.messages.success", { currency: currencyNameString }))
 
         return
     }

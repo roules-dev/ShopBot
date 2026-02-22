@@ -1,9 +1,8 @@
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
 import { Account } from "@/features/accounts/database/accounts-type.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { t } from "@/index.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showSingleInputModal } from "@/ui-components/modals.js"
@@ -26,7 +25,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private discountCode?: string = undefined
     private discount: number = 0
 
-    private locale = getLocale().userInterfaces.buy
+    private locale = "userInterfaces.buy" as const
 
     constructor (selectedShop: Shop) {
         super()
@@ -34,15 +33,15 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        if (!this.selectedShop.products.size) return await replyErrorMessage(interaction, errorMessages().noProducts)
+        if (!this.selectedShop.products.size) return await replyErrorMessage(interaction, t("errorMessages.noProducts"))
     }
 
     protected override getMessage(): string {
-        const discountCodeString = this.discountCode ? `\n${this.locale.messages.discountCode} ${bold(this.discountCode)}` : ''
-        const priceString = this.priceString() != '' ? replaceTemplates(this.locale.messages.price, { price: this.priceString() }) : ''
+        const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ''
+        const priceString = this.priceString() != '' ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ''
 
-        const message = replaceTemplates(this.locale.messages.default, {
-            product: bold(getProductName(this.selectedShop.id, this.selectedProduct?.id) || defaultComponents().selectProduct),
+        const message = t(`${this.locale}.messages.default`, {
+            product: bold(getProductName(this.selectedShop.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
             shop: bold(getShopName(this.selectedShop.id)!),
         })
 
@@ -53,7 +52,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const selectProductMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
-                placeholder: defaultComponents().selectProduct,
+                placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000,
             },
             this.selectedShop.products,
@@ -71,7 +70,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
-                label: this.locale.components.buyButton,
+                label: t(`${this.locale}.components.buyButton`),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 time: 120_000,
@@ -82,7 +81,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const discountCodeButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+discount-code`,
-                label: this.locale.components.discountCodeButton,
+                label: t(`${this.locale}.components.discountCodeButton`),
                 emoji: {name: '🎁'},
                 style: ButtonStyle.Secondary,
                 time: 120_000,
@@ -107,8 +106,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const [modalSubmit, input] = await showSingleInputModal(interaction, {
             id: modalId,
-            title: this.locale.components.setDiscountCodeModal.title,
-            inputLabel: this.locale.components.setDiscountCodeModal.input,
+            title: t(`${this.locale}.components.setDiscountCodeModal.title`),
+            inputLabel: t(`${this.locale}.components.setDiscountCodeModal.input`),
             placeholder: 'XXXXXXX',
             required: true,
             minLength: 6,
@@ -125,10 +124,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     private async buyProduct(interaction: UserInterfaceInteraction) {
 
-        if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         if (this.isNotAllowedToBuy(interaction)) {
-            return replyErrorMessage(interaction, this.locale.errorMessages.cantBuyHere)
+            return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
         }
 
         const user = await getOrCreateAccount(interaction.user.id)
@@ -137,13 +136,13 @@ export class BuyProductUserInterface extends MessageUserInterface {
         if (balanceAfterBuy < 0) {
             return replyErrorMessage(
                 interaction, 
-                replaceTemplates(this.locale.errorMessages.notEnoughMoney, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) })
+                t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) })
             )
         }
 
         const itemStockAfterBuy = this.itemStockAfterBuy(this.selectedProduct, 1)
         if (itemStockAfterBuy != undefined && itemStockAfterBuy < 0) {
-            return replyErrorMessage(interaction, this.locale.errorMessages.productNoLongerAvailable)
+            return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
         }
 
         if (itemStockAfterBuy != undefined) {
@@ -188,8 +187,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 member.roles.add(roleId)
 
-                actionMessage = replaceTemplates(
-                    this.locale.actionProducts.giveRole.message, 
+                actionMessage = t(
+                    `${this.locale}.actionProducts.giveRole.message`, 
                     { role: bold(roleMention(roleId)) }
                 )
                 break
@@ -206,9 +205,9 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 setAccountCurrencyAmount(interaction.user.id, currency, userCurrencyAmount + amount)
 
-                actionMessage = replaceTemplates(
-                    this.locale.actionProducts.giveCurrency.message, 
-                    { currency: getCurrencyName(currency)!, amount }
+                actionMessage = t(
+                    `${this.locale}.actionProducts.giveCurrency.message`, 
+                    { currency: getCurrencyName(currency)!, amount: bold(`${amount}`) }
                 )
 
                 break
@@ -241,7 +240,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const priceString = this.priceString()
         const discountCodeString = this.discountCode ? this.discountCode : 'none'
 
-        const message = replaceTemplates(this.locale.messages.success, { 
+        const message = t(`${this.locale}.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
             price: priceString

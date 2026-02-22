@@ -1,33 +1,32 @@
-import { getLocale } from "@/lib/localization/localization.js"
-import { replaceTemplates } from "@/lib/localization/translate.js"
+import { t } from "@/index.js"
 import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 
 const YES = 'yes'
 const NO = 'no'
 
 export async function showConfirmationModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction): Promise<[ModalSubmitInteraction, boolean]> {
-    const strings = getLocale().extendedComponents.confirmationModal
+    const modalLocale = "extendedComponents.confirmationModal"
 
     const modalId = 'confirmation-modal'
     const labelId = 'confirm-select-menu'
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
-        .setTitle(strings.title)
+        .setTitle(t(`${modalLocale}.title`))
 
     const label = new LabelBuilder()
-        .setLabel(strings.cantBeUndone)
+        .setLabel(t(`${modalLocale}.cantBeUndone`))
         .setStringSelectMenuComponent(new StringSelectMenuBuilder()
             .setCustomId(labelId)
-            .setPlaceholder(strings.selectYes)
+            .setPlaceholder(t(`${modalLocale}.selectYes`))
             .addOptions(
                 new StringSelectMenuOptionBuilder()
-                    .setLabel(strings.yes)
+                    .setLabel(t(`${modalLocale}.yes`))
                     .setValue(YES)
             )
             .addOptions(
                 new StringSelectMenuOptionBuilder()
-                    .setLabel(strings.no)
+                    .setLabel(t(`${modalLocale}.no`))
                     .setValue(NO)
             )
         )
@@ -104,15 +103,15 @@ type EditModalOptions = {
 export async function showEditModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     { edit, previousValue, required, minLength, maxLength }: EditModalOptions
 ): Promise<[ModalSubmitInteraction, string]> {
-    const strings = getLocale().extendedComponents.editModal
+    const modalLocale = "extendedComponents.editModal"
 
     const editNormalized = `${edit.toLocaleLowerCase().replaceSpaces('-')}`
     const modalId = `edit-${editNormalized}-modal`
 
     return showSingleInputModal(interaction, {
         id: modalId,
-        title: replaceTemplates(strings.title, { edit }),
-        inputLabel: replaceTemplates(strings.new, { edit }),
+        title: t(`${modalLocale}.title`, { edit }),
+        inputLabel: t(`${modalLocale}.new`, { edit }),
         placeholder: previousValue ?? edit,
         required: required ?? true,
         minLength: minLength ?? 0,
