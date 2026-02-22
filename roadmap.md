@@ -28,10 +28,9 @@
 ### Code refactoring
 
 - [x] Add pagination at the level of user interface class
-- [ ] Improve UI Implementation (no more "start" function - check feasibility first)
 - [x] switching from uuid to nanoid, for performance improvement
 - [ ] docker container
-- [ ] improve internationalisation (reimplement in a more modular way,add fallback for missing translations)
+- [x] improve internationalisation (reimplement in a more modular way,add fallback for missing translations)
 - [x] improve error handling (implement result pattern)
 - [x] improve data access, add abstraction to avoid errors and repeated code
 - [ ] branded IDs ? -> will be made once Zod validation is implemented
