@@ -507,7 +507,7 @@ export const locale = {
         },
         "currencyEdit": {
             "messages": {
-                "default": "Modificar {currency}.\n**Nuevo {option}**: {value}",
+                "default": "Modificar {currency}.\n**Nuevo** {option}: {value}",
                 "success": "Has modificado con éxito la moneda {currency}. \nNuevo {option}: {value}"
             },
             "components": {

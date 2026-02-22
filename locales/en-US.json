@@ -518,7 +518,7 @@
         },
         "currencyEdit": {
             "messages": {
-                "default": "Edit {currency}.\n**New {option}**: {value}",
+                "default": "Edit {currency}.\n**New** {option}: {value}",
                 "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {

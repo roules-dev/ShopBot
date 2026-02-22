@@ -22,9 +22,9 @@ async function setup() {
 
     const resetData = await questionWithCondition('\nReset data? (y/n): ', answer => answer === 'y' || answer === 'n')
     if (resetData === 'y') {
-        await fs.writeFile('./data/shops.json', JSON.stringify({}, null, 2))
-        await fs.writeFile('./data/accounts.json', JSON.stringify({}, null, 2))
-        await fs.writeFile('./data/currencies.json', JSON.stringify({}, null, 2))
+        await fs.writeFile('./data/shops.json', JSON.stringify({}, null, 4))
+        await fs.writeFile('./data/accounts.json', JSON.stringify({}, null, 4))
+        await fs.writeFile('./data/currencies.json', JSON.stringify({}, null, 4))
     }
 
     await saveConfig()

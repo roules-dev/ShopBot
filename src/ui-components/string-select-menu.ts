@@ -1,6 +1,6 @@
 import { subMap } from "@/utils/maps.js"
-import { ComponentType, StringSelectMenuBuilder, StringSelectMenuInteraction, ReadonlyCollection, MessageComponentInteraction, StringSelectMenuOptionBuilder } from "discord.js"
-import { Identifiable, Labelled, Emojiable, ExtendedComponent } from "./extended-components.js"
+import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
+import { Emojiable, ExtendedComponent, Identifiable, Labelled } from "./extended-components.js"
 
 
 
@@ -125,7 +125,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
                 .setLabel(label)
                 .setValue(key)
 
-            if (value.emoji != undefined) {
+            if (value.emoji != undefined && value.emoji.length > 0) {
                 option.setEmoji(value.emoji)
             }
 

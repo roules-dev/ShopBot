@@ -1,5 +1,5 @@
 import { UserInterfaceComponentBuilder } from "@/user-interfaces/user-interfaces.js"
-import { ComponentEmojiResolvable, ComponentType, InteractionCollector, ButtonInteraction, StringSelectMenuInteraction, MessageComponentInteraction, ReadonlyCollection, InteractionCallbackResponse, MessageComponentType } from "discord.js"
+import { ComponentType, InteractionCollector, ButtonInteraction, StringSelectMenuInteraction, MessageComponentInteraction, ReadonlyCollection, InteractionCallbackResponse, MessageComponentType } from "discord.js"
 
 
 // those types could be moved to a shared module
@@ -12,7 +12,7 @@ export type Labelled = {
 }
 
 export type Emojiable = {
-    emoji?: ComponentEmojiResolvable
+    emoji?: string
 }
 
 export abstract class ExtendedComponent {

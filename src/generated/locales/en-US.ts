@@ -1,4 +1,3 @@
-
 // AUTO-GENERATED FILE — DO NOT EDIT
 export const locale = {
     "errorMessages": {
@@ -508,7 +507,7 @@ export const locale = {
         },
         "currencyEdit": {
             "messages": {
-                "default": "Edit {currency}.\n**New {option}**: {value}",
+                "default": "Edit {currency}.\n**New** {option}: {value}",
                 "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {
@@ -649,5 +648,5 @@ export const locale = {
             }
         }
     }
-} as const 
+} as const
 export default locale
