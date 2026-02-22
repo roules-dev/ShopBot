@@ -1,6 +1,6 @@
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
-import { t } from "@/index.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"

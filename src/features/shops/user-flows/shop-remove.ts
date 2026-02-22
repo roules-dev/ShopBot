@@ -1,4 +1,5 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -6,7 +7,6 @@ import { UserFlow } from "@/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, bold } from "discord.js"
 import { getShopName, getShops, removeShop } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { t } from "@/index.js"
 
 
 export class ShopRemoveFlow extends UserFlow {

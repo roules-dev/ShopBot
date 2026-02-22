@@ -1,4 +1,4 @@
-import { t } from "@/index.js"
+import { t } from "@/lib/localization.js"
 import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 
 const YES = 'yes'

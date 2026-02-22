@@ -1,6 +1,7 @@
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -10,7 +11,6 @@ import { getProductName } from "../database/products-database.js"
 import { getShopName, getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { BuyProductUserInterface } from "./buy.js"
-import { t } from "@/index.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {

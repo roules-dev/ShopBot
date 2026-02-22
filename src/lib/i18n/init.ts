@@ -16,7 +16,7 @@ type Join<K, P> = K extends string
         : never
     : never
 
-type DotPathsFor<T extends object = RegisteredTranslations> = {
+export type DotPathsFor<T extends object = RegisteredTranslations> = {
     [K in keyof T]: T[K] extends I18nMessage
         ? K
         : T[K] extends object
@@ -106,13 +106,13 @@ function getTranslation<S extends DotPathsFor, A extends Params<S>>(
 
 
     if (typeof translation === "string") {
-        return t(translation, argObj)
+        return replaceTemplates(translation, argObj)
     }
 
     return undefined
 }
 
-function getTranslationByKey(obj: LanguageMessages, key: string) {
+export function getTranslationByKey(obj: LanguageMessages, key: string) {
     const keys = key.split(".")
     let currentObj = obj
 
@@ -133,7 +133,7 @@ function getTranslationByKey(obj: LanguageMessages, key: string) {
 }
 
 
-function t(str: string, templates: { [key: string]: string | number }): string {
+function replaceTemplates(str: string, templates: { [key: string]: string | number }): string {
     let result = str
     for (const key in templates) {
         const value = templates[key]

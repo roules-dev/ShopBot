@@ -1,8 +1,8 @@
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
 import { EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
-import { t } from "@/index.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
+import { t } from "@/lib/localization.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
 
