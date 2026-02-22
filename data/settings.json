@@ -2,19 +2,19 @@
     "logChannelId": {
         "id": "logChannelId",
         "name": "Log Channel",
-        "value": null,
+        "value": "1332836427238739988",
         "type": "channelId"
     },
     "activityMessage": {
         "id": "activityMessage",
         "name": "Activity Message",
-        "value": "tv",
+        "value": "Theodora",
         "type": "string"
     },
     "activityType": {
         "id": "activityType",
         "name": "Activity Type",
-        "value": "Watching",
+        "value": "Listening",
         "options": [
             "Playing",
             "Streaming",
@@ -27,7 +27,7 @@
     "language": {
         "id": "language",
         "name": "Language",
-        "value": null,
+        "value": "en-US",
         "type": "enum",
         "options": [
             {

@@ -1,7 +1,7 @@
-import { getCurrencyName, getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showEditModal } from "@/ui-components/modals.js"
@@ -10,23 +10,11 @@ import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { InteractionCallbackResponse, ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, roleMention, RoleSelectMenuInteraction, Snowflake } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import { addProduct } from "../database/products-database.js"
-import { ProductActionType, ProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductActionOptions, createProductAction } from "../database/products-types.js"
-import { getShops, getShopName } from "../database/shops-database.js"
+import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
+import { getShopName, getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export class AddProductFlow extends UserFlow {
@@ -43,11 +31,11 @@ export class AddProductFlow extends UserFlow {
 
     protected response: InteractionCallbackResponse | null = null
 
-    protected locale = getLocale().userFlows.productAdd
+    protected locale = "userFlows.productAdd" as const
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
+        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
         const productName = interaction.options.getString('name')?.replaceSpaces()
         const productDescription = interaction.options.getString('description')?.replaceSpaces() || ''
@@ -58,9 +46,9 @@ export class AddProductFlow extends UserFlow {
         
         const productAmount = interaction.options.getInteger('amount')
 
-        if (!productName || productPrice == null) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!productName || productPrice == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     
-        if (productName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, errorMessages().notOnlyEmojisInName)
+        if (productName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
         
         this.productName = productName
         this.productPrice = +productPrice.toFixed(2)
@@ -80,14 +68,14 @@ export class AddProductFlow extends UserFlow {
     }
     
     protected getMessage(): string {
-        const descString = (this.productDescription) ? `. ${this.locale.messages.description} ${bold(this.productDescription.replaceSpaces())}` : ''
+        const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ''
         const nameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ''}${this.productName}`)
 
-        const message = replaceTemplates(this.locale.messages.default, {
+        const message = t(`${this.locale}.messages.default`, {
             product: nameString,
-            price: this.productPrice!,
+            price: `${this.productPrice!}`,
             currency: getCurrencyName(this.selectedShop?.currency.id) || '[ ]',
-            shop: getShopName(this.selectedShop?.id) || defaultComponents().selectShop,
+            shop: getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"),
             description: descString
         })
 
@@ -98,7 +86,7 @@ export class AddProductFlow extends UserFlow {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: defaultComponents().selectShop,
+                placeholder: t("defaultComponents.selectShop"),
                 time: 120_000
             },
             getShops(),
@@ -112,7 +100,7 @@ export class AddProductFlow extends UserFlow {
         const submitShopButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit-shop`,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -133,7 +121,7 @@ export class AddProductFlow extends UserFlow {
     }
 
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const [error, product] = await addProduct(this.selectedShop.id, { 
             name: this.productName, 
@@ -144,7 +132,7 @@ export class AddProductFlow extends UserFlow {
         })
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, {
+        const message = t(`${this.locale}.messages.success`, {
             product: product.name,
             shop: bold(getShopName(this.selectedShop.id)!)
         })
@@ -172,7 +160,7 @@ export class AddActionProductFlow extends AddProductFlow {
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const productActionType = interaction.options.getString('action')
 
-        if (productActionType != null && !isProductActionType(productActionType)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (productActionType != null && !isProductActionType(productActionType)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         this.productActionType = productActionType
 
@@ -185,14 +173,14 @@ export class AddActionProductFlow extends AddProductFlow {
                 return super.getMessage()
 
             case AddActionProductFlowStage.SETUP_ACTION: {
-                const descString = (this.productDescription) ? `. ${this.locale.messages.description} ${bold(this.productDescription.replaceSpaces())}` : ''
+                const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ''
                 const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ''}${this.productName}`)
 
-                const productString = replaceTemplates(this.locale.messages.default, {
+                const productString = t(`${this.locale}.messages.default`, {
                     product: productNameString,
-                    price: this.productPrice!,
+                    price: `${this.productPrice!}`,
                     currency: getCurrencyName(this.selectedShop?.currency.id) || '[ ]',
-                    shop: getShopName(this.selectedShop?.id) || defaultComponents().selectShop,
+                    shop: getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"),
                     description: descString
                 })
 
@@ -203,9 +191,9 @@ export class AddActionProductFlow extends AddProductFlow {
                         const roleMentionString = 
                             (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole> | undefined)?.roleId ? 
                             roleMention((this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole>).roleId) : 
-                            defaultComponents().unset
+                            t("defaultComponents.unset")
 
-                        actionString = replaceTemplates(this.locale.messages.actions.giveRole, { role: roleMentionString })
+                        actionString = t(`${this.locale}.messages.actions.giveRole`, { role: roleMentionString })
                         break
                     }
 
@@ -221,14 +209,14 @@ export class AddActionProductFlow extends AddProductFlow {
                         const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId) : undefined
                         const currencyString = getCurrencyName(currency?.id) || '[ ]'
 
-                        actionString = replaceTemplates(this.locale.messages.actions.giveCurrency, { amount: amountString, currency: currencyString })
+                        actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
                         break
                     }
                     default:
                         break
                 }
 
-                return `${productString}\n${this.locale.messages.action} ${actionString}`}
+            return `${productString}\n${t(`${this.locale}.messages.action`)} ${actionString}`}
 
         }
     }
@@ -244,7 +232,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
                     {
                         customId: `${this.id}+select-role`,
-                        placeholder: defaultComponents().selectRole,
+                        placeholder: t("defaultComponents.selectRole"),
                         time: 120_000
                     },
                     (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake): void => {
@@ -261,7 +249,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
                     {
                         customId: `${this.id}+select-currency`,
-                        placeholder: defaultComponents().selectCurrency,
+                        placeholder: t("defaultComponents.selectCurrency"),
                         time: 120_000
                     },
                     getCurrencies(),
@@ -275,13 +263,13 @@ export class AddActionProductFlow extends AddProductFlow {
                 const setAmountButton = new ExtendedButtonComponent(
                     {
                         customId: `${this.id}+set-amount`,
-                        label: this.locale.components.setAmountButton,
+                        label: t(`${this.locale}.components.setAmountButton`),
                         emoji: { name: '🪙' },
                         style: ButtonStyle.Secondary,
                         time: 120_000
                     },
                     async (interaction: ButtonInteraction) => {
-                        const [modalSubmit, input] = await showEditModal(interaction, { edit: this.locale.components.editAmountModalTitle, previousValue: '0' })
+                        const [modalSubmit, input] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: '0' })
 
                         const amount = parseInt(input)
                         if (isNaN(amount) || amount < 0) return this.updateInteraction(modalSubmit)
@@ -307,7 +295,7 @@ export class AddActionProductFlow extends AddProductFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: '✅',
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -319,7 +307,7 @@ export class AddActionProductFlow extends AddProductFlow {
         const changeShopButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+change-shop`,
-                label: defaultComponents().changeShopButton,
+                label: t("defaultComponents.changeShopButton"),
                 emoji: {name: '📝'},
                 style: ButtonStyle.Secondary,
                 time: 120_000
@@ -372,7 +360,7 @@ export class AddActionProductFlow extends AddProductFlow {
             return this.updateInteraction(interaction)
         }
         
-        if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const [error, product] = await addProduct(this.selectedShop.id, { 
             name: this.productName, 
@@ -384,12 +372,12 @@ export class AddActionProductFlow extends AddProductFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, {
+        const message = t(`${this.locale}.messages.success`, {
             product: product.name,
             shop: bold(getShopName(this.selectedShop.id)!)
         })
 
-        const withActionMessage = replaceTemplates(this.locale.messages.withAction, { action: bold(`${this.productActionType}`) })
+        const withActionMessage = t(`${this.locale}.messages.withAction`, { action: bold(`${this.productActionType}`) })
 
         return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}`)
 

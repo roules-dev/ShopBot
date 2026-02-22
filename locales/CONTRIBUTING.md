@@ -107,13 +107,19 @@ To register commands, run the following command:
 npm run deploy /a
 ```
 
-And to start the bot, run the following command:
+Then, you must regenerate the locales files:
+
+```bash
+npm run generate:locales
+```
+
+Finally, to start the bot, run the following command:
 
 ```bash
 npm run start
 ```
 
-Then, use your translated language setting to verify messages appear properly.
+Then, use your translated language setting to verify messages appear properly. (`/settings` command in the bot)
 
 
 ## 📥 Submitting Your Contribution

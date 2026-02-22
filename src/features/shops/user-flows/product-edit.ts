@@ -1,28 +1,17 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { InteractionCallbackResponse, ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { getProductName, updateProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
-import { getShops, getShopName } from "../database/shops-database.js"
+import { getShopName, getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-
-
-
-
-
-
-
-
-
-
-
 
 
 enum EditProductFlowStage {
@@ -53,19 +42,19 @@ export class EditProductFlow extends UserFlow {
 
     private response: InteractionCallbackResponse | null = null
 
-    protected locale = getLocale().userFlows.productEdit
+    protected locale = "userFlows.productEdit" as const
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, this.locale.errorMessages.noShopsWithProducts)
+        if (!shops.size) return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.noShopsWithProducts`))
 
         const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !Object.values(EditProductOption).includes(subcommand as EditProductOption)) return replyErrorMessage(interaction, errorMessages().invalidSubcommand)
+        if (!subcommand || !Object.values(EditProductOption).includes(subcommand as EditProductOption)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
         this.updateOption = subcommand as EditProductOption
 
         this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
 
-        if (this.updateOptionValue == null) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (this.updateOptionValue == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         this.initComponents()
         this.updateComponents()
@@ -79,14 +68,14 @@ export class EditProductFlow extends UserFlow {
     protected getMessage(): string {
         switch (this.stage) {
             case EditProductFlowStage.SELECT_SHOP:
-                return replaceTemplates(this.locale.messages.shopSelectStage, {
-                    shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop),
+                return t(`${this.locale}.messages.shopSelectStage`, {
+                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
                     option: bold(this.getUpdateOptionName(this.updateOption!)),
                     value: bold(this.getUpdateValueString(this.updateOption!))
                 })
             case EditProductFlowStage.SELECT_PRODUCT:
-                return replaceTemplates(this.locale.messages.productSelectStage, {
-                    product: bold(getProductName(this.selectedShop?.id, this.selectedProduct?.id) || defaultComponents().selectProduct),
+                return t(`${this.locale}.messages.productSelectStage`, {
+                    product: bold(getProductName(this.selectedShop?.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
                     shop: bold(getShopName(this.selectedShop?.id)!),
                     option: bold(this.getUpdateOptionName(this.updateOption!)),
                     value: bold(this.getUpdateValueString(this.updateOption!))
@@ -100,7 +89,7 @@ export class EditProductFlow extends UserFlow {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: defaultComponents().selectShop,
+                placeholder: t("defaultComponents.selectShop"),
                 time: 120_000
             },
             getShops(),
@@ -115,13 +104,13 @@ export class EditProductFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-shop`,
                 time: 120_000,
-                label: defaultComponents().submitShopButton,
+                label: t("defaultComponents.submitShopButton"),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
             (interaction: ButtonInteraction) => {
-                if (this.selectedShop!.products.size == 0) return updateAsErrorMessage(interaction, errorMessages().noProducts)
+                if (this.selectedShop!.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
                 this.changeStage(EditProductFlowStage.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
@@ -138,7 +127,7 @@ export class EditProductFlow extends UserFlow {
         const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>(
             {
                 customId: `${this.id}+select-product`,
-                placeholder: defaultComponents().selectProduct,
+                placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000
             }, new Map(), 
             (interaction) => this.updateInteraction(interaction),
@@ -152,7 +141,7 @@ export class EditProductFlow extends UserFlow {
             {
                 customId: `${this.id}+edit-product`,
                 time: 120_000,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true
@@ -164,7 +153,7 @@ export class EditProductFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
-                label: defaultComponents().changeShopButton,
+                label: t("defaultComponents.changeShopButton"),
                 emoji: {name: '📝'},
                 style: ButtonStyle.Secondary
             },
@@ -219,9 +208,9 @@ export class EditProductFlow extends UserFlow {
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        if (!this.selectedProduct) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const updateOption: Record<string, string | number> = {}
         updateOption[this.updateOption.toString()] = this.updateOptionValue
@@ -232,7 +221,7 @@ export class EditProductFlow extends UserFlow {
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, {
+        const message = t(`${this.locale}.messages.success`, {
             product: bold(oldName),
             shop: bold(getShopName(this.selectedShop.id)!),
             option: bold(this.getUpdateOptionName(this.updateOption)),
@@ -243,7 +232,7 @@ export class EditProductFlow extends UserFlow {
     }
 
     private getUpdateOptionName(option: EditProductOption): string {
-        return this.locale.editOptions[option] ?? option
+        return t(`${this.locale}.editOptions.${option}`)
     }
 
     private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditProductOption): string | number | null {
@@ -272,17 +261,17 @@ export class EditProductFlow extends UserFlow {
     private getUpdateValueString(option: EditProductOption | null): string {
         switch (option) {
             case null:
-                return defaultComponents().unset
+                return t("defaultComponents.unset")
             case EditProductOption.NAME:
             case EditProductOption.DESCRIPTION:
-                return (this.updateOptionValue as string | null) ?? defaultComponents().unset
+                return (this.updateOptionValue as string | null) ?? t("defaultComponents.unset")
             case EditProductOption.PRICE:
-                return `${this.updateOptionValue ?? defaultComponents().unset}` 
+                return `${this.updateOptionValue ?? t("defaultComponents.unset")}` 
             case EditProductOption.EMOJI:
-                return (this.updateOptionValue as string | null) ?? defaultComponents().unset
+                return (this.updateOptionValue as string | null) ?? t("defaultComponents.unset")
             case EditProductOption.AMOUNT:
-                if (this.updateOptionValue == -1) return this.locale.messages.unlimited
-                return `${this.updateOptionValue ?? defaultComponents().unset}`
+                if (this.updateOptionValue == -1) return t(`${this.locale}.messages.unlimited`)
+                return `${this.updateOptionValue ?? t("defaultComponents.unset")}`
             default:
                 assertNeverReached(option)
         }

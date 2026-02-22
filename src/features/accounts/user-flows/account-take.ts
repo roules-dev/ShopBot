@@ -1,21 +1,14 @@
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { User, ChatInputCommandInteraction, MessageFlags, bold, userMention, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction } from "discord.js"
-import { getOrCreateAccount, emptyAccount, setAccountCurrencyAmount } from "../database/accounts-database.js"
-
-
-
-
-
-
-
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, User, bold, userMention } from "discord.js"
+import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts-database.js"
 
 
 export class AccountTakeFlow extends UserFlow {
@@ -27,17 +20,17 @@ export class AccountTakeFlow extends UserFlow {
     private target: User | null = null
     private amount: number | null = null
 
-    protected locale = getLocale().userFlows.accountTake
+    protected locale = "userFlows.accountTake" as const
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
 
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `${this.locale.errorMessages?.cantTakeMoney} ${errorMessages().noCurrencies}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)
     
         const target = interaction.options.getUser('target')
         const amount = interaction.options.getNumber('amount')
     
-        if (!target || !amount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!target || !amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         this.target = target
         this.amount = amount
@@ -51,11 +44,11 @@ export class AccountTakeFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return replaceTemplates(
-            this.locale.messages?.default, 
+        return t(
+            `${this.locale}.messages.default`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || defaultComponents().selectCurrency}]`), 
+                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency")}]`), 
                 user: userMention(this.target!.id) 
             }
         )
@@ -63,7 +56,7 @@ export class AccountTakeFlow extends UserFlow {
 
     protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
-            { customId: `${this.id}+select-currency`, placeholder: defaultComponents().selectCurrency, time: 120_000 },
+            { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
             getCurrencies(),
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
@@ -75,7 +68,7 @@ export class AccountTakeFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: '✅',
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -87,7 +80,7 @@ export class AccountTakeFlow extends UserFlow {
         const takeAllButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+take-all`,
-                label: this.locale.components.takeAllButton,
+                label: t(`${this.locale}.components.takeAllButton`),
                 emoji: '🔥',
                 style: ButtonStyle.Danger,
                 disabled: true,
@@ -104,7 +97,7 @@ export class AccountTakeFlow extends UserFlow {
         const emptyAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+empty-account`,
-                label: this.locale.components.emptyAccountButton,
+                label: t(`${this.locale}.components.emptyAccountButton`),
                 emoji: '🗑️',
                 style: ButtonStyle.Danger,
                 time: 120_000,
@@ -115,7 +108,7 @@ export class AccountTakeFlow extends UserFlow {
                 if (!confirmed) return this.updateInteraction(modalSubmitInteraction)
 
                 await emptyAccount(this.target!.id, 'currencies')
-                await updateAsSuccessMessage(modalSubmitInteraction, replaceTemplates(this.locale.messages.successfullyEmptied, { user: userMention(this.target!.id) }))
+                await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target!.id) }))
             }
         )
 
@@ -140,7 +133,7 @@ export class AccountTakeFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (!this.selectedCurrency) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedCurrency) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
         const newBalance = Math.max(currentBalance - this.amount!, 0)
@@ -148,8 +141,8 @@ export class AccountTakeFlow extends UserFlow {
         const [error, _] = await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, newBalance)
         if (error) return replyErrorMessage(interaction, error.message)
 
-        const successMessage = replaceTemplates(
-            this.locale.messages?.success, 
+        const successMessage = t(
+            `${this.locale}.messages.success`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: getCurrencyName(this.selectedCurrency.id)!, 

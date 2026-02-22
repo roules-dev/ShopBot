@@ -2,15 +2,8 @@ import { AccountGiveFlow, BulkAccountGiveFlow } from "@/features/accounts/user-f
 import { AccountTakeFlow } from "@/features/accounts/user-flows/account-take.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage } from "@/lib/discord.js"
-import { errorMessages } from "@/lib/localisation.js"
-import { SlashCommandBuilder, PermissionFlagsBits, Client, ChatInputCommandInteraction } from "discord.js"
-
-
-
-
-
-
-
+import { t } from "@/lib/localization.js"
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
     .setName('accounts-manage') 
@@ -80,7 +73,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
         case 'view-account': {
             const user = interaction.options.getUser('target')
             if (!user) {
-                replyErrorMessage(interaction, errorMessages().insufficientParameters)
+                replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 break
             }
     
@@ -100,7 +93,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
             new AccountTakeFlow().start(interaction)
             break
         default:
-            await replyErrorMessage(interaction, errorMessages().invalidSubcommand)
+            await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
             break
     }
 }

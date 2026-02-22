@@ -1,21 +1,23 @@
+import "@/utils/strings.js"
+import "@/lib/localization.js"
+import "dotenv/config"
+
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
 
-import "@/lib/localisation.js"
-import "@/utils/strings.js"
-import "dotenv/config"
 
 
-if (process.env["NODE_ENV"] && process.env.NODE_ENV === 'development') {
-	PrettyLog.warn('Development mode enabled')
-	PrettyLog.warn('Errors won\'t be caught by the error handler')
+if (process.env["NODE_ENV"] && process.env.NODE_ENV === "development") {
+	PrettyLog.warn("Development mode enabled")
+	PrettyLog.warn("Errors won\"t be caught by the error handler")
 }
 else {
-	process.on('unhandledRejection', (reason: unknown) => PrettyLog.error(`${reason}`))
-	process.on('uncaughtException', (reason: unknown) => PrettyLog.error(`${reason}`))
-	process.on('uncaughtExceptionMonitor', (reason: unknown) => PrettyLog.error(`${reason}`))
+	process.on("unhandledRejection", (reason: unknown) => PrettyLog.error(`${reason}`))
+	process.on("uncaughtException", (reason: unknown) => PrettyLog.error(`${reason}`))
+	process.on("uncaughtExceptionMonitor", (reason: unknown) => PrettyLog.error(`${reason}`))
 }
 
 
 // Start the bot
 startClient()
+

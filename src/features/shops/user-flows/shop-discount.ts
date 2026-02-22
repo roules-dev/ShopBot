@@ -1,20 +1,13 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, InteractionCallbackResponse } from "discord.js"
-import { getShops, getShopName, createDiscountCode, removeDiscountCode } from "../database/shops-database.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
+import { createDiscountCode, getShopName, getShops, removeDiscountCode } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-
-
-
-
-
-
-
 
 
 export class DiscountCodeCreateFlow extends UserFlow {
@@ -25,16 +18,16 @@ export class DiscountCodeCreateFlow extends UserFlow {
     private discountCode: string | null = null
     private discountAmount: number | null = null
 
-    protected locale = getLocale().userFlows.discountCodeCreate
+    protected locale = "userFlows.discountCodeCreate" as const
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
+        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
         const discountCode = interaction.options.getString('code')?.replaceSpaces('').toUpperCase()
         const discountAmount = interaction.options.getInteger('amount')
 
-        if (!discountCode || !discountAmount) return replyErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!discountCode || !discountAmount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         this.discountCode = discountCode
         this.discountAmount = discountAmount
@@ -48,8 +41,8 @@ export class DiscountCodeCreateFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        const message = replaceTemplates(this.locale.messages.default, {
-            shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop),
+        const message = t(`${this.locale}.messages.default`, {
+            shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
             code: bold(this.discountCode!),
             amount: bold(`${this.discountAmount}`)
         })
@@ -61,7 +54,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: defaultComponents().selectShop,
+                placeholder: t("defaultComponents.selectShop"),
                 time: 120_000,
             },
             getShops(),
@@ -75,7 +68,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -99,14 +92,14 @@ export class DiscountCodeCreateFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const [error] = await createDiscountCode(this.selectedShop.id, this.discountCode, this.discountAmount)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, { 
+        const message = t(`${this.locale}.messages.success`, { 
             shop: bold(getShopName(this.selectedShop.id)!), 
             code: bold(this.discountCode), 
             amount: bold(`${this.discountAmount}`)
@@ -134,11 +127,11 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
     private response: InteractionCallbackResponse | null = null
 
-    protected locale = getLocale().userFlows.discountCodeRemove
+    protected locale = "userFlows.discountCodeRemove" as const
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, errorMessages().noShops)
+        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
         this.initComponents()
         this.updateComponents()
@@ -152,13 +145,13 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     protected override getMessage(): string {
         switch (this.stage) {
             case DiscountCodeRemoveStage.SELECT_SHOP:
-                return replaceTemplates(this.locale.messages.shopSelectStage, {
-                    shop: bold(getShopName(this.selectedShop?.id) || defaultComponents().selectShop)
+                return t(`${this.locale}.messages.shopSelectStage`, {
+                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"))
                 })
             case DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE:
-                return replaceTemplates(this.locale.messages.codeSelectStage, {
+                return t(`${this.locale}.messages.codeSelectStage`, {
                     shop: bold(getShopName(this.selectedShop?.id)!),
-                    code: bold(this.selectedDiscountCode || this.locale.components.discountCodeSelect)
+                    code: bold(this.selectedDiscountCode || t(`${this.locale}.components.discountCodeSelect`))
                 })
             default:
                 assertNeverReached(this.stage)
@@ -169,7 +162,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
             {
                 customId: `${this.id}+select-shop`,
-                placeholder: defaultComponents().selectShop,
+                placeholder: t("defaultComponents.selectShop"),
                 time: 120_000,
             },
             getShops(),
@@ -184,7 +177,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 time: 120_000,
-                label: defaultComponents().submitShopButton,
+                label: t("defaultComponents.submitShopButton"),
                 emoji: {name: '✅'},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -209,7 +202,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         const discountCodeSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-discount-code`,
-                placeholder: this.locale.components.discountCodeSelect,
+                placeholder: t(`${this.locale}.components.discountCodeSelect`),
                 time: 120_000,
             },
             new Map(),
@@ -224,7 +217,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             {
                 customId: `${this.id}+remove-discount-code`,
                 time: 120_000,
-                label: this.locale.components.submitButton,
+                label: t(`${this.locale}.components.submitButton`),
                 emoji: {name: '⛔'},
                 style: ButtonStyle.Danger,
                 disabled: true
@@ -236,7 +229,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
-                label: defaultComponents().changeShopButton,
+                label: t("defaultComponents.changeShopButton"),
                 emoji: {name: '📝'},
                 style: ButtonStyle.Secondary
             },
@@ -291,14 +284,14 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
-        if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, errorMessages().insufficientParameters)
+        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const [error] = await removeDiscountCode(this.selectedShop.id, this.selectedDiscountCode)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const message = replaceTemplates(this.locale.messages.success, { 
+        const message = t(`${this.locale}.messages.success`, { 
             shop: bold(getShopName(this.selectedShop.id)!), 
             code: bold(this.selectedDiscountCode) 
         })

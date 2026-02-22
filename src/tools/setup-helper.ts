@@ -1,5 +1,5 @@
 import config from '@/../config/config.json' with { type: 'json' }
-import { PrettyLog } from '@//lib/pretty-log.js'
+import { PrettyLog } from '@/lib/pretty-log.js'
 import { appDeployCommands } from '@/app/deploy-commands.js'
 import fs from 'node:fs/promises'
 import readline from 'node:readline'
