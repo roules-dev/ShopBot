@@ -1,7 +1,7 @@
 import { getSettings } from "@/features/settings/database/settings-handler.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { MessageFlags, TextChannel } from "discord.js"
-import { errorMessages } from "./localisation.js"
+import { errorMessages } from "./localization/localization.js"
 import { PrettyLog } from "./pretty-log.js"
 
 

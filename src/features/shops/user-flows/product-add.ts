@@ -1,7 +1,8 @@
-import { getCurrencyName, getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
+import { replaceTemplates } from "@/lib/localization/translate.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showEditModal } from "@/ui-components/modals.js"
@@ -10,23 +11,11 @@ import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { InteractionCallbackResponse, ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, roleMention, RoleSelectMenuInteraction, Snowflake } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import { addProduct } from "../database/products-database.js"
-import { ProductActionType, ProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductActionOptions, createProductAction } from "../database/products-types.js"
-import { getShops, getShopName } from "../database/shops-database.js"
+import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
+import { getShopName, getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export class AddProductFlow extends UserFlow {

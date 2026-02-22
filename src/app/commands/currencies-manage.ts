@@ -1,17 +1,11 @@
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
-import { EditCurrencyOption, EditCurrencyFlow } from "@/features/currencies/user-flows/currency-edit.js"
+import { EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
-import { errorMessages, replaceTemplates, getLocale } from "@/lib/localisation.js"
+import { errorMessages, getLocale } from "@/lib/localization/localization.js"
+import { replaceTemplates } from "@/lib/localization/translate.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { SlashCommandBuilder, PermissionFlagsBits, Client, ChatInputCommandInteraction, bold } from "discord.js"
-
-
-
-
-
-
-
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
 
 
 export const data = new SlashCommandBuilder()

@@ -1,7 +1,7 @@
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
 
-import "@/lib/localisation.js"
+import { getLocales } from "@/lib/localization/localization.js"
 import "@/utils/strings.js"
 import "dotenv/config"
 
@@ -19,3 +19,6 @@ else {
 
 // Start the bot
 startClient()
+
+// load locales
+getLocales()

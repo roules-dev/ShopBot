@@ -8,14 +8,17 @@ import { pathToFileURL } from 'node:url'
 import en_US_locale from '@/../locales/en-US.json' with { type: 'json' }
 import { EVENTS } from "@/middleware.js"
 
+
 const DEFAULT_LOCALE_CODE = 'en-US'
 export const defaultLocale = en_US_locale
-export type LocaleStrings = typeof defaultLocale
+export type RegisteredTranslations = typeof defaultLocale
+
+
 
 // absolute path from the project root to the locales folder
 const localesPath = './locales'
 
-const locales: { cache: { [code: string]: LocaleStrings }, expired: boolean } = { cache: {}, expired: true }
+const locales: { cache: { [code: string]: RegisteredTranslations }, expired: boolean } = { cache: {}, expired: true }
 
 let currentLocale = defaultLocale
 
@@ -106,16 +109,6 @@ async function getLocaleStrings(path: string[], maxLength?: number): Promise<{ [
     return result
 }
 
-export function replaceTemplates(str: string, templates: { [key: string]: string | number }): string {
-    let result = str
-    for (const key in templates) {
-        const value = templates[key]
-        result = result.replace(new RegExp(`{${key}}`, 'g'), String(value)) 
-    }
-    return result
-}
-
-
 export async function setCurrentLocale(localeCode: string | undefined) {
 	const locales = await getLocales()
 
@@ -125,7 +118,7 @@ export async function setCurrentLocale(localeCode: string | undefined) {
 	currentLocale = locale
 }
 
-export function getLocale(): LocaleStrings {
+export function getLocale(): RegisteredTranslations {
 	if (!currentLocale) {
 		throw new Error('Locale not set')
 	}

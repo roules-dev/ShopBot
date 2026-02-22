@@ -1,6 +1,6 @@
-import { getLocale, replaceTemplates } from "@/lib/localisation.js"
-import { MessageComponentInteraction, ChatInputCommandInteraction, ModalSubmitInteraction, ModalBuilder, LabelBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
-
+import { getLocale } from "@/lib/localization/localization.js"
+import { replaceTemplates } from "@/lib/localization/translate.js"
+import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 
 const YES = 'yes'
 const NO = 'no'

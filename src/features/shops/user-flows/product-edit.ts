@@ -1,28 +1,18 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { getLocale, errorMessages, replaceTemplates, defaultComponents } from "@/lib/localisation.js"
+import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
+import { replaceTemplates } from "@/lib/localization/translate.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
-import { InteractionCallbackResponse, ChatInputCommandInteraction, MessageFlags, bold, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { getProductName, updateProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
-import { getShops, getShopName } from "../database/shops-database.js"
+import { getShopName, getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-
-
-
-
-
-
-
-
-
-
-
 
 
 enum EditProductFlowStage {

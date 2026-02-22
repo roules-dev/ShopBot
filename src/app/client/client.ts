@@ -1,12 +1,12 @@
 import config from "@/../config/config.json" with { type: "json" }
 import { PrettyLog } from "@//lib/pretty-log.js"
-import { LocaleStrings } from "@/lib/localisation.js"
+import { RegisteredTranslations } from "@/lib/localization/localization.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from "fs/promises"
 import path from "path"
 
-import { fileURLToPath, pathToFileURL } from "node:url"
 import { EVENTS } from "@/middleware.js"
+import { fileURLToPath, pathToFileURL } from "node:url"
 import { setActivity } from "./status.js"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -20,7 +20,7 @@ interface Command {
 declare module "discord.js" {
     export interface Client {
         commands: Collection<string, Command>
-        locale: LocaleStrings
+        locale: RegisteredTranslations
     }
 }
 

@@ -2,7 +2,8 @@ import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } fr
 import { Account } from "@/features/accounts/database/accounts-type.js"
 import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { defaultComponents, errorMessages, getLocale, replaceTemplates } from "@/lib/localisation.js"
+import { defaultComponents, errorMessages, getLocale } from "@/lib/localization/localization.js"
+import { replaceTemplates } from "@/lib/localization/translate.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showSingleInputModal } from "@/ui-components/modals.js"
@@ -13,19 +14,6 @@ import { getProductName, updateProduct } from "../database/products-database.js"
 import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
 import { getShopName } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export class BuyProductUserInterface extends MessageUserInterface {

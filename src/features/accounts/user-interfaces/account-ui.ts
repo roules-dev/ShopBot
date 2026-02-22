@@ -1,12 +1,13 @@
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { getLocale, replaceTemplates } from "@/lib/localisation.js"
+import { getLocale } from "@/lib/localization/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
-import { PaginatedMultipleEmbedUserInterface, ObjectValues, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EmbedBuilder, InteractionCallbackResponse, User, Colors, ButtonStyle, ButtonInteraction, APIEmbedField } from "discord.js"
+import { ObjectValues, PaginatedMultipleEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
+import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { getOrCreateAccount } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
+import { replaceTemplates } from "@/lib/localization/translate.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = 'account-ui'

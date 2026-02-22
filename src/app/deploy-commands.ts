@@ -1,4 +1,4 @@
-import { addLocalisationToCommand } from "@/lib/localisation.js"
+import { addLocalisationToCommand } from "@/lib/localization/localization.js"
 import { PrettyLog, drawProgressBar } from "@/lib/pretty-log.js"
 import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from "discord.js"
 import fs from "fs"

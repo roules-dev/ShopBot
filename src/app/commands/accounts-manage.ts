@@ -2,8 +2,8 @@ import { AccountGiveFlow, BulkAccountGiveFlow } from "@/features/accounts/user-f
 import { AccountTakeFlow } from "@/features/accounts/user-flows/account-take.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage } from "@/lib/discord.js"
-import { errorMessages } from "@/lib/localisation.js"
-import { SlashCommandBuilder, PermissionFlagsBits, Client, ChatInputCommandInteraction } from "discord.js"
+import { errorMessages } from "@/lib/localization/localization.js"
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 
 
