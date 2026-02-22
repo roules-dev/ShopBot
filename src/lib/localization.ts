@@ -44,10 +44,10 @@ export async function addLocalisationToCommand(commandData: SlashCommandBuilder)
 
 async function addLocalisationToOptions(options: APIApplicationCommandOption[], path: string) {
     for (const option of options) {
-        option.name_localizations = await getLocaleStrings(`${path}.commands.${option.name}.name`)
-        option.description_localizations = await getLocaleStrings(`${path}.commands.${option.name}.description`)
+        option.name_localizations = await getLocaleStrings(`${path}.${option.name}.name`)
+        option.description_localizations = await getLocaleStrings(`${path}.${option.name}.description`)
         if ("options" in option && option.options) {
-            await addLocalisationToOptions(option.options, `${path}.commands.${option.name}.options`)
+            await addLocalisationToOptions(option.options, `${path}.${option.name}.options`)
         }
     }
 }

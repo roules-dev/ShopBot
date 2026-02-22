@@ -12,7 +12,7 @@
     "dev": "nodemon src/index.ts",
     "start": "npm run build && npm run serve",
     "serve": "node --enable-source-maps dist/index.js",
-    "deploy": "node ./dist/deploy-commands.js",
+    "deploy": "node ./dist/app/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
     "setup": "npm i && node ./dist/tools/setup-helper.js",
     "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",

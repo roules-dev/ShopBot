@@ -8,7 +8,6 @@ import { fileURLToPath, pathToFileURL } from "url"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const configFilePath = path.join(__dirname, '../config/config.json')
 let config: { clientId: string, token: string } | undefined
 
 let rest: REST | undefined
@@ -64,9 +63,13 @@ async function getCommands() {
 export async function appDeployCommands() { 
     try {
         await getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
+
         PrettyLog.success('Successfully registered application commands.', false)
         return true
-    } catch {
+    } catch (e) {
+        PrettyLog.error('Failed to deploy commands', false)
+        console.error(e)
+
         return false
     }
 }
@@ -79,7 +82,10 @@ export async function appDeleteCommands() {
         PrettyLog.success('Successfully deleted application commands.', false)
         return true
     }
-    catch {
+    catch (e) {
+        PrettyLog.error('Failed to deploy commands', false)
+        console.error(e)
+
         return false
     }   
 }
@@ -91,7 +97,10 @@ export async function guildDeployCommands(guildId: Snowflake) {
         PrettyLog.success('Successfully registered all guild commands.', false)
         return true       
     }
-    catch {
+    catch (e) {
+        PrettyLog.error('Failed to deploy commands', false)
+        console.error(e)
+
         return false
     }
 }
@@ -103,15 +112,19 @@ export async function guildDeleteCommands(guildId: Snowflake) {
         PrettyLog.success('Successfully deleted all guild commands.', false)
         return true
     }
-    catch {
+    catch (e) {
+        PrettyLog.error('Failed to deploy commands', false)
+        console.error(e)
+
         return false
     }
 }
 
 
-function main() {
+async function main() {
     const flag = process.argv[2]
     const guildId = process.argv[3]
+
 
     switch (flag) {
         case '/a':
@@ -140,6 +153,7 @@ function main() {
 
         default:
             PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n', false)
+            process.exit(1)
     }
 }
 
@@ -172,7 +186,7 @@ function getConfig() {
         return config
     }
 
-    const _config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+    const _config = JSON.parse(fs.readFileSync('./config/config.json', 'utf-8'))
 
     config = _config
     return _config
