@@ -7,33 +7,24 @@
   "scripts": {
     "build": "tsc && npx tsc-alias",
     "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
-    "cleanbuild": "npm run clean:dist --silent && npm run build",
-    "prodbuild": "npm run clean:dist --silent && tsc --build --sourceMap false && npx tsc-alias",
+    "build:clean": "npm run clean:dist --silent && npm run build",
+    "build:prod": "npm run clean:dist --silent && tsc --build --sourceMap false && npx tsc-alias",
     "dev": "nodemon src/index.ts",
     "start": "npm run build && npm run serve",
     "serve": "node --enable-source-maps dist/index.js",
     "deploy": "node ./dist/deploy-commands.js",
     "test": "npm run build && node ./dist/test.js",
     "setup": "npm i && node ./dist/tools/setup-helper.js",
-    "nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
-    "verify-translation": "node ./dist/tools/verify-translation.js"
+    "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
+    "verify-translation": "node ./dist/tools/verify-translation.js",
+    "generate:locales": "node ./dist/tools/generate-locales.js"
   },
   "license": "GPL-3.0",
   "devDependencies": {
-    "@discordjs/rest": "^2.2.0",
+    "@discordjs/rest": "^2.6.0",
     "@types/luxon": "^3.4.2",
     "@types/node": "^25.0.3",
-    "@typescript-eslint/parser": "^8.55.0",
-    "eslint": "^9.39.2",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-boundaries": "^5.4.0",
-    "eslint-plugin-import": "^2.32.0",
-    "nodemon": "^3.1.10",
-    "prettier": "3.8.1",
-    "ts-node": "^10.9.2",
-    "tsc-alias": "^1.8.16",
-    "typescript-eslint": "^8.54.0"
+    "tsc-alias": "^1.8.16"
   },
   "dependencies": {
     "discord.js": "^14.25.1",

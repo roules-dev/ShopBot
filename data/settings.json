@@ -29,7 +29,7 @@
         "name": "Language",
         "value": null,
         "type": "enum",
-        "options": [
+        "options": [ 
             {
                 "value": "en-US",
                 "label": "English (US)"

@@ -1,9 +1,12 @@
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
-
-import { getLocales } from "@/lib/localization/localization.js"
 import "@/utils/strings.js"
 import "dotenv/config"
+import { initI18n } from "./lib/localization/translate.js"
+
+import en_US_locale from "@/generated/locales/en-US.js"
+import es_ES_locale from "@/generated/locales/es-ES.js"
+import fr_locale from "@/generated/locales/fr.js"
 
 
 if (process.env["NODE_ENV"] && process.env.NODE_ENV === 'development') {
@@ -21,4 +24,19 @@ else {
 startClient()
 
 // load locales
-getLocales()
+
+declare module "./lib/localization/translations.js" {
+	interface Register {
+		translations: typeof en_US_locale
+	}
+}
+
+export const { t } = initI18n({
+	locale: 'en-US',
+	fallbackLocale: 'en-US',
+	translations: {
+		'en-US': en_US_locale,
+		'es-ES': es_ES_locale,
+		'fr': fr_locale
+	}
+})

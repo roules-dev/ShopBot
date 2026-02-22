@@ -1,4 +1,4 @@
-import { PrettyLog } from '@//lib/pretty-log.js'
+import { PrettyLog } from '@/lib/pretty-log.js'
 import { defaultLocale } from '@/lib/localization/localization.js'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 

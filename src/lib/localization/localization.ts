@@ -1,18 +1,19 @@
-import { PrettyLog } from "@//lib/pretty-log.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
 import '@/utils/strings.js'
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js"
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import en_US_locale from '@/../locales/en-US.json' with { type: 'json' }
+import en_US_locale from "@/generated/locales/en-US.js"
+
 import { EVENTS } from "@/middleware.js"
+import { RegisteredTranslations } from "./translate.js"
 
 
 const DEFAULT_LOCALE_CODE = 'en-US'
 export const defaultLocale = en_US_locale
-export type RegisteredTranslations = typeof defaultLocale
-
+// export type RegisteredTranslations = typeof defaultLocale
 
 
 // absolute path from the project root to the locales folder

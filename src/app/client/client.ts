@@ -1,6 +1,5 @@
 import config from "@/../config/config.json" with { type: "json" }
-import { PrettyLog } from "@//lib/pretty-log.js"
-import { RegisteredTranslations } from "@/lib/localization/localization.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from "fs/promises"
 import path from "path"
@@ -20,7 +19,6 @@ interface Command {
 declare module "discord.js" {
     export interface Client {
         commands: Collection<string, Command>
-        locale: RegisteredTranslations
     }
 }
 

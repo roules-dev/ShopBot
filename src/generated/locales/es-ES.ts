@@ -1,0 +1,652 @@
+// AUTO-GENERATED FILE — DO NOT EDIT
+export const locale = {
+    "errorMessages": {
+        "default": "Ha ocurrido un error al ejecutar este comando, por favor inténtalo más tarde.",
+        "invalidSubcommand": "Subcomando inválido",
+        "insufficientParameters": "Parámetros insuficientes",
+        "noShops": "No hay ninguna tienda.\n-# Usa `/shops-manage create` para crear una nueva",
+        "noCurrencies": "No hay ninguna moneda.\n-# Usa `/currencies-manage create` para crear una nueva moneda",
+        "noProducts": "La tienda seleccionada no tiene productos",
+        "notOnlyEmojisInName": "El nombre no puede contener solo emojis personalizados",
+        "shopDoesNotExist": "La tienda no existe",
+        "shopAlreadyExists": "La tienda ya existe",
+        "invalidPosition": "Posición inválida",
+        "currencyDoesNotExist": "La moneda no existe",
+        "currencyAlreadyExists": "La moneda ya existe",
+        "productDoesNotExist": "El producto no existe",
+        "accountDoesNotExist": "La cuenta no existe",
+        "invalidSettingType": "El tipo de configuración proporcionado es inválido",
+        "duplicateSettingName": "El nombre de la configuración ya existe"
+    },
+    "commands": {
+        "account": {
+            "name": "cuenta",
+            "description": "Mostrar tu cuenta"
+        },
+        "accounts-manage": {
+            "name": "gestionar-cuentas",
+            "description": "Gestionar las cuentas de los usuarios",
+            "options": {
+                "view-account": {
+                    "name": "ver-cuenta",
+                    "description": "Ver la cuenta de un usuario",
+                    "options": {
+                        "target": {
+                            "name": "objetivo",
+                            "description": "El usuario cuya cuenta quieres ver"
+                        }
+                    }
+                },
+                "give": {
+                    "name": "dar",
+                    "description": "Dar moneda a un usuario",
+                    "options": {
+                        "target": {
+                            "name": "objetivo",
+                            "description": "El usuario al que quieres dar moneda"
+                        },
+                        "amount": {
+                            "name": "cantidad",
+                            "description": "La cantidad de moneda a dar"
+                        }
+                    }
+                },
+                "bulk-give": {
+                    "name": "dar-grupo",
+                    "description": "Dar moneda a todos los usuarios con un rol específico",
+                    "options": {
+                        "role": {
+                            "name": "rol",
+                            "description": "El rol de los usuarios a los que quieres dar moneda"
+                        },
+                        "amount": {
+                            "name": "cantidad",
+                            "description": "La cantidad de moneda a dar a cada usuario"
+                        }
+                    }
+                },
+                "take": {
+                    "name": "quitar",
+                    "description": "Quitar moneda a un usuario",
+                    "options": {
+                        "target": {
+                            "name": "objetivo",
+                            "description": "El usuario al que quieres quitar moneda"
+                        },
+                        "amount": {
+                            "name": "cantidad",
+                            "description": "La cantidad de moneda a quitar. Si quieres quitarlo todo, podrás hacerlo más tarde."
+                        }
+                    }
+                }
+            }
+        },
+        "currencies-manage": {
+            "name": "gestionar-monedas",
+            "description": "Gestionar tus monedas",
+            "options": {
+                "create": {
+                    "name": "crear",
+                    "description": "Crear una nueva moneda",
+                    "options": {
+                        "name": {
+                            "name": "nombre",
+                            "description": "El nombre de la moneda"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "El emoji de la moneda (opcional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "eliminar",
+                    "description": "Eliminar la moneda seleccionada"
+                },
+                "edit": {
+                    "name": "modificar",
+                    "description": "Modificar una moneda",
+                    "options": {
+                        "name": {
+                            "name": "nombre",
+                            "description": "Cambiar el nombre. Seleccionarás la moneda más tarde",
+                            "options": {
+                                "new-name": {
+                                    "name": "nuevo-nombre",
+                                    "description": "El nuevo nombre de la moneda"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Cambiar el emoji. Seleccionarás la moneda más tarde",
+                            "options": {
+                                "new-emoji": {
+                                    "name": "nuevo-emoji",
+                                    "description": "El nuevo emoji de la moneda (si solo quieres eliminarlo, escribe cualquier cosa)"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "products-manage": {
+            "name": "gestionar-productos",
+            "description": "Gestionar tus productos",
+            "options": {
+                "add": {
+                    "name": "agregar",
+                    "description": "Agregar un nuevo producto",
+                    "options": {
+                        "name": {
+                            "name": "nombre",
+                            "description": "El nombre del producto"
+                        },
+                        "price": {
+                            "name": "precio",
+                            "description": "El precio del producto"
+                        },
+                        "description": {
+                            "name": "descripcion",
+                            "description": "La descripción del producto (opcional)"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "El emoji del producto (opcional)"
+                        },
+                        "amount": {
+                            "name": "cantidad",
+                            "description": "La cantidad del producto (opcional)"
+                        },
+                        "action": {
+                            "name": "accion",
+                            "description": "La acción del producto (opcional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "eliminar",
+                    "description": "Eliminar un producto"
+                },
+                "edit": {
+                    "name": "modificar",
+                    "description": "Modificar un producto",
+                    "options": {
+                        "name": {
+                            "name": "nombre",
+                            "description": "Cambiar el nombre. Seleccionarás el producto más tarde",
+                            "options": {
+                                "new-name": {
+                                    "name": "nuevo-nombre",
+                                    "description": "El nuevo nombre del producto"
+                                }
+                            }
+                        },
+                        "description": {
+                            "name": "descripcion",
+                            "description": "Cambiar la descripción. Seleccionarás el producto más tarde",
+                            "options": {
+                                "new-description": {
+                                    "name": "nueva-descripcion",
+                                    "description": "La nueva descripción del producto"
+                                }
+                            }
+                        },
+                        "price": {
+                            "name": "precio",
+                            "description": "Cambiar el precio. Seleccionarás el producto más tarde",
+                            "options": {
+                                "new-price": {
+                                    "name": "nuevo-precio",
+                                    "description": "El nuevo precio del producto"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Cambiar el emoji. Seleccionarás el producto más tarde",
+                            "options": {
+                                "new-emoji": {
+                                    "name": "nuevo-emoji",
+                                    "description": "El nuevo emoji del producto (si solo quieres eliminarlo, escribe cualquier cosa)"
+                                }
+                            }
+                        },
+                        "amount": {
+                            "name": "cantidad",
+                            "description": "Cambiar la cantidad. Seleccionarás el producto más tarde",
+                            "options": {
+                                "new-amount": {
+                                    "name": "nueva-cantidad",
+                                    "description": "La nueva cantidad del producto (-1 para ilimitado)"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "settings": {
+            "name": "configuraciones",
+            "description": "Ver y modificar tus configuraciones"
+        },
+        "shop": {
+            "name": "tienda",
+            "description": "Mostrar las tiendas y comprar productos"
+        },
+        "shops-manage": {
+            "name": "gestionar-tiendas",
+            "description": "Gestionar tus tiendas",
+            "options": {
+                "create": {
+                    "name": "crear",
+                    "description": "Crear una nueva tienda",
+                    "options": {
+                        "name": {
+                            "name": "nombre",
+                            "description": "El nombre de la tienda"
+                        },
+                        "description": {
+                            "name": "descripcion",
+                            "description": "La descripción de la tienda (opcional)"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "El emoji de la tienda (opcional)"
+                        },
+                        "reserved-to-role": {
+                            "name": "reservada-a-rol",
+                            "description": "Especifica si la tienda debe estar reservada a un rol (opcional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "eliminar",
+                    "description": "Eliminar la tienda seleccionada"
+                },
+                "reorder": {
+                    "name": "reordenar",
+                    "description": "Reorganizar las tiendas"
+                },
+                "create-discount-code": {
+                    "name": "crear-codigo-descuento",
+                    "description": "Crear un código de descuento",
+                    "options": {
+                        "code": {
+                            "name": "codigo",
+                            "description": "El código de descuento"
+                        },
+                        "amount": {
+                            "name": "cantidad",
+                            "description": "El porcentaje de descuento"
+                        }
+                    }
+                },
+                "remove-discount-code": {
+                    "name": "eliminar-codigo-descuento",
+                    "description": "Eliminar un código de descuento"
+                },
+                "edit": {
+                    "name": "modificar",
+                    "description": "Modificar una tienda",
+                    "options": {
+                        "name": {
+                            "name": "nombre",
+                            "description": "Cambiar el nombre. Seleccionarás la tienda más tarde",
+                            "options": {
+                                "new-name": {
+                                    "name": "nuevo-nombre",
+                                    "description": "El nuevo nombre de la tienda"
+                                }
+                            }
+                        },
+                        "description": {
+                            "name": "descripcion",
+                            "description": "Cambiar la descripción. Seleccionarás la tienda más tarde",
+                            "options": {
+                                "new-description": {
+                                    "name": "nueva-descripcion",
+                                    "description": "La nueva descripción de la tienda"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Cambiar el emoji. Seleccionarás la tienda más tarde",
+                            "options": {
+                                "new-emoji": {
+                                    "name": "nuevo-emoji",
+                                    "description": "El nuevo emoji de la tienda"
+                                }
+                            }
+                        },
+                        "reserved-to-role": {
+                            "name": "reservada-a-rol",
+                            "description": "Cambiar el rol al que está reservada la tienda. Seleccionarás la tienda más tarde",
+                            "options": {
+                                "new-role": {
+                                    "name": "nuevo-rol",
+                                    "description": "El nuevo rol al que estará reservada la tienda. Déjalo vacío para eliminarlo"
+                                }
+                            }
+                        },
+                        "currency": {
+                            "name": "moneda",
+                            "description": "Cambiar la moneda. Seleccionarás la tienda más tarde"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "defaultComponents": {
+        "selectCurrency": "Seleccionar una moneda",
+        "selectShop": "Seleccionar una tienda",
+        "selectRole": "Seleccionar un rol",
+        "selectProduct": "Seleccionar un producto",
+        "changeShopButton": "Cambiar de tienda",
+        "submitShopButton": "Enviar la tienda",
+        "unset": "No definido"
+    },
+    "extendedComponents": {
+        "confirmationModal": {
+            "title": "⚠️ ¿Estás seguro?",
+            "cantBeUndone": "Esta acción es irreversible",
+            "selectYes": "Selecciona 'Sí' para confirmar",
+            "yes": "Sí",
+            "no": "No"
+        },
+        "editModal": {
+            "title": "Modificar {edit}",
+            "new": "Nuevo {edit}"
+        }
+    },
+    "userInterfaces": {
+        "settings": {
+            "embeds": {
+                "settings": {
+                    "title": "⚙️ Configuraciones",
+                    "description": "Puedes modificar tus configuraciones aquí",
+                    "unsetSetting": "No definido"
+                }
+            },
+            "components": {
+                "selectSetting": "Modificar una configuración",
+                "defaultEditor": {
+                    "title": "Modificar {name}"
+                },
+                "toggleEditor": {
+                    "toggleOn": "Activar",
+                    "toggleOff": "Desactivar"
+                },
+                "selector": {
+                    "title": "Seleccionar {type} para {name}",
+                    "types": {
+                        "role": "un rol",
+                        "user": "un usuario",
+                        "channel": "un canal",
+                        "option": "una opción"
+                    }
+                },
+                "resetButton": "Reiniciar {name}",
+                "backButton": "Regresar"
+            }
+        },
+        "account": {
+            "embeds": {
+                "account": {
+                    "title": "💰 Cuenta de _{user}_"
+                },
+                "inventory": {
+                    "title": "💼 Inventario de _{user}_"
+                }
+            },
+            "components": {
+                "showAccountButton": "Mostrar la cuenta",
+                "showInventoryButton": "Mostrar el inventario"
+            },
+            "errors": {
+                "accountEmpty": "❌ La cuenta está vacía",
+                "inventoryEmpty": "❌ El inventario está vacío"
+            }
+        },
+        "shop": {
+            "embeds": {
+                "shop": {
+                    "products": "Productos:",
+                    "reservedTo": "Reservado para {role}",
+                    "noProduct": "No hay productos disponibles aquí",
+                    "xProductsLeft": "restante: {x}",
+                    "outOfStock": "Agotado",
+                    "price": "Precio:"
+                }
+            },
+            "components": {
+                "buyButton": "Comprar un producto",
+                "showAccountButton": "Mi cuenta"
+            }
+        },
+        "buy": {
+            "messages": {
+                "default": "Comprar {product} de {shop}",
+                "discountCode": "Código de descuento:",
+                "price": "por {price}",
+                "success": "Has comprado {product} con éxito en {shop} por {price}"
+            },
+            "errorMessages": {
+                "cantBuyHere": "No puedes comprar nada en esta tienda.",
+                "notEnoughMoney": "No tienes suficiente {currency} para comprar este producto.",
+                "productNoLongerAvailable": "Este producto ya no está disponible."
+            },
+            "components": {
+                "buyButton": "Comprar",
+                "discountCodeButton": "Tengo un código de descuento",
+                "setDiscountCodeModal": {
+                    "title": "Establecer el código de descuento",
+                    "input": "Código de descuento"
+                }
+            },
+            "actionProducts": {
+                "giveRole": {
+                    "message": "Has recibido el rol {role}"
+                },
+                "giveCurrency": {
+                    "message": "Has recibido **{amount} {currency}**"
+                }
+            }
+        }
+    },
+    "userFlows": {
+        "accountGive": {
+            "errorMessages": {
+                "cantGiveMoney": "No se puede dar dinero."
+            },
+            "messages": {
+                "default": "Dar {amount} {currency} a {user}",
+                "bulkGive": "Dar {amount} {currency} a todos los usuarios con el rol {role}",
+                "success": "Has dado con éxito {amount} {currency} a {user}",
+                "bulkGiveSuccess": "Has dado con éxito {amount} {currency} a todos los usuarios con el rol {role}"
+            },
+            "components": {
+                "submitButton": "Validar"
+            }
+        },
+        "accountTake": {
+            "errorMessages": {
+                "cantTakeMoney": "No se puede quitar dinero."
+            },
+            "messages": {
+                "default": "Quitar {amount} {currency} de {user}",
+                "successfullyEmptied": "Has vaciado con éxito la cuenta de {user}",
+                "success": "Has quitado con éxito {amount} {currency} de {user}"
+            },
+            "components": {
+                "submitButton": "Validar",
+                "takeAllButton": "Quitar todo",
+                "emptyAccountButton": "Vaciar la cuenta"
+            }
+        },
+        "currencyCreate": {
+            "messages": {
+                "success": "Has creado con éxito la moneda {currency}. \n-# Usa `/currencies-manage remove` para eliminarla"
+            }
+        },
+        "currencyRemove": {
+            "errorMessages": {
+                "cantRemoveCurrency": "⚠️ ¡No se puede eliminar {currency}! Las siguientes tiendas todavía la usan: {shops}.",
+                "changeShopsCurrencies": "Por favor elimínalas (`/shops-manage remove`) o cambia su moneda (`/shops-manage change-currency`) antes de eliminar la moneda."
+            },
+            "messages": {
+                "default": "Eliminar {currency}, ⚠️ __**esto también la eliminará de las cuentas de los usuarios**__",
+                "success": "Has eliminado con éxito la moneda {currency}"
+            },
+            "components": {
+                "submitButton": "Eliminar la moneda"
+            }
+        },
+        "currencyEdit": {
+            "messages": {
+                "default": "Modificar {currency}.\n**Nuevo {option}**: {value}",
+                "success": "Has modificado con éxito la moneda {currency}. \nNuevo {option}: {value}"
+            },
+            "components": {
+                "submitButton": "Modificar la moneda"
+            },
+            "editOptions": {
+                "name": "nombre",
+                "emoji": "emoji"
+            }
+        },
+        "productAdd": {
+            "messages": {
+                "default": "Agregar un producto: {product} por {price} {currency} en {shop}{description}",
+                "description": "Descripción:",
+                "success": "Has agregado con éxito el producto {product} a la tienda {shop}",
+                "withAction": "con la acción {action}",
+                "action": "Acción:",
+                "actions": {
+                    "giveRole": "dar el rol {role}",
+                    "giveCurrency": "dar {amount} {currency}"
+                }
+            },
+            "components": {
+                "submitButton": "Agregar el producto",
+                "setAmountButton": "Establecer la cantidad",
+                "editAmountModalTitle": "Cantidad"
+            }
+        },
+        "productRemove": {
+            "messages": {
+                "shopSelectStage": "Eliminar un producto de: {shop}",
+                "productSelectStage": "Eliminar el producto: {product} de {shop}",
+                "success": "Has eliminado con éxito el producto {product} de {shop}"
+            },
+            "components": {
+                "submitButton": "Eliminar el producto"
+            }
+        },
+        "productEdit": {
+            "errorMessages": {
+                "noShopsWithProducts": "No hay ninguna tienda con productos.\n-# Usa `/shops-manage create` para crear una tienda y `/products-manage add` para agregar productos"
+            },
+            "messages": {
+                "shopSelectStage": "Modificar un producto de {shop}.\nNuevo {option}: {value}",
+                "productSelectStage": "Modificar el producto: {product} de {shop}.\nNuevo {option}: {value}",
+                "success": "Has modificado con éxito el producto {product} de {shop}.\nNuevo {option}: {value}",
+                "unlimited": "ilimitado"
+            },
+            "components": {
+                "submitButton": "Modificar el producto"
+            },
+            "editOptions": {
+                "name": "nombre",
+                "emoji": "emoji",
+                "price": "precio",
+                "description": "descripción",
+                "amount": "cantidad"
+            }
+        },
+        "shopCreate": {
+            "errorMessages": {
+                "cantCreateShop": "No se puede crear una nueva tienda"
+            },
+            "messages": {
+                "default": "Crear la tienda {shop} con la moneda {currency}",
+                "success": "Has creado con éxito la tienda {shop} con la moneda {currency}.\n-# Usa `/shops-manage remove` para eliminarla"
+            },
+            "components": {
+                "submitButton": "Crear la tienda",
+                "changeShopNameButton": "Cambiar el nombre",
+                "changeShopEmojiButton": "Cambiar el emoji",
+                "editNameModalTitle": "Nombre de la tienda",
+                "editEmojiModalTitle": "Emoji de la tienda"
+            }
+        },
+        "shopRemove": {
+            "messages": {
+                "default": "Eliminar la tienda {shop}.\n⚠️ __**Esto también eliminará todos los productos de la tienda**__",
+                "success": "Has eliminado con éxito la tienda {shop}"
+            },
+            "components": {
+                "submitButton": "Eliminar la tienda"
+            }
+        },
+        "shopReorder": {
+            "messages": {
+                "default": "Establecer la posición de {shop} a {position}",
+                "success": "Has colocado {shop} en la posición {position} con éxito"
+            },
+            "components": {
+                "submitNewPositionButton": "Validar la posición",
+                "selectPosition": "Seleccionar la posición"
+            }
+        },
+        "shopEdit": {
+            "messages": {
+                "default": "Modificar {shop}.\nNuevo {option}: {value}",
+                "success": "Has modificado con éxito la tienda {shop}.\nNuevo {option}: {value}"
+            },
+            "components": {
+                "submitButton": "Modificar la tienda"
+            },
+            "editOptions": {
+                "name": "nombre",
+                "emoji": "emoji",
+                "description": "descripción",
+                "reserved-to-role": "reservada al rol"
+            }
+        },
+        "shopChangeCurrency": {
+            "messages": {
+                "shopSelectStage": "Cambiar la moneda de {shop}",
+                "currencySelectStage": "Establecer la moneda de {shop} a {currency}",
+                "success": "Has cambiado la moneda de {shop} a {currency} con éxito"
+            },
+            "components": {
+                "submitButton": "Cambiar la moneda"
+            }
+        },
+        "discountCodeCreate": {
+            "messages": {
+                "default": "Crear un código de descuento para la tienda {shop}.\n**Código**: {code}\nCantidad: {amount}% de descuento",
+                "success": "Has creado con éxito el código de descuento {code} para {shop} con {amount}% de descuento"
+            },
+            "components": {
+                "submitButton": "Crear el código de descuento"
+            }
+        },
+        "discountCodeRemove": {
+            "messages": {
+                "shopSelectStage": "Eliminar un código de descuento de {shop}",
+                "codeSelectStage": "Eliminar el código de descuento {code} de {shop}",
+                "success": "Has eliminado con éxito el código de descuento {code} de {shop}"
+            },
+            "components": {
+                "discountCodeSelect": "Seleccionar un código de descuento",
+                "submitButton": "Eliminar el código de descuento"
+            }
+        }
+    }
+} as const
+export default locale
