@@ -1,15 +1,4 @@
 # ShopBot 2
-
-### Contents
-
-- [👋 Introduction](#introduction)
-- [🌟 Features](#-features)
-- [🚀 How to use](#-how-to-use)
-- [📝 Documentation](#-documentation)
-- [📸 Screenshots](#-screenshots)
-- [❓ Q&A](#-qa)
-- [⚖️ Legal Stuff](#%EF%B8%8F-legal-information)
-
 ## Introduction
 
 ### Hi 👋 <br>
