@@ -1,9 +1,10 @@
 {
-  "extends": "./tsconfig.json",
-  "exclude": [
-    "src/test.ts"
-  ],
-  "compilerOptions": {
-    "sourceMap": false
-  }
+    "extends": "./tsconfig.json",
+    "exclude": [
+        "src/test.ts"
+    ],
+    "compilerOptions": {
+        "outDir": "./build/dist",
+        "sourceMap": false
+    }
 }

@@ -1,4 +1,4 @@
-// AUTO-GENERATED FILE — DO NOT EDIT
+//! AUTO-GENERATED FILE — DO NOT EDIT
 export const locale = {
     "errorMessages": {
         "default": "Ha ocurrido un error al ejecutar este comando, por favor inténtalo más tarde.",
