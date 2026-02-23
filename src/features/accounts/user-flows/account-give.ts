@@ -1,6 +1,6 @@
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { logToDiscord, replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -106,8 +106,11 @@ export class AccountGiveFlow extends UserFlow {
                 user: userMention(this.target.id) 
             }
         )
-        // TODO : log to log channel
-        //? user suggestion #18
+
+        if (interaction.guild) {
+            logToDiscord(interaction.guild, `${interaction.member} gave ${this.amount} ${getCurrencyName(this.selectedCurrency.id)} to ${userMention(this.target.id)}`)
+        }
+
         return await updateAsSuccessMessage(interaction, successMessage)
     }
 }
@@ -172,9 +175,10 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
             }
         )
 
-        // TODO : log to log channel
-        //? user suggestion #18
-
+        if (interaction.guild) {
+            logToDiscord(interaction.guild, `${interaction.member} gave ${this.amount} ${getCurrencyName(this.selectedCurrency.id)} to ${roleMention(this.targetRole.id)}`)
+        }
+        
         return await updateAsSuccessMessage(interaction, message)
     }
 }

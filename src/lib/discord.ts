@@ -1,7 +1,7 @@
 import { getSettings } from "@/features/settings/database/settings-handler.js"
 import { t } from "@/lib/localization.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { MessageFlags, TextChannel } from "discord.js"
+import { Guild, MessageFlags, TextChannel } from "discord.js"
 import { PrettyLog } from "./pretty-log.js"
 
 
@@ -43,13 +43,13 @@ function getSuccessMessage(successMessage: string) {
     return `✅ ${successMessage}`
 }
 
-export async function logToDiscord(interaction: UserInterfaceInteraction, message: string) {
+export async function logToDiscord(guild: Guild, message: string) {
     PrettyLog.info(`Logged to Discord: ${message}`)
     
     try {
         const logChannelSetting = getSettings().get('logChannelId')
         if (!logChannelSetting?.value || logChannelSetting.type !== 'channelId') return
-        const logChannel = await interaction.guild?.channels.fetch(logChannelSetting.value)
+        const logChannel = await guild.channels.fetch(logChannelSetting.value)
         if (!(logChannel instanceof TextChannel)) return
 
         await logChannel.send(message)

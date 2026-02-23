@@ -1,6 +1,6 @@
 import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { logToDiscord, replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -149,6 +149,10 @@ export class AccountTakeFlow extends UserFlow {
                 user: userMention(this.target!.id) 
             }
         )
+
+        if (interaction.guild) {
+            logToDiscord(interaction.guild, `${interaction.member} took ${this.amount} ${getCurrencyName(this.selectedCurrency.id)} from ${userMention(this.target!.id)}`)
+        }
 
         return await updateAsSuccessMessage(interaction, successMessage)
 

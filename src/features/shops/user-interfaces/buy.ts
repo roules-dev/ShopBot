@@ -250,9 +250,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         await updateAsSuccessMessage(interaction, `${message}${appendixString}`)
 
-        logToDiscord(interaction, 
-            `${interaction.member} purchased ${productName} from ${shopName} for ${priceString} with discount code ${discountCodeString}. Action: ${product.action?.type || 'none'} ${appendixString}`
-        )
+        if (interaction.guild) {
+            logToDiscord(interaction.guild, 
+                `${interaction.member} purchased ${productName} from ${shopName} for ${priceString} with discount code ${discountCodeString}. Action: ${product.action?.type || 'none'} ${appendixString}`
+            )
+        }
     }
 
     private isNotAllowedToBuy(interaction: UserInterfaceInteraction) {
