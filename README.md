@@ -258,7 +258,7 @@ And you can do [many more things](#-documentation)... Create discount codes, add
 
 ### Multi language support ?
 
-Implemented ! It is community driven, the currently available languages are : English, French. <br>
+Implemented ! It is community driven, the currently available languages are : English, French, Spanish. <br>
 If your language is not mentionned here, you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
 
 ### New features ?
