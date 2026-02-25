@@ -88,14 +88,8 @@ export abstract class Database<IdType extends string, DataType> {
     
             return ok(true)
         } catch (e) {
-            // if (e instanceof Error) return err(e)
-            // return err(new Error(`Unknown error while saving database ${this.path}`))
-            if (e !== null && typeof e === "object" && "message" in e && typeof e.message === "string") {
-                return err({ message: e.message })
-            }
-
-            return err({ message: `Unknown error while saving database ${this.path}`})
-
+            if (e instanceof Error) return err(e)
+            return err(new Error(`Unknown error while saving database ${this.path}`))
         }
     }
 }

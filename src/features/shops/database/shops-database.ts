@@ -21,13 +21,6 @@ export function getShopId(shopName: string): string | undefined {
     })
     return shopId
 }
-// export function getShopName(shopId: string | undefined): string | undefined {
-//     if (!shopId) return undefined
-//     const shop = getShops().get(shopId)
-//     if (!shop) return undefined
-
-//     return `${shop.emoji != '' ? `${shop.emoji} ` : ''}${shop.name}`
-// }
 
 export async function createShop(shopName: string, description: string, currencyId: string, emoji: string, reservedTo?: Snowflake) {
     if (getShopId(shopName) != undefined) return err(new DatabaseError("ShopAlreadyExists"))

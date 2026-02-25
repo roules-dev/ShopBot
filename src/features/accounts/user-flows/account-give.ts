@@ -20,7 +20,6 @@ export class AccountGiveFlow extends UserFlow {
     protected amount: number | null = null
 
     protected locale = "userFlows.accountGive" as const
-    // protected locale = getLocale().userFlows.accountGive
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const currencies = getCurrencies()

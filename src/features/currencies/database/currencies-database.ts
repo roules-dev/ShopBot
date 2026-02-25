@@ -20,15 +20,6 @@ export function getCurrencyId(currencyName: string): string | undefined {
     return currencyId 
 }
 
-// export function getCurrencyName(currencyId: string | undefined): string | undefined {
-//     if (!currencyId) return undefined
-
-//     const currency = getCurrencies().get(currencyId)
-//     if (!currency) return undefined
-
-//     return `${currency.emoji != '' ? `${currency.emoji} ` : ''}${currency.name}`    
-// }
-
 export async function createCurrency(currencyName: string, emoji: string) {
     if (getCurrencyId(currencyName) != undefined) return err(new DatabaseError("CurrencyAlreadyExists"))
     

@@ -55,6 +55,10 @@ export function isProductActionType(
 }
 
 
+
+// Product will become Item, independant of shops
+// so no more shopId
+
 // Price system will change :
 // it'll be a map of currencyId => price (number)
 
