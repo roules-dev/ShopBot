@@ -1,7 +1,7 @@
 import { updateAsErrorMessage, replyErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
-import { ExtendedComponent } from "@/ui-components/extended-components.js"
+import { ComponentSeparator, ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ButtonBuilder, StringSelectMenuBuilder, RoleSelectMenuBuilder, ChannelSelectMenuBuilder, UserSelectMenuBuilder, ComponentType, ActionRowBuilder, InteractionEditReplyOptions, InteractionCallbackResponse, MessageFlags, EmbedBuilder, APIEmbedField, ButtonStyle, ButtonInteraction } from "discord.js"
 
 
@@ -15,7 +15,7 @@ const selectMenuComponents = [ComponentType.MentionableSelect, ComponentType.Str
 
 export abstract class UserInterface {
     public abstract id: string
-    protected abstract components: Map<string, ExtendedComponent>
+    protected abstract components: Map<string, ExtendedComponent | ComponentSeparator>
 
     protected abstract getMessage(): string 
     protected abstract updateComponents(): unknown
@@ -27,6 +27,11 @@ export abstract class UserInterface {
         const paginationRow = new ActionRowBuilder<UserInterfaceComponentBuilder>()
 
         this.components.forEach((component) => {
+            if (component instanceof ComponentSeparator) {
+                rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>())
+                return
+            }
+
             if (component.customId.endsWith('page')) {
                 paginationRow.addComponents(component.getComponent())
             }
@@ -87,18 +92,21 @@ export abstract class UserInterface {
 
     protected createComponentsCollectors(response: InteractionCallbackResponse): void {
         this.components.forEach((component) => {
+            if (component instanceof ComponentSeparator) return
             component.createCollector(response)
         })
     }
 
     protected destroyComponentsCollectors(): void {
         this.components.forEach((component) => {
+            if (component instanceof ComponentSeparator) return
             component.destroyCollector()
         })
     }
 
     protected disableComponents(): void {
         this.components.forEach((component) => {
+            if (component instanceof ComponentSeparator) return
             component.toggle(false)
         })
     }

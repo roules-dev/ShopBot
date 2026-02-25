@@ -151,7 +151,7 @@ export class AccountTakeFlow extends UserFlow {
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} took ${this.amount} ${getCurrencyName(this.selectedCurrency.id)} from ${userMention(this.target!.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} took **${this.amount} ${getCurrencyName(this.selectedCurrency.id)}** from ${userMention(this.target!.id)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)

@@ -1,6 +1,6 @@
 {
     "name": "shopbot",
-    "version": "2.4.1",
+    "version": "3.0.0",
     "author": "roules-dev",
     "funding": "https://ko-fi.com/roules_",
     "type": "module",
@@ -10,7 +10,7 @@
         "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
         "clean:build-dist": "(rd /s /q \"build/dist\" || rm -rf \"build/dist\") && mkdir \"build/dist\"",
         "build:clean": "npm run clean:dist --silent && npm run build",
-        "build:prod": "npm run clean:build-dist --silent && tsc -p tsconfig.build.json && node ./build.mjs",
+        "build:prod": "npm run generate:locales && npm run clean:build-dist --silent && tsc -p tsconfig.build.json && node ./scripts/build.mjs",
         "dev": "nodemon src/index.ts",
         "start": "npm run build && npm run serve",
         "serve": "node --enable-source-maps dist/index.js",
@@ -19,7 +19,8 @@
         "setup": "npm i --omit=dev --silent && node ./dist/tools/setup-helper.js",
         "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
         "verify-translation": "node ./dist/tools/verify-translation.js",
-        "generate:locales": "node ./dist/tools/generate-locales.js"
+        "generate:locales": "node ./scripts/generate-locales.mjs",
+        "prebuild": "npm run generate:locales"
     },
     "license": "GPL-3.0",
     "devDependencies": {

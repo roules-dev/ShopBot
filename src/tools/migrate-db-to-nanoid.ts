@@ -17,8 +17,6 @@ const save = async (path: string, content: object): Promise<boolean> => {
     }
 }
 
-
-
 const dbs = [
     {
         path: 'data/currencies.json',

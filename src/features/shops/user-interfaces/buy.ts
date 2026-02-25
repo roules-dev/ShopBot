@@ -4,8 +4,8 @@ import { getCurrencyName } from "@/features/currencies/database/currencies-datab
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
-import { ExtendedComponent } from "@/ui-components/extended-components.js"
-import { showSingleInputModal } from "@/ui-components/modals.js"
+import { ComponentSeparator, ExtendedComponent } from "@/ui-components/extended-components.js"
+import { showEditModal, showSingleInputModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { bold, ButtonInteraction, ButtonStyle, GuildMember, roleMention, StringSelectMenuInteraction } from "discord.js"
@@ -13,14 +13,17 @@ import { getProductName, updateProduct } from "../database/products-database.js"
 import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
 import { getShopName } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { objToString } from "@/utils/objects.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
     public override id = 'buy-product-ui'
-    protected override components: Map<string, ExtendedComponent> = new Map()
+    protected override components = new Map()
 
     private selectedShop: Shop
     private selectedProduct: Product | null = null
+
+    private quantity: number = 1
 
     private discountCode?: string = undefined
     private discount: number = 0
@@ -42,10 +45,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const message = t(`${this.locale}.messages.default`, {
             product: bold(getProductName(this.selectedShop.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
+            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : '',
             shop: bold(getShopName(this.selectedShop.id)!),
         })
 
-        return `${message}${priceString}.${discountCodeString}`
+        return `${message} ${priceString}.${discountCodeString}`
     }
 
     protected override initComponents(): void {
@@ -63,15 +67,64 @@ export class BuyProductUserInterface extends MessageUserInterface {
             }
         )
 
-        // TODO : select number of items to buy (modal and/or buttons)
-        //? user suggestion #17
+        const plusButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+plus`,
+                emoji: '➕',
+                style: ButtonStyle.Primary,
+                time: 120_000,
+            },
+            (interaction: ButtonInteraction) => {
+                this.quantity += 1
+                this.updateInteraction(interaction)
+            }
+        )
 
+        const setQuantityButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+set-quantity`,
+                label: t(`${this.locale}.components.setQuantityButton`),
+                emoji: '🔢',
+                style: ButtonStyle.Secondary,
+                time: 120_000,
+            },
+            async (interaction: ButtonInteraction) => {
+                const [modalSubmit, quantityInput] = await showEditModal(
+                    interaction,
+                    {
+                        edit: t(`${this.locale}.components.editQuantityModalTitle`),
+                        previousValue: this.quantity.toString(),
+                        required: true
+                    }
+                )
+
+                const quantity = parseInt(quantityInput)
+                if (isNaN(quantity) || quantity < 1) return this.updateInteraction(modalSubmit)
+                
+                this.quantity = quantity
+                this.updateInteraction(modalSubmit)
+            }
+        )
+
+        const minusButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+minus`,
+                label: '',
+                emoji: '➖',
+                style: ButtonStyle.Primary,
+                time: 120_000,
+            },
+            (interaction: ButtonInteraction) => {
+                this.quantity = Math.max(1, this.quantity - 1)
+                this.updateInteraction(interaction)
+            }
+        )
 
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
                 label: t(`${this.locale}.components.buyButton`),
-                emoji: {name: '✅'},
+                emoji: '✅',
                 style: ButtonStyle.Success,
                 time: 120_000,
             },
@@ -82,7 +135,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             {
                 customId: `${this.id}+discount-code`,
                 label: t(`${this.locale}.components.discountCodeButton`),
-                emoji: {name: '🎁'},
+                emoji: '🎁',
                 style: ButtonStyle.Secondary,
                 time: 120_000,
             },
@@ -90,14 +143,37 @@ export class BuyProductUserInterface extends MessageUserInterface {
         )
 
         this.components.set(selectProductMenu.customId, selectProductMenu)
+        this.components.set(plusButton.customId, plusButton)
+        this.components.set(setQuantityButton.customId, setQuantityButton)
+        this.components.set(minusButton.customId, minusButton)
+        this.components.set('separator', new ComponentSeparator())
         this.components.set(buyButton.customId, buyButton)
         this.components.set(discountCodeButton.customId, discountCodeButton)
     }
 
     protected override updateComponents(): void {
+        const isProductSelected = this.selectedProduct != null 
+        
         const buyButton = this.components.get(`${this.id}+buy`)
         if (buyButton instanceof ExtendedButtonComponent) {
-            buyButton.toggle(this.selectedProduct != null)
+            buyButton.toggle(isProductSelected)
+        }
+
+        const isActionProduct = this.selectedProduct != null && this.selectedProduct.action != undefined
+
+        const minusButton = this.components.get(`${this.id}+minus`)
+        if (minusButton instanceof ExtendedButtonComponent) {
+            minusButton.toggle(isProductSelected && this.quantity > 1 && !isActionProduct)
+        }
+
+        const setQuantityButton = this.components.get(`${this.id}+set-quantity`)
+        if (setQuantityButton instanceof ExtendedButtonComponent) {
+            setQuantityButton.toggle(isProductSelected && !isActionProduct)
+        }
+
+        const plusButton = this.components.get(`${this.id}+plus`)
+        if (plusButton instanceof ExtendedButtonComponent) {
+            plusButton.toggle(isProductSelected && !isActionProduct)
         }
     }
 
@@ -132,7 +208,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const user = await getOrCreateAccount(interaction.user.id)
         
-        const balanceAfterBuy = this.balanceAfterBuy(user, this.selectedProduct, this.selectedShop.currency.id)
+        const balanceAfterBuy = this.balanceAfterBuy(user, this.selectedShop.currency.id)
         if (balanceAfterBuy < 0) {
             return replyErrorMessage(
                 interaction, 
@@ -140,14 +216,13 @@ export class BuyProductUserInterface extends MessageUserInterface {
             )
         }
 
-        const itemStockAfterBuy = this.itemStockAfterBuy(this.selectedProduct, 1)
+        const itemStockAfterBuy = this.itemStockAfterBuy(this.selectedProduct, this.quantity)
         if (itemStockAfterBuy != undefined && itemStockAfterBuy < 0) {
             return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
         }
 
-        if (itemStockAfterBuy != undefined) {
-            updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: itemStockAfterBuy })
-        }
+        updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: itemStockAfterBuy })
+        
 
         const [error] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, balanceAfterBuy)
         if (error) return replyErrorMessage(interaction, error.message)
@@ -155,7 +230,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
 
         const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
-        await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + 1)
+        await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + this.quantity)
 
         await this.printAndLogPurchase(interaction, this.selectedProduct)
     }
@@ -163,8 +238,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private priceString(): string {
         if (!this.selectedProduct) return ''
 
-        const price = this.selectedProduct.price * (1 - this.discount / 100)
-        const priceAsString = price.toFixed(2)
+        const priceAsString = this.getPrice().toFixed(2)
 
         const originalPriceAsString = this.selectedProduct.price.toFixed(2)
         if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${getCurrencyName(this.selectedShop.currency.id)!}**`
@@ -207,7 +281,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
                 actionMessage = t(
                     `${this.locale}.actionProducts.giveCurrency.message`, 
-                    { currency: getCurrencyName(currency)!, amount: bold(`${amount}`) }
+                    { currency: bold(getCurrencyName(currency)!), amount: bold(`${amount}`) }
                 )
 
                 break
@@ -219,19 +293,23 @@ export class BuyProductUserInterface extends MessageUserInterface {
         await this.printAndLogPurchase(interaction, this.selectedProduct, actionMessage)
     }
 
-    private balanceAfterBuy(user: Account, selectedProduct: Product, currencyId: string) {
+    private balanceAfterBuy(user: Account, currencyId: string) {
         const userCurrencyAmount = user.currencies.get(currencyId)?.amount || 0
-        const price = selectedProduct.price * (1 - this.discount / 100)
 
-        return userCurrencyAmount - price
+        return userCurrencyAmount - this.getPrice()
     }
 
-    private itemStockAfterBuy(product: Product, amountToBuy: number) {
+    private itemStockAfterBuy(product: Product, quantity: number) {
         if (product.amount == undefined) {
             return undefined
         }
 
-        return product.amount - amountToBuy
+        return product.amount - quantity
+    }
+
+    private getPrice() {
+        if (!this.selectedProduct) return 0
+        return this.quantity * this.selectedProduct.price * (1 - this.discount / 100)
     }
 
     private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product, appendix?: string) {
@@ -243,6 +321,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const message = t(`${this.locale}.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
+            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : '',
             price: priceString
         })
 
@@ -252,7 +331,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (interaction.guild) {
             logToDiscord(interaction.guild, 
-                `${interaction.member} purchased ${productName} from ${shopName} for ${priceString} with discount code ${discountCodeString}. Action: ${product.action?.type || 'none'} ${appendixString}`
+                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${objToString(product.action.options)})` : 'none'}`
             )
         }
     }

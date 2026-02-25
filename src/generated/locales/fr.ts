@@ -429,10 +429,10 @@ export const locale = {
         },
         "buy": {
             "messages": {
-                "default": "Acheter {product} de {shop}",
+                "default": "Acheter {quantity}{product} de {shop}",
                 "discountCode": "Code de réduction :",
                 "price": "pour {price}",
-                "success": "Vous avez acheté {product} avec succès dans {shop} pour {price}"
+                "success": "Vous avez acheté {quantity}{product} avec succès dans {shop} pour {price}"
             },
             "errorMessages": {
                 "cantBuyHere": "Vous ne pouvez rien acheter dans cette boutique.",
@@ -452,7 +452,7 @@ export const locale = {
                     "message": "Vous avez reçu le rôle {role}"
                 },
                 "giveCurrency": {
-                    "message": "Vous avez reçu **{amount} {currency}**"
+                    "message": "Vous avez reçu {amount} {currency}"
                 }
             }
         }

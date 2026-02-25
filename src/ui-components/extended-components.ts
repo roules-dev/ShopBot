@@ -57,3 +57,6 @@ export abstract class ExtendedComponent {
     }
 } 
 
+export class ComponentSeparator {
+    
+}

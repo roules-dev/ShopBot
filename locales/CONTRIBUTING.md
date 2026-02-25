@@ -9,8 +9,8 @@ Your contributions make a huge difference. This guide explains how to add or imp
 2. **Clone** your fork locally:
 
    ```bash
-   git clone https://github.com/YOUR-USERNAME/PROJECT-NAME.git
-   cd PROJECT-NAME
+   git clone https://github.com/roules-dev/ShopBot.git
+   cd ShopBot
    ```
 
 3. **Create a new branch** for your translation:
@@ -40,7 +40,7 @@ For example:
 └── ...
 ```
 
-If your language doesn’t exist yet, create a new file named after the [Discord locales codes](https://discord.com/developers/docs/reference#locales):
+If your language doesn’t exist yet, create a new file named after the [Discord locales codes](https://discord.com/developers/docs/reference#locales)
 
 > Example: `de.json` for German, `ja.json` for Japanese, etc.
 
@@ -89,37 +89,41 @@ To add your translation, **keep the same keys** and replace the English text wit
 
 ## 🧪 Testing Your Translation
 
+### 🔎 Translation completeness check 
 Firstly, you should make sure your not missing any translations.
 For this, you can use the utility command 
 
 ```bash
-npm run verify-translation <language-code>
+npm run verify-translation "<language-code>"
 ```
 
-It will print any missing key.
+It will print any missing key, make sure to add them, otherwise the message will fall back to english.
+
+### 👀 Verify translations in context
 
 Then you should run the bot locally to make sure everything looks correct.
 It'll also make sure that the name and descriptions of the commands follow discord's [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
-To register commands, run the following command:
+Firstly, you must deploy the commands:
+```bash
+npm run build
+```
+> it will also generate the locales files
+
+Then you can use the setup helper command: (make sure to follow the [installation tutorial](https://github.com/roules-dev/ShopBot#-installing-the-bot))
 
 ```bash
-npm run deploy /a
+npm run setup
 ```
-
-Then, you must regenerate the locales files:
-
-```bash
-npm run generate:locales
-```
+> it will ask for your bot's token and Application ID, then deploy commands
 
 Finally, to start the bot, run the following command:
 
 ```bash
-npm run start
+npm run serve
 ```
 
-Then, use your translated language setting to verify messages appear properly. (`/settings` command in the bot)
+Then, use your translated language setting to check that messages appear properly. (`/settings` command in the bot)
 
 
 ## 📥 Submitting Your Contribution

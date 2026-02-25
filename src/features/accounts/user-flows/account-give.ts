@@ -108,7 +108,7 @@ export class AccountGiveFlow extends UserFlow {
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave ${this.amount} ${getCurrencyName(this.selectedCurrency.id)} to ${userMention(this.target.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.amount} ${getCurrencyName(this.selectedCurrency.id)}** to ${userMention(this.target.id)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)
@@ -176,9 +176,9 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave ${this.amount} ${getCurrencyName(this.selectedCurrency.id)} to ${roleMention(this.targetRole.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.amount} ${getCurrencyName(this.selectedCurrency.id)}** to ${roleMention(this.targetRole.id)}`)
         }
-        
+
         return await updateAsSuccessMessage(interaction, message)
     }
 }

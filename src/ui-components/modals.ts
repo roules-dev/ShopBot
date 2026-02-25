@@ -51,10 +51,13 @@ type ModalOptions = {
     inputLabel: string,
     placeholder: string, 
     required: boolean, 
-    minLength: number, 
-    maxLength: number 
+    minLength?: number, 
+    maxLength?: number 
 }
 
+
+
+// TODO : add the possibility to pass a Zod schema as a parameter to validate the input
 export async function showSingleInputModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     { id, title, inputLabel, placeholder, required, minLength, maxLength }: ModalOptions
 ): Promise<[ModalSubmitInteraction, string]> {
@@ -118,3 +121,4 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
         maxLength: maxLength ?? 120
     })
 }
+

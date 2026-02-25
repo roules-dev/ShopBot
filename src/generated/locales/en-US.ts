@@ -429,10 +429,10 @@ export const locale = {
         },
         "buy": {
             "messages": {
-                "default": "Buy {product} from {shop}",
+                "default": "Buy {quantity}{product} from {shop}",
                 "discountCode": "Discount code:",
                 "price": "for {price}",
-                "success": "You successfully bought {product} in {shop} for {price}"
+                "success": "You successfully bought {quantity}{product} in {shop} for {price}"
             },
             "errorMessages": {
                 "cantBuyHere": "You can't buy products from this shop",
@@ -441,6 +441,8 @@ export const locale = {
             },
             "components": {
                 "buyButton": "Buy",
+                "setQuantityButton": "Set quantity",
+                "editQuantityModalTitle": "Quantity",
                 "discountCodeButton": "I have a discount code",
                 "setDiscountCodeModal": {
                     "title": "Set discount code",
@@ -452,7 +454,7 @@ export const locale = {
                     "message": "You were granted the role {role}"
                 },
                 "giveCurrency": {
-                    "message": "You were given **{amount} {currency}**"
+                    "message": "You were given {amount} {currency}"
                 }
             }
         }

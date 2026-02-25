@@ -9,28 +9,40 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function sameStructureRec(a: Record<string, any>, b: Record<string, any>, path: string[] = []): [boolean, string[]] {
-        if (typeof a === "string" && typeof b === "string") {
+    function sameStructureRec(ref: any, tested: any, path: string[] = []): [boolean, string[]] {
+        const pathString = path.join('.')
+
+
+        if (typeof ref === "string" && typeof tested === "string") {
+
+            const refTemplateKeys = getTemplateKeys(ref)
+            const testedTemplateKeys = getTemplateKeys(tested)
+
+            if (refTemplateKeys.length !== testedTemplateKeys.length) {
+                const missingKeys = refTemplateKeys.filter(k => !testedTemplateKeys.includes(k))
+                return [false, [`Missing template keys (${missingKeys.join(', ')}): ${pathString}`]]
+            }
+
             return [true, []]
         }
 
-        if (typeof a !== "object" || typeof b !== "object") {
-            return [false, [`Incorect type: ${path.join('.')}`]]
+        if (typeof ref !== "object" || typeof tested !== "object") {
+            return [false, [`Incorect type: ${pathString}`]]
         }
 
         const errors: string[] = []
 
-        const aKeys = Object.keys(a)
+        const refKeys = Object.keys(ref)
 
-        for (let i = 0; i < aKeys.length; i++) {
-            const key = aKeys[i]
+        for (let i = 0; i < refKeys.length; i++) {
+            const key = refKeys[i]
 
-            if (!Object.prototype.hasOwnProperty.call(b, key)) {
-                errors.push(`Missing key: ${path.join('.')}.${key}`)
+            if (!Object.prototype.hasOwnProperty.call(tested, key)) {
+                errors.push(`Missing key: ${pathString}.${key}`)
                 continue
             }
 
-            const [same, subErrors] = sameStructureRec(a[key], b[key], [...path, key])
+            const [same, subErrors] = sameStructureRec(ref[key], tested[key], [...path, key])
 
             if (!same) {
                 errors.push(...subErrors)
@@ -41,6 +53,15 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
     }
 
     return sameStructureRec(a, b, [])
+}
+
+function getTemplateKeys(template: string) {
+    const matches = template.matchAll(/{(.+?)}/g)
+    const keys = []
+    for (const match of matches) {
+        keys.push(match[1])
+    }
+    return keys
 }
 
 async function loadLocaleFile(localeCode: string) {

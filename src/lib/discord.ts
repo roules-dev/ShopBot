@@ -44,8 +44,7 @@ function getSuccessMessage(successMessage: string) {
 }
 
 export async function logToDiscord(guild: Guild, message: string) {
-    PrettyLog.info(`Logged to Discord: ${message}`)
-    
+
     try {
         const logChannelSetting = getSettings().get('logChannelId')
         if (!logChannelSetting?.value || logChannelSetting.type !== 'channelId') return
@@ -53,6 +52,11 @@ export async function logToDiscord(guild: Guild, message: string) {
         if (!(logChannel instanceof TextChannel)) return
 
         await logChannel.send(message)
+
+        const simplifiedMessage = message.replaceAll("**", "\"")
+
+        PrettyLog.info(`Logged to Discord: ${simplifiedMessage}`)
+
     } catch (error) {
         PrettyLog.error(`Failed to log to Discord: ${error}`)
     }
