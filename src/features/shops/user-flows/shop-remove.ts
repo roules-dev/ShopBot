@@ -5,7 +5,7 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, bold } from "discord.js"
-import { getShopName, getShops, removeShop } from "../database/shops-database.js"
+import { getShops, removeShop } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 
 
@@ -30,7 +30,7 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        return t(`${this.locale}.messages.default`, { shop: getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")})
+        return t(`${this.locale}.messages.default`, { shop: this.selectedShop?.name || t("defaultComponents.selectShop")})
     }
 
     protected override initComponents(): void {
@@ -78,7 +78,7 @@ export class ShopRemoveFlow extends UserFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, { shop: bold(getShopName(this.selectedShop.id)!) }))
+        return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, { shop: bold(this.selectedShop.name) }))
 
     }
 }

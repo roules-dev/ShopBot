@@ -1,4 +1,4 @@
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
@@ -13,7 +13,7 @@ import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import { addProduct } from "../database/products-database.js"
 import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
-import { getShopName, getShops } from "../database/shops-database.js"
+import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 
 
@@ -74,8 +74,8 @@ export class AddProductFlow extends UserFlow {
         const message = t(`${this.locale}.messages.default`, {
             product: nameString,
             price: `${this.productPrice!}`,
-            currency: getCurrencyName(this.selectedShop?.currency.id) || '[ ]',
-            shop: getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"),
+            currency: this.selectedShop?.currency.name || '[ ]',
+            shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
             description: descString
         })
 
@@ -128,13 +128,13 @@ export class AddProductFlow extends UserFlow {
             description: this.productDescription || '', 
             emoji: this.productEmoji || '', 
             price: this.productPrice,
-            amount: this.productAmount ?? undefined
+            stock: this.productAmount ?? undefined
         })
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {
             product: product.name,
-            shop: bold(getShopName(this.selectedShop.id)!)
+            shop: bold(this.selectedShop.name)
         })
 
         return await updateAsSuccessMessage(interaction, message)
@@ -179,13 +179,14 @@ export class AddActionProductFlow extends AddProductFlow {
                 const productString = t(`${this.locale}.messages.default`, {
                     product: productNameString,
                     price: `${this.productPrice!}`,
-                    currency: getCurrencyName(this.selectedShop?.currency.id) || '[ ]',
-                    shop: getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"),
+                    currency: this.selectedShop?.currency.name || '[ ]',
+                    shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
                     description: descString
                 })
 
                 let actionString = ''
-
+                
+                // TODO: refactor
                 switch (this.productActionType) {
                     case PRODUCT_ACTION_TYPE.GiveRole: {
                         const roleMentionString = 
@@ -207,7 +208,7 @@ export class AddActionProductFlow extends AddProductFlow {
 
                         const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : 'Unset'
                         const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId) : undefined
-                        const currencyString = getCurrencyName(currency?.id) || '[ ]'
+                        const currencyString = currency?.name || '[ ]'
 
                         actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
                         break
@@ -216,8 +217,8 @@ export class AddActionProductFlow extends AddProductFlow {
                         break
                 }
 
-            return `${productString}\n${t(`${this.locale}.messages.action`)} ${actionString}`}
-
+                return `${productString}\n${t(`${this.locale}.messages.action`)} ${actionString}`
+            }
         }
     }
 
@@ -274,6 +275,7 @@ export class AddActionProductFlow extends AddProductFlow {
                         const amount = parseInt(input)
                         if (isNaN(amount) || amount < 0) return this.updateInteraction(modalSubmit)
 
+                        // Weirdly implemented
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, {
                             currencyId: (this.productAction!.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId,
                             amount
@@ -374,7 +376,7 @@ export class AddActionProductFlow extends AddProductFlow {
 
         const message = t(`${this.locale}.messages.success`, {
             product: product.name,
-            shop: bold(getShopName(this.selectedShop.id)!)
+            shop: bold(this.selectedShop.name)
         })
 
         const withActionMessage = t(`${this.locale}.messages.withAction`, { action: bold(`${this.productActionType}`) })

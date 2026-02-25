@@ -1,5 +1,4 @@
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
-import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
@@ -7,10 +6,10 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getProductName } from "../database/products-database.js"
-import { getShopName, getShops } from "../database/shops-database.js"
+import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { BuyProductUserInterface } from "./buy.js"
+import { formattedProductName } from "../utils/products.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
@@ -29,11 +28,16 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+        if (!shops.size) {
+            replyErrorMessage(interaction, t("errorMessages.noShops"))
+            return false
+        }
 
         this.selectedShop = shops.values().next().value!
 
         this.member = interaction.member as GuildMember ?? null
+
+        return true
     }
 
     protected override getMessage(): string { return '' }
@@ -101,7 +105,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ''
 
         const shopEmbed = new EmbedBuilder()
-            .setTitle(`${getShopName(this.selectedShop.id)!}`)
+            .setTitle(`${this.selectedShop.name}`)
             .setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`${this.locale}.embeds.shop.products`)} `)
             .setColor(Colors.Gold)
 
@@ -126,7 +130,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const reservedToString = this.selectedShop.reservedTo !== undefined ? 
             ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ''
 
-        shopEmbed.setTitle(`${getShopName(this.selectedShop.id)!}`)
+        shopEmbed.setTitle(`${this.selectedShop.name}`)
         shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`${this.locale}.embeds.shop.products`)} `)
 
         shopEmbed.setFields(this.getPageEmbedFields())
@@ -136,20 +140,20 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
 
     protected override getEmbedFields(): APIEmbedField[] {
-        if (!this.selectedShop) return []
+        if (this.selectedShop == null) return []
         if (this.selectedShop.products.size == 0) return [{ name: '\u200b', value: `🛒 ${italic(t(`${this.locale}.embeds.shop.noProduct`))}` }]
 
         const fields: APIEmbedField[] = []
 
         this.selectedShop.products.forEach(product => {
             const descString = product.description ? product.description : '\u200b'
-            const amountString = product.amount == undefined ?  '' : 
-                product.amount == 0 ? ` (${t(`${this.locale}.embeds.shop.outOfStock`)})` : 
-                ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.amount}` })})`
+            const amountString = product.stock == undefined ?  '' : 
+                product.stock == 0 ? ` (${t(`${this.locale}.embeds.shop.outOfStock`)})` : 
+                ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 
             fields.push({ 
-                name: getProductName(this.selectedShop!.id, product.id)!,
-                value: `${t(`${this.locale}.embeds.shop.price`)} **${product.price} ${getCurrencyName(this.selectedShop!.currency.id)}**${amountString}\n${descString}`, 
+                name: formattedProductName(product),
+                value: `${t(`${this.locale}.embeds.shop.price`)} **${product.price} ${this.selectedShop!.currency.name}**${amountString}\n${descString}`, 
                 inline: true 
             })
         })
@@ -170,7 +174,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         
         if (!this.member) return false
 
-        const isUserAuthorized = this.member.roles.cache.has(this.selectedShop.reservedTo!)
+        const isUserAuthorized = this.member.roles.cache.has(isReserved)
         const isUserAdmin = this.member.permissions.has("Administrator")
 
         return !isUserAuthorized && !isUserAdmin 

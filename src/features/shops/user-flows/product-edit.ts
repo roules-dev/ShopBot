@@ -8,10 +8,11 @@ import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
-import { getProductName, updateProduct } from "../database/products-database.js"
+import { updateProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
-import { getShopName, getShops } from "../database/shops-database.js"
+import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { formattedProductName } from "../utils/products.js"
 
 
 enum EditProductFlowStage {
@@ -69,14 +70,16 @@ export class EditProductFlow extends UserFlow {
         switch (this.stage) {
             case EditProductFlowStage.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
-                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
+                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
                     option: bold(this.getUpdateOptionName(this.updateOption!)),
                     value: bold(this.getUpdateValueString(this.updateOption!))
                 })
             case EditProductFlowStage.SELECT_PRODUCT:
+                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in EditProductFlowStage.SELECT_PRODUCT stage")
+
                 return t(`${this.locale}.messages.productSelectStage`, {
-                    product: bold(getProductName(this.selectedShop?.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
-                    shop: bold(getShopName(this.selectedShop?.id)!),
+                    product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
+                    shop: bold(this.selectedShop.name),
                     option: bold(this.getUpdateOptionName(this.updateOption!)),
                     value: bold(this.getUpdateValueString(this.updateOption!))
                 })
@@ -110,7 +113,8 @@ export class EditProductFlow extends UserFlow {
                 disabled: true,
             },
             (interaction: ButtonInteraction) => {
-                if (this.selectedShop!.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
+                if (this.selectedShop == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+                if (this.selectedShop.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
                 this.changeStage(EditProductFlowStage.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
@@ -215,7 +219,7 @@ export class EditProductFlow extends UserFlow {
         const updateOption: Record<string, string | number> = {}
         updateOption[this.updateOption.toString()] = this.updateOptionValue
 
-        const oldName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
+        const oldName = formattedProductName(this.selectedProduct)
 
         const [error] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, updateOption)
 
@@ -223,7 +227,7 @@ export class EditProductFlow extends UserFlow {
 
         const message = t(`${this.locale}.messages.success`, {
             product: bold(oldName),
-            shop: bold(getShopName(this.selectedShop.id)!),
+            shop: bold(this.selectedShop.name),
             option: bold(this.getUpdateOptionName(this.updateOption)),
             value: bold(this.getUpdateValueString(this.updateOption))
         })

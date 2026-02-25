@@ -1,6 +1,14 @@
 import { NanoId } from "@/database/database-types.js"
 import { Snowflake } from "discord.js"
 
+
+// thinking of a reworking of the product system :
+// products could now be items, with their own database
+// product will no longer be attached to a shop
+// a shop will just hold a list of products
+
+
+
 export const PRODUCT_ACTION_TYPE = {
     GiveRole: "give-role",
     GiveCurrency: "give-currency",
@@ -46,14 +54,18 @@ export function isProductActionType(
     )
 }
 
+
+// Price system will change :
+// it'll be a map of currencyId => price (number)
+
 export interface Product {
     id: NanoId
     shopId: NanoId
     name: string
     emoji: string
     description: string
-    amount?: number
-    price: number
+    stock?: number
+    price: number 
     action?: ProductAction
 }
 

@@ -11,7 +11,7 @@ import { nanoid } from 'nanoid'
 export const shopsDatabase = new ShopsDatabase(shops, "data/shops.json")
 
 export function getShops(): Map<string, Shop> {
-    return shopsDatabase.data
+    return Object.freeze(shopsDatabase.data)
 }
 
 export function getShopId(shopName: string): string | undefined {
@@ -21,41 +21,51 @@ export function getShopId(shopName: string): string | undefined {
     })
     return shopId
 }
-export function getShopName(shopId: string | undefined): string | undefined {
-    if (!shopId) return undefined
-    const shop = getShops().get(shopId)
-    if (!shop) return undefined
+// export function getShopName(shopId: string | undefined): string | undefined {
+//     if (!shopId) return undefined
+//     const shop = getShops().get(shopId)
+//     if (!shop) return undefined
 
-    return `${shop.emoji != '' ? `${shop.emoji} ` : ''}${shop.name}`
-}
+//     return `${shop.emoji != '' ? `${shop.emoji} ` : ''}${shop.name}`
+// }
 
 export async function createShop(shopName: string, description: string, currencyId: string, emoji: string, reservedTo?: Snowflake) {
-    if (shopsDatabase.data.has(getShopId(shopName) || '')) return err(new DatabaseError("ShopAlreadyExists"))
-    if (!getCurrencies().has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
+    if (getShopId(shopName) != undefined) return err(new DatabaseError("ShopAlreadyExists"))
+    
+    const currency = getCurrencies().get(currencyId)
+    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
 
     const newShopId = nanoid()    
 
-    shopsDatabase.data.set(newShopId, {
+    const newShop = {
         id: newShopId,
         name: shopName,
         emoji,
         description,
-        currency: getCurrencies().get(currencyId)!,
+        currency: currency,
         discountCodes: {},
         reservedTo,
         products: new Map()
-    })
+    }
 
-    await shopsDatabase.save()
+    shopsDatabase.data.set(newShopId, newShop)
 
-    return ok(shopsDatabase.data.get(newShopId)!)
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
+
+    return ok(Object.freeze(newShop))
 }
 
 export async function removeShop(shopId: string) {
     if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
 
     shopsDatabase.data.delete(shopId)
-    shopsDatabase.save()
+
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+
     return ok(true)
 }
 
@@ -73,26 +83,32 @@ const SHOP_FIELD_HANDLERS = {
 }
 
 export async function updateShop(shopId: string, options: ShopOptionsOptional) {
-    if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
- 
-    const shop = shopsDatabase.data.get(shopId)!
+    const shop = shopsDatabase.data.get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
     
     update(shop, options, SHOP_FIELD_HANDLERS)
         
-    await shopsDatabase.save()
-    return ok(shop)
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
+    return ok(Object.freeze(shop))
 }
 
 export async function updateShopCurrency(shopId: string, currencyId: string) {
-    if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
-    if (!getCurrencies().has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
+    const shop = shopsDatabase.data.get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    
+    const currency = getCurrencies().get(currencyId)
+    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
 
-    const shop = shopsDatabase.data.get(shopId)!
+    shop.currency = currency
 
-    shop.currency = getCurrencies().get(currencyId)!
-
-    await shopsDatabase.save()
-    return ok(shop)
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
+    return ok(Object.freeze(shop))
 }
 
 export function getShopsWithCurrency(currencyId: string) {
@@ -106,7 +122,7 @@ export function getShopsWithCurrency(currencyId: string) {
     return shopsWithCurrency
 }
 
-export function updateShopPosition(shopId: string, index: number) {
+export async function updateShopPosition(shopId: string, index: number) {
     if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
     if (index < 0 || index > shopsDatabase.data.size - 1) return err(new DatabaseError("InvalidPosition"))
 
@@ -118,22 +134,34 @@ export function updateShopPosition(shopId: string, index: number) {
     shopsArray.splice(index, 0, shopsArray.splice(shopIndex, 1)[0])
 
     shopsDatabase.data = new Map(shopsArray)
-    shopsDatabase.save()
+
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+
     return ok(true)
 }
 
 export async function createDiscountCode(shopId: string, discountCode: string, discountAmount: number) {
-    if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
+    const shop = getShops().get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
 
-    shopsDatabase.data.get(shopId)!.discountCodes[discountCode] = discountAmount
-    await shopsDatabase.save()
+    shop.discountCodes[discountCode] = discountAmount
+
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
     return ok(true)
 }
 
 export async function removeDiscountCode(shopId: string, discountCode: string) {
-    if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
+    const shop = getShops().get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
 
-    delete shopsDatabase.data.get(shopId)!.discountCodes[discountCode]
-    await shopsDatabase.save()
+    delete shop.discountCodes[discountCode]
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
     return ok(true)
 }

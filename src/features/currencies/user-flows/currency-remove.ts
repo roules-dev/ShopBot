@@ -1,5 +1,5 @@
 import { takeCurrencyFromAccounts } from "@/features/accounts/database/accounts-database.js"
-import { getShopName, getShopsWithCurrency } from "@/features/shops/database/shops-database.js"
+import { getShopsWithCurrency } from "@/features/shops/database/shops-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
@@ -8,7 +8,7 @@ import { showConfirmationModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
-import { getCurrencies, getCurrencyName, removeCurrency } from "../database/currencies-database.js"
+import { getCurrencies, removeCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
 
 
@@ -70,10 +70,10 @@ export class CurrencyRemoveFlow extends UserFlow {
             const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency.id)
 
             if (shopsWithCurrency.size > 0) {
-                const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(getShopName(shop.id) || ''))).join(', ')
+                const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(', ')
 
                 const errorMessage = t(`${this.locale}.errorMessages.cantRemoveCurrency`, {
-                    currency: bold(getCurrencyName(this.selectedCurrency.id) || ''),
+                    currency: bold(this.selectedCurrency.name || ''),
                     shops: shopsWithCurrencyNames
                 })
                 const tipMessage = t(`${this.locale}.errorMessages.changeShopsCurrencies`)
@@ -83,7 +83,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         }
 
         const message = t(`${this.locale}.messages.default`, {
-            currency: bold(getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency"))
+            currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
         })
 
         return message
@@ -103,11 +103,14 @@ export class CurrencyRemoveFlow extends UserFlow {
 
         if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        await takeCurrencyFromAccounts(this.selectedCurrency.id)
+        const [error] = await takeCurrencyFromAccounts(this.selectedCurrency.id)
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currencyName = getCurrencyName(this.selectedCurrency.id) || ''
+        const currencyName = this.selectedCurrency.name || ''
 
-        await removeCurrency(this.selectedCurrency.id)
+        const [error2] = await removeCurrency(this.selectedCurrency.id)
+        if (error2) return updateAsErrorMessage(interaction, error2.message)
+
         return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))
     }
 }

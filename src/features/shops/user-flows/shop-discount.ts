@@ -6,7 +6,7 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
-import { createDiscountCode, getShopName, getShops, removeDiscountCode } from "../database/shops-database.js"
+import { createDiscountCode, getShops, removeDiscountCode } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 
 
@@ -42,7 +42,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
 
     protected override getMessage(): string {
         const message = t(`${this.locale}.messages.default`, {
-            shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
+            shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             code: bold(this.discountCode!),
             amount: bold(`${this.discountAmount}`)
         })
@@ -100,7 +100,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, { 
-            shop: bold(getShopName(this.selectedShop.id)!), 
+            shop: bold(this.selectedShop.name), 
             code: bold(this.discountCode), 
             amount: bold(`${this.discountAmount}`)
         })
@@ -146,11 +146,13 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         switch (this.stage) {
             case DiscountCodeRemoveStage.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
-                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"))
+                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
             case DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE:
+                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE stage")
+
                 return t(`${this.locale}.messages.codeSelectStage`, {
-                    shop: bold(getShopName(this.selectedShop?.id)!),
+                    shop: bold(this.selectedShop?.name),
                     code: bold(this.selectedDiscountCode || t(`${this.locale}.components.discountCodeSelect`))
                 })
             default:
@@ -292,7 +294,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, { 
-            shop: bold(getShopName(this.selectedShop.id)!), 
+            shop: bold(this.selectedShop.name), 
             code: bold(this.selectedDiscountCode) 
         })
 

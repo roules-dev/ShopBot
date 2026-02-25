@@ -7,10 +7,11 @@ import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
-import { getProductName, removeProduct } from "../database/products-database.js"
+import { removeProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
-import { getShopName, getShops } from "../database/shops-database.js"
+import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { formattedProductName } from "../utils/products.js"
 
 
 enum RemoveProductFlowStage {
@@ -49,12 +50,14 @@ export class RemoveProductFlow extends UserFlow {
         switch (this.stage) {
             case RemoveProductFlowStage.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
-                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"))
+                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
             case RemoveProductFlowStage.SELECT_PRODUCT:
+                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in RemoveProductFlowStage.SELECT_PRODUCT stage")
+
                 return t(`${this.locale}.messages.productSelectStage`, {
-                    product: bold(getProductName(this.selectedShop?.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
-                    shop: bold(getShopName(this.selectedShop?.id)!)
+                    product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
+                    shop: bold(this.selectedShop.name)
                 })
 
             default:
@@ -87,7 +90,8 @@ export class RemoveProductFlow extends UserFlow {
                 disabled: true,
             },
             (interaction: ButtonInteraction) => {
-                if (this.selectedShop!.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
+                if (this.selectedShop == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+                if (this.selectedShop.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
                 this.changeStage(RemoveProductFlowStage.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
@@ -189,15 +193,15 @@ export class RemoveProductFlow extends UserFlow {
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const oldProductName = getProductName(this.selectedShop.id, this.selectedProduct.id) || ''
+        const oldProductName = formattedProductName(this.selectedProduct)
 
-        const [error, _] =await removeProduct(this.selectedShop.id, this.selectedProduct.id)
+        const [error] =await removeProduct(this.selectedShop.id, this.selectedProduct.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {
             product: bold(oldProductName),
-            shop: bold(getShopName(this.selectedShop.id)!)
+            shop: bold(this.selectedShop.name)
         })
 
         return await updateAsSuccessMessage(interaction, message)

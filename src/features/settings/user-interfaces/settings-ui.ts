@@ -1,4 +1,4 @@
-import { replyErrorMessage } from "@/lib/discord.js"
+import { updateAsErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
@@ -167,7 +167,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             },
             async (interaction: MessageComponentInteraction) => {
                 const [error, updatedSetting] = await setSetting(setting.id, undefined)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
                     
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(interaction)
@@ -216,7 +216,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 const [modalSubmit, newValue] = await showEditModal(interaction, { edit: setting.name, previousValue: setting.value })
 
                 const [error, updatedSetting] = await setSetting(setting.id, newValue)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(modalSubmit)
             }
@@ -236,7 +236,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             },
             async (interaction: MessageComponentInteraction) => {
                 const [error, updatedSetting] = await setSetting(setting.id, !setting.value)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(interaction)
             }
@@ -260,7 +260,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 if (isNaN(newValueAsNumber)) return this.updateInteraction(interaction)
                 
                 const [error, updatedSetting] = await setSetting(setting.id, newValueAsNumber)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
                 
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(modalSubmit)
@@ -280,7 +280,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 channelTypes: [ChannelType.GuildText]
             }, async (interaction: ChannelSelectMenuInteraction, selectedChannelId: Snowflake) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedChannelId)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
                 
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(interaction)
@@ -299,7 +299,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 time: 120_000 
             }, async (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedRoleId)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
                 
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(interaction)
@@ -318,7 +318,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 time: 120_000 
             }, async (interaction: UserSelectMenuInteraction, selectedUserId: Snowflake) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedUserId)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(interaction)
@@ -345,7 +345,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             (interaction) => this.updateInteraction(interaction),
             async (interaction: StringSelectMenuInteraction, selectedOption: {id: string, name: string}) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedOption.id)
-                if (error) return replyErrorMessage(interaction, error.message)
+                if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.selectedSetting = updatedSetting
                 this.updateInteraction(interaction)

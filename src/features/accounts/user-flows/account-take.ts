@@ -1,6 +1,6 @@
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { logToDiscord, replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { logToDiscord, replyErrorMessage, replySuccessMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -48,7 +48,7 @@ export class AccountTakeFlow extends UserFlow {
             `${this.locale}.messages.default`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency")}]`), 
+                currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
                 user: userMention(this.target!.id) 
             }
         )
@@ -89,7 +89,12 @@ export class AccountTakeFlow extends UserFlow {
             async (interaction: ButtonInteraction) => {
                 if (!this.selectedCurrency || !this.target) return this.updateInteraction(interaction)
 
-                this.amount = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency!.id)?.amount || 0
+                if (!this.target || !this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+                const [error, account] = await getOrCreateAccount(this.target.id)
+                if (error) return updateAsErrorMessage(interaction, error.message)
+
+                this.amount = account.currencies.get(this.selectedCurrency.id)?.amount || 0
                 this.success(interaction)
             }
         )
@@ -107,8 +112,12 @@ export class AccountTakeFlow extends UserFlow {
 
                 if (!confirmed) return this.updateInteraction(modalSubmitInteraction)
 
-                await emptyAccount(this.target!.id, 'currencies')
-                await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target!.id) }))
+                if (!this.target) return updateAsErrorMessage(modalSubmitInteraction, t("errorMessages.insufficientParameters"))                    
+
+                const [error] = await emptyAccount(this.target.id, 'currencies')
+                if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
+
+                await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target.id) }))
             }
         )
 
@@ -133,25 +142,28 @@ export class AccountTakeFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
 
-        if (!this.selectedCurrency) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
-        const newBalance = Math.max(currentBalance - this.amount!, 0)
+        const [error, account] = await getOrCreateAccount(this.target.id)
+        if (error) return updateAsErrorMessage(interaction, error.message)
+
+        const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
+        const newBalance = Math.max(currentBalance - this.amount, 0)
         
-        const [error, _] = await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, newBalance)
-        if (error) return replyErrorMessage(interaction, error.message)
+        const [error2, _] = await setAccountCurrencyAmount(this.target.id, this.selectedCurrency.id, newBalance)
+        if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         const successMessage = t(
             `${this.locale}.messages.success`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: getCurrencyName(this.selectedCurrency.id)!, 
-                user: userMention(this.target!.id) 
+                currency: this.selectedCurrency.name, 
+                user: userMention(this.target.id) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} took **${this.amount} ${getCurrencyName(this.selectedCurrency.id)}** from ${userMention(this.target!.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} took **${this.amount} ${this.selectedCurrency.name}** from ${userMention(this.target.id)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)

@@ -345,6 +345,7 @@ export const locale = {
         "selectShop": "Select a shop",
         "selectRole": "Select a role",
         "selectProduct": "Select a product",
+        "selectItem": "Select an item",
         "changeShopButton": "Change shop",
         "submitShopButton": "Submit shop",
         "unset": "Unset"
@@ -487,6 +488,29 @@ export const locale = {
                 "submitButton": "Submit",
                 "takeAllButton": "Take all",
                 "emptyAccountButton": "Empty account"
+            }
+        },
+        "inventoryGive": {
+            "messages": {
+                "default": "Give {amount} {item} to {user}",
+                "bulkGive": "Give {amount} {item} to all users with role {role}",
+                "success": "You successfully gave {amount} {item} to {user}",
+                "bulkGiveSuccess": "You successfully gave {amount} {item} to all users with role {role}"
+            },
+            "components": {
+                "submitButton": "Submit"
+            }
+        },
+        "inventoryTake": {
+            "messages": {
+                "default": "Take {amount} {item} from {user}",
+                "successfullyEmptied": "You successfully emptied {user} inventory",
+                "success": "You successfully took {amount} {item} from {user}"
+            },
+            "components": {
+                "submitButton": "Submit",
+                "takeAllButton": "Take all",
+                "emptyInventoryButton": "Empty inventory"
             }
         },
         "currencyCreate": {

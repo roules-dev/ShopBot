@@ -1,4 +1,4 @@
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
@@ -9,7 +9,7 @@ import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
-import { createShop, getShopName } from "../database/shops-database.js"
+import { createShop } from "../database/shops-database.js"
 
 export class ShopCreateFlow extends UserFlow {
     public id = 'shop-create'
@@ -55,7 +55,7 @@ export class ShopCreateFlow extends UserFlow {
 
         const message = t(`${this.locale}.messages.default`, {
             shop: bold(shopNameString),
-            currency: bold(getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency"))
+            currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
         })
 
         return message
@@ -139,8 +139,8 @@ export class ShopCreateFlow extends UserFlow {
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {
-            shop: bold(getShopName(newShop.id)!),
-            currency: bold(getCurrencyName(newShop.currency.id)!)
+            shop: bold(newShop.name),
+            currency: bold(this.selectedCurrency.name)
         })
 
         return await updateAsSuccessMessage(interaction, message)

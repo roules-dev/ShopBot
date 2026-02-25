@@ -1,6 +1,6 @@
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { logToDiscord, replyErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -47,7 +47,7 @@ export class AccountGiveFlow extends UserFlow {
             `${this.locale}.messages.default`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency")}]`), 
+                currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
                 user: userMention(this.target!.id) 
             }
         )
@@ -90,25 +90,28 @@ export class AccountGiveFlow extends UserFlow {
     protected async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
         
-        if (!this.selectedCurrency || !this.target || !this.amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const currentBalance = (await getOrCreateAccount(this.target!.id)).currencies.get(this.selectedCurrency.id)?.amount || 0
-        const [error, _] = await setAccountCurrencyAmount(this.target!.id, this.selectedCurrency.id, currentBalance + this.amount)
+        const [error, account] = await getOrCreateAccount(this.target.id)
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-        if (error) return replyErrorMessage(interaction, error.message)
+        const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
+        const [error2, _] = await setAccountCurrencyAmount(this.target.id, this.selectedCurrency.id, currentBalance + this.amount)
+
+        if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         
         const successMessage = t(
             `${this.locale}.messages.success`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: getCurrencyName(this.selectedCurrency.id)!, 
+                currency: this.selectedCurrency.name, 
                 user: userMention(this.target.id) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave **${this.amount} ${getCurrencyName(this.selectedCurrency.id)}** to ${userMention(this.target.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.amount} ${this.selectedCurrency.name}** to ${userMention(this.target.id)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)
@@ -146,7 +149,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
             `${this.locale}.messages.bulkGive`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: bold(`[${getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency")}]`), 
+                currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
                 role: roleMention(this.targetRole!.id) 
             }
         )
@@ -155,28 +158,31 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
     protected override async success(interaction: ButtonInteraction): Promise<unknown> {
         this.disableComponents()
         
-        if (!this.selectedCurrency || !this.targetRole || !this.amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (!this.selectedCurrency || !this.targetRole || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
 
         for (const userId of targetUsersIds) {
-            const currentBalance = (await getOrCreateAccount(userId)).currencies.get(this.selectedCurrency.id)?.amount || 0
-            const [error, _] = await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
+            const [error, account] = await getOrCreateAccount(userId)
+            if (error) return updateAsErrorMessage(interaction, error.message)
+            
+            const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
+            const [error2, _] = await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
 
-            if (error) return replyErrorMessage(interaction, error.message)
+            if (error2) return updateAsErrorMessage(interaction, error2.message)
         }
 
         const message = t(
             `${this.locale}.messages.bulkGiveSuccess`, 
             { 
                 amount: bold(`${this.amount}`), 
-                currency: getCurrencyName(this.selectedCurrency.id)!, 
+                currency: this.selectedCurrency.name, 
                 role: roleMention(this.targetRole.id) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave **${this.amount} ${getCurrencyName(this.selectedCurrency.id)}** to ${roleMention(this.targetRole.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.amount} ${this.selectedCurrency.name}** to ${roleMention(this.targetRole.id)}`)
         }
 
         return await updateAsSuccessMessage(interaction, message)

@@ -35,3 +35,6 @@
 - [x] improve data access, add abstraction to avoid errors and repeated code
 - [ ] branded IDs ? -> will be made once Zod validation is implemented
 - [x] improve folder structure (implement feature base folder structure)
+- [ ] discount codes should be stored as a Map
+- [ ] products must become items, independant of shops
+- [ ] 

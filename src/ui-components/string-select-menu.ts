@@ -1,6 +1,7 @@
 import { subMap } from "@/utils/maps.js"
 import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
-import { Emojiable, ExtendedComponent, Identifiable, Labelled } from "./extended-components.js"
+import { ExtendedComponent } from "./extended-components.js"
+import { Identifiable, Labelled, Emojiable, MutableOrReadonly } from "@/utils/types.js"
 
 
 
@@ -23,7 +24,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     componentType = ComponentType.StringSelect
     customId: string
     component: StringSelectMenuBuilder
-    map: Map<string, T>
+    map: MutableOrReadonly<Map<string, T>>
     placeholder: string
 
     update: (interaction: StringSelectMenuInteraction) => void
@@ -34,7 +35,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     pageCount: number = 1
 
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions,
-        map: Map<string, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+        map: MutableOrReadonly<Map<string, T>>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
     ) {
         super()
         this.customId = customId

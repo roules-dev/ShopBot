@@ -15,10 +15,7 @@ export async function replyErrorMessage(interaction: UserInterfaceInteraction, e
 
 export async function updateAsErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
     const message = getErrorMessage(errorMessage)
-
-    if (interaction.deferred) return await interaction.editReply({ content: message, components: [] })
-    if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) return await interaction.update({ content: message, components: [] })
-    return await interaction.editReply({ content: message, components: [] })
+    await updateWithMessage(interaction, message)
 }
 
 export async function replySuccessMessage(interaction: UserInterfaceInteraction, successMessage: string) {
@@ -27,13 +24,14 @@ export async function replySuccessMessage(interaction: UserInterfaceInteraction,
 
 export async function updateAsSuccessMessage(interaction: UserInterfaceInteraction, successMessage: string) {
     const message = getSuccessMessage(successMessage)
+    await updateWithMessage(interaction, message)
+}
 
+async function updateWithMessage(interaction: UserInterfaceInteraction, message: string) {
     if (interaction.deferred) return await interaction.editReply({ content: message, components: [] })
     if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) return await interaction.update({ content: message, components: [] })
     return await interaction.editReply({ content: message, components: [] })
 }
-
-
 
 function getErrorMessage(errorMessage?: string) {
     return `❌ ${errorMessage ? errorMessage : t("errorMessages.default")}`

@@ -1,19 +1,18 @@
 import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
 import { Account } from "@/features/accounts/database/accounts-type.js"
-import { getCurrencyName } from "@/features/currencies/database/currencies-database.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
-import { ComponentSeparator, ExtendedComponent } from "@/ui-components/extended-components.js"
+import { ComponentSeparator } from "@/ui-components/extended-components.js"
 import { showEditModal, showSingleInputModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { bold, ButtonInteraction, ButtonStyle, GuildMember, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getProductName, updateProduct } from "../database/products-database.js"
-import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
-import { getShopName } from "../database/shops-database.js"
-import { Shop } from "../database/shops-types.js"
 import { objToString } from "@/utils/objects.js"
+import { bold, ButtonInteraction, ButtonStyle, GuildMember, roleMention, StringSelectMenuInteraction } from "discord.js"
+import { updateProduct } from "../database/products-database.js"
+import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
+import { Shop } from "../database/shops-types.js"
+import { formattedProductName } from "../utils/products.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -36,7 +35,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        if (!this.selectedShop.products.size) return await replyErrorMessage(interaction, t("errorMessages.noProducts"))
+        if (!this.selectedShop.products.size) {
+            await replyErrorMessage(interaction, t("errorMessages.noProducts"))
+            return false
+        }
+        return true
     }
 
     protected override getMessage(): string {
@@ -44,9 +47,9 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const priceString = this.priceString() != '' ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ''
 
         const message = t(`${this.locale}.messages.default`, {
-            product: bold(getProductName(this.selectedShop.id, this.selectedProduct?.id) || t("defaultComponents.selectProduct")),
+            product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
             quantity: this.quantity > 1 ? `**${this.quantity}x** ` : '',
-            shop: bold(getShopName(this.selectedShop.id)!),
+            shop: bold(this.selectedShop.name),
         })
 
         return `${message} ${priceString}.${discountCodeString}`
@@ -206,13 +209,14 @@ export class BuyProductUserInterface extends MessageUserInterface {
             return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
         }
 
-        const user = await getOrCreateAccount(interaction.user.id)
+        const [error, account] = await getOrCreateAccount(interaction.user.id)
+        if (error) return replyErrorMessage(interaction, error.message)
         
-        const balanceAfterBuy = this.balanceAfterBuy(user, this.selectedShop.currency.id)
+        const balanceAfterBuy = this.balanceAfterBuy(account, this.selectedShop.currency.id)
         if (balanceAfterBuy < 0) {
             return replyErrorMessage(
                 interaction, 
-                t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(getCurrencyName(this.selectedShop.currency.id)!) })
+                t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(this.selectedShop.currency.name) })
             )
         }
 
@@ -221,17 +225,21 @@ export class BuyProductUserInterface extends MessageUserInterface {
             return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
         }
 
-        updateProduct(this.selectedShop.id, this.selectedProduct.id, { amount: itemStockAfterBuy })
-        
+    
+        const [error2] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, { stock: itemStockAfterBuy })
+        if (error2) return replyErrorMessage(interaction, error2.message)
 
-        const [error] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, balanceAfterBuy)
-        if (error) return replyErrorMessage(interaction, error.message)
+
+        const [error3] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, balanceAfterBuy)
+        if (error3) return replyErrorMessage(interaction, error3.message)
         
         if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
 
-        const userProductAmount = user.inventory.get(this.selectedProduct.id)?.amount || 0
-        await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + this.quantity)
+        const userProductAmount = account.inventory.get(this.selectedProduct.id)?.amount || 0
 
+        const [error4] = await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + this.quantity)
+        if (error4) return replyErrorMessage(interaction, error4.message)
+        
         await this.printAndLogPurchase(interaction, this.selectedProduct)
     }
 
@@ -241,9 +249,9 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const priceAsString = this.getPrice().toFixed(2)
 
         const originalPriceAsString = this.selectedProduct.price.toFixed(2)
-        if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${getCurrencyName(this.selectedShop.currency.id)!}**`
+        if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${this.selectedShop.currency.name}**`
 
-        return `**${priceAsString} ${getCurrencyName(this.selectedShop.currency.id)!}**`
+        return `**${priceAsString} ${this.selectedShop.currency.name}**`
     }
 
     private async buyActionProduct(interaction: UserInterfaceInteraction): Promise<unknown> {
@@ -268,20 +276,24 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 break
             }
             case PRODUCT_ACTION_TYPE.GiveCurrency: {
-                const currency = this.selectedProduct.action.options.currencyId
-                if (!currency) return
+                const currencyId = this.selectedProduct.action.options.currencyId
+                if (!currencyId) return
 
                 const amount = this.selectedProduct.action.options.amount
                 if (!amount) return
 
-                const user = await getOrCreateAccount(interaction.user.id)
-                const userCurrencyAmount = user.currencies.get(this.selectedShop.currency.id)?.amount || 0
+                const [error, account] = await getOrCreateAccount(interaction.user.id)
+                if (error) return replyErrorMessage(interaction, error.message)
 
-                setAccountCurrencyAmount(interaction.user.id, currency, userCurrencyAmount + amount)
+                const userCurrencyAmount = account.currencies.get(this.selectedShop.currency.id)?.amount || 0
+
+                const [error2, currency] = await setAccountCurrencyAmount(interaction.user.id, currencyId, userCurrencyAmount + amount)
+
+                if (error2) return replyErrorMessage(interaction, error2.message)
 
                 actionMessage = t(
                     `${this.locale}.actionProducts.giveCurrency.message`, 
-                    { currency: bold(getCurrencyName(currency)!), amount: bold(`${amount}`) }
+                    { currency: bold(currency.name), amount: bold(`${amount}`) }
                 )
 
                 break
@@ -300,11 +312,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private itemStockAfterBuy(product: Product, quantity: number) {
-        if (product.amount == undefined) {
+        if (product.stock == undefined) {
             return undefined
         }
 
-        return product.amount - quantity
+        return product.stock - quantity
     }
 
     private getPrice() {
@@ -313,8 +325,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product, appendix?: string) {
-        const productName = getProductName(this.selectedShop.id, product.id) || 'unknown product'
-        const shopName = getShopName(this.selectedShop.id) || 'unknown shop'
+        const productName = formattedProductName(product)
+        const shopName = this.selectedShop.name
         const priceString = this.priceString()
         const discountCodeString = this.discountCode ? this.discountCode : 'none'
 
@@ -341,6 +353,6 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         return this.selectedShop.reservedTo != undefined
             && interaction.member instanceof GuildMember 
-            && !(interaction.member?.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
+            && !(interaction.member.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
     }
 }

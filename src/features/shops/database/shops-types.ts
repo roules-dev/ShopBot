@@ -50,7 +50,8 @@ export class ShopsDatabase extends Database<NanoId, Shop> {
         const shops: Map<NanoId, Shop> = new Map()
 
         for (const [shopId, shop] of Object.entries(databaseRaw)) {
-            if (!getCurrencies().has(shop.currencyId)) continue
+            const currency = getCurrencies().get(shop.currencyId)
+            if (!currency) continue
 
             const products = new Map(
                     Object.entries(shop.products).map(([id, product]) => {
@@ -64,7 +65,7 @@ export class ShopsDatabase extends Database<NanoId, Shop> {
                     })
                 )
 
-            shops.set(shopId, { ...shop, products, currency: getCurrencies().get(shop.currencyId)! })
+            shops.set(shopId, { ...shop, products, currency })
         }
 
         return ok(shops)

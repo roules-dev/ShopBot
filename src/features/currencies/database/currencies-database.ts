@@ -9,7 +9,7 @@ import { nanoid } from 'nanoid'
 const currenciesDatabase = new CurrenciesDatabase(currencies, 'data/currencies.json')
 
 export function getCurrencies(): Map<string, Currency> {
-    return currenciesDatabase.data
+    return Object.freeze(currenciesDatabase.data)
 }
 
 export function getCurrencyId(currencyName: string): string | undefined {
@@ -20,43 +20,48 @@ export function getCurrencyId(currencyName: string): string | undefined {
     return currencyId 
 }
 
-export function getCurrencyName(currencyId: string | undefined): string | undefined {
-    if (!currencyId) return undefined
+// export function getCurrencyName(currencyId: string | undefined): string | undefined {
+//     if (!currencyId) return undefined
 
-    const currency = getCurrencies().get(currencyId)
-    if (!currency) return undefined
+//     const currency = getCurrencies().get(currencyId)
+//     if (!currency) return undefined
 
-    return `${currency.emoji != '' ? `${currency.emoji} ` : ''}${currency.name}`    
-}
+//     return `${currency.emoji != '' ? `${currency.emoji} ` : ''}${currency.name}`    
+// }
 
 export async function createCurrency(currencyName: string, emoji: string) {
-    if (currenciesDatabase.data.has(getCurrencyId(currencyName) || '')) return err(new DatabaseError("CurrencyAlreadyExists"))
+    if (getCurrencyId(currencyName) != undefined) return err(new DatabaseError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid()
     const newCurrency = { id: newCurrencyId, name: currencyName, emoji }
 
     currenciesDatabase.data.set(newCurrencyId, newCurrency)
-    currenciesDatabase.save()
+    const [error] = await currenciesDatabase.save()
+    if (error) return err(error)
 
-    return ok(newCurrency)
+    return ok(Object.freeze(newCurrency))
 }
 
 export async function removeCurrency(currencyId: string) {
     if (!currenciesDatabase.data.has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
 
     currenciesDatabase.data.delete(currencyId)
-    currenciesDatabase.save()
+    const [error] = await currenciesDatabase.save()
+    if (error) return err(error)
+
     return ok(true)
 }
 
 export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {  
-    if (!currenciesDatabase.data.has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
+    const currency = currenciesDatabase.data.get(currencyId)
     
-    const currency = currenciesDatabase.data.get(currencyId)!
-
+    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
+    
     update(currency, options)
 
-    await currenciesDatabase.save()
-    return ok(currency)
+    const [error] = await currenciesDatabase.save()
+    if (error) return err(error)
+
+    return ok(Object.freeze(currency))
 }
 

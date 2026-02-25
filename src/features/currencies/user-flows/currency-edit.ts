@@ -8,7 +8,7 @@ import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
-import { getCurrencies, getCurrencyName, updateCurrency } from "../database/currencies-database.js"
+import { getCurrencies, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
 
 export enum EditCurrencyOption {
@@ -46,7 +46,7 @@ export class EditCurrencyFlow extends UserFlow {
 
     protected override getMessage(): string {
         const message = t(`${this.locale}.messages.default`, {
-            currency: bold(getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency")),
+            currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
             value: bold(this.updateOptionValue!)
         })
@@ -93,9 +93,9 @@ export class EditCurrencyFlow extends UserFlow {
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const oldName = getCurrencyName(this.selectedCurrency.id) || ''
+        const oldName = this.selectedCurrency.name
 
-        const [error, _] = await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
+        const [error] = await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 

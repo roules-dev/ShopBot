@@ -6,38 +6,45 @@ import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
 
 export function getProducts(shopId: string){
-    if (!getShops().has(shopId)) {
-        return err(new DatabaseError("ShopDoesNotExist"))
-    }
+    const shop = getShops().get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
 
-    return ok(getShops().get(shopId)!.products)
+    return ok(Object.freeze(shop.products))
 }
 
 export async function addProduct(shopId: string, options: ProductOptions) {
-    if (!getShops().has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
+    const shop = getShops().get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
 
     const id = nanoid()
     const product = Object.assign({ id, shopId }, options)
 
-    getShops().get(shopId)!.products.set(id, product)
-    await shopsDatabase.save()
+    shop.products.set(id, product)
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
 
-    return ok(getShops().get(shopId)!.products.get(id)!)
+    return ok(Object.freeze(product))
 }
 
 export async function removeProduct(shopId: string, productId: string) {
-    if (!getShops().has(shopId))return err(new DatabaseError("ShopDoesNotExist"))
+    const shop = getShops().get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
 
-    getShops().get(shopId)!.products.delete(productId)
-    await shopsDatabase.save()
+    shop.products.delete(productId)
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
     return ok(true)
 }
 
 
 const PRODUCT_FIELD_HANDLERS = {
-    amount: (product: Product, amount: number) => {
-        if (amount == -1) product.amount = undefined
-        else product.amount = amount
+    stock: (product: Product, stock: number) => {
+        if (stock == -1) product.stock = undefined
+        else product.stock = stock
     }
 }
 
@@ -47,23 +54,19 @@ export async function updateProduct(
     productId: string,
     options: ProductOptionsOptional,
 ) {
-    if (!getShops().has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
+    const shop = getShops().get(shopId)
+    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
 
-    const product = getShops().get(shopId)!.products.get(productId)
+    const product = shop.products.get(productId)
 
     if (!product) return err(new DatabaseError("ProductDoesNotExist"))
 
     update(product, options, PRODUCT_FIELD_HANDLERS)
 
-    await shopsDatabase.save()
+    
+    const [error] = await shopsDatabase.save()
+    if (error) return err(error)
+    
     return ok(product)
 }
 
-export function getProductName( shopId: string | undefined, productId: string | undefined) {
-    if (!shopId || !productId) return undefined
-
-    const product = getShops().get(shopId)?.products.get(productId)
-    if (!product) return undefined
-
-    return `${product.emoji != "" ? `${product.emoji} ` : ""}${product.name}`
-}

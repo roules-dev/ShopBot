@@ -8,34 +8,34 @@ import { err, ok } from '@/lib/error-handling.js'
 
 const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
 
-export async function getOrCreateAccount(id: Snowflake): Promise<Account> {
+export async function getOrCreateAccount(id: Snowflake) {
     let account = accountsDatabase.data.get(id)
 
     if (!account) {
         accountsDatabase.data.set(id, { currencies: new Map(), inventory: new Map() })
-        await accountsDatabase.save()
+
+        const [error] = await accountsDatabase.save()
+        if (error) return err(error)
+
         account = accountsDatabase.data.get(id)!
     }
 
-    return account
+    return ok(Object.freeze(account))
 }
 
 export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
-    const account = await getOrCreateAccount(id)
-    
-    if (!getCurrencies().has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
+    const [error, account] = await getOrCreateAccount(id)
+    if (error) return err(error)
+
+    const currency = getCurrencies().get(currencyId)
+    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
 
     const currencyBalance = account.currencies.get(currencyId)
 
     if (!currencyBalance) {
-        const currency = getCurrencies().get(currencyId)!
         account.currencies.set(currencyId, 
             { 
-                item: { 
-                    id: currencyId, 
-                    name: currency.name,
-                    emoji: currency.emoji
-                }, 
+                item: currency, 
                 amount: +amount.toFixed(2)
             }
         )
@@ -43,12 +43,16 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
         currencyBalance.amount = +amount.toFixed(2)
     }
 
-    await accountsDatabase.save()
-    return ok(account)
+    const [error2] = await accountsDatabase.save()
+    if (error2) return err(error2)
+
+    return ok(Object.freeze(currency))
 }
 
 export async function setAccountItemAmount(id: Snowflake, product: Product, amount: number) {
-    const account = await getOrCreateAccount(id)
+    const [error, account] = await getOrCreateAccount(id)
+    if (error) return err(error)
+        
     const productBalance = account.inventory.get(product.id)
 
     if (!productBalance) {
@@ -63,7 +67,10 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
         productBalance.amount = amount
     }
 
-    await accountsDatabase.save()
+    const [error2] = await accountsDatabase.save()
+    if (error2) return err(error2)
+
+    return ok(Object.freeze(product))
 }
 
 export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'inventory' | 'all') {
@@ -73,8 +80,10 @@ export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'invento
     if (empty === 'currencies' || empty === 'all') account.currencies.clear()
     if (empty === 'inventory' || empty === 'all') account.inventory.clear()
 
-    await accountsDatabase.save()
-    return ok(account) // could be ok(true) ?
+    const [error] = await accountsDatabase.save()
+    if (error) return err(error)
+
+    return ok(Object.freeze(account)) 
 }
 
 export async function getAccountsWithCurrency(currencyId: string) {
@@ -82,7 +91,7 @@ export async function getAccountsWithCurrency(currencyId: string) {
     accountsDatabase.data.forEach((account: Account, id: Snowflake) => {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
     })
-    return accountsWithCurrency
+    return Object.freeze(accountsWithCurrency)
     
 }
 
@@ -92,6 +101,8 @@ export async function takeCurrencyFromAccounts(currencyId: string) {
         account.currencies.delete(currencyId)
     })
 
-    await accountsDatabase.save()
-    return accountsWithCurrency
+    const [error] = await accountsDatabase.save()
+    if (error) return err(error)
+
+    return ok(Object.freeze(accountsWithCurrency))
 }

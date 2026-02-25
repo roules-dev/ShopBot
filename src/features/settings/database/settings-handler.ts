@@ -18,15 +18,17 @@ export function getSetting(id: string): Setting | undefined {
 // -> probably with some Zod validation
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function setSetting(id: string, value: any) {
-    if (!settingsDatabase.data.has(id)) return err({ message: "Setting does not exist" })
+    const setting = settingsDatabase.data.get(id)
+    if (!setting) return err({ message: "Setting does not exist" })
 
-    const setting = settingsDatabase.data.get(id)!
     const updatedSetting = {...setting, value: value}
 
     settingsDatabase.data.set(id, updatedSetting)
 
-    await settingsDatabase.save()
+    const [error] = await  settingsDatabase.save()
+    if (error) return err(error)
+
     EVENTS.emit("settingUpdated", id, updatedSetting)
 
-    return ok(settingsDatabase.data.get(id)!)
+    return ok(Object.freeze(setting))
 }

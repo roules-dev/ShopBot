@@ -1,4 +1,4 @@
-import { Result } from "@/lib/error-handling.js"
+import { err, ok, Result } from "@/lib/error-handling.js"
 import fs from "fs/promises"
 
 export type NanoId = string
@@ -82,13 +82,20 @@ export abstract class Database<IdType extends string, DataType> {
     
     protected abstract parseRaw(databaseRaw: DatabaseJSONBody): Result<Map<IdType, DataType>, DatabaseError> 
     
-    public async save () {
+    public async save() {
         try {
             await fs.writeFile(this.path, JSON.stringify(this.toJSON(), null, 4))
     
-            return true
-        } catch {
-            return false
+            return ok(true)
+        } catch (e) {
+            // if (e instanceof Error) return err(e)
+            // return err(new Error(`Unknown error while saving database ${this.path}`))
+            if (e !== null && typeof e === "object" && "message" in e && typeof e.message === "string") {
+                return err({ message: e.message })
+            }
+
+            return err({ message: `Unknown error while saving database ${this.path}`})
+
         }
     }
 }

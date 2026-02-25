@@ -1,20 +1,6 @@
 import { UserInterfaceComponentBuilder } from "@/user-interfaces/user-interfaces.js"
 import { ComponentType, InteractionCollector, ButtonInteraction, StringSelectMenuInteraction, MessageComponentInteraction, ReadonlyCollection, InteractionCallbackResponse, MessageComponentType } from "discord.js"
 
-
-// those types could be moved to a shared module
-export type Identifiable = {
-    id: string // will be branded when Zod validation is implemented
-}
-
-export type Labelled = {
-    name: string
-}
-
-export type Emojiable = {
-    emoji?: string
-}
-
 export abstract class ExtendedComponent {
     abstract componentType: ComponentType
     abstract customId: string

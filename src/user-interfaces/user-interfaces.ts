@@ -1,4 +1,5 @@
 import { updateAsErrorMessage, replyErrorMessage } from "@/lib/discord.js"
+import { ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ComponentSeparator, ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -113,7 +114,9 @@ export abstract class UserInterface {
 }
 
 export abstract class MessageUserInterface extends UserInterface {
-    protected predisplay(_interaction: UserInterfaceInteraction) {}
+    protected async predisplay(_interaction: UserInterfaceInteraction): Promise<boolean> {
+        return true
+    }
 
     protected setup(_interaction: UserInterfaceInteraction): void {
         this.initComponents()
@@ -121,7 +124,8 @@ export abstract class MessageUserInterface extends UserInterface {
     }
 
     public async display(interaction: UserInterfaceInteraction) {
-        await this.predisplay(interaction)
+        const success = await this.predisplay(interaction)
+        if (!success) return
 
         this.setup(interaction)
 

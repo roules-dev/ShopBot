@@ -1,4 +1,4 @@
-import { getCurrencies, getCurrencyName } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
@@ -10,7 +10,7 @@ import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getShopName, getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
+import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 
 
@@ -75,7 +75,7 @@ export class EditShopFlow extends UserFlow {
 
     protected override getMessage(): string {
         const message = t(`${this.locale}.messages.default`, { 
-            shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
+            shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
             value: bold(`${this.updateOptionValueDisplay}`)
         })
@@ -126,7 +126,7 @@ export class EditShopFlow extends UserFlow {
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const oldName = getShopName(this.selectedShop?.id) || ''
+        const oldName = this.selectedShop?.name || ''
 
         const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
@@ -134,7 +134,7 @@ export class EditShopFlow extends UserFlow {
 
         const message = t(`${this.locale}.messages.success`, {
             shop: bold(oldName),
-            option: bold(this.getUpdateOptionName(this.updateOption!)),
+            option: bold(this.getUpdateOptionName(this.updateOption)),
             value: bold(`${this.updateOptionValueDisplay}`)
         })
 
@@ -222,12 +222,12 @@ export class EditShopCurrencyFlow extends UserFlow {
         switch (this.stage) {
             case EditShopCurrencyStage.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
-                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop"))
+                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
             case EditShopCurrencyStage.SELECT_CURRENCY:
                 return t(`${this.locale}.messages.currencySelectStage`, {
-                    shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
-                    currency: bold(getCurrencyName(this.selectedCurrency?.id) || t("defaultComponents.selectCurrency"))
+                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
+                    currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
                 })
             default:
                 assertNeverReached(this.stage)
@@ -356,7 +356,7 @@ export class EditShopCurrencyFlow extends UserFlow {
 
         const message = t(`${this.locale}.messages.success`, { 
             shop: bold(shop.name), 
-            currency: bold(getCurrencyName(this.selectedCurrency.id)!)
+            currency: bold(this.selectedCurrency.name)
         })
 
         return await updateAsSuccessMessage(interaction, message)
@@ -391,7 +391,7 @@ export class ShopReorderFlow extends UserFlow {
 
     protected override getMessage(): string {
         const message = t(`${this.locale}.messages.default`, { 
-            shop: bold(getShopName(this.selectedShop?.id) || t("defaultComponents.selectShop")),
+            shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             position: bold(`${this.selectedPosition}` || t(`${this.locale}.components.selectPosition`))
         })
 
@@ -488,11 +488,11 @@ export class ShopReorderFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction) {
         if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
+        const [error] = await updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {
-            shop: bold(getShopName(this.selectedShop?.id)!),
+            shop: bold(this.selectedShop.name),
             position: bold(`${this.selectedPosition}`)
         })
 
