@@ -4,6 +4,7 @@ import shops from "@/../data/shops.json" with { type: "json" }
 
 import fs from "fs/promises"
 import { nanoid } from "nanoid"
+import { fileURLToPath } from "url"
 
 
 const UUID_REGEXP = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g
@@ -32,24 +33,30 @@ const dbs = [
     }
 ]
 
-const idsArray: string[] = []
+export async function migrateDBtoNanoid() {
+    const idsArray: string[] = []
 
-for (const { dataString } of dbs) {
-    Array.prototype.push.apply(idsArray, [...dataString.matchAll(UUID_REGEXP)].map(match => match[0]))
-}
+    for (const { dataString } of dbs) {
+        Array.prototype.push.apply(idsArray, [...dataString.matchAll(UUID_REGEXP)].map(match => match[0]))
+    }
 
-const ids = new Set(idsArray)
+    const ids = new Set(idsArray)
 
 
-for (const id of ids) {
-    const newId = nanoid()
+    for (const id of ids) {
+        const newId = nanoid()
 
-    for (const db of dbs) {
-        db.dataString = db.dataString.replaceAll(id, newId)
+        for (const db of dbs) {
+            db.dataString = db.dataString.replaceAll(id, newId)
+        }
+    }
+
+
+    for (const { dataString, path } of dbs) {
+        await save(path, JSON.parse(dataString))
     }
 }
 
-
-for (const { dataString, path } of dbs) {
-    save(path, JSON.parse(dataString))
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    migrateDBtoNanoid()
 }

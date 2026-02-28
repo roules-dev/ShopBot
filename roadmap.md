@@ -3,7 +3,7 @@
 ## Roadmap
 
 1. ~~products with a set stock~~
-1. ability to buy a certain amount of a product ([#17](https://github.com/roules-dev/ShopBot/issues/17))
+1. ~~ability to buy a certain amount of a product ([#17](https://github.com/roules-dev/ShopBot/issues/17))~~
 1. removing items for inventories - and bulk removing of an item. ([#14](https://github.com/roules-dev/ShopBot/issues/14))
 1. admin actions logging ([#18](https://github.com/roules-dev/ShopBot/issues/18))
 1. item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
@@ -17,13 +17,14 @@
 - [x] Shops reserved for specific roles
 - [x] New settings system
 - [x] Products with a set stock
-- [ ] ability to buy a set amount ([#17](https://github.com/roules-dev/ShopBot/issues/17))
+- [x] ability to buy a set amount ([#17](https://github.com/roules-dev/ShopBot/issues/17))
 - [x] multi language support
 - [ ] permanently displayed shops ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] allowing users to display inventory publicly ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] log admin actions to the log channel ([#18](https://github.com/roules-dev/ShopBot/issues/18))
 - [ ] multi-currency items (and thus no more shop-wide currency / leave it optional ?) ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
+- [ ] shop wide discount
 
 ### Code refactoring
 

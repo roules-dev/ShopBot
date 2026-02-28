@@ -5,9 +5,6 @@ import { ComponentSeparator, ExtendedComponent } from "@/ui-components/extended-
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js"
 
 
-
-
-
 export type UserInterfaceInteraction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction
 export type UserInterfaceComponentBuilder = ButtonBuilder | StringSelectMenuBuilder | RoleSelectMenuBuilder | ChannelSelectMenuBuilder | UserSelectMenuBuilder
 
