@@ -1,6 +1,6 @@
 import { replyErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { Events, BaseInteraction, InteractionType, ChatInputCommandInteraction, ChannelType } from "discord.js"
+import { BaseInteraction, ChannelType, ChatInputCommandInteraction, Events, InteractionType } from "discord.js"
 
 
 
@@ -24,11 +24,11 @@ async function handleSlashCommand(interaction: ChatInputCommandInteraction) {
     if (!command) return
     if (interaction?.channel?.type === ChannelType.DM) return
     try {
-        PrettyLog.info(`${interaction.user.username} (${interaction.user.id}) in #${interaction?.channel?.name} (${interaction?.channel?.id}) triggered the command '/${interaction.commandName}'`)
+        PrettyLog.info(`${interaction.user.username} (${interaction.user.id}) in #${interaction?.channel?.name} (${interaction?.channel?.id}) triggered the command "/${interaction.commandName}"`)
         await command.execute(interaction.client, interaction)
     } catch (error: unknown) {
         console.error(error)
-        PrettyLog.error(`Failed to execute the command '/${interaction.commandName}' (user: ${interaction.user.username} (${interaction.user.id}) in #${interaction?.channel?.name} (${interaction?.channel?.id}))`)
+        PrettyLog.error(`Failed to execute the command "/${interaction.commandName}" (user: ${interaction.user.username} (${interaction.user.id}) in #${interaction?.channel?.name} (${interaction?.channel?.id}))`)
         
         await replyErrorMessage(interaction)
     }

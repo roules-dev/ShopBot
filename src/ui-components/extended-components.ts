@@ -1,5 +1,5 @@
 import { UserInterfaceComponentBuilder } from "@/user-interfaces/user-interfaces.js"
-import { ComponentType, InteractionCollector, ButtonInteraction, StringSelectMenuInteraction, MessageComponentInteraction, ReadonlyCollection, InteractionCallbackResponse, MessageComponentType } from "discord.js"
+import { ButtonInteraction, ComponentType, InteractionCallbackResponse, InteractionCollector, MessageComponentInteraction, MessageComponentType, ReadonlyCollection, StringSelectMenuInteraction } from "discord.js"
 
 export abstract class ExtendedComponent {
     abstract componentType: ComponentType
@@ -22,8 +22,8 @@ export abstract class ExtendedComponent {
 
         if (collector == undefined) return
 
-        collector.on('collect', (interaction) => this.onCollect(interaction))
-        collector.on('end', (collected) => this.onEnd(collected))
+        collector.on("collect", (interaction) => this.onCollect(interaction))
+        collector.on("end", (collected) => this.onEnd(collected))
     }
 
     public destroyCollector() {
@@ -43,6 +43,4 @@ export abstract class ExtendedComponent {
     }
 } 
 
-export class ComponentSeparator {
-    
-}
+export class ComponentSeparator {}

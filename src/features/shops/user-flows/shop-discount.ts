@@ -11,7 +11,7 @@ import { Shop } from "../database/shops-types.js"
 
 
 export class DiscountCodeCreateFlow extends UserFlow {
-    public override id: string = 'discount-code-create'
+    public override id: string = "discount-code-create"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
     private selectedShop: Shop | null = null
@@ -24,8 +24,8 @@ export class DiscountCodeCreateFlow extends UserFlow {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
-        const discountCode = interaction.options.getString('code')?.replaceSpaces('').toUpperCase()
-        const discountAmount = interaction.options.getInteger('amount')
+        const discountCode = interaction.options.getString("code")?.replaceSpaces("").toUpperCase()
+        const discountAmount = interaction.options.getInteger("amount")
 
         if (!discountCode || !discountAmount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
@@ -69,7 +69,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000
@@ -116,7 +116,7 @@ enum DiscountCodeRemoveStage {
 }
 
 export class DiscountCodeRemoveFlow extends UserFlow {
-    public override id: string = 'discount-code-remove'
+    public override id: string = "discount-code-remove"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
     private stage: DiscountCodeRemoveStage = DiscountCodeRemoveStage.SELECT_SHOP
@@ -180,14 +180,14 @@ export class DiscountCodeRemoveFlow extends UserFlow {
                 customId: `${this.id}+submit`,
                 time: 120_000,
                 label: t("defaultComponents.submitShopButton"),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
             (interaction: ButtonInteraction) => {
                 const shopDiscountCodes = this.selectedShop?.discountCodes
 
-                if (!shopDiscountCodes || Object.keys(shopDiscountCodes).length == 0) return updateAsErrorMessage(interaction, 'The selected shop has no discount codes')
+                if (!shopDiscountCodes || Object.keys(shopDiscountCodes).length == 0) return updateAsErrorMessage(interaction, "The selected shop has no discount codes")
 
                 this.changeStage(DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE)
                 return this.updateInteraction(interaction)
@@ -220,7 +220,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
                 customId: `${this.id}+remove-discount-code`,
                 time: 120_000,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '⛔'},
+                emoji: {name: "⛔"},
                 style: ButtonStyle.Danger,
                 disabled: true
             },
@@ -232,7 +232,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
                 label: t("defaultComponents.changeShopButton"),
-                emoji: {name: '📝'},
+                emoji: {name: "📝"},
                 style: ButtonStyle.Secondary
             },
             (interaction: ButtonInteraction) => {

@@ -4,10 +4,10 @@ export const locale = {
         "default": "An error occured while executing this command, please try again later.",
         "invalidSubcommand": "Invalid subcommand",
         "insufficientParameters": "Insufficient parameters",
-        "noShops": "There isn't any shop.\n-# Use `/shops-manage create` to create a new one",
-        "noCurrencies": "There isn't any currency.\n-# Use `/currencies-manage create` to create a new currency",
+        "noShops": "There isn"t any shop.\n-# Use `/shops-manage create` to create a new one",
+        "noCurrencies": "There isn"t any currency.\n-# Use `/currencies-manage create` to create a new currency",
         "noProducts": "The selected shop has no products",
-        "notOnlyEmojisInName": "The name can't contain only custom emojis",
+        "notOnlyEmojisInName": "The name can"t contain only custom emojis",
         "shopDoesNotExist": "Shop does not exist",
         "shopAlreadyExists": "Shop already exists",
         "invalidPosition": "Invalid position",
@@ -29,7 +29,7 @@ export const locale = {
             "options": {
                 "view-account": {
                     "name": "view-account",
-                    "description": "View a user's account",
+                    "description": "View a user"s account",
                     "options": {
                         "target": {
                             "name": "target",
@@ -75,7 +75,7 @@ export const locale = {
                         },
                         "amount": {
                             "name": "amount",
-                            "description": "The amount of money to take. If you want to take all target's money, you'll be able to do it later"
+                            "description": "The amount of money to take. If you want to take all target"s money, you"ll be able to do it later"
                         }
                     }
                 }
@@ -353,8 +353,8 @@ export const locale = {
     "extendedComponents": {
         "confirmationModal": {
             "title": "⚠️ Are you sure?",
-            "cantBeUndone": "This action can't be undone",
-            "selectYes": "Select 'Yes' to confirm",
+            "cantBeUndone": "This action can"t be undone",
+            "selectYes": "Select "Yes" to confirm",
             "yes": "Yes",
             "no": "No"
         },
@@ -397,10 +397,10 @@ export const locale = {
         "account": {
             "embeds": {
                 "account": {
-                    "title": "💰 _{user}_'s Account"
+                    "title": "💰 _{user}_"s Account"
                 },
                 "inventory": {
-                    "title": "💼 _{user}_'s Inventory"
+                    "title": "💼 _{user}_"s Inventory"
                 }
             },
             "components": {
@@ -436,8 +436,8 @@ export const locale = {
                 "success": "You successfully bought {quantity}{product} in {shop} for {price}"
             },
             "errorMessages": {
-                "cantBuyHere": "You can't buy products from this shop",
-                "notEnoughMoney": "You don't have enough {currency} to buy this product.",
+                "cantBuyHere": "You can"t buy products from this shop",
+                "notEnoughMoney": "You don"t have enough {currency} to buy this product.",
                 "productNoLongerAvailable": "This product is no longer available."
             },
             "components": {
@@ -463,7 +463,7 @@ export const locale = {
     "userFlows": {
         "accountGive": {
             "errorMessages": {
-                "cantGiveMoney": "Can't give money."
+                "cantGiveMoney": "Can"t give money."
             },
             "messages": {
                 "default": "Give {amount} {currency} to {user}",
@@ -477,7 +477,7 @@ export const locale = {
         },
         "accountTake": {
             "errorMessages": {
-                "cantTakeMoney": "Can't take money."
+                "cantTakeMoney": "Can"t take money."
             },
             "messages": {
                 "default": "Take {amount} {currency} from {user}",
@@ -520,11 +520,11 @@ export const locale = {
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveCurrency": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
+                "cantRemoveCurrency": "⚠️ Can"t remove {currency}! The following shops are still using it : {shops}.",
                 "changeShopsCurrencies": "Please consider removing them (`/shops-manage remove`) or changing their currency (`/shops-manage change-currency`) before removing the currency."
             },
             "messages": {
-                "default": "Remove {currency}, ⚠️ __**it will also take it from user's accounts**__",
+                "default": "Remove {currency}, ⚠️ __**it will also take it from user"s accounts**__",
                 "success": "You successfully removed the currency {currency}"
             },
             "components": {
@@ -574,7 +574,7 @@ export const locale = {
         },
         "productEdit": {
             "errorMessages": {
-                "noShopsWithProducts": "There isn't any shop with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
+                "noShopsWithProducts": "There isn"t any shop with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
             },
             "messages": {
                 "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
@@ -595,7 +595,7 @@ export const locale = {
         },
         "shopCreate": {
             "errorMessages": {
-                "cantCreateShop": "Can't create a new shop."
+                "cantCreateShop": "Can"t create a new shop."
             },
             "messages": {
                 "default": "Create the shop {shop} with currency {currency}",

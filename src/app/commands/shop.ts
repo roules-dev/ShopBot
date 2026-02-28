@@ -1,9 +1,9 @@
 import { ShopUserInterface } from "@/features/shops/user-interfaces/shop.js"
-import { SlashCommandBuilder, Client, ChatInputCommandInteraction } from "discord.js"
+import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
-    .setName('shop')
-    .setDescription('Display shops and buy products')
+    .setName("shop")
+    .setDescription("Display shops and buy products")
 
 
 export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {

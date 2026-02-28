@@ -8,12 +8,12 @@ import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-in
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { BuyProductUserInterface } from "./buy.js"
 import { formattedProductName } from "../utils/products.js"
+import { BuyProductUserInterface } from "./buy.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
-    public override id = 'shop-ui'
+    public override id = "shop-ui"
     protected override components: Map<string, ExtendedComponent> = new Map()
     protected override embed: EmbedBuilder | null = null
 
@@ -40,7 +40,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         return true
     }
 
-    protected override getMessage(): string { return '' }
+    protected override getMessage(): string { return "" }
 
     protected override initComponents(): void {
         const selectShopMenu = new ExtendedStringSelectMenuComponent(
@@ -62,7 +62,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             {
                 customId: `${this.id}+buy`,
                 label: t(`${this.locale}.components.buyButton`),
-                emoji: {name: '🪙'},
+                emoji: {name: "🪙"},
                 style: ButtonStyle.Primary,
                 time: 120_000,
                 disabled: this.isBuyButtonDisabled()
@@ -79,7 +79,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             {
                 customId: `${this.id}+show-account`,
                 label: t(`${this.locale}.components.showAccountButton`),
-                emoji: {name: '💰'},
+                emoji: {name: "💰"},
                 style: ButtonStyle.Secondary,
                 time: 120_000,
             },
@@ -102,7 +102,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         if (!this.selectedShop) return
 
         const reservedToString = this.selectedShop.reservedTo !== undefined ? 
-            ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ''
+            ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         const shopEmbed = new EmbedBuilder()
             .setTitle(`${this.selectedShop.name}`)
@@ -128,7 +128,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         if (!shopEmbed || !this.selectedShop) return
 
         const reservedToString = this.selectedShop.reservedTo !== undefined ? 
-            ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ''
+            ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         shopEmbed.setTitle(`${this.selectedShop.name}`)
         shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`${this.locale}.embeds.shop.products`)} `)
@@ -141,13 +141,13 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override getEmbedFields(): APIEmbedField[] {
         if (this.selectedShop == null) return []
-        if (this.selectedShop.products.size == 0) return [{ name: '\u200b', value: `🛒 ${italic(t(`${this.locale}.embeds.shop.noProduct`))}` }]
+        if (this.selectedShop.products.size == 0) return [{ name: "\u200b", value: `🛒 ${italic(t(`${this.locale}.embeds.shop.noProduct`))}` }]
 
         const fields: APIEmbedField[] = []
 
         this.selectedShop.products.forEach(product => {
-            const descString = product.description ? product.description : '\u200b'
-            const amountString = product.stock == undefined ?  '' : 
+            const descString = product.description ? product.description : "\u200b"
+            const amountString = product.stock == undefined ?  "" : 
                 product.stock == 0 ? ` (${t(`${this.locale}.embeds.shop.outOfStock`)})` : 
                 ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 

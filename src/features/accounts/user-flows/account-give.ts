@@ -11,7 +11,7 @@ import { getOrCreateAccount, setAccountCurrencyAmount } from "../database/accoun
 
 
 export class AccountGiveFlow extends UserFlow {
-    public id = 'account-give'
+    public id = "account-give"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     protected selectedCurrency: Currency | null = null
@@ -25,8 +25,8 @@ export class AccountGiveFlow extends UserFlow {
         const currencies = getCurrencies()
         if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
     
-        const target = interaction.options.getUser('target')
-        const amount = interaction.options.getNumber('amount')
+        const target = interaction.options.getUser("target")
+        const amount = interaction.options.getNumber("amount")
     
         if (!target || !amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
@@ -67,7 +67,7 @@ export class AccountGiveFlow extends UserFlow {
             { 
                 customId: `${this.id}+submit`, 
                 label: t(`${this.locale}.components.submitButton`), 
-                emoji: '✅', 
+                emoji: "✅", 
                 style: ButtonStyle.Success, 
                 disabled: true,
                 time: 120_000, 
@@ -120,15 +120,15 @@ export class AccountGiveFlow extends UserFlow {
 export class BulkAccountGiveFlow extends AccountGiveFlow {
     private targetRole: Role | APIRole | null = null
 
-    public override id = 'bulk-account-give'
+    public override id = "bulk-account-give"
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
 
         const currencies = getCurrencies()
         if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
     
-        const targetRole = interaction.options.getRole('role')
-        const amount = interaction.options.getNumber('amount')
+        const targetRole = interaction.options.getRole("role")
+        const amount = interaction.options.getNumber("amount")
     
         if (!targetRole || !amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 

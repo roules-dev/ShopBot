@@ -12,12 +12,12 @@ import { getCurrencies, updateCurrency } from "../database/currencies-database.j
 import { Currency } from "../database/currencies-types.js"
 
 export enum EditCurrencyOption {
-    NAME = 'name',
-    EMOJI = 'emoji'
+    NAME = "name",
+    EMOJI = "emoji"
 }
 
 export class EditCurrencyFlow extends UserFlow {
-    id = 'currency-edit'
+    id = "currency-edit"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     private selectedCurrency: Currency | null = null
@@ -69,7 +69,7 @@ export class EditCurrencyFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: this.selectedCurrency == null,
                 time: 120_000,
@@ -115,10 +115,10 @@ export class EditCurrencyFlow extends UserFlow {
     private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption): string {
         switch (option) {
             case EditCurrencyOption.NAME:
-                return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ''
+                return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ""
             case EditCurrencyOption.EMOJI: {
                 const emojiOption = interaction.options.getString(`new-${option}`)
-                return emojiOption?.match(EMOJI_REGEX)?.[0] || ''
+                return emojiOption?.match(EMOJI_REGEX)?.[0] || ""
             }
             default:
                 assertNeverReached(option)

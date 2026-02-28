@@ -21,11 +21,11 @@ enum EditProductFlowStage {
 }
 
 export enum EditProductOption {
-    NAME = 'name',
-    DESCRIPTION = 'description',
-    PRICE = 'price',
-    EMOJI = 'emoji',
-    AMOUNT = 'amount'
+    NAME = "name",
+    DESCRIPTION = "description",
+    PRICE = "price",
+    EMOJI = "emoji",
+    AMOUNT = "amount"
 }
 
 export class EditProductFlow extends UserFlow {
@@ -108,7 +108,7 @@ export class EditProductFlow extends UserFlow {
                 customId: `${this.id}+submit-shop`,
                 time: 120_000,
                 label: t("defaultComponents.submitShopButton"),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
@@ -146,7 +146,7 @@ export class EditProductFlow extends UserFlow {
                 customId: `${this.id}+edit-product`,
                 time: 120_000,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true
             },
@@ -158,7 +158,7 @@ export class EditProductFlow extends UserFlow {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
                 label: t("defaultComponents.changeShopButton"),
-                emoji: {name: '📝'},
+                emoji: {name: "📝"},
                 style: ButtonStyle.Secondary
             },
             (interaction: ButtonInteraction) => {

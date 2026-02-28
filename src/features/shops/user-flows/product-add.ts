@@ -37,14 +37,14 @@ export class AddProductFlow extends UserFlow {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
-        const productName = interaction.options.getString('name')?.replaceSpaces()
-        const productDescription = interaction.options.getString('description')?.replaceSpaces() || ''
-        const productPrice = interaction.options.getNumber('price')
+        const productName = interaction.options.getString("name")?.replaceSpaces()
+        const productDescription = interaction.options.getString("description")?.replaceSpaces() || ""
+        const productPrice = interaction.options.getNumber("price")
 
-        const productEmojiOption = interaction.options.getString('emoji')
-        const productEmoji = productEmojiOption?.match(EMOJI_REGEX)?.[0] || ''
+        const productEmojiOption = interaction.options.getString("emoji")
+        const productEmoji = productEmojiOption?.match(EMOJI_REGEX)?.[0] || ""
         
-        const productAmount = interaction.options.getInteger('amount')
+        const productAmount = interaction.options.getInteger("amount")
 
         if (!productName || productPrice == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     
@@ -68,13 +68,13 @@ export class AddProductFlow extends UserFlow {
     }
     
     protected getMessage(): string {
-        const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ''
-        const nameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ''}${this.productName}`)
+        const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
+        const nameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
 
         const message = t(`${this.locale}.messages.default`, {
             product: nameString,
             price: `${this.productPrice!}`,
-            currency: this.selectedShop?.currency.name || '[ ]',
+            currency: this.selectedShop?.currency.name || "[ ]",
             shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
             description: descString
         })
@@ -101,7 +101,7 @@ export class AddProductFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-shop`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000
@@ -125,8 +125,8 @@ export class AddProductFlow extends UserFlow {
 
         const [error, product] = await addProduct(this.selectedShop.id, { 
             name: this.productName, 
-            description: this.productDescription || '', 
-            emoji: this.productEmoji || '', 
+            description: this.productDescription || "", 
+            emoji: this.productEmoji || "", 
             price: this.productPrice,
             stock: this.productAmount ?? undefined
         })
@@ -158,7 +158,7 @@ export class AddActionProductFlow extends AddProductFlow {
     private actionSetupCompleted: boolean = false
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
-        const productActionType = interaction.options.getString('action')
+        const productActionType = interaction.options.getString("action")
 
         if (productActionType != null && !isProductActionType(productActionType)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
@@ -173,18 +173,18 @@ export class AddActionProductFlow extends AddProductFlow {
                 return super.getMessage()
 
             case AddActionProductFlowStage.SETUP_ACTION: {
-                const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ''
-                const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ''}${this.productName}`)
+                const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
+                const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
 
                 const productString = t(`${this.locale}.messages.default`, {
                     product: productNameString,
                     price: `${this.productPrice!}`,
-                    currency: this.selectedShop?.currency.name || '[ ]',
+                    currency: this.selectedShop?.currency.name || "[ ]",
                     shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
                     description: descString
                 })
 
-                let actionString = ''
+                let actionString = ""
                 
                 // TODO: refactor
                 switch (this.productActionType) {
@@ -206,9 +206,9 @@ export class AddActionProductFlow extends AddProductFlow {
                             && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId !== undefined 
                             && productActionAsGiveCurrency != undefined 
 
-                        const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : 'Unset'
+                        const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : "Unset"
                         const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId) : undefined
-                        const currencyString = currency?.name || '[ ]'
+                        const currencyString = currency?.name || "[ ]"
 
                         actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
                         break
@@ -265,12 +265,12 @@ export class AddActionProductFlow extends AddProductFlow {
                     {
                         customId: `${this.id}+set-amount`,
                         label: t(`${this.locale}.components.setAmountButton`),
-                        emoji: { name: '🪙' },
+                        emoji: { name: "🪙" },
                         style: ButtonStyle.Secondary,
                         time: 120_000
                     },
                     async (interaction: ButtonInteraction) => {
-                        const [modalSubmit, input] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: '0' })
+                        const [modalSubmit, input] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: "0" })
 
                         const amount = parseInt(input)
                         if (isNaN(amount) || amount < 0) return this.updateInteraction(modalSubmit)
@@ -298,7 +298,7 @@ export class AddActionProductFlow extends AddProductFlow {
             {
                 customId: `${this.id}+submit`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: '✅',
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000
@@ -310,7 +310,7 @@ export class AddActionProductFlow extends AddProductFlow {
             {
                 customId: `${this.id}+change-shop`,
                 label: t("defaultComponents.changeShopButton"),
-                emoji: {name: '📝'},
+                emoji: {name: "📝"},
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
@@ -366,8 +366,8 @@ export class AddActionProductFlow extends AddProductFlow {
 
         const [error, product] = await addProduct(this.selectedShop.id, { 
             name: this.productName, 
-            description: this.productDescription || '', 
-            emoji: this.productEmoji || '', 
+            description: this.productDescription || "", 
+            emoji: this.productEmoji || "", 
             price: this.productPrice,
             action: this.productAction 
         })

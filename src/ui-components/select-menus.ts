@@ -3,8 +3,6 @@ import { ExtendedComponent } from "./extended-components.js"
 import { ExtendedSelectMenuOptions } from "./string-select-menu.js"
 
 
-
-
 type SelectMenuComponentTypes = ComponentType.RoleSelect | ComponentType.ChannelSelect | ComponentType.UserSelect
 
 type SelectMenuBuilders<T extends SelectMenuComponentTypes> = 

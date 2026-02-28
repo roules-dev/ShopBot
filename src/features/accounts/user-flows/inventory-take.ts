@@ -15,7 +15,7 @@ import { emptyAccount, getOrCreateAccount, setAccountItemAmount } from "../datab
 
 
 export class InventoryTakeFlow extends UserFlow {
-    public id = 'account-take'
+    public id = "account-take"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     private selectedItem: Product | null = null
@@ -26,8 +26,8 @@ export class InventoryTakeFlow extends UserFlow {
     protected locale = "userFlows.inventoryTake" as const
 
     public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
-        const target = interaction.options.getUser('target')
-        const amount = interaction.options.getNumber('amount')
+        const target = interaction.options.getUser("target")
+        const amount = interaction.options.getNumber("amount")
     
         if (!target || !amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
@@ -80,7 +80,7 @@ export class InventoryTakeFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: '✅',
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000,
@@ -92,7 +92,7 @@ export class InventoryTakeFlow extends UserFlow {
             {
                 customId: `${this.id}+take-all`,
                 label: t(`${this.locale}.components.takeAllButton`),
-                emoji: '🔥',
+                emoji: "🔥",
                 style: ButtonStyle.Danger,
                 disabled: true,
                 time: 120_000,
@@ -112,7 +112,7 @@ export class InventoryTakeFlow extends UserFlow {
             {
                 customId: `${this.id}+empty-inventory`,
                 label: t(`${this.locale}.components.emptyInventoryButton`),
-                emoji: '🗑️',
+                emoji: "🗑️",
                 style: ButtonStyle.Danger,
                 time: 120_000,
             },
@@ -123,7 +123,7 @@ export class InventoryTakeFlow extends UserFlow {
 
                 if (!this.target) return updateAsErrorMessage(modalSubmitInteraction, t("errorMessages.insufficientParameters"))
 
-                const [error] = await emptyAccount(this.target.id, 'currencies')
+                const [error] = await emptyAccount(this.target.id, "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
                 await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target!.id) }))

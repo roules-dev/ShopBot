@@ -15,10 +15,10 @@ String.prototype.ellipsis = function (this : string, max: number) {
 
 String.prototype.removeCustomEmojis = function (this: string): string {
     
-    return this.replace(/<:[a-zA-Z0-9_]{2,32}:[0-9]{17,19}>/g, '')
+    return this.replace(/<:[a-zA-Z0-9_]{2,32}:[0-9]{17,19}>/g, "")
 }
 
-String.prototype.replaceSpaces = function (this: string, by: string = ' '): string{
+String.prototype.replaceSpaces = function (this: string, by: string = " "): string{
     // eslint-disable-next-line no-irregular-whitespace
     return this.replace(/[\s ]/g, by)
 } 

@@ -1,14 +1,14 @@
 import { t } from "@/lib/localization.js"
 import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 
-const YES = 'yes'
-const NO = 'no'
+const YES = "yes"
+const NO = "no"
 
 export async function showConfirmationModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction): Promise<[ModalSubmitInteraction, boolean]> {
     const modalLocale = "extendedComponents.confirmationModal"
 
-    const modalId = 'confirmation-modal'
-    const labelId = 'confirm-select-menu'
+    const modalId = "confirmation-modal"
+    const labelId = "confirm-select-menu"
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
@@ -86,7 +86,7 @@ export async function showSingleInputModal(interaction: MessageComponentInteract
     const filter = (interaction: ModalSubmitInteraction) => interaction.customId === id
     const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
 
-    if (!modalSubmit.isFromMessage()) return [modalSubmit, '']
+    if (!modalSubmit.isFromMessage()) return [modalSubmit, ""]
     await modalSubmit.deferUpdate()
 
     const inputValue = modalSubmit.fields.getTextInputValue(`${id}-input`)
@@ -108,7 +108,7 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
 ): Promise<[ModalSubmitInteraction, string]> {
     const modalLocale = "extendedComponents.editModal"
 
-    const editNormalized = `${edit.toLocaleLowerCase().replaceSpaces('-')}`
+    const editNormalized = `${edit.toLocaleLowerCase().replaceSpaces("-")}`
     const modalId = `edit-${editNormalized}-modal`
 
     return showSingleInputModal(interaction, {

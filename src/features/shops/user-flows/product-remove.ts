@@ -85,7 +85,7 @@ export class RemoveProductFlow extends UserFlow {
                 customId: `${this.id}+submit-shop`,
                 time: 120_000,
                 label: t("defaultComponents.submitShopButton"),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
@@ -123,7 +123,7 @@ export class RemoveProductFlow extends UserFlow {
             {
                 customId: `${this.id}+remove-product`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '⛔'},
+                emoji: {name: "⛔"},
                 style: ButtonStyle.Danger,
                 disabled: true,
                 time: 120_000
@@ -135,7 +135,7 @@ export class RemoveProductFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop`,
                 label: t("defaultComponents.changeShopButton"),
-                emoji: {name: '📝'},
+                emoji: {name: "📝"},
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },

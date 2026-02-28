@@ -8,37 +8,37 @@ import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandB
 
 
 export const data = new SlashCommandBuilder()
-    .setName('currencies-manage') 
-    .setDescription('Manage your currencies')
+    .setName("currencies-manage") 
+    .setDescription("Manage your currencies")
     .addSubcommand(subcommand => subcommand
-        .setName('create')
-        .setDescription('Create a new currency')
+        .setName("create")
+        .setDescription("Create a new currency")
         .addStringOption(option => option
-            .setName('name')
-            .setDescription('The name of the currency')
+            .setName("name")
+            .setDescription("The name of the currency")
             .setRequired(true)
             .setMaxLength(40)
             .setMinLength(1)
         )
         .addStringOption(option => option
-            .setName('emoji')
-            .setDescription('The emoji of the currency')
+            .setName("emoji")
+            .setDescription("The emoji of the currency")
             .setRequired(false)
         )
     )
     .addSubcommand(subcommand => subcommand
-        .setName('remove')
-        .setDescription('Remove the selected currency')
+        .setName("remove")
+        .setDescription("Remove the selected currency")
     )
     .addSubcommandGroup(group => group
-        .setName('edit')
-        .setDescription('Edit a currency')
+        .setName("edit")
+        .setDescription("Edit a currency")
         .addSubcommand(subcommand => subcommand
             .setName(EditCurrencyOption.NAME)
-            .setDescription('Change Name. You will select the currency later')        
+            .setDescription("Change Name. You will select the currency later")        
             .addStringOption(option => option
-                .setName('new-name')
-                .setDescription('The new name of the currency')
+                .setName("new-name")
+                .setDescription("The new name of the currency")
                 .setRequired(true)
                 .setMaxLength(40)
                 .setMinLength(1)
@@ -46,10 +46,10 @@ export const data = new SlashCommandBuilder()
         )
         .addSubcommand(subcommand => subcommand
             .setName(EditCurrencyOption.EMOJI)
-            .setDescription('Change Emoji. You will select the currency later')
+            .setDescription("Change Emoji. You will select the currency later")
             .addStringOption(option => option
-                .setName('new-emoji')
-                .setDescription('The new emoji of the currency (if you just want to remove it write anything)')
+                .setName("new-emoji")
+                .setDescription("The new emoji of the currency (if you just want to remove it write anything)")
                 .setRequired(true)
             )
         )
@@ -62,14 +62,14 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
     const subCommandGroup = interaction.options.getSubcommandGroup()
 
     switch (subCommand) {
-        case 'create':
+        case "create":
             await createCurrencyCommand(client, interaction)
             break
-        case 'remove':
+        case "remove":
             new CurrencyRemoveFlow().start(interaction)
             break 
         default:
-            if (subCommandGroup == 'edit') {
+            if (subCommandGroup == "edit") {
                 const editCurrencyFlow = new EditCurrencyFlow()
                 editCurrencyFlow.start(interaction)
                 break
@@ -80,17 +80,17 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
 }
 
 export async function createCurrencyCommand(client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
-    const currencyName = interaction.options.getString('name')?.replaceSpaces()
+    const currencyName = interaction.options.getString("name")?.replaceSpaces()
     if (!currencyName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-    const emojiOption = interaction.options.getString('emoji')
-    const emojiString = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
+    const emojiOption = interaction.options.getString("emoji")
+    const emojiString = emojiOption?.match(EMOJI_REGEX)?.[0] || ""
 
     if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
     
     const [error, _] = await createCurrency(currencyName, emojiString)
     if (!error) {
-        const currencyNameString = bold(`${emojiString ? `${emojiString} ` : ''}${currencyName}`)
+        const currencyNameString = bold(`${emojiString ? `${emojiString} ` : ""}${currencyName}`)
         await replySuccessMessage(interaction, t("userFlows.currencyCreate.messages.success", { currency: currencyNameString }))
 
         return

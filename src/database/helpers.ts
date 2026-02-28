@@ -14,11 +14,11 @@ export function update<T extends object, O extends Partial<T>>(
         if (handlers && handlers[key] !== undefined) {
             const handler = handlers[key]
 
-            // forced cast, because TS can't correctly infer here
+            // forced cast, because TS can"t correctly infer here
             handler(entry, value as NotUndefined<O[typeof key]>)
         }
         else {
-            // forced cast, because TS can't correctly infer here
+            // forced cast, because TS can"t correctly infer here
             entry[key as keyof T] = value as T[keyof T]
         }
     }

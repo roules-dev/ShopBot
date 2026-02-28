@@ -9,5 +9,5 @@ export function err<const R extends string, E extends { message: R }>(error: E):
 }
 
 export function assertNeverReached(_: never): never {
-    throw new Error('Did not expect to get here')
+    throw new Error("Did not expect to get here")
 }

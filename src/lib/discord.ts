@@ -44,8 +44,8 @@ function getSuccessMessage(successMessage: string) {
 export async function logToDiscord(guild: Guild, message: string) {
 
     try {
-        const logChannelSetting = getSettings().get('logChannelId')
-        if (!logChannelSetting?.value || logChannelSetting.type !== 'channelId') return
+        const logChannelSetting = getSettings().get("logChannelId")
+        if (!logChannelSetting?.value || logChannelSetting.type !== "channelId") return
         const logChannel = await guild.channels.fetch(logChannelSetting.value)
         if (!(logChannel instanceof TextChannel)) return
 

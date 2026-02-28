@@ -13,7 +13,7 @@ import { Currency } from "../database/currencies-types.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
-    id = 'currency-remove'
+    id = "currency-remove"
     protected components: Map<string, ExtendedComponent> = new Map()
     private selectedCurrency: Currency | null = null
 
@@ -48,7 +48,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent({
             customId: `${this.id}+submit`,
             label: t(`${this.locale}.components.submitButton`),
-            emoji: {name: '⛔'},
+            emoji: {name: "⛔"},
             style: ButtonStyle.Danger,
             disabled: this.selectedCurrency == null,
             time: 120_000,
@@ -70,10 +70,10 @@ export class CurrencyRemoveFlow extends UserFlow {
             const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency.id)
 
             if (shopsWithCurrency.size > 0) {
-                const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(', ')
+                const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
 
                 const errorMessage = t(`${this.locale}.errorMessages.cantRemoveCurrency`, {
-                    currency: bold(this.selectedCurrency.name || ''),
+                    currency: bold(this.selectedCurrency.name || ""),
                     shops: shopsWithCurrencyNames
                 })
                 const tipMessage = t(`${this.locale}.errorMessages.changeShopsCurrencies`)
@@ -93,7 +93,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
-        const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency?.id || '')
+        const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency?.id || "")
 
         submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
     }
@@ -106,7 +106,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         const [error] = await takeCurrencyFromAccounts(this.selectedCurrency.id)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currencyName = this.selectedCurrency.name || ''
+        const currencyName = this.selectedCurrency.name || ""
 
         const [error2] = await removeCurrency(this.selectedCurrency.id)
         if (error2) return updateAsErrorMessage(interaction, error2.message)

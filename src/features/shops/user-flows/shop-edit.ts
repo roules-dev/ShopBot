@@ -15,10 +15,10 @@ import { Shop } from "../database/shops-types.js"
 
 
 export const EDIT_SHOP_OPTIONS = {
-    Name: 'name',
-    Description: 'description',
-    Emoji: 'emoji',
-    ReservedTo: 'reserved-to-role'
+    Name: "name",
+    Description: "description",
+    Emoji: "emoji",
+    ReservedTo: "reserved-to-role"
 } as const
 
 type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
@@ -32,14 +32,14 @@ function getShopOptionName(option: EditShopOption): string {
         case EDIT_SHOP_OPTIONS.Emoji:
             return option
         case EDIT_SHOP_OPTIONS.ReservedTo:
-            return 'reservedTo'
+            return "reservedTo"
         default:
             assertNeverReached(option)
     }
 }
 
 export class EditShopFlow extends UserFlow {
-    public override id: string = 'edit-shop'
+    public override id: string = "edit-shop"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
     private selectedShop: Shop | null = null
@@ -102,7 +102,7 @@ export class EditShopFlow extends UserFlow {
                 customId: `${this.id}+submit`,
                 time: 120_000,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
@@ -126,7 +126,7 @@ export class EditShopFlow extends UserFlow {
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const oldName = this.selectedShop?.name || ''
+        const oldName = this.selectedShop?.name || ""
 
         const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
@@ -147,18 +147,18 @@ export class EditShopFlow extends UserFlow {
 
         switch (subcommand) {
             case EDIT_SHOP_OPTIONS.Name:
-                updateValue = interaction.options.getString('new-name')?.replaceSpaces() ?? t("defaultComponents.unset")
+                updateValue = interaction.options.getString("new-name")?.replaceSpaces() ?? t("defaultComponents.unset")
                 break
             case EDIT_SHOP_OPTIONS.Description:
-                updateValue = interaction.options.getString('new-description')?.replaceSpaces() ?? t("defaultComponents.unset")
+                updateValue = interaction.options.getString("new-description")?.replaceSpaces() ?? t("defaultComponents.unset")
                 break
             case EDIT_SHOP_OPTIONS.Emoji: {
-                const emojiOption = interaction.options.getString('new-emoji')
+                const emojiOption = interaction.options.getString("new-emoji")
                 updateValue = emojiOption?.match(EMOJI_REGEX)?.[0] ?? t("defaultComponents.unset")
                 break
             }
             case EDIT_SHOP_OPTIONS.ReservedTo:
-                updateValue = interaction.options.getRole('new-role')?.id ?? t("defaultComponents.unset")
+                updateValue = interaction.options.getRole("new-role")?.id ?? t("defaultComponents.unset")
                 break
             default:
                 assertNeverReached(subcommand)
@@ -176,7 +176,7 @@ export class EditShopFlow extends UserFlow {
     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string | null {
         switch (subcommand) {
             case EDIT_SHOP_OPTIONS.ReservedTo: {
-                const role = interaction.options.getRole('new-role')
+                const role = interaction.options.getRole("new-role")
                 if (!role) return t("defaultComponents.unset")
                 return roleMention(role.id)
             }
@@ -192,7 +192,7 @@ enum EditShopCurrencyStage {
 }
 
 export class EditShopCurrencyFlow extends UserFlow {
-    public override id: string = 'edit-shop-currency'
+    public override id: string = "edit-shop-currency"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
     private stage: EditShopCurrencyStage = EditShopCurrencyStage.SELECT_SHOP
@@ -254,7 +254,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 customId: `${this.id}+submit-shop`,
                 time: 120_000,
                 label: t("defaultComponents.submitShopButton"),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
             },
@@ -289,7 +289,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 customId: `${this.id}+submit-currency`,
                 time: 120_000,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: '✅'},
+                emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true
             },
@@ -301,7 +301,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 customId: `${this.id}+change-shop`,
                 time: 120_000,
                 label: t("defaultComponents.changeShopButton"),
-                emoji: {name: '📝'},
+                emoji: {name: "📝"},
                 style: ButtonStyle.Secondary
             },
             (interaction: ButtonInteraction) => {
@@ -365,7 +365,7 @@ export class EditShopCurrencyFlow extends UserFlow {
 
 
 export class ShopReorderFlow extends UserFlow {
-    public id = 'shop-reorder'
+    public id = "shop-reorder"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     private selectedShop: Shop | null = null
@@ -421,8 +421,8 @@ export class ShopReorderFlow extends UserFlow {
             {
                 customId: `${this.id}+up`,
                 time: 120_000,
-                label: '',
-                emoji: {name: '⬆️'},
+                label: "",
+                emoji: {name: "⬆️"},
                 style: ButtonStyle.Primary,
                 disabled: this.selectedPosition != null && this.selectedPosition < getShops().size,
             },
@@ -437,8 +437,8 @@ export class ShopReorderFlow extends UserFlow {
             {
                 customId: `${this.id}+down`,
                 time: 120_000,
-                label: '',
-                emoji: {name: '⬇️'},
+                label: "",
+                emoji: {name: "⬇️"},
                 style: ButtonStyle.Primary,
                 disabled: this.selectedPosition != null && this.selectedPosition > 1,
             },
@@ -455,7 +455,7 @@ export class ShopReorderFlow extends UserFlow {
                 customId: `${this.id}+submit-new-position`,
                 time: 120_000,
                 label: t(`${this.locale}.components.submitNewPositionButton`),
-                emoji: {name: ''},
+                emoji: {name: ""},
                 style: ButtonStyle.Success,
                 disabled: true,
             },

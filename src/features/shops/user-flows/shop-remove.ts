@@ -10,7 +10,7 @@ import { Shop } from "../database/shops-types.js"
 
 
 export class ShopRemoveFlow extends UserFlow {
-    public id = 'shop-remove'
+    public id = "shop-remove"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     private selectedShop: Shop | null = null
@@ -52,7 +52,7 @@ export class ShopRemoveFlow extends UserFlow {
             customId: `${this.id}+submit`,
             time: 120_000,
             label: t(`${this.locale}.components.submitButton`),
-            emoji: {name: '⛔'},
+            emoji: {name: "⛔"},
             style: ButtonStyle.Danger,
             disabled: true
         }, (interaction: ButtonInteraction) => this.success(interaction))

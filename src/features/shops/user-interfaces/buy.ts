@@ -16,7 +16,7 @@ import { formattedProductName } from "../utils/products.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
-    public override id = 'buy-product-ui'
+    public override id = "buy-product-ui"
     protected override components = new Map()
 
     private selectedShop: Shop
@@ -43,12 +43,12 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     protected override getMessage(): string {
-        const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ''
-        const priceString = this.priceString() != '' ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ''
+        const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ""
+        const priceString = this.priceString() != "" ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ""
 
         const message = t(`${this.locale}.messages.default`, {
             product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
-            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : '',
+            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
             shop: bold(this.selectedShop.name),
         })
 
@@ -73,7 +73,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const plusButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+plus`,
-                emoji: '➕',
+                emoji: "➕",
                 style: ButtonStyle.Primary,
                 time: 120_000,
             },
@@ -87,7 +87,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             {
                 customId: `${this.id}+set-quantity`,
                 label: t(`${this.locale}.components.setQuantityButton`),
-                emoji: '🔢',
+                emoji: "🔢",
                 style: ButtonStyle.Secondary,
                 time: 120_000,
             },
@@ -112,8 +112,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const minusButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+minus`,
-                label: '',
-                emoji: '➖',
+                label: "",
+                emoji: "➖",
                 style: ButtonStyle.Primary,
                 time: 120_000,
             },
@@ -127,7 +127,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             {
                 customId: `${this.id}+buy`,
                 label: t(`${this.locale}.components.buyButton`),
-                emoji: '✅',
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 time: 120_000,
             },
@@ -138,7 +138,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             {
                 customId: `${this.id}+discount-code`,
                 label: t(`${this.locale}.components.discountCodeButton`),
-                emoji: '🎁',
+                emoji: "🎁",
                 style: ButtonStyle.Secondary,
                 time: 120_000,
             },
@@ -149,7 +149,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.components.set(plusButton.customId, plusButton)
         this.components.set(setQuantityButton.customId, setQuantityButton)
         this.components.set(minusButton.customId, minusButton)
-        this.components.set('separator', new ComponentSeparator())
+        this.components.set("separator", new ComponentSeparator())
         this.components.set(buyButton.customId, buyButton)
         this.components.set(discountCodeButton.customId, discountCodeButton)
     }
@@ -187,7 +187,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             id: modalId,
             title: t(`${this.locale}.components.setDiscountCodeModal.title`),
             inputLabel: t(`${this.locale}.components.setDiscountCodeModal.input`),
-            placeholder: 'XXXXXXX',
+            placeholder: "XXXXXXX",
             required: true,
             minLength: 6,
             maxLength: 8
@@ -244,7 +244,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private priceString(): string {
-        if (!this.selectedProduct) return ''
+        if (!this.selectedProduct) return ""
 
         const priceAsString = this.getPrice().toFixed(2)
 
@@ -257,7 +257,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private async buyActionProduct(interaction: UserInterfaceInteraction): Promise<unknown> {
         if (!this.selectedProduct) return
 
-        let actionMessage = ''
+        let actionMessage = ""
 
         switch (this.selectedProduct.action?.type) {
             case PRODUCT_ACTION_TYPE.GiveRole: {
@@ -328,22 +328,22 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const productName = formattedProductName(product)
         const shopName = this.selectedShop.name
         const priceString = this.priceString()
-        const discountCodeString = this.discountCode ? this.discountCode : 'none'
+        const discountCodeString = this.discountCode ? this.discountCode : "none"
 
         const message = t(`${this.locale}.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
-            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : '',
+            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
             price: priceString
         })
 
-        const appendixString = appendix ? `\n${appendix}` : ''
+        const appendixString = appendix ? `\n${appendix}` : ""
 
         await updateAsSuccessMessage(interaction, `${message}${appendixString}`)
 
         if (interaction.guild) {
             logToDiscord(interaction.guild, 
-                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${objToString(product.action.options)})` : 'none'}`
+                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${objToString(product.action.options)})` : "none"}`
             )
         }
     }
@@ -353,6 +353,6 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         return this.selectedShop.reservedTo != undefined
             && interaction.member instanceof GuildMember 
-            && !(interaction.member.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has('Administrator'))
+            && !(interaction.member.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has("Administrator"))
     }
 }

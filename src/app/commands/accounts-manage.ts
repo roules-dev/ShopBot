@@ -6,61 +6,61 @@ import { t } from "@/lib/localization.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
-    .setName('accounts-manage') 
-    .setDescription('Manage your users')
+    .setName("accounts-manage") 
+    .setDescription("Manage your users")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(subcommand => subcommand
-        .setName('view-account')
-        .setDescription('View user\'s account')
+        .setName("view-account")
+        .setDescription("View user\"s account")
         .addUserOption(option => option
-            .setName('target')
-            .setDescription('The user you want to see the account of')
+            .setName("target")
+            .setDescription("The user you want to see the account of")
             .setRequired(true)
         )
     )
     .addSubcommand(subcommand => subcommand
-        .setName('give')
-        .setDescription('Give money to target')
+        .setName("give")
+        .setDescription("Give money to target")
         .addUserOption(option => option
-            .setName('target')
-            .setDescription('The user you want to give money')
+            .setName("target")
+            .setDescription("The user you want to give money")
             .setRequired(true)    
         )
         .addNumberOption(option => option
-            .setName('amount')
-            .setDescription('The amount of money to give')
+            .setName("amount")
+            .setDescription("The amount of money to give")
             .setRequired(true)
             .setMaxValue(99999999)
             .setMinValue(1)
         )
     )
     .addSubcommand(subcommand => subcommand
-        .setName('bulk-give')
-        .setDescription('Give money to users with a certain role')
+        .setName("bulk-give")
+        .setDescription("Give money to users with a certain role")
         .addRoleOption(option => option
-            .setName('role')
-            .setDescription('The role you want to give money to')
+            .setName("role")
+            .setDescription("The role you want to give money to")
             .setRequired(true)    
         )
         .addNumberOption(option => option
-            .setName('amount')
-            .setDescription('The amount of money to give')
+            .setName("amount")
+            .setDescription("The amount of money to give")
             .setRequired(true)
             .setMaxValue(99999999)
             .setMinValue(1)
         )
     )
     .addSubcommand(subcommand => subcommand
-        .setName('take')
-        .setDescription('Take money from target')
+        .setName("take")
+        .setDescription("Take money from target")
         .addUserOption(option => option
-            .setName('target')
-            .setDescription('The user you want to take money')
+            .setName("target")
+            .setDescription("The user you want to take money")
             .setRequired(true)    
         )
         .addNumberOption(option => option
-            .setName('amount')
-            .setDescription('The amount of money to take. If you want to take all target\'s money, you will be able to do it later')
+            .setName("amount")
+            .setDescription("The amount of money to take. If you want to take all target\"s money, you will be able to do it later")
             .setRequired(true)
             .setMinValue(1)
         )
@@ -70,8 +70,8 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
     const subCommand = interaction.options.getSubcommand()
 
     switch (subCommand) {
-        case 'view-account': {
-            const user = interaction.options.getUser('target')
+        case "view-account": {
+            const user = interaction.options.getUser("target")
             if (!user) {
                 replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 break
@@ -81,15 +81,15 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
             
             break
         }
-        case 'give':
+        case "give":
             new AccountGiveFlow().start(interaction)    
             break
 
-        case 'bulk-give':
+        case "bulk-give":
             new BulkAccountGiveFlow().start(interaction)
             break
 
-        case 'take':
+        case "take":
             new AccountTakeFlow().start(interaction)
             break
         default:

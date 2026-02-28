@@ -14,7 +14,7 @@ import { Setting } from "../database/settings-types.js"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {
-    public override id = 'settings-ui'
+    public override id = "settings-ui"
     protected override components: Map<string, ExtendedComponent> = new Map()
     protected override embed: EmbedBuilder | null = null
 
@@ -29,7 +29,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     protected locale = "userInterfaces.settings" as const
 
     protected override getMessage(): string {
-        return ''
+        return ""
     }
 
     protected override getInputSize(): number {
@@ -38,7 +38,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected override initComponents(): unknown {
         const settingSelectMenu = new ExtendedStringSelectMenuComponent(
-            { customId: 'settings-select-menu', placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
+            { customId: "settings-select-menu", placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
             getSettings(), 
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selected: Setting) => {
@@ -47,7 +47,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             }
         )
 
-        this.components.set('settings-select-menu', settingSelectMenu)
+        this.components.set("settings-select-menu", settingSelectMenu)
         return
     }
 
@@ -103,13 +103,13 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             }
 
             const displayValue = 
-                type === 'string' ? value : 
-                type === 'bool' ? (value ? '✅' : '❌') :
-                type === 'number' ? `${value}` :
-                type === 'enum' ? this.enumOptionDisplay(setting) :
-                type === 'channelId' ? channelMention(value) :
-                type === 'roleId' ? roleMention(value) :
-                type === 'userId' ? userMention(value) :
+                type === "string" ? value : 
+                type === "bool" ? (value ? "✅" : "❌") :
+                type === "number" ? `${value}` :
+                type === "enum" ? this.enumOptionDisplay(setting) :
+                type === "channelId" ? channelMention(value) :
+                type === "roleId" ? roleMention(value) :
+                type === "userId" ? userMention(value) :
                 assertNeverReached(type)
 
             fields.push({ name, value: displayValue, inline: true })
@@ -118,8 +118,8 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return fields
     }
 
-    private enumOptionDisplay(setting: Setting & { type: 'enum' }) {
-        const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === 'object'
+    private enumOptionDisplay(setting: Setting & { type: "enum" }) {
+        const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === "object"
         
         const displayValue = optionsAreObjects ? 
             (setting.options as { label: string, value: string }[]).find(option => option.value === setting.value)?.label : 
@@ -132,25 +132,25 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         const components: ExtendedComponent[] = []
 
         switch (setting.type) {
-            case 'string': 
+            case "string": 
                 components.push(this.getStringEditorComponent(setting))
                 break
-            case 'bool': 
+            case "bool": 
                 components.push(this.getBoolEditorComponent(setting))
                 break
-            case 'number': 
+            case "number": 
                 components.push(this.getNumberEditorComponent(setting))
                 break
-            case 'channelId': 
+            case "channelId": 
                 components.push(this.getChannelEditorComponent(setting))
                 break
-            case 'roleId': 
+            case "roleId": 
                 components.push(this.getRoleEditorComponent(setting))
                 break
-            case 'userId': 
+            case "userId": 
                 components.push(this.getUserEditorComponent(setting))
                 break
-            case 'enum': 
+            case "enum": 
                 components.push(this.getEnumEditorComponent(setting))
                 break
             default:
@@ -159,9 +159,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         
         const resetSettingButton = new ExtendedButtonComponent(
             {
-                customId: 'edit-setting+reset-button',
+                customId: "edit-setting+reset-button",
                 label: t(`${this.locale}.components.resetButton`, { name: setting.name }),
-                emoji: '🗑️',
+                emoji: "🗑️",
                 style: ButtonStyle.Danger,
                 time: 120_000
             },
@@ -176,9 +176,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
         const backButton = new ExtendedButtonComponent(
             {
-                customId: 'edit-setting+back-button',
+                customId: "edit-setting+back-button",
                 label: t(`${this.locale}.components.backButton`),
-                emoji: '⬅️',
+                emoji: "⬅️",
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
@@ -195,7 +195,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     private clearEditComponents(): void {
-        const editSettingsComponentsIds = [...this.components.keys()].filter(id => id.startsWith('edit-setting'))
+        const editSettingsComponentsIds = [...this.components.keys()].filter(id => id.startsWith("edit-setting"))
         if (editSettingsComponentsIds.length === 0) return
         for (const id of editSettingsComponentsIds) {
             this.components.delete(id)
@@ -206,9 +206,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     private getStringEditorComponent(setting: Setting & { type: "string"}) {
         return new ExtendedButtonComponent(
             {
-                customId: 'edit-setting+string',
+                customId: "edit-setting+string",
                 label: t(`${this.locale}.components.defaultEditor.title`, { name: setting.name }),
-                emoji: '📝',
+                emoji: "📝",
                 style: ButtonStyle.Primary,
                 time: 120000
             },
@@ -228,9 +228,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
         return new ExtendedButtonComponent(
             {
-                customId: 'edit-setting+bool',
+                customId: "edit-setting+bool",
                 label: `${setting.value ? toggleOff : toggleOn} ${setting.name}`,
-                emoji: setting.value ? '✖️' : '✅',
+                emoji: setting.value ? "✖️" : "✅",
                 style: setting.value ? ButtonStyle.Danger : ButtonStyle.Success,
                 time: 120_000
             },
@@ -246,9 +246,9 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     private getNumberEditorComponent(setting: Setting & { type: "number"}) {
         return new ExtendedButtonComponent(
             {
-                customId: 'edit-setting+number',
+                customId: "edit-setting+number",
                 label: t(`${this.locale}.components.defaultEditor.title`, { name: setting.name }),
-                emoji: '📝',
+                emoji: "📝",
                 style: ButtonStyle.Primary,
                 time: 120_000
             }, 
@@ -271,7 +271,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     private getChannelEditorComponent(setting: Setting & { type: "channelId"}) {
         return new ExtendedChannelSelectMenuComponent(
             { 
-                customId: 'edit-setting+channel', 
+                customId: "edit-setting+channel", 
                 placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
                     type: t(`${this.locale}.components.selector.types.channel`)
@@ -291,7 +291,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     private getRoleEditorComponent(setting: Setting & { type: "roleId"}) {
         return new ExtendedRoleSelectMenuComponent(
             { 
-                customId: 'edit-setting+role', 
+                customId: "edit-setting+role", 
                 placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
                     type: t(`${this.locale}.components.selector.types.role`)
@@ -310,7 +310,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     private getUserEditorComponent(setting: Setting & { type: "userId"}) {
         return new ExtendedUserSelectMenuComponent(
             { 
-                customId: 'edit-setting+user', 
+                customId: "edit-setting+user", 
                 placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
                     type: t(`${this.locale}.components.selector.types.user`)
@@ -327,14 +327,14 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     private getEnumEditorComponent(setting: Setting & { type: "enum"}) {
-        const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === 'object'
+        const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === "object"
         const optionsMap = optionsAreObjects
             ? new Map((setting.options as Record<string, string>[]).map(option => [option.value, {id: option.value, name: option.label}]))
             : new Map((setting.options as string[]).map(option => [option, {id: option, name: option}]))
 
         const optionSelectMenu = new ExtendedStringSelectMenuComponent(
             {
-                customId: 'edit-setting+enum',
+                customId: "edit-setting+enum",
                 placeholder: t(`${this.locale}.components.selector.title`, { 
                     name: setting.name, 
                     type:t(`${this.locale}.components.selector.types.option`)

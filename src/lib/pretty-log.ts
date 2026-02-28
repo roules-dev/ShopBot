@@ -1,7 +1,7 @@
 import { DateTime } from "luxon"
+import fs from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
-import fs from "node:fs/promises"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -9,9 +9,9 @@ const __dirname = path.dirname(__filename)
 export class PrettyLog {
     private static loadStepCount = 1
     static logLoadStep(message: string, more?: string) {
-        console.log(`${this.stepX()} \x1b[32m${message}\x1b[0m \x1b[34m${more != undefined ? more : ''}\x1b[0m`)
+        console.log(`${this.stepX()} \x1b[32m${message}\x1b[0m \x1b[34m${more != undefined ? more : ""}\x1b[0m`)
 
-        this.saveLogs(`✓ Step ${this.loadStepCount - 1} - ${message} ${more != undefined ? more : ''}`)
+        this.saveLogs(`✓ Step ${this.loadStepCount - 1} - ${message} ${more != undefined ? more : ""}`)
     }
     
     static logLoadSuccess() {
@@ -70,15 +70,15 @@ export class PrettyLog {
 
     private static async saveLogs(message: string) {
         try {
-            const sanatizedMessage = message.replace(new RegExp(/\\x1b\[\d+m/, 'gm'), '')
-            await fs.appendFile(path.join(__dirname, '..', '..', 'logs.txt'), `[${this.getNowTimeString()}] ${sanatizedMessage}\n`)
+            const sanatizedMessage = message.replace(new RegExp(/\\x1b\[\d+m/, "gm"), "")
+            await fs.appendFile(path.join(__dirname, "..", "..", "logs.txt"), `[${this.getNowTimeString()}] ${sanatizedMessage}\n`)
         } catch (error) {
             console.log(`Failed to save logs: ${error}`)
         }
     }
 
     private static getNowTimeString(): string | null {
-        return DateTime.now().setZone('Europe/Paris').toSQL({ includeOffset: false })
+        return DateTime.now().setZone("Europe/Paris").toSQL({ includeOffset: false })
     }
 }
 
@@ -86,6 +86,6 @@ export class PrettyLog {
 export function drawProgressBar(progress: number, barWidth = 30) {
     const filledWidth = Math.floor(progress / 100 * barWidth)
     const emptyWidth = barWidth - filledWidth
-    const progressBar = '█'.repeat(filledWidth) + '▒'.repeat(emptyWidth)
+    const progressBar = "█".repeat(filledWidth) + "▒".repeat(emptyWidth)
     process.stdout.write(`\r[${progressBar}] ${progress.toFixed(0)}%  `)
 }

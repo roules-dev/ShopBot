@@ -60,7 +60,7 @@ export function isProductActionType(
 // so no more shopId
 
 // Price system will change :
-// it'll be a map of currencyId => price (number)
+// it"ll be a map of currencyId => price (number)
 
 export interface Product {
     id: NanoId

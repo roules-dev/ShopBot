@@ -1,6 +1,6 @@
-import { DEFAULT_LOCALE_CODE, LOCALES } from '@/lib/localization.js'
-import { PrettyLog } from '@/lib/pretty-log.js'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { DEFAULT_LOCALE_CODE, LOCALES } from "@/lib/localization.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { fileURLToPath, pathToFileURL } from "node:url"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean, string[]] {
@@ -10,7 +10,7 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function sameStructureRec(ref: any, tested: any, path: string[] = []): [boolean, string[]] {
-        const pathString = path.join('.')
+        const pathString = path.join(".")
 
 
         if (typeof ref === "string" && typeof tested === "string") {
@@ -20,7 +20,7 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
 
             if (refTemplateKeys.length !== testedTemplateKeys.length) {
                 const missingKeys = refTemplateKeys.filter(k => !testedTemplateKeys.includes(k))
-                return [false, [`Missing template keys (${missingKeys.join(', ')}): ${pathString}`]]
+                return [false, [`Missing template keys (${missingKeys.join(", ")}): ${pathString}`]]
             }
 
             return [true, []]
@@ -70,7 +70,7 @@ async function loadLocaleFile(localeCode: string) {
             with: { type: "json" } 
         })).default
 
-        if (typeof locale !== 'object') throw new Error(`Locale ${localeCode} is not an object.`)
+        if (typeof locale !== "object") throw new Error(`Locale ${localeCode} is not an object.`)
     
         if (!locale) throw new Error(`Locale ${localeCode} is empty or not found.`)
         return locale
@@ -103,7 +103,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     else {
         PrettyLog.error(`The locale ${localeCode} misses some translations or has extra keys.`)
 
-        PrettyLog.error(`Found ${errors.length} error${errors.length === 1 ? '' : 's'}:`)
+        PrettyLog.error(`Found ${errors.length} error${errors.length === 1 ? "" : "s"}:`)
         
         for (const error of errors) {
             PrettyLog.error(`- ${error}`)

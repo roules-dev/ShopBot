@@ -1,5 +1,6 @@
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
-import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
+import { replyErrorMessage } from "@/lib/discord.js"
+import { assertNeverReached } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -7,15 +8,14 @@ import { ObjectValues, PaginatedMultipleEmbedUserInterface, UserInterfaceInterac
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { getOrCreateAccount } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
-import { replyErrorMessage } from "@/lib/discord.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
-    public override id: string = 'account-ui'
+    public override id: string = "account-ui"
     protected override components: Map<string, ExtendedComponent> = new Map()
     
     protected override readonly modes = {
-        CURRENCIES:'currencies',
-        INVENTORY: 'inventory'
+        CURRENCIES:"currencies",
+        INVENTORY: "inventory"
     } as const
     
     protected override mode: ObjectValues<typeof this.modes> = this.modes.CURRENCIES
@@ -49,7 +49,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     protected override getMessage(): string {
-        return ''
+        return ""
     }
 
     protected override initEmbeds(interaction: UserInterfaceInteraction): void {
@@ -57,7 +57,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         const currenciesEmbed = new EmbedBuilder()
             .setTitle(t(`${this.locale}.embeds.account.title`, { user: this.user.displayName }))
             .setColor(Colors.Gold)
-            .setFooter({ text: 'ShopBot', iconURL: interaction.client.user.displayAvatarURL()})
+            .setFooter({ text: "ShopBot", iconURL: interaction.client.user.displayAvatarURL()})
             .setFields(this.getPageEmbedFields())
 
 
@@ -65,7 +65,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         const inventoryEmbed = new EmbedBuilder()
             .setTitle(t(`${this.locale}.embeds.inventory.title`, { user: this.user.displayName }))
             .setColor(Colors.DarkRed)
-            .setFooter({ text: 'ShopBot', iconURL: interaction.client.user.displayAvatarURL()})
+            .setFooter({ text: "ShopBot", iconURL: interaction.client.user.displayAvatarURL()})
             .setFields(this.getPageEmbedFields())
 
         this.embedByMode.set(this.modes.CURRENCIES, currenciesEmbed)
@@ -89,7 +89,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
             {
                 customId: `${this.id}+show-account`,
                 label: t(`${this.locale}.components.showAccountButton`),
-                emoji: {name: '💰'},
+                emoji: {name: "💰"},
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.CURRENCIES,
                 time: 120_000
@@ -101,7 +101,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
             {
                 customId: `${this.id}+show-inventory`,
                 label: t(`${this.locale}.components.showInventoryButton`),
-                emoji: {name: '💼'},
+                emoji: {name: "💼"},
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.INVENTORY,
                 time: 120_000
@@ -135,11 +135,11 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     private getAccountFields(): APIEmbedField[] {
-        if (!this.account || !this.account.currencies.size) return [{ name: t(`${this.locale}.errors.accountEmpty`), value: '\u200b' }]
+        if (!this.account || !this.account.currencies.size) return [{ name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }]
         const fields: APIEmbedField[] = []
 
         this.account.currencies.forEach(currencyBalance => {
-            const emojiString = currencyBalance.item.emoji != null ? `${currencyBalance.item.emoji} ` : ''
+            const emojiString = currencyBalance.item.emoji != null ? `${currencyBalance.item.emoji} ` : ""
 
             fields.push({ name: `${emojiString}${currencyBalance.item.name}`, value: `${currencyBalance.amount}`, inline: true })
         })
@@ -148,11 +148,11 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     private getInventoryFields(): APIEmbedField[] { 
-        if (!this.account || !this.account.inventory.size) return [{ name: t(`${this.locale}.errors.inventoryEmpty`), value: '\u200b' }]
+        if (!this.account || !this.account.inventory.size) return [{ name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }]
         const fields: APIEmbedField[] = []
 
         this.account.inventory.forEach(productBalance => {
-            const emojiString = productBalance.item.emoji != null ? `${productBalance.item.emoji} ` : ''
+            const emojiString = productBalance.item.emoji != null ? `${productBalance.item.emoji} ` : ""
 
             fields.push({ name: `${emojiString}${productBalance.item.name}`, value: `${productBalance.amount}`, inline: true })
         })

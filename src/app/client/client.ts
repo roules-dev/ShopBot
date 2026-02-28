@@ -69,7 +69,7 @@ export async function startClient() {
     await client.login(config.token)
 }
 
-EVENTS.on('settingUpdated', async (settingId, _) => {
-    if (settingId !== 'activityMessage' && settingId !== 'activityType') return
+EVENTS.on("settingUpdated", async (settingId, _) => {
+    if (settingId !== "activityMessage" && settingId !== "activityType") return
     setActivity(client)
 })

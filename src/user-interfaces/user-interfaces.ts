@@ -1,9 +1,8 @@
-import { updateAsErrorMessage, replyErrorMessage } from "@/lib/discord.js"
-import { ok, Result } from "@/lib/error-handling.js"
+import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ComponentSeparator, ExtendedComponent } from "@/ui-components/extended-components.js"
-import { ChatInputCommandInteraction, MessageComponentInteraction, ModalSubmitInteraction, ButtonBuilder, StringSelectMenuBuilder, RoleSelectMenuBuilder, ChannelSelectMenuBuilder, UserSelectMenuBuilder, ComponentType, ActionRowBuilder, InteractionEditReplyOptions, InteractionCallbackResponse, MessageFlags, EmbedBuilder, APIEmbedField, ButtonStyle, ButtonInteraction } from "discord.js"
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js"
 
 
 
@@ -33,7 +32,7 @@ export abstract class UserInterface {
                 return
             }
 
-            if (component.customId.endsWith('page')) {
+            if (component.customId.endsWith("page")) {
                 paginationRow.addComponents(component.getComponent())
             }
             else if (component.componentType == ComponentType.Button) {
@@ -223,13 +222,13 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
                 new ExtendedButtonComponent({
                     customId: `${this.id}+previous-page`,
                     time: 120_000,
-                    emoji: '⬅️',
+                    emoji: "⬅️",
                     style: ButtonStyle.Secondary,
                 }, (interaction: ButtonInteraction) => this.previousPage(interaction)),
                 new ExtendedButtonComponent({
                     customId: `${this.id}+next-page`,
                     time: 120_000,
-                    emoji: {name: '➡️'},
+                    emoji: "➡️",
                     style: ButtonStyle.Secondary,
                 }, (interaction: ButtonInteraction) => this.nextPage(interaction))
             ]

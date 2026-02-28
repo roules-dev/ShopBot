@@ -1,7 +1,7 @@
 import { subMap } from "@/utils/maps.js"
+import { Emojiable, Identifiable, Labelled, MutableOrReadonly } from "@/utils/types.js"
 import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
-import { Identifiable, Labelled, Emojiable, MutableOrReadonly } from "@/utils/types.js"
 
 
 
@@ -10,8 +10,8 @@ const API_MAX_SELECT_MENU_OPTIONS = 25
 const MAX_OPTIONS_PER_PAGE = API_MAX_SELECT_MENU_OPTIONS - 2
 
 const SELECT_PAGE_OPTIONS = {
-    previous: 'previous',
-    next: 'next'
+    previous: "previous",
+    next: "next"
 }
 
 export interface ExtendedSelectMenuOptions {

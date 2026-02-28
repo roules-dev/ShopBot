@@ -3,8 +3,8 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 
 
 export const data = new SlashCommandBuilder()
-    .setName('account')
-    .setDescription('Display your account')
+    .setName("account")
+    .setDescription("Display your account")
 
     //? (user suggestion - issue #13) add option to display a "snapshot" of the account publicly
 

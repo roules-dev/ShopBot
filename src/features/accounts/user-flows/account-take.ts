@@ -1,6 +1,6 @@
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
-import { logToDiscord, replyErrorMessage, replySuccessMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
@@ -12,7 +12,7 @@ import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "../d
 
 
 export class AccountTakeFlow extends UserFlow {
-    public id = 'account-take'
+    public id = "account-take"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     private selectedCurrency: Currency | null = null
@@ -27,8 +27,8 @@ export class AccountTakeFlow extends UserFlow {
         const currencies = getCurrencies()
         if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)
     
-        const target = interaction.options.getUser('target')
-        const amount = interaction.options.getNumber('amount')
+        const target = interaction.options.getUser("target")
+        const amount = interaction.options.getNumber("amount")
     
         if (!target || !amount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
@@ -69,7 +69,7 @@ export class AccountTakeFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: '✅',
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000,
@@ -81,7 +81,7 @@ export class AccountTakeFlow extends UserFlow {
             {
                 customId: `${this.id}+take-all`,
                 label: t(`${this.locale}.components.takeAllButton`),
-                emoji: '🔥',
+                emoji: "🔥",
                 style: ButtonStyle.Danger,
                 disabled: true,
                 time: 120_000,
@@ -103,7 +103,7 @@ export class AccountTakeFlow extends UserFlow {
             {
                 customId: `${this.id}+empty-account`,
                 label: t(`${this.locale}.components.emptyAccountButton`),
-                emoji: '🗑️',
+                emoji: "🗑️",
                 style: ButtonStyle.Danger,
                 time: 120_000,
             },
@@ -114,7 +114,7 @@ export class AccountTakeFlow extends UserFlow {
 
                 if (!this.target) return updateAsErrorMessage(modalSubmitInteraction, t("errorMessages.insufficientParameters"))                    
 
-                const [error] = await emptyAccount(this.target.id, 'currencies')
+                const [error] = await emptyAccount(this.target.id, "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
                 await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target.id) }))

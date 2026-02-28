@@ -1,12 +1,12 @@
-import accounts from '@/../data/accounts.json' with { type: 'json' }
-import { DatabaseError } from '@/database/database-types.js'
-import { getCurrencies } from '@/features/currencies/database/currencies-database.js'
-import { Snowflake } from "discord.js"
+import accounts from "@/../data/accounts.json" with { type: "json" }
+import { DatabaseError } from "@/database/database-types.js"
 import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type.js"
-import { Product } from '@/features/shops/database/products-types.js'
-import { err, ok } from '@/lib/error-handling.js'
+import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { Product } from "@/features/shops/database/products-types.js"
+import { err, ok } from "@/lib/error-handling.js"
+import { Snowflake } from "discord.js"
 
-const accountsDatabase = new AccountsDatabase(accounts, 'data/accounts.json')
+const accountsDatabase = new AccountsDatabase(accounts, "data/accounts.json")
 
 export async function getOrCreateAccount(id: Snowflake) {
     let account = accountsDatabase.data.get(id)
@@ -73,12 +73,12 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
     return ok(Object.freeze(product))
 }
 
-export async function emptyAccount(id: Snowflake, empty: 'currencies' | 'inventory' | 'all') {
+export async function emptyAccount(id: Snowflake, empty: "currencies" | "inventory" | "all") {
     const account = accountsDatabase.data.get(id)
     if (!account) return err(new DatabaseError("AccountDoesNotExist"))
 
-    if (empty === 'currencies' || empty === 'all') account.currencies.clear()
-    if (empty === 'inventory' || empty === 'all') account.inventory.clear()
+    if (empty === "currencies" || empty === "all") account.currencies.clear()
+    if (empty === "inventory" || empty === "all") account.inventory.clear()
 
     const [error] = await accountsDatabase.save()
     if (error) return err(error)

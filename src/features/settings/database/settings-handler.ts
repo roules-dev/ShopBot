@@ -1,7 +1,7 @@
-import settings from '@/../data/settings.json' with { type: 'json' }
-import { Setting, Settings, SettingsDatabase } from '@/features/settings/database/settings-types.js'
-import { err, ok } from '@/lib/error-handling.js'
-import { EVENTS } from '@/middleware.js'
+import settings from "@/../data/settings.json" with { type: "json" }
+import { Setting, Settings, SettingsDatabase } from "@/features/settings/database/settings-types.js"
+import { err, ok } from "@/lib/error-handling.js"
+import { EVENTS } from "@/middleware.js"
 
 const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
 

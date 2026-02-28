@@ -5,34 +5,34 @@ export type NanoId = string
 
 const DATABASE_ERRORS = {
     ShopDoesNotExist: {
-        message: 'Shop does not exist',
+        message: "Shop does not exist",
         status: 404
     },
     ShopAlreadyExists: {
-        message: 'Shop already exists',
+        message: "Shop already exists",
         status: 409
     },
     InvalidPosition: {
-        message: 'Invalid position',
+        message: "Invalid position",
         status: 400
     },
 
     CurrencyDoesNotExist: {
-        message: 'Currency does not exist',
+        message: "Currency does not exist",
         status: 404
     },
     CurrencyAlreadyExists: {
-        message: 'Currency already exists',
+        message: "Currency already exists",
         status: 409
     },
 
     ProductDoesNotExist: {
-        message: 'Product does not exist',
+        message: "Product does not exist",
         status: 404
     },
 
     AccountDoesNotExist: {
-        message: 'Account does not exist',
+        message: "Account does not exist",
         status: 404
     },
 

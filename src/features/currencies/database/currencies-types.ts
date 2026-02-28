@@ -7,7 +7,7 @@ export interface Currency {
     emoji: string
 }
 
-export type CurrencyOptions = Omit<Currency, 'id'>
+export type CurrencyOptions = Omit<Currency, "id">
 export type CurrencyOptionsOptional = Partial<CurrencyOptions>
 
 export interface CurrenciesDatabaseJSONBody extends DatabaseJSONBody {

@@ -137,7 +137,7 @@ function replaceTemplates(str: string, templates: { [key: string]: string | numb
     let result = str
     for (const key in templates) {
         const value = templates[key]
-        result = result.replace(new RegExp(`{${key}}`, 'g'), String(value)) 
+        result = result.replace(new RegExp(`{${key}}`, "g"), String(value)) 
     }
     return result
 }

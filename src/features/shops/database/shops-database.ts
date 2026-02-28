@@ -5,8 +5,8 @@ import { getCurrencies } from "@/features/currencies/database/currencies-databas
 import { Shop, ShopOptionsOptional, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
-import { Snowflake } from 'discord.js'
-import { nanoid } from 'nanoid'
+import { Snowflake } from "discord.js"
+import { nanoid } from "nanoid"
 
 export const shopsDatabase = new ShopsDatabase(shops, "data/shops.json")
 
@@ -66,7 +66,7 @@ export async function removeShop(shopId: string) {
 // works, but the updateShop function should only receive validated fields, 
 // which means the special transformer here should not exist, 
 // because the test should be done before calling the updateShop function, not inside it.
-// We'll be able to do that once Zod validation is implemented, enabling us to work with 
+// We"ll be able to do that once Zod validation is implemented, enabling us to work with 
 // branded strings types (thus an Id will indeed be an Id.).
 
 const SHOP_FIELD_HANDLERS = {

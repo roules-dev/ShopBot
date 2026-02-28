@@ -20,22 +20,22 @@ async function getCommands() {
         return commands.cache
     }
 
-    PrettyLog.info('Loading commands for deployment...', false)
+    PrettyLog.info("Loading commands for deployment...", false)
 
     const commandsList: RESTPostAPIChatInputApplicationCommandsJSONBody[] = []
-    const commandsPath = path.join(__dirname, 'commands')
-    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'))
+    const commandsPath = path.join(__dirname, "commands")
+    const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"))
 
     const commandsCount = commandFiles.length
 
     if (commandsCount === 0) {
-        PrettyLog.error('No command files found.', false)
+        PrettyLog.error("No command files found.", false)
         process.exit(1)
     }
 
     PrettyLog.info(`Found ${commandsCount} command files.`, false)
 
-    PrettyLog.info('Processing command files...', false)
+    PrettyLog.info("Processing command files...", false)
 
     for (const [index, file] of commandFiles.entries()) {
         const filePath = path.join(commandsPath, file)
@@ -51,9 +51,9 @@ async function getCommands() {
         drawProgressBar(((index + 1) / commandsCount) * 100)
     }
     drawProgressBar(100)
-    console.log('')
+    console.log("")
 
-    PrettyLog.info('All command files processed.', false)
+    PrettyLog.info("All command files processed.", false)
 
     commands.cache = commandsList
     commands.expired = false
@@ -64,10 +64,10 @@ export async function appDeployCommands() {
     try {
         await getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
 
-        PrettyLog.success('Successfully registered application commands.', false)
+        PrettyLog.success("Successfully registered application commands.", false)
         return true
     } catch (e) {
-        PrettyLog.error('Failed to deploy commands', false)
+        PrettyLog.error("Failed to deploy commands", false)
         console.error(e)
 
         return false
@@ -79,11 +79,11 @@ export async function appDeleteCommands() {
     try {    
         await getRest().put(Routes.applicationCommands(getClientId()), { body: [] })
         
-        PrettyLog.success('Successfully deleted application commands.', false)
+        PrettyLog.success("Successfully deleted application commands.", false)
         return true
     }
     catch (e) {
-        PrettyLog.error('Failed to deploy commands', false)
+        PrettyLog.error("Failed to deploy commands", false)
         console.error(e)
 
         return false
@@ -94,11 +94,11 @@ export async function guildDeployCommands(guildId: Snowflake) {
     try {
         await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: await getCommands() })
 
-        PrettyLog.success('Successfully registered all guild commands.', false)
+        PrettyLog.success("Successfully registered all guild commands.", false)
         return true       
     }
     catch (e) {
-        PrettyLog.error('Failed to deploy commands', false)
+        PrettyLog.error("Failed to deploy commands", false)
         console.error(e)
 
         return false
@@ -109,11 +109,11 @@ export async function guildDeleteCommands(guildId: Snowflake) {
     try {    
         await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: [] })
         
-        PrettyLog.success('Successfully deleted all guild commands.', false)
+        PrettyLog.success("Successfully deleted all guild commands.", false)
         return true
     }
     catch (e) {
-        PrettyLog.error('Failed to deploy commands', false)
+        PrettyLog.error("Failed to deploy commands", false)
         console.error(e)
 
         return false
@@ -127,32 +127,32 @@ async function main() {
 
 
     switch (flag) {
-        case '/a':
+        case "/a":
             appDeployCommands()
             break
 
-        case '/ad':
+        case "/ad":
             appDeleteCommands()
             break
 
-        case '/g':
+        case "/g":
             if (!guildId) {
-                PrettyLog.error('Please specify a guild id', false)
+                PrettyLog.error("Please specify a guild id", false)
                 break
             }
             guildDeployCommands(guildId)
             break 
             
-        case '/gd':
+        case "/gd":
             if (!guildId) {
-                PrettyLog.error('Please specify a guild id', false)
+                PrettyLog.error("Please specify a guild id", false)
                 break
             }
             guildDeleteCommands(guildId)
             break 
 
         default:
-            PrettyLog.error('Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n', false)
+            PrettyLog.error("Please specify one of these flags: \n\n    /a  : Deploy App Commands\n    /ad : Delete App Commands\n    /g  : Deploy Guild Commands\n    /gd : Delete Guild Commands\n", false)
             process.exit(1)
     }
 }
@@ -170,23 +170,23 @@ function getRest() {
     const token = getToken()
 
     if (!getClientId() || !token) {
-        PrettyLog.error('Missing clientId or token in config.json', false)
+        PrettyLog.error("Missing clientId or token in config.json", false)
         process.exit(1)
     }
 
-    rest = new REST({ version: '10' }).setToken(token)
+    rest = new REST({ version: "10" }).setToken(token)
     
     return rest
 }
 
 function getConfig() {
     if (config !== undefined 
-        && config.token !== undefined && config.token !== ''
-        && config.clientId !== undefined && config.clientId !== '') {
+        && config.token !== undefined && config.token !== ""
+        && config.clientId !== undefined && config.clientId !== "") {
         return config
     }
 
-    const _config = JSON.parse(fs.readFileSync('./config/config.json', 'utf-8'))
+    const _config = JSON.parse(fs.readFileSync("./config/config.json", "utf-8"))
 
     config = _config
     return _config
@@ -197,12 +197,12 @@ function getClientId() {
     const config = getConfig()
 
     if (!config) {
-        PrettyLog.error('Missing config.json')
+        PrettyLog.error("Missing config.json")
         process.exit(1)
     }
 
     if (!config.clientId) {
-        PrettyLog.error('Missing clientId in config.json')
+        PrettyLog.error("Missing clientId in config.json")
         process.exit(1)
     }
 
@@ -213,12 +213,12 @@ function getToken() {
     const config = getConfig()
 
     if (!config) {
-        PrettyLog.error('Missing config.json')
+        PrettyLog.error("Missing config.json")
         process.exit(1)
     }
 
     if (!config.token) {
-        PrettyLog.error('Missing token in config.json')
+        PrettyLog.error("Missing token in config.json")
         process.exit(1)
     }
 

@@ -22,14 +22,14 @@ export interface Shop {
     products: Map<NanoId, Product>
 }
 
-export type ShopOptions = Omit<Shop, 'id' | 'products' | 'currency' | 'discountCodes'>
+export type ShopOptions = Omit<Shop, "id" | "products" | "currency" | "discountCodes">
 export type ShopOptionsOptional = Partial<ShopOptions>
 
 
 export interface ShopsDatabaseJSONBody extends DatabaseJSONBody {
-    [shopId: NanoId]: Omit<Shop, 'products' | 'currency'> 
+    [shopId: NanoId]: Omit<Shop, "products" | "currency"> 
         & { 
-            products: { [productId: NanoId]: Omit<Product, 'action' | 'shopId'> & { action?: ProductActionJSONBody } }
+            products: { [productId: NanoId]: Omit<Product, "action" | "shopId"> & { action?: ProductActionJSONBody } }
         } 
         & { currencyId: NanoId }
 }

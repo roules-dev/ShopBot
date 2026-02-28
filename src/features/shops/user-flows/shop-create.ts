@@ -12,7 +12,7 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Mess
 import { createShop } from "../database/shops-database.js"
 
 export class ShopCreateFlow extends UserFlow {
-    public id = 'shop-create'
+    public id = "shop-create"
     protected components: Map<string, ExtendedComponent> = new Map()
 
     private selectedCurrency: Currency | null = null
@@ -27,11 +27,11 @@ export class ShopCreateFlow extends UserFlow {
         const currencies = getCurrencies()
         if (!currencies.size) return await replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantCreateShop`)} ${t("errorMessages.noCurrencies")}`)
 
-        const shopName = interaction.options.getString('name')?.replaceSpaces()
-        const shopDescription = interaction.options.getString('description')?.replaceSpaces()  || ''
-        const emojiOption = interaction.options.getString('emoji')
-        const shopEmoji = emojiOption?.match(EMOJI_REGEX)?.[0] || ''
-        const shopReservedTo = interaction.options.getRole('reserved-to')?.id
+        const shopName = interaction.options.getString("name")?.replaceSpaces()
+        const shopDescription = interaction.options.getString("description")?.replaceSpaces()  || ""
+        const emojiOption = interaction.options.getString("emoji")
+        const shopEmoji = emojiOption?.match(EMOJI_REGEX)?.[0] || ""
+        const shopReservedTo = interaction.options.getRole("reserved-to")?.id
 
         if (!shopName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
@@ -51,7 +51,7 @@ export class ShopCreateFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        const shopNameString = `${this.shopEmoji ? `${this.shopEmoji} ` : ''}${this.shopName!}`
+        const shopNameString = `${this.shopEmoji ? `${this.shopEmoji} ` : ""}${this.shopName!}`
 
         const message = t(`${this.locale}.messages.default`, {
             shop: bold(shopNameString),
@@ -75,7 +75,7 @@ export class ShopCreateFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 label: t(`${this.locale}.components.submitButton`),
-                emoji: '✅',
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000
@@ -87,7 +87,7 @@ export class ShopCreateFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop-name`,
                 label: t(`${this.locale}.components.changeShopNameButton`),
-                emoji: '📝',
+                emoji: "📝",
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
@@ -103,7 +103,7 @@ export class ShopCreateFlow extends UserFlow {
             {
                 customId: `${this.id}+change-shop-emoji`,
                 label: t(`${this.locale}.components.changeShopEmojiButton`),
-                emoji: '✏️',
+                emoji: "✏️",
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
@@ -134,7 +134,7 @@ export class ShopCreateFlow extends UserFlow {
         if (!this.shopName) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, newShop] = await createShop(this.shopName, this.shopDescription || '', this.selectedCurrency.id, this.shopEmoji || '', this.shopReservedTo)
+        const [error, newShop] = await createShop(this.shopName, this.shopDescription || "", this.selectedCurrency.id, this.shopEmoji || "", this.shopReservedTo)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
