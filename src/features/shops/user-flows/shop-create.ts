@@ -2,12 +2,14 @@ import { getCurrencies } from "@/features/currencies/database/currencies-databas
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
+import { validate } from "@/lib/validation.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { showEditModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import { createShop } from "../database/shops-database.js"
 
@@ -30,7 +32,8 @@ export class ShopCreateFlow extends UserFlow {
         const shopName = interaction.options.getString("name")?.replaceSpaces()
         const shopDescription = interaction.options.getString("description")?.replaceSpaces()  || ""
         const emojiOption = interaction.options.getString("emoji")
-        const shopEmoji = emojiOption?.match(EMOJI_REGEX)?.[0] || ""
+        const [error, _shopEmoji] = validate(EmojiSchema, emojiOption)
+        const shopEmoji = error ? null : _shopEmoji
         const shopReservedTo = interaction.options.getRole("reserved-to")?.id
 
         if (!shopName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -51,7 +54,7 @@ export class ShopCreateFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        const shopNameString = `${this.shopEmoji ? `${this.shopEmoji} ` : ""}${this.shopName!}`
+        const shopNameString = formattedEmojiableName({ name: this.shopName!, emoji: this.shopEmoji ?? undefined})
 
         const message = t(`${this.locale}.messages.default`, {
             shop: bold(shopNameString),
@@ -110,7 +113,9 @@ export class ShopCreateFlow extends UserFlow {
             async (interaction: ButtonInteraction) => {
                 const [modalSubmit, newShopEmoji] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editEmojiModalTitle`), previousValue: this.shopEmoji || undefined })
                 
-                this.shopEmoji = newShopEmoji?.match(EMOJI_REGEX)?.[0] || this.shopEmoji
+                const [error, emoji] = validate(EmojiSchema, newShopEmoji)
+
+                this.shopEmoji = error ? this.shopEmoji : emoji
                 this.updateInteraction(modalSubmit)
             }
         )

@@ -1,7 +1,12 @@
-import { migrateDBtoNanoid } from "./migrate-db-to-nanoid.js"
-import fs from "fs/promises"
 import shops from "@/../data/shops.json" with { type: "json" }
-import { Product } from "@/features/shops/database/products-types.js"
+import { Item, ItemJSON } from "@/features/items/database/items-types.js"
+import { ShopsDatabaseJSONBody } from "@/features/shops/database/shops-types.js"
+import fs from "fs/promises"
+import { migrateDBtoNanoid } from "./migrate-db-to-nanoid.js"
+import { NanoId } from "@/database/database-types.js"
+import { validate } from "@/lib/validation.js"
+import { ItemJSONSchema, ItemSchema } from "@/features/items/schemas/items-schemas.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
 
 const save = async (path: string, content: object): Promise<boolean> => {
     try {
@@ -12,21 +17,56 @@ const save = async (path: string, content: object): Promise<boolean> => {
     }
 }
 
-const shopsPath = "data/shops.json"
+const shopsPath = "data/shops2.json"
 const itemsPath = "data/items.json"
 
-async function migrateDBtoV3() {
+type Items = Record<string, ItemJSON>
+
+type NewShopsJSONBody = ShopsDatabaseJSONBody extends {
+    [id: string]: infer ShopJSONBody
+} ? {
+    [id: string]: Omit<ShopJSONBody, "products" | "currencyId" | "id"> & {
+        productIds: Array<NanoId>
+    }
+} : never
+
+export async function migrateDBtoV3() {
     await migrateDBtoNanoid()
 
-    const items: Record<string, Product> = {}
+    const items: Items = {}
 
-    for (const [_, shop] of Object.entries(shops)) {
-        const { products } = shop
+    const newShops: NewShopsJSONBody = {}
+
+    for (const [shopId, shop] of Object.entries(shops)) {
+        const { products, currencyId, id:_ , ...newShop } = shop
+        
+        const productIds = []
 
         for (const [productId, product] of Object.entries(products)) {
-            items[productId] = product
+            const { shopId: _, id: __, price: priceNum, ...newProductWithoutPriceWithoutId } = product
+
+            const newPrice = Object.fromEntries([[currencyId, priceNum]])
+
+            const newProduct = { price: newPrice , ...newProductWithoutPriceWithoutId}
+
+            const [error, newProductValidated] = validate(ItemJSONSchema, newProduct)
+
+            if (error) {
+                PrettyLog.error(`Invalid Item: ${productId}\n${error.message}`)
+                continue
+            }
+
+            items[productId] = newProductValidated
+            
+            productIds.push(productId)
         }
+
+        newShops[shopId] = { ...newShop, productIds }
     }
 
     await save(itemsPath, items)
+    await save(shopsPath, newShops)
+
+
+    // also update currencies and accounts
 }

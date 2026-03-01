@@ -6,13 +6,14 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { updateProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { formattedProductName } from "../utils/products.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
+import { validate } from "@/lib/validation.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
 
 
 enum EditProductFlowStage {
@@ -78,7 +79,7 @@ export class EditProductFlow extends UserFlow {
                 if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in EditProductFlowStage.SELECT_PRODUCT stage")
 
                 return t(`${this.locale}.messages.productSelectStage`, {
-                    product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
+                    product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
                     shop: bold(this.selectedShop.name),
                     option: bold(this.getUpdateOptionName(this.updateOption!)),
                     value: bold(this.getUpdateValueString(this.updateOption!))
@@ -219,7 +220,7 @@ export class EditProductFlow extends UserFlow {
         const updateOption: Record<string, string | number> = {}
         updateOption[this.updateOption.toString()] = this.updateOptionValue
 
-        const oldName = formattedProductName(this.selectedProduct)
+        const oldName = formattedEmojiableName(this.selectedProduct)
 
         const [error] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, updateOption)
 
@@ -253,7 +254,9 @@ export class EditProductFlow extends UserFlow {
             }
             case EditProductOption.EMOJI: {
                 const emojiOption = interaction.options.getString(interactionOption)
-                return emojiOption?.match(EMOJI_REGEX)?.[0] ?? null
+
+                const [error, emoji] = validate(EmojiSchema, emojiOption)
+                return error ? null : emoji
             }
             case EditProductOption.AMOUNT:
                 return interaction.options.getInteger(interactionOption)

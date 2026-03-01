@@ -11,8 +11,7 @@ import { removeProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { formattedProductName } from "../utils/products.js"
-
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 enum RemoveProductFlowStage {
     SELECT_SHOP,
@@ -56,7 +55,7 @@ export class RemoveProductFlow extends UserFlow {
                 if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in RemoveProductFlowStage.SELECT_PRODUCT stage")
 
                 return t(`${this.locale}.messages.productSelectStage`, {
-                    product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
+                    product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
                     shop: bold(this.selectedShop.name)
                 })
 
@@ -193,7 +192,7 @@ export class RemoveProductFlow extends UserFlow {
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const oldProductName = formattedProductName(this.selectedProduct)
+        const oldProductName = formattedEmojiableName(this.selectedProduct)
 
         const [error] =await removeProduct(this.selectedShop.id, this.selectedProduct.id)
 

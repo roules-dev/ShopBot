@@ -16,7 +16,7 @@ const scriptsParamsToRemove = {
 }
 
 async function main() {
-    const packageJson = JSON.parse(await fs.readFile("./package.json"))
+    const packageJson = JSON.parse(await fs.readFile("./package.json", "utf-8"))
     
     if (!packageJson.scripts || !packageJson.version) return
 

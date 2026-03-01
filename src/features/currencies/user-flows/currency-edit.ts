@@ -6,10 +6,11 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { getCurrencies, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
+import { validate } from "@/lib/validation.js"
 
 export enum EditCurrencyOption {
     NAME = "name",
@@ -118,7 +119,8 @@ export class EditCurrencyFlow extends UserFlow {
                 return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ""
             case EditCurrencyOption.EMOJI: {
                 const emojiOption = interaction.options.getString(`new-${option}`)
-                return emojiOption?.match(EMOJI_REGEX)?.[0] || ""
+                const [error, emoji] = validate(EmojiSchema, emojiOption)
+                return error ? "" : emoji
             }
             default:
                 assertNeverReached(option)

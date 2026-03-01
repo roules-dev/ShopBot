@@ -8,10 +8,11 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { validate } from "@/lib/validation.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
 
 
 export const EDIT_SHOP_OPTIONS = {
@@ -154,7 +155,8 @@ export class EditShopFlow extends UserFlow {
                 break
             case EDIT_SHOP_OPTIONS.Emoji: {
                 const emojiOption = interaction.options.getString("new-emoji")
-                updateValue = emojiOption?.match(EMOJI_REGEX)?.[0] ?? t("defaultComponents.unset")
+                const [error, emoji] = validate(EmojiSchema, emojiOption)
+                updateValue = error ? t("defaultComponents.unset") : emoji
                 break
             }
             case EDIT_SHOP_OPTIONS.ReservedTo:

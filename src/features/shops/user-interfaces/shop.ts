@@ -8,8 +8,8 @@ import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/user-in
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { formattedProductName } from "../utils/products.js"
 import { BuyProductUserInterface } from "./buy.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
@@ -152,7 +152,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
                 ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 
             fields.push({ 
-                name: formattedProductName(product),
+                name: formattedEmojiableName(product),
                 value: `${t(`${this.locale}.embeds.shop.price`)} **${product.price} ${this.selectedShop!.currency.name}**${amountString}\n${descString}`, 
                 inline: true 
             })

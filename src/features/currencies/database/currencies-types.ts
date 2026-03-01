@@ -4,7 +4,7 @@ import { ok } from "@/lib/error-handling.js"
 export interface Currency {
     id: NanoId
     name: string
-    emoji: string
+    emoji?: string
 }
 
 export type CurrencyOptions = Omit<Currency, "id">

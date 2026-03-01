@@ -12,7 +12,7 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember, roleMention, StringS
 import { updateProduct } from "../database/products-database.js"
 import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
-import { formattedProductName } from "../utils/products.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -47,7 +47,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const priceString = this.priceString() != "" ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ""
 
         const message = t(`${this.locale}.messages.default`, {
-            product: bold(formattedProductName(this.selectedProduct) || t("defaultComponents.selectProduct")),
+            product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
             quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
             shop: bold(this.selectedShop.name),
         })
@@ -325,7 +325,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product, appendix?: string) {
-        const productName = formattedProductName(product)
+        const productName = formattedEmojiableName(product)
         const shopName = this.selectedShop.name
         const priceString = this.priceString()
         const discountCodeString = this.discountCode ? this.discountCode : "none"

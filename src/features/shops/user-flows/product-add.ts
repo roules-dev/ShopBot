@@ -9,12 +9,14 @@ import { ExtendedRoleSelectMenuComponent } from "@/ui-components/select-menus.js
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { EMOJI_REGEX } from "@/utils/constants.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import { addProduct } from "../database/products-database.js"
 import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { validate } from "@/lib/validation.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export class AddProductFlow extends UserFlow {
@@ -42,8 +44,10 @@ export class AddProductFlow extends UserFlow {
         const productPrice = interaction.options.getNumber("price")
 
         const productEmojiOption = interaction.options.getString("emoji")
-        const productEmoji = productEmojiOption?.match(EMOJI_REGEX)?.[0] || ""
+        const [error, _productEmoji] = validate(EmojiSchema, productEmojiOption)
         
+        const productEmoji = error ? null : this.productEmoji
+
         const productAmount = interaction.options.getInteger("amount")
 
         if (!productName || productPrice == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -69,7 +73,7 @@ export class AddProductFlow extends UserFlow {
     
     protected getMessage(): string {
         const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
-        const nameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
+        const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji ?? undefined}))
 
         const message = t(`${this.locale}.messages.default`, {
             product: nameString,

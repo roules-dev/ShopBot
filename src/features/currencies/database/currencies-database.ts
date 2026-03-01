@@ -20,7 +20,7 @@ export function getCurrencyId(currencyName: string): string | undefined {
     return currencyId 
 }
 
-export async function createCurrency(currencyName: string, emoji: string) {
+export async function createCurrency(currencyName: string, emoji?: string) {
     if (getCurrencyId(currencyName) != undefined) return err(new DatabaseError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid()

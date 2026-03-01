@@ -1,0 +1,55 @@
+{
+    "h3G8N_1F2LzI1T29bjdxJ": {
+        "name": "Bookshop",
+        "emoji": "📖",
+        "description": "The small bookshop in the downtown. Here you can buy and read books of all types.",
+        "discountCodes": {
+            "FUZE50": 50
+        },
+        "reservedTo": "1358489735542341683",
+        "productIds": [
+            "nxtWWm9IEe3qSLh4fj5qn",
+            "9-fiMoU-faP7vOVhO58Su",
+            "SQWzMyipYZO3fnCmhAttr"
+        ]
+    },
+    "TgT-Mhzvj7JPX8Oix_6ru": {
+        "name": "Grocery",
+        "emoji": "🛒",
+        "description": "Buy anything you need here",
+        "discountCodes": {},
+        "productIds": []
+    },
+    "-hw7m2WLOmaNKPSbFdajZ": {
+        "name": "Bakery",
+        "emoji": "🍞",
+        "description": "The town's best bakery",
+        "discountCodes": {},
+        "productIds": [
+            "Uasu0unlCLGnsJNQb_3S0",
+            "w9zcCjKIt-yDjhXi2TLMB",
+            "jREXpbU4e0mrY6K3RzWbY",
+            "FbZgPJ-aJOkvm1QAB3ucE",
+            "6lb722Z-cvgTL23LeXnyZ",
+            "lfDYxuEIIXzzHQUZfXbPu",
+            "k1nWe7JbqmwirLQ5XLWXE",
+            "Dfs5AihBk8iBX9by0RL9U",
+            "a8aSYSlPsS9SP5WxNCLq6",
+            "yLs7vNX4Z4j3OFe2VcsmT"
+        ]
+    },
+    "1QsK0ayyoze-Ig3-5GG-T": {
+        "name": "Hardware Shop",
+        "emoji": "🛠",
+        "description": "",
+        "discountCodes": {},
+        "reservedTo": "1197195793191420035",
+        "productIds": [
+            "5qpg3DPSth4IG1pAyesc5",
+            "iU_U1_JAKqJ1xXj8ePrRf",
+            "m3AmJIuCmlpXYh89Kf-HZ",
+            "l4b1O42OyoCD1coPstpVx",
+            "XNOw9i0NJGzCbXqSLAWOo"
+        ]
+    }
+}

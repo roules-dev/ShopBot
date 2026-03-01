@@ -38,8 +38,8 @@ export const data = new SlashCommandBuilder()
             .setRequired(false)
         )
         .addIntegerOption(option => option
-            .setName("amount")
-            .setDescription("The amount of the product")
+            .setName("stock")
+            .setDescription("The available stock for the product")
             .setRequired(false)
             .setMaxValue(99999999)
             .setMinValue(1)
@@ -49,8 +49,8 @@ export const data = new SlashCommandBuilder()
             .setDescription("The action of the product")
             .setRequired(false)
             .addChoices(
-                { name: "Give Role", value: PRODUCT_ACTION_TYPE.GiveRole },
-                { name: "Give Currency", value: PRODUCT_ACTION_TYPE.GiveCurrency }
+                { name: "Give Role", value: "give-role" },
+                { name: "Give Currency", value: "give-currency" }
             )
         )
     )

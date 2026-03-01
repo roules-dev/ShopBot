@@ -353,7 +353,7 @@ export const locale = {
         "confirmationModal": {
             "title": "⚠️ ¿Estás seguro?",
             "cantBeUndone": "Esta acción es irreversible",
-            "selectYes": "Selecciona "Sí" para confirmar",
+            "selectYes": "Selecciona 'Sí' para confirmar",
             "yes": "Sí",
             "no": "No"
         },
