@@ -1,10 +1,10 @@
-import { Database, DatabaseJSONBody, NanoId } from "@/database/database-types.js"
+import { Database, DatabaseJsonBody, NanoId } from "@/database/database-types.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import {
     Product,
     ProductAction,
-    ProductActionJSONBody,
+    ProductActionJsonBody,
     createProductAction,
     isProductActionType,
 } from "@/features/shops/database/products-types.js"
@@ -26,27 +26,27 @@ export type ShopOptions = Omit<Shop, "id" | "products" | "currency" | "discountC
 export type ShopOptionsOptional = Partial<ShopOptions>
 
 
-export interface ShopsDatabaseJSONBody extends DatabaseJSONBody {
+export interface ShopsDatabaseJsonBody extends DatabaseJsonBody {
     [shopId: NanoId]: Omit<Shop, "products" | "currency"> 
         & { 
-            products: { [productId: NanoId]: Omit<Product, "action" | "shopId"> & { action?: ProductActionJSONBody } }
+            products: { [productId: NanoId]: Omit<Product, "action" | "shopId"> & { action?: ProductActionJsonBody } }
         } 
         & { currencyId: NanoId }
 }
 
 export class ShopsDatabase extends Database<NanoId, Shop> {
-    public toJSON(): ShopsDatabaseJSONBody {
-        const shopsJSON: ShopsDatabaseJSONBody = {}
+    public toJSON(): ShopsDatabaseJsonBody {
+        const shopsJson: ShopsDatabaseJsonBody = {}
 
         this.data.forEach((shop, shopId) => {
             const { currency: _, ...shopWithoutCurrency } = shop
-            shopsJSON[shopId] = { ...shopWithoutCurrency, products: Object.fromEntries(shop.products), currencyId: shop.currency.id }
+            shopsJson[shopId] = { ...shopWithoutCurrency, products: Object.fromEntries(shop.products), currencyId: shop.currency.id }
         })
 
-        return shopsJSON
+        return shopsJson
     }
 
-    protected parseRaw(databaseRaw: ShopsDatabaseJSONBody) {
+    protected parseRaw(databaseRaw: ShopsDatabaseJsonBody) {
         const shops: Map<NanoId, Shop> = new Map()
 
         for (const [shopId, shop] of Object.entries(databaseRaw)) {

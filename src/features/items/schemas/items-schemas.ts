@@ -1,4 +1,4 @@
-import { EmojiSchema } from "@/schemas/emojis.js"
+import { EmojiSchema } from "@/schemas/utils.js"
 import z from "zod"
 
 export const ItemActionSchema = z.discriminatedUnion("type", [
@@ -18,15 +18,10 @@ export const ItemActionSchema = z.discriminatedUnion("type", [
 ])
 
 
-export const ItemSchema = z.object({
-    id: z.nanoid(),
+export const ItemRawSchema = z.object({
     name: z.string(), // must add validation for the length
     emoji: EmojiSchema.optional(),
     description: z.string(),
-    // price: z.record(z.nanoid(), z.number().min(0)),  --> price must be shop specific
-    stock: z.number().min(0).optional(),
     action: ItemActionSchema.optional()
 })
-
-export const ItemJSONSchema = ItemSchema.omit({ id: true })
 

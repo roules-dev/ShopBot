@@ -4,7 +4,7 @@ import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from 
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
 import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/emojis.js"
+import { EmojiSchema } from "@/schemas/utils.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"

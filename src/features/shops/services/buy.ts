@@ -1,13 +1,13 @@
-import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
-import { updateAsErrorMessage, replyErrorMessage } from "@/lib/discord.js"
+import { getOrCreateAccount } from "@/features/accounts/database/accounts-database.js"
+import { Account } from "@/features/accounts/database/accounts-type.js"
+import { setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/services/accounts-services.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
 import { bold, GuildMember, roleMention } from "discord.js"
 import { updateProduct } from "../database/products-database.js"
 import { Product, ProductAction } from "../database/products-types.js"
-import { Account } from "@/features/accounts/database/accounts-type.js"
 import { Shop } from "../database/shops-types.js"
-import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
 
 
 export async function processPurchase(member: GuildMember, shop: Shop, product: Product, quantity: number, discount: number) {
@@ -97,12 +97,12 @@ async function executeActionProduct(action: ProductAction, member: GuildMember) 
 
             const userCurrencyAmount = account.currencies.get(currencyId)?.amount || 0
 
-            const [error2, currency] = await setAccountCurrencyAmount(member.id, currencyId, userCurrencyAmount + amount)
+            const [error2, res] = await setAccountCurrencyAmount(member.id, currencyId, userCurrencyAmount + amount)
             if (error2) return err(error2)
 
             actionMessage = t(
                 `userInterfaces.buy.actionProducts.giveCurrency.message`, 
-                { currency: bold(currency.name), amount: bold(`${amount}`) }
+                { currency: bold(res.currency.name), amount: bold(`${amount}`) }
             )
 
             break

@@ -7,7 +7,8 @@ import { showConfirmationModal } from "@/ui-components/modals.js";
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js";
 import { UserFlow } from "@/user-flows/user-flow.js";
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js";
-import { emptyAccount, getOrCreateAccount, setAccountItemAmount } from "../database/accounts-database.js";
+import { getOrCreateAccount } from "../database/accounts-database.js";
+import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js";
 
 
 // TODO: implement inventory take / bulk take

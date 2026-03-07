@@ -8,7 +8,8 @@ import { showConfirmationModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, User, bold, userMention } from "discord.js"
-import { emptyAccount, getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts-database.js"
+import { getOrCreateAccount } from "../database/accounts-database.js"
+import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts-services.js"
 
 
 export class AccountTakeFlow extends UserFlow {

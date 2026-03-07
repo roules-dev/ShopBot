@@ -4,7 +4,7 @@ import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-re
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
 import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/emojis.js"
+import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
 

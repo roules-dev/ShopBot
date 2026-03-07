@@ -33,9 +33,9 @@
 - [ ] docker container
 - [x] improve internationalisation (reimplement in a more modular way,add fallback for missing translations)
 - [x] improve error handling (implement result pattern)
-- [x] improve data access, add abstraction to avoid errors and repeated code
+- [ ] improve data access, add abstraction to avoid errors and repeated code
 - [ ] branded IDs ? -> will be made once Zod validation is implemented
 - [x] improve folder structure (implement feature base folder structure)
 - [ ] discount codes should be stored as a Map
 - [ ] products must become items, independant of shops
-- [ ] 
+- [ ] write unit tests

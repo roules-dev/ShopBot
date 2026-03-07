@@ -7,7 +7,8 @@ import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { UserFlow } from "@/user-flows/user-flow.js"
 import { APIRole, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, StringSelectMenuInteraction, User, bold, roleMention, userMention } from "discord.js"
-import { getOrCreateAccount, setAccountCurrencyAmount } from "../database/accounts-database.js"
+import { getOrCreateAccount } from "../database/accounts-database.js"
+import { setAccountCurrencyAmount } from "../services/accounts-services.js"
 
 
 export class AccountGiveFlow extends UserFlow {

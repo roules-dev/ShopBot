@@ -86,14 +86,14 @@ export class DatabaseError extends Error {
 }
 
 
-export type DatabaseJSONBody = Record<string, unknown>
+export type DatabaseJsonBody = Record<string, unknown>
 
 export abstract class Database<IdType extends string, DataType> {
     public path: string
     public data: Map<IdType, DataType>
 
 
-    public constructor (databaseRaw: DatabaseJSONBody, path: string) {
+    public constructor (databaseRaw: DatabaseJsonBody, path: string) {
         this.path = path
 
         const [error, data] = this.parseRaw(databaseRaw)
@@ -102,9 +102,9 @@ export abstract class Database<IdType extends string, DataType> {
         this.data = data
     }
     
-    public abstract toJSON(): DatabaseJSONBody 
+    public abstract toJSON(): DatabaseJsonBody 
     
-    protected abstract parseRaw(databaseRaw: DatabaseJSONBody): Result<Map<IdType, DataType>, ApiError> 
+    protected abstract parseRaw(databaseRaw: DatabaseJsonBody): Result<Map<IdType, DataType>, ApiError> 
     
     public async save()  {
         try {
@@ -125,21 +125,21 @@ export abstract class Database<IdType extends string, DataType> {
 type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
 
 
-export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema extends z.ZodObject> {
-    private dataItemJSONSchema: DataItemJSONSchema
+export class Database2<IdSchema extends z.ZodStringFormat, DataItemRawSchema extends z.ZodObject> {
+    private dataItemJsonSchema: DataItemRawSchema
 
     public data: Map<
         z.infer<IdSchema>, 
-        { id: z.infer<IdSchema> } & z.infer<DataItemJSONSchema>
+        { id: z.infer<IdSchema> } & z.infer<DataItemRawSchema>
     >
 
     public constructor (
-        databaseRaw: DatabaseJSONBody, 
+        databaseRaw: DatabaseJsonBody, 
         private path: PathLike, 
-        dataItemJSONSchema: NoIdSchema<DataItemJSONSchema>, 
+        dataItemJsonSchema: NoIdSchema<DataItemRawSchema>, 
         private idSchema: IdSchema
     ) {
-        this.dataItemJSONSchema = dataItemJSONSchema
+        this.dataItemJsonSchema = dataItemJsonSchema
 
         const [error, data] = this.parseRaw(databaseRaw)
         if (error) throw error
@@ -147,19 +147,20 @@ export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema ex
         this.data = data
     }
     
-    public toJSON(): Record<string, z.infer<DataItemJSONSchema>> {
-        const itemsJSON: Record<string, z.infer<DataItemJSONSchema>> = {}
+    public toJSON(): Record<string, z.infer<DataItemRawSchema>> {
+        const itemsJson: Record<string, z.infer<DataItemRawSchema>> = {}
 
         this.data.forEach((item, _) => {
             const { id, ...itemWithoutId } = item
-            itemsJSON[id] = itemWithoutId as z.infer<DataItemJSONSchema>
+            
             // the use of NoIdSchema in the constructor ensures that this assertion is always correct
+            itemsJson[id] = itemWithoutId as z.infer<DataItemRawSchema>
         })
 
-        return itemsJSON
+        return itemsJson
     }
     
-    protected parseRaw(databaseRaw: DatabaseJSONBody): Result<typeof this.data, ApiError> {
+    protected parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, ApiError> {
         const data: typeof this.data = new Map()
 
         for (const [_id, _dataItem] of Object.entries(databaseRaw)) {
@@ -170,7 +171,7 @@ export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema ex
                 continue
             }
 
-            const [itemError, dataItem] = validate(this.dataItemJSONSchema, _dataItem)
+            const [itemError, dataItem] = validate(this.dataItemJsonSchema, _dataItem)
 
             if (itemError) {
                 PrettyLog.error(`Error parsing ${id}\n${itemError.message}`)

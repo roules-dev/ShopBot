@@ -29,7 +29,7 @@ export type ProductAction = {
     }
 }[ProductActionType]
 
-export type ProductActionJSONBody = {
+export type ProductActionJsonBody = {
     [T in ProductActionType]: {
         type: string
         options: ProductActionOptions<T>

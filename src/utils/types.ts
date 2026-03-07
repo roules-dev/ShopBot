@@ -11,3 +11,6 @@ export type Emojiable = {
 }
 
 export type MutableOrReadonly<T> = T | Readonly<T>
+
+export type MapValues<T> = T extends Map<unknown, infer V> ? V : never
+

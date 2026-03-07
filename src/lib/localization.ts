@@ -25,21 +25,21 @@ export const LOCALES = {
 
 
 export async function addLocalisationToCommand(commandData: SlashCommandBuilder) {
-    const commandDataJSON = commandData.toJSON()
+    const commandDataJson = commandData.toJSON()
 
-    if (!commandDataJSON || !(commandDataJSON.name in LOCALES[DEFAULT_LOCALE_CODE].commands)) {
-        return commandDataJSON
+    if (!commandDataJson || !(commandDataJson.name in LOCALES[DEFAULT_LOCALE_CODE].commands)) {
+        return commandDataJson
     }
 
-    commandDataJSON.name_localizations = await getLocaleStrings(`commands.${commandDataJSON.name}.name`)
-    commandDataJSON.description_localizations = await getLocaleStrings(`commands.${commandDataJSON.name}.description`)
+    commandDataJson.name_localizations = await getLocaleStrings(`commands.${commandDataJson.name}.name`)
+    commandDataJson.description_localizations = await getLocaleStrings(`commands.${commandDataJson.name}.description`)
 
-    if (!commandDataJSON.options) {
-        return commandDataJSON
+    if (!commandDataJson.options) {
+        return commandDataJson
     }
-    await addLocalisationToOptions(commandDataJSON.options, `commands.${commandDataJSON.name}.options`)
+    await addLocalisationToOptions(commandDataJson.options, `commands.${commandDataJson.name}.options`)
 
-    return commandDataJSON
+    return commandDataJson
 }
 
 async function addLocalisationToOptions(options: APIApplicationCommandOption[], path: string) {

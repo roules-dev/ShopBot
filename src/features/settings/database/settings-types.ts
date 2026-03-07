@@ -47,20 +47,20 @@ type OmitFromUnion<U, K extends keyof any> = U extends any ? Omit<U, K> : never
 
 type ExtraSettingFields = UnionToIntersection<OmitFromUnion<Setting, "id" | "name" | "type" | "value">>
 
-type SettingJSONBody = {
+type SettingJsonBody = {
     id: string
     name: string
     type: string
     value: string | number | boolean | null
 } & Partial<ExtraSettingFields>
 
-export type SettingsJSONBody = {
-    [id: string]: SettingJSONBody
+export type SettingsJsonBody = {
+    [id: string]: SettingJsonBody
 }
 
 export class SettingsDatabase extends Database<string, Setting> {
 
-    public constructor (databaseRaw: SettingsJSONBody, path: string) {
+    public constructor (databaseRaw: SettingsJsonBody, path: string) {
         super(databaseRaw, path)
 
         const [error, settings] = this.parseRaw(databaseRaw)
@@ -69,19 +69,19 @@ export class SettingsDatabase extends Database<string, Setting> {
         this.data = settings
     }
     
-    public override toJSON(): SettingsJSONBody {
-        const settingsJSON: SettingsJSONBody = {}
+    public override toJSON(): SettingsJsonBody {
+        const settingsJson: SettingsJsonBody = {}
 
         this.data.forEach((setting) => {
-            settingsJSON[setting.id] = { ...setting, type: setting.type as string, 
+            settingsJson[setting.id] = { ...setting, type: setting.type as string, 
                 value: (setting.value === undefined) ? null : setting.value
             }
         })
 
-        return settingsJSON
+        return settingsJson
     }
 
-    protected override parseRaw(databaseRaw: SettingsJSONBody) {
+    protected override parseRaw(databaseRaw: SettingsJsonBody) {
         const settings: Settings = new Map()
 
         for (const [id, setting] of Object.entries(databaseRaw)) {
