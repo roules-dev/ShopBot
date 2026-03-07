@@ -23,7 +23,7 @@ export const ItemSchema = z.object({
     name: z.string(), // must add validation for the length
     emoji: EmojiSchema.optional(),
     description: z.string(),
-    price: z.record(z.nanoid(), z.number().min(0)),
+    // price: z.record(z.nanoid(), z.number().min(0)),  --> price must be shop specific
     stock: z.number().min(0).optional(),
     action: ItemActionSchema.optional()
 })

@@ -98,21 +98,25 @@ export abstract class Database<IdType extends string, DataType> {
 }
 
 
-export class Database2<IdSchema extends z.ZodString, DataItemSchema extends z.ZodObject<{ id: IdSchema }>> {
+type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
+
+
+export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema extends z.ZodObject> {
     private idSchema: IdSchema
     
-    private dataItemSchema: DataItemSchema
-    private dataItemJSONSchema
+    private dataItemJSONSchema: DataItemJSONSchema
 
     private path: PathLike
-    public data: Map<z.infer<typeof this.idSchema>, z.infer<typeof this.dataItemSchema>>
+    public data: Map<
+        z.infer<IdSchema>, 
+        { id: z.infer<IdSchema> } & z.infer<DataItemJSONSchema>
+    >
 
-    public constructor (databaseRaw: DatabaseJSONBody, path: PathLike, dataItemSchema: DataItemSchema, idSchema: IdSchema) {
+    public constructor (databaseRaw: DatabaseJSONBody, path: PathLike, dataItemJSONSchema: NoIdSchema<DataItemJSONSchema>, idSchema: IdSchema) {
         this.path = path
         
         this.idSchema = idSchema
-        this.dataItemSchema = dataItemSchema
-        this.dataItemJSONSchema = dataItemSchema//.omit({ id: true })
+        this.dataItemJSONSchema = dataItemJSONSchema
 
         const [error, data] = this.parseRaw(databaseRaw)
         if (error) throw error
@@ -120,8 +124,16 @@ export class Database2<IdSchema extends z.ZodString, DataItemSchema extends z.Zo
         this.data = data
     }
     
-    public toJSON(): DatabaseJSONBody {
-        return {}
+    public toJSON(): Record<string, z.infer<DataItemJSONSchema>> {
+        const itemsJSON: Record<string, z.infer<DataItemJSONSchema>> = {}
+
+        this.data.forEach((item, _) => {
+            const { id, ...itemWithoutId } = item
+            itemsJSON[id] = itemWithoutId as z.infer<DataItemJSONSchema>
+            // the use of NoIdSchema in the constructor ensures that this assertion is always correct
+        })
+
+        return itemsJSON
     }
     
     protected parseRaw(databaseRaw: DatabaseJSONBody): Result<typeof this.data, DatabaseError> {
@@ -142,8 +154,7 @@ export class Database2<IdSchema extends z.ZodString, DataItemSchema extends z.Zo
                 PrettyLog.error(`Error parsing ${id}\n${itemError.message}`)
                 continue
             }
-
-            data.set(id, { ...dataItem, id })
+            data.set(id, { id, ...dataItem })
         }
 
 

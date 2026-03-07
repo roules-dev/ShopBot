@@ -1,5 +1,4 @@
 import shops from "@/../data/shops.json" with { type: "json" }
-import { Item, ItemJSON } from "@/features/items/database/items-types.js"
 import { ShopsDatabaseJSONBody } from "@/features/shops/database/shops-types.js"
 import fs from "fs/promises"
 import { migrateDBtoNanoid } from "./migrate-db-to-nanoid.js"
@@ -7,6 +6,7 @@ import { NanoId } from "@/database/database-types.js"
 import { validate } from "@/lib/validation.js"
 import { ItemJSONSchema, ItemSchema } from "@/features/items/schemas/items-schemas.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
+import z from "zod"
 
 const save = async (path: string, content: object): Promise<boolean> => {
     try {
@@ -20,13 +20,13 @@ const save = async (path: string, content: object): Promise<boolean> => {
 const shopsPath = "data/shops2.json"
 const itemsPath = "data/items.json"
 
-type Items = Record<string, ItemJSON>
+type Items = Record<string, z.infer<typeof ItemJSONSchema>>
 
 type NewShopsJSONBody = ShopsDatabaseJSONBody extends {
     [id: string]: infer ShopJSONBody
 } ? {
     [id: string]: Omit<ShopJSONBody, "products" | "currencyId" | "id"> & {
-        productIds: Array<NanoId>
+        products: Record<NanoId, { price: Record<NanoId, number> }>
     }
 } : never
 
@@ -40,7 +40,7 @@ export async function migrateDBtoV3() {
     for (const [shopId, shop] of Object.entries(shops)) {
         const { products, currencyId, id:_ , ...newShop } = shop
         
-        const productIds = []
+        const newProducts: Record<NanoId, { price: Record<NanoId, number> }> = {}
 
         for (const [productId, product] of Object.entries(products)) {
             const { shopId: _, id: __, price: priceNum, ...newProductWithoutPriceWithoutId } = product
@@ -58,10 +58,10 @@ export async function migrateDBtoV3() {
 
             items[productId] = newProductValidated
             
-            productIds.push(productId)
+            newProducts[productId] = { price: newPrice }
         }
 
-        newShops[shopId] = { ...newShop, productIds }
+        newShops[shopId] = { ...newShop, products: newProducts }
     }
 
     await save(itemsPath, items)

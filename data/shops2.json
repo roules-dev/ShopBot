@@ -7,36 +7,88 @@
             "FUZE50": 50
         },
         "reservedTo": "1358489735542341683",
-        "productIds": [
-            "nxtWWm9IEe3qSLh4fj5qn",
-            "9-fiMoU-faP7vOVhO58Su",
-            "SQWzMyipYZO3fnCmhAttr"
-        ]
+        "products": {
+            "nxtWWm9IEe3qSLh4fj5qn": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 5.49
+                }
+            },
+            "9-fiMoU-faP7vOVhO58Su": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 5
+                }
+            },
+            "SQWzMyipYZO3fnCmhAttr": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 770
+                }
+            }
+        }
     },
     "TgT-Mhzvj7JPX8Oix_6ru": {
         "name": "Grocery",
         "emoji": "🛒",
         "description": "Buy anything you need here",
         "discountCodes": {},
-        "productIds": []
+        "products": {}
     },
     "-hw7m2WLOmaNKPSbFdajZ": {
         "name": "Bakery",
         "emoji": "🍞",
         "description": "The town's best bakery",
         "discountCodes": {},
-        "productIds": [
-            "Uasu0unlCLGnsJNQb_3S0",
-            "w9zcCjKIt-yDjhXi2TLMB",
-            "jREXpbU4e0mrY6K3RzWbY",
-            "FbZgPJ-aJOkvm1QAB3ucE",
-            "6lb722Z-cvgTL23LeXnyZ",
-            "lfDYxuEIIXzzHQUZfXbPu",
-            "k1nWe7JbqmwirLQ5XLWXE",
-            "Dfs5AihBk8iBX9by0RL9U",
-            "a8aSYSlPsS9SP5WxNCLq6",
-            "yLs7vNX4Z4j3OFe2VcsmT"
-        ]
+        "products": {
+            "Uasu0unlCLGnsJNQb_3S0": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 0.9
+                }
+            },
+            "w9zcCjKIt-yDjhXi2TLMB": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 2
+                }
+            },
+            "jREXpbU4e0mrY6K3RzWbY": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 1.1
+                }
+            },
+            "FbZgPJ-aJOkvm1QAB3ucE": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 1.2
+                }
+            },
+            "6lb722Z-cvgTL23LeXnyZ": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 4
+                }
+            },
+            "lfDYxuEIIXzzHQUZfXbPu": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 4
+                }
+            },
+            "k1nWe7JbqmwirLQ5XLWXE": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 4
+                }
+            },
+            "Dfs5AihBk8iBX9by0RL9U": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 3
+                }
+            },
+            "a8aSYSlPsS9SP5WxNCLq6": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 2
+                }
+            },
+            "yLs7vNX4Z4j3OFe2VcsmT": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 0.8
+                }
+            }
+        }
     },
     "1QsK0ayyoze-Ig3-5GG-T": {
         "name": "Hardware Shop",
@@ -44,12 +96,32 @@
         "description": "",
         "discountCodes": {},
         "reservedTo": "1197195793191420035",
-        "productIds": [
-            "5qpg3DPSth4IG1pAyesc5",
-            "iU_U1_JAKqJ1xXj8ePrRf",
-            "m3AmJIuCmlpXYh89Kf-HZ",
-            "l4b1O42OyoCD1coPstpVx",
-            "XNOw9i0NJGzCbXqSLAWOo"
-        ]
+        "products": {
+            "5qpg3DPSth4IG1pAyesc5": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 5400
+                }
+            },
+            "iU_U1_JAKqJ1xXj8ePrRf": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 51
+                }
+            },
+            "m3AmJIuCmlpXYh89Kf-HZ": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 0
+                }
+            },
+            "l4b1O42OyoCD1coPstpVx": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 500
+                }
+            },
+            "XNOw9i0NJGzCbXqSLAWOo": {
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 1000000
+                }
+            }
+        }
     }
 }
