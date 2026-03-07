@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Database, DatabaseError } from "@/database/database-types.js"
+import { ApiError, Database } from "@/database/database-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
 
@@ -85,11 +85,11 @@ export class SettingsDatabase extends Database<string, Setting> {
         const settings: Settings = new Map()
 
         for (const [id, setting] of Object.entries(databaseRaw)) {
-            if (!(isSettingType(setting.type))) return err(new DatabaseError("InvalidSettingType"))
-            
+            if (!(isSettingType(setting.type))) return err(new ApiError("InvalidSettingType"))
+
             const value = setting.value
 
-            if(settings.has(id)) return err(new DatabaseError("DuplicateSettingName"))
+            if(settings.has(id)) return err(new ApiError("DuplicateSettingName"))
 
             if (value === null) {
                 settings.set(id, { ...(setting as Setting), value: undefined })
@@ -100,21 +100,21 @@ export class SettingsDatabase extends Database<string, Setting> {
                 case "channelId":
                 case "roleId":
                 case "userId":
-                    if (!(typeof value === "string")) return err(new DatabaseError("InvalidSettingType"))
+                    if (!(typeof value === "string")) return err(new ApiError("InvalidSettingType"))
                     settings.set(id, { ...setting, value: value as Snowflake, type: setting.type })
                     break
 
                 case "string":
-                    if (!(typeof value === "string")) return err(new DatabaseError("InvalidSettingType"))
+                    if (!(typeof value === "string")) return err(new ApiError("InvalidSettingType"))
                     settings.set(id, { ...setting, value: value as string, type: setting.type })
                     break
                 case "bool":
-                    if (!(typeof value === "boolean")) return err(new DatabaseError("InvalidSettingType"))
+                    if (!(typeof value === "boolean")) return err(new ApiError("InvalidSettingType"))
                     settings.set(id, { ...setting, value: value as boolean, type: setting.type })
                     break
 
                 case "number": {
-                    if (!(typeof value === "number")) return err(new DatabaseError("InvalidSettingType"))
+                    if (!(typeof value === "number")) return err(new ApiError("InvalidSettingType"))
 
                     let clampedvalue = value as number
                     if (setting.min !== undefined) clampedvalue = Math.max(clampedvalue, setting.min)
@@ -124,8 +124,8 @@ export class SettingsDatabase extends Database<string, Setting> {
                     break
                 }
                 case "enum":
-                    if (!(typeof value === "string")) return err(new DatabaseError("InvalidSettingType"))
-                    if (setting.options === undefined) return err(new DatabaseError("InvalidSettingType"))
+                    if (!(typeof value === "string")) return err(new ApiError("InvalidSettingType"))
+                    if (setting.options === undefined) return err(new ApiError("InvalidSettingType"))
                     
                     settings.set(id, { ...setting, value: value as string, options: setting.options, type: setting.type })
                     break

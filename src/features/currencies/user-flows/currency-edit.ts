@@ -1,6 +1,8 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
+import { validate } from "@/lib/validation.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -9,8 +11,6 @@ import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { getCurrencies, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
-import { EmojiSchema } from "@/schemas/emojis.js"
-import { validate } from "@/lib/validation.js"
 
 export enum EditCurrencyOption {
     NAME = "name",

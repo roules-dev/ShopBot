@@ -1,5 +1,5 @@
 import currencies from "@/../data/currencies.json" with { type: "json" }
-import { DatabaseError } from "@/database/database-types.js"
+import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
@@ -21,7 +21,7 @@ export function getCurrencyId(currencyName: string): string | undefined {
 }
 
 export async function createCurrency(currencyName: string, emoji?: string) {
-    if (getCurrencyId(currencyName) != undefined) return err(new DatabaseError("CurrencyAlreadyExists"))
+    if (getCurrencyId(currencyName) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid()
     const newCurrency = { id: newCurrencyId, name: currencyName, emoji }
@@ -34,7 +34,7 @@ export async function createCurrency(currencyName: string, emoji?: string) {
 }
 
 export async function removeCurrency(currencyId: string) {
-    if (!currenciesDatabase.data.has(currencyId)) return err(new DatabaseError("CurrencyDoesNotExist"))
+    if (!currenciesDatabase.data.has(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
 
     currenciesDatabase.data.delete(currencyId)
     const [error] = await currenciesDatabase.save()
@@ -46,7 +46,7 @@ export async function removeCurrency(currencyId: string) {
 export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {  
     const currency = currenciesDatabase.data.get(currencyId)
     
-    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
+    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
     
     update(currency, options)
 

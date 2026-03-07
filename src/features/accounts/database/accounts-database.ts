@@ -1,5 +1,5 @@
 import accounts from "@/../data/accounts.json" with { type: "json" }
-import { DatabaseError } from "@/database/database-types.js"
+import { ApiError } from "@/database/database-types.js"
 import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Product } from "@/features/shops/database/products-types.js"
@@ -28,7 +28,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
     if (error) return err(error)
 
     const currency = getCurrencies().get(currencyId)
-    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
+    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
     const currencyBalance = account.currencies.get(currencyId)
 
@@ -75,7 +75,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
 
 export async function emptyAccount(id: Snowflake, empty: "currencies" | "inventory" | "all") {
     const account = accountsDatabase.data.get(id)
-    if (!account) return err(new DatabaseError("AccountDoesNotExist"))
+    if (!account) return err(new ApiError("AccountDoesNotExist"))
 
     if (empty === "currencies" || empty === "all") account.currencies.clear()
     if (empty === "inventory" || empty === "all") account.inventory.clear()

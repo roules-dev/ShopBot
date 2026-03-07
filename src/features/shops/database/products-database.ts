@@ -1,4 +1,4 @@
-import { DatabaseError } from "@/database/database-types.js"
+import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { Product, ProductOptions, ProductOptionsOptional } from "@/features/shops/database/products-types.js"
 import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js"
@@ -7,14 +7,14 @@ import { nanoid } from "nanoid"
 
 export function getProducts(shopId: string){
     const shop = getShops().get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     return ok(Object.freeze(shop.products))
 }
 
 export async function addProduct(shopId: string, options: ProductOptions) {
     const shop = getShops().get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const id = nanoid()
     const product = Object.assign({ id, shopId }, options)
@@ -30,7 +30,7 @@ export async function addProduct(shopId: string, options: ProductOptions) {
 
 export async function removeProduct(shopId: string, productId: string) {
     const shop = getShops().get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     shop.products.delete(productId)
     
@@ -55,11 +55,11 @@ export async function updateProduct(
     options: ProductOptionsOptional,
 ) {
     const shop = getShops().get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const product = shop.products.get(productId)
 
-    if (!product) return err(new DatabaseError("ProductDoesNotExist"))
+    if (!product) return err(new ApiError("ProductDoesNotExist"))
 
     update(product, options, PRODUCT_FIELD_HANDLERS)
 

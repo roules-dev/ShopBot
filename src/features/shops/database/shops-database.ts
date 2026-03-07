@@ -1,5 +1,5 @@
 import shops from "@/../data/shops.json" with { type: "json" }
-import { DatabaseError } from "@/database/database-types.js"
+import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Shop, ShopOptionsOptional, ShopsDatabase } from "@/features/shops/database/shops-types.js"
@@ -23,10 +23,10 @@ export function getShopId(shopName: string): string | undefined {
 }
 
 export async function createShop(shopName: string, description: string, currencyId: string, emoji: string, reservedTo?: Snowflake) {
-    if (getShopId(shopName) != undefined) return err(new DatabaseError("ShopAlreadyExists"))
+    if (getShopId(shopName) != undefined) return err(new ApiError("ShopAlreadyExists"))
     
     const currency = getCurrencies().get(currencyId)
-    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
+    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
     const newShopId = nanoid()    
 
@@ -52,7 +52,7 @@ export async function createShop(shopName: string, description: string, currency
 }
 
 export async function removeShop(shopId: string) {
-    if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shopsDatabase.data.has(shopId)) return err(new ApiError("ShopDoesNotExist"))
 
     shopsDatabase.data.delete(shopId)
 
@@ -66,7 +66,7 @@ export async function removeShop(shopId: string) {
 // works, but the updateShop function should only receive validated fields, 
 // which means the special transformer here should not exist, 
 // because the test should be done before calling the updateShop function, not inside it.
-// We"ll be able to do that once Zod validation is implemented, enabling us to work with 
+// We'll be able to do that once Zod validation is implemented, enabling us to work with 
 // branded strings types (thus an Id will indeed be an Id.).
 
 const SHOP_FIELD_HANDLERS = {
@@ -77,7 +77,7 @@ const SHOP_FIELD_HANDLERS = {
 
 export async function updateShop(shopId: string, options: ShopOptionsOptional) {
     const shop = shopsDatabase.data.get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
     
     update(shop, options, SHOP_FIELD_HANDLERS)
         
@@ -90,10 +90,10 @@ export async function updateShop(shopId: string, options: ShopOptionsOptional) {
 
 export async function updateShopCurrency(shopId: string, currencyId: string) {
     const shop = shopsDatabase.data.get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
     
     const currency = getCurrencies().get(currencyId)
-    if (!currency) return err(new DatabaseError("CurrencyDoesNotExist"))
+    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
     shop.currency = currency
 
@@ -116,13 +116,13 @@ export function getShopsWithCurrency(currencyId: string) {
 }
 
 export async function updateShopPosition(shopId: string, index: number) {
-    if (!shopsDatabase.data.has(shopId)) return err(new DatabaseError("ShopDoesNotExist"))
-    if (index < 0 || index > shopsDatabase.data.size - 1) return err(new DatabaseError("InvalidPosition"))
+    if (!shopsDatabase.data.has(shopId)) return err(new ApiError("ShopDoesNotExist"))
+    if (index < 0 || index > shopsDatabase.data.size - 1) return err(new ApiError("InvalidPosition"))
 
     const shopsArray = Array.from(shopsDatabase.data.entries())
     const shopIndex = shopsArray.findIndex(([id, ]) => id === shopId)
 
-    if (shopIndex === -1) return err(new DatabaseError("ShopDoesNotExist"))
+    if (shopIndex === -1) return err(new ApiError("ShopDoesNotExist"))
 
     shopsArray.splice(index, 0, shopsArray.splice(shopIndex, 1)[0])
 
@@ -136,7 +136,7 @@ export async function updateShopPosition(shopId: string, index: number) {
 
 export async function createDiscountCode(shopId: string, discountCode: string, discountAmount: number) {
     const shop = getShops().get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     shop.discountCodes[discountCode] = discountAmount
 
@@ -149,7 +149,7 @@ export async function createDiscountCode(shopId: string, discountCode: string, d
 
 export async function removeDiscountCode(shopId: string, discountCode: string) {
     const shop = getShops().get(shopId)
-    if (!shop) return err(new DatabaseError("ShopDoesNotExist"))
+    if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     delete shop.discountCodes[discountCode]
     

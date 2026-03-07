@@ -6,7 +6,7 @@ import { t } from "@/lib/localization.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/emojis.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold, formatEmoji } from "discord.js"
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
 
 
 export const data = new SlashCommandBuilder()

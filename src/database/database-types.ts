@@ -1,14 +1,13 @@
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { validate } from "@/lib/validation.js"
-import { Identifiable } from "@/utils/types.js"
 import { PathLike } from "fs"
 import fs from "fs/promises"
 import z from "zod"
 
 export type NanoId = string
 
-const DATABASE_ERRORS = {
+const API_ERRORS = { 
     ShopDoesNotExist: {
         message: "Shop does not exist",
         status: 404
@@ -51,13 +50,35 @@ const DATABASE_ERRORS = {
     }
 } as const
 
-export type DatabaseErrors = keyof typeof DATABASE_ERRORS
-export class DatabaseError extends Error {
-    status: number
-    constructor(error: DatabaseErrors) {
-        super(DATABASE_ERRORS[error].message)
 
-        this.name = "DatabaseError"
+const DATABASE_ERRORS = {
+    SaveError: {
+        message: "Error saving database",
+        status: 500
+    }
+}
+
+export class ApiError extends Error {
+    public override name = "ApiError" as const
+    status: number
+
+    constructor(error: keyof typeof API_ERRORS) {
+        super(API_ERRORS[error].message)
+
+        this.status = API_ERRORS[error].status
+
+        Object.setPrototypeOf(this, ApiError.prototype)
+    }
+}
+
+export class DatabaseError extends Error {
+    public override name = "DatabaseError" as const
+    status: number
+
+    constructor(error: keyof typeof DATABASE_ERRORS, path: PathLike, additionalMessage?: string) {
+        const message = `${DATABASE_ERRORS[error].message}. Database: ${path}\n${additionalMessage}`
+        super(message)
+
         this.status = DATABASE_ERRORS[error].status
 
         Object.setPrototypeOf(this, DatabaseError.prototype)
@@ -83,16 +104,19 @@ export abstract class Database<IdType extends string, DataType> {
     
     public abstract toJSON(): DatabaseJSONBody 
     
-    protected abstract parseRaw(databaseRaw: DatabaseJSONBody): Result<Map<IdType, DataType>, DatabaseError> 
+    protected abstract parseRaw(databaseRaw: DatabaseJSONBody): Result<Map<IdType, DataType>, ApiError> 
     
-    public async save() {
+    public async save()  {
         try {
             await fs.writeFile(this.path, JSON.stringify(this.toJSON(), null, 4))
     
             return ok(true)
         } catch (e) {
-            if (e instanceof Error) return err(e)
-            return err(new Error(`Unknown error while saving database ${this.path}`))
+            let message = `Unknown error while saving database ${this.path}`
+            if (e instanceof Error) {
+                message = e.message
+            }
+            return err(new DatabaseError("SaveError", this.path, message))
         }
     }
 }
@@ -102,20 +126,19 @@ type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any
 
 
 export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema extends z.ZodObject> {
-    private idSchema: IdSchema
-    
     private dataItemJSONSchema: DataItemJSONSchema
 
-    private path: PathLike
     public data: Map<
         z.infer<IdSchema>, 
         { id: z.infer<IdSchema> } & z.infer<DataItemJSONSchema>
     >
 
-    public constructor (databaseRaw: DatabaseJSONBody, path: PathLike, dataItemJSONSchema: NoIdSchema<DataItemJSONSchema>, idSchema: IdSchema) {
-        this.path = path
-        
-        this.idSchema = idSchema
+    public constructor (
+        databaseRaw: DatabaseJSONBody, 
+        private path: PathLike, 
+        dataItemJSONSchema: NoIdSchema<DataItemJSONSchema>, 
+        private idSchema: IdSchema
+    ) {
         this.dataItemJSONSchema = dataItemJSONSchema
 
         const [error, data] = this.parseRaw(databaseRaw)
@@ -136,7 +159,7 @@ export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema ex
         return itemsJSON
     }
     
-    protected parseRaw(databaseRaw: DatabaseJSONBody): Result<typeof this.data, DatabaseError> {
+    protected parseRaw(databaseRaw: DatabaseJSONBody): Result<typeof this.data, ApiError> {
         const data: typeof this.data = new Map()
 
         for (const [_id, _dataItem] of Object.entries(databaseRaw)) {
@@ -147,7 +170,6 @@ export class Database2<IdSchema extends z.ZodStringFormat, DataItemJSONSchema ex
                 continue
             }
 
-            this.dataItemJSONSchema.parse(_dataItem)
             const [itemError, dataItem] = validate(this.dataItemJSONSchema, _dataItem)
 
             if (itemError) {

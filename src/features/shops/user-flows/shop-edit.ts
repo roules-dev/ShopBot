@@ -3,6 +3,8 @@ import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
+import { validate } from "@/lib/validation.js"
+import { EmojiSchema } from "@/schemas/emojis.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ExtendedComponent } from "@/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
@@ -11,8 +13,6 @@ import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/emojis.js"
 
 
 export const EDIT_SHOP_OPTIONS = {
@@ -166,7 +166,7 @@ export class EditShopFlow extends UserFlow {
                 assertNeverReached(subcommand)
         }
 
-        if (!updateValue) return err({ message: t("errorMessages.insufficientParameters")})
+        if (!updateValue) return err(t("errorMessages.insufficientParameters"))
 
         return ok(updateValue)
     }

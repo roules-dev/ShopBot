@@ -1,18 +1,17 @@
-import { getOrCreateAccount, setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/database/accounts-database.js"
-import { Account } from "@/features/accounts/database/accounts-type.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { assertNeverReached } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
 import { ExtendedButtonComponent } from "@/ui-components/button.js"
 import { ComponentSeparator } from "@/ui-components/extended-components.js"
 import { showEditModal, showSingleInputModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
-import { objToString } from "@/utils/objects.js"
-import { bold, ButtonInteraction, ButtonStyle, GuildMember, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { updateProduct } from "../database/products-database.js"
-import { Product, PRODUCT_ACTION_TYPE } from "../database/products-types.js"
-import { Shop } from "../database/shops-types.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
+import { objToString } from "@/utils/objects.js"
+import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInteraction } from "discord.js"
+import { Product } from "../database/products-types.js"
+import { Shop } from "../database/shops-types.js"
+import { processPurchase } from "../services/buy.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -205,42 +204,33 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (!this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        if (this.isNotAllowedToBuy(interaction)) {
-            return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
+        if (!(interaction.member instanceof GuildMember)) return updateAsErrorMessage(interaction, "Unexpected error: member is not a guild member")
+
+        const [error, message] = await processPurchase(interaction.member, this.selectedShop, this.selectedProduct, this.quantity, this.discount)
+
+        if (error === null) {
+            return this.printAndLogPurchase(interaction, this.selectedProduct, message)
         }
 
-        const [error, account] = await getOrCreateAccount(interaction.user.id)
-        if (error) return replyErrorMessage(interaction, error.message)
-        
-        const balanceAfterBuy = this.balanceAfterBuy(account, this.selectedShop.currency.id)
-        if (balanceAfterBuy < 0) {
-            return replyErrorMessage(
-                interaction, 
-                t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(this.selectedShop.currency.name) })
-            )
+        const errorName = error.name
+
+        switch (errorName) {
+            case "ApiError":
+            case "DatabaseError":
+                return updateAsErrorMessage(interaction, error.message)
+
+            case "NotAllowedToBuy":
+                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
+            
+            case "NotEnoughMoney":
+                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(this.selectedShop.currency.name) }))
+            
+            case "ProductNoLongerAvailable":
+                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
+
+            default:
+                assertNeverReached(errorName)
         }
-
-        const itemStockAfterBuy = this.itemStockAfterBuy(this.selectedProduct, this.quantity)
-        if (itemStockAfterBuy != undefined && itemStockAfterBuy < 0) {
-            return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
-        }
-
-    
-        const [error2] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, { stock: itemStockAfterBuy })
-        if (error2) return replyErrorMessage(interaction, error2.message)
-
-
-        const [error3] = await setAccountCurrencyAmount(interaction.user.id, this.selectedShop.currency.id, balanceAfterBuy)
-        if (error3) return replyErrorMessage(interaction, error3.message)
-        
-        if (this.selectedProduct.action != undefined) return this.buyActionProduct(interaction)
-
-        const userProductAmount = account.inventory.get(this.selectedProduct.id)?.amount || 0
-
-        const [error4] = await setAccountItemAmount(interaction.user.id, this.selectedProduct, userProductAmount + this.quantity)
-        if (error4) return replyErrorMessage(interaction, error4.message)
-        
-        await this.printAndLogPurchase(interaction, this.selectedProduct)
     }
 
     private priceString(): string {
@@ -252,71 +242,6 @@ export class BuyProductUserInterface extends MessageUserInterface {
         if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${this.selectedShop.currency.name}**`
 
         return `**${priceAsString} ${this.selectedShop.currency.name}**`
-    }
-
-    private async buyActionProduct(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (!this.selectedProduct) return
-
-        let actionMessage = ""
-
-        switch (this.selectedProduct.action?.type) {
-            case PRODUCT_ACTION_TYPE.GiveRole: {
-                const roleId = this.selectedProduct.action.options.roleId
-                if (!roleId) return
-
-                const member = interaction.member
-                if (!(member instanceof GuildMember)) return
-
-                member.roles.add(roleId)
-
-                actionMessage = t(
-                    `${this.locale}.actionProducts.giveRole.message`, 
-                    { role: bold(roleMention(roleId)) }
-                )
-                break
-            }
-            case PRODUCT_ACTION_TYPE.GiveCurrency: {
-                const currencyId = this.selectedProduct.action.options.currencyId
-                if (!currencyId) return
-
-                const amount = this.selectedProduct.action.options.amount
-                if (!amount) return
-
-                const [error, account] = await getOrCreateAccount(interaction.user.id)
-                if (error) return replyErrorMessage(interaction, error.message)
-
-                const userCurrencyAmount = account.currencies.get(this.selectedShop.currency.id)?.amount || 0
-
-                const [error2, currency] = await setAccountCurrencyAmount(interaction.user.id, currencyId, userCurrencyAmount + amount)
-
-                if (error2) return replyErrorMessage(interaction, error2.message)
-
-                actionMessage = t(
-                    `${this.locale}.actionProducts.giveCurrency.message`, 
-                    { currency: bold(currency.name), amount: bold(`${amount}`) }
-                )
-
-                break
-            }
-            default:
-                break
-        }
-
-        await this.printAndLogPurchase(interaction, this.selectedProduct, actionMessage)
-    }
-
-    private balanceAfterBuy(user: Account, currencyId: string) {
-        const userCurrencyAmount = user.currencies.get(currencyId)?.amount || 0
-
-        return userCurrencyAmount - this.getPrice()
-    }
-
-    private itemStockAfterBuy(product: Product, quantity: number) {
-        if (product.stock == undefined) {
-            return undefined
-        }
-
-        return product.stock - quantity
     }
 
     private getPrice() {
@@ -348,11 +273,4 @@ export class BuyProductUserInterface extends MessageUserInterface {
         }
     }
 
-    private isNotAllowedToBuy(interaction: UserInterfaceInteraction) {
-        console.log(`reservedTo: ${this.selectedShop.reservedTo}`)
-
-        return this.selectedShop.reservedTo != undefined
-            && interaction.member instanceof GuildMember 
-            && !(interaction.member.roles.cache.has(this.selectedShop.reservedTo) || interaction.member.permissions.has("Administrator"))
-    }
 }

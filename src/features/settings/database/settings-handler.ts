@@ -19,7 +19,7 @@ export function getSetting(id: string): Setting | undefined {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function setSetting(id: string, value: any) {
     const setting = settingsDatabase.data.get(id)
-    if (!setting) return err({ message: "Setting does not exist" })
+    if (!setting) return err("Setting does not exist")
 
     const updatedSetting = {...setting, value: value}
 
