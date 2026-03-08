@@ -1,4 +1,5 @@
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
+import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies-schemas.js"
 import { EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
@@ -19,7 +20,7 @@ export const data = new SlashCommandBuilder()
             .setName("name")
             .setDescription("The name of the currency")
             .setRequired(true)
-            .setMaxLength(40)
+            .setMaxLength(CURRENCY_NAME_MAX_LENGTH)
             .setMinLength(1)
         )
         .addStringOption(option => option
@@ -42,7 +43,7 @@ export const data = new SlashCommandBuilder()
                 .setName("new-name")
                 .setDescription("The new name of the currency")
                 .setRequired(true)
-                .setMaxLength(40)
+                .setMaxLength(CURRENCY_NAME_MAX_LENGTH)
                 .setMinLength(1)
             )
         )

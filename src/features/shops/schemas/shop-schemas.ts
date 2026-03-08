@@ -1,27 +1,41 @@
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import z from "zod"
 
+export const SHOP_NAME_MAX_LENGTH = 120
+export const SHOP_DESCRIPTION_MAX_LENGTH = 480
+
+export const DISCOUNT_CODE_MIN_LENGTH = 6
+export const DISCOUNT_CODE_MAX_LENGTH = 8
 
 export const ProductRawSchema = z.object({
     price: z.record(
         z.nanoid(), 
         z.number().min(0)
     ),
-    stock: z.number().min(0).optional() 
+    stock: z.optional(z.number().min(0))
 })
 
 
 export const ShopRawSchema = z.object({
-    name: z.string(), // must add validation for the length
-    emoji: z.string(),
-    description: z.string(),
+    name: z.string()
+        .min(1)
+        .max(SHOP_NAME_MAX_LENGTH),
+
+    emoji: z.nullable(z.string()),
+
+    description: z.nullable(z.string()
+        .min(1)
+        .max(SHOP_DESCRIPTION_MAX_LENGTH)
+    ),
 
     discountCodes: z.record(
-        z.string(), 
+        z.string()
+            .min(DISCOUNT_CODE_MIN_LENGTH)
+            .max(DISCOUNT_CODE_MAX_LENGTH), 
         z.number().min(0)
     ),
 
-    reservedTo: SnowflakeSchema.optional(),
+    reservedTo: z.optional(SnowflakeSchema),
 
     products: z.record(
         z.nanoid(), 

@@ -29,7 +29,7 @@
                 "id": "SQWzMyipYZO3fnCmhAttr",
                 "name": "Super Expensive Quantum Physics book",
                 "emoji": "📗",
-                "description": "",
+                "description": null,
                 "price": 770,
                 "shopId": "h3G8N_1F2LzI1T29bjdxJ"
             }
@@ -89,7 +89,7 @@
                 "id": "6lb722Z-cvgTL23LeXnyZ",
                 "name": "Apple Pie",
                 "emoji": "🥧",
-                "description": "",
+                "description": null,
                 "price": 4,
                 "shopId": "-hw7m2WLOmaNKPSbFdajZ"
             },
@@ -97,7 +97,7 @@
                 "id": "lfDYxuEIIXzzHQUZfXbPu",
                 "name": "Strawberry Pie",
                 "emoji": "🥧",
-                "description": "",
+                "description": null,
                 "price": 4,
                 "shopId": "-hw7m2WLOmaNKPSbFdajZ"
             },
@@ -113,7 +113,7 @@
                 "id": "Dfs5AihBk8iBX9by0RL9U",
                 "name": "Foccacia",
                 "emoji": "🫓",
-                "description": "",
+                "description": null,
                 "price": 3,
                 "shopId": "-hw7m2WLOmaNKPSbFdajZ"
             },
@@ -121,7 +121,7 @@
                 "id": "a8aSYSlPsS9SP5WxNCLq6",
                 "name": "Chouquettes (x12)",
                 "emoji": "<:chouquette:1342277376406716476>",
-                "description": "",
+                "description": null,
                 "price": 2,
                 "shopId": "-hw7m2WLOmaNKPSbFdajZ"
             },
@@ -139,7 +139,7 @@
         "id": "1QsK0ayyoze-Ig3-5GG-T",
         "name": "Hardware Shop",
         "emoji": "🛠",
-        "description": "",
+        "description": null,
         "discountCodes": {},
         "products": {
             "5qpg3DPSth4IG1pAyesc5": {
@@ -174,7 +174,7 @@
             "m3AmJIuCmlpXYh89Kf-HZ": {
                 "id": "m3AmJIuCmlpXYh89Kf-HZ",
                 "name": "admin give 10000$",
-                "description": "",
+                "description": null,
                 "emoji": "💵",
                 "price": 0,
                 "action": {

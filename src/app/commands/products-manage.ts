@@ -1,3 +1,4 @@
+import { ITEM_DESCRIPTION_MAX_LENGTH, ITEM_NAME_MAX_LENGTH } from "@/features/items/schemas/items-schemas.js"
 import { PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
 import { AddActionProductFlow, AddProductFlow } from "@/features/shops/user-flows/product-add.js"
 import { EditProductFlow, EditProductOption } from "@/features/shops/user-flows/product-edit.js"
@@ -16,7 +17,7 @@ export const data = new SlashCommandBuilder()
             .setName("name")
             .setDescription("The name of the product")
             .setRequired(true)
-            .setMaxLength(70)
+            .setMaxLength(ITEM_NAME_MAX_LENGTH)
             .setMinLength(1)
         )
         .addNumberOption(option => option
@@ -29,7 +30,7 @@ export const data = new SlashCommandBuilder()
         .addStringOption(option => option
             .setName("description")
             .setDescription("The description of the product")
-            .setMaxLength(300)
+            .setMaxLength(ITEM_DESCRIPTION_MAX_LENGTH)
             .setMinLength(1)
         )
         .addStringOption(option => option
@@ -68,7 +69,7 @@ export const data = new SlashCommandBuilder()
                 .setName("new-name")
                 .setDescription("The new name of the product")
                 .setRequired(true)
-                .setMaxLength(70)
+                .setMaxLength(ITEM_NAME_MAX_LENGTH)
                 .setMinLength(1)
             )
         )
@@ -79,7 +80,7 @@ export const data = new SlashCommandBuilder()
                 .setName("new-description")
                 .setRequired(true)
                 .setDescription("The new description of the product")
-                .setMaxLength(300)
+                .setMaxLength(ITEM_DESCRIPTION_MAX_LENGTH)
                 .setMinLength(1)
             )
         )

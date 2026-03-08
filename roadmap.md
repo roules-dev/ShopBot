@@ -3,9 +3,9 @@
 ## Roadmap
 
 1. ~~products with a set stock~~
-1. ~~ability to buy a certain amount of a product ([#17](https://github.com/roules-dev/ShopBot/issues/17))~~
-1. removing items for inventories - and bulk removing of an item. ([#14](https://github.com/roules-dev/ShopBot/issues/14))
-1. admin actions logging ([#18](https://github.com/roules-dev/ShopBot/issues/18))
+1. (v3 done) ability to buy a certain amount of a product ([#17](https://github.com/roules-dev/ShopBot/issues/17))
+1. (v3) removing items for inventories - and bulk removing of an item. ([#14](https://github.com/roules-dev/ShopBot/issues/14))
+1. (v3 done) admin actions logging ([#18](https://github.com/roules-dev/ShopBot/issues/18))
 1. item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
 1. api
 
@@ -36,6 +36,5 @@
 - [ ] improve data access, add abstraction to avoid errors and repeated code
 - [ ] branded IDs ? -> will be made once Zod validation is implemented
 - [x] improve folder structure (implement feature base folder structure)
-- [ ] discount codes should be stored as a Map
 - [ ] products must become items, independant of shops
 - [ ] write unit tests

@@ -213,7 +213,6 @@ export class BuyProductUserInterface extends MessageUserInterface {
         }
 
         const errorName = error.name
-
         switch (errorName) {
             case "ApiError":
             case "DatabaseError":
