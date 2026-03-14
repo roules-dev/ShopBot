@@ -3,7 +3,6 @@ import { ApiError, NanoId } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { Account, AccountBalanceTypes, AccountsDatabase, Balance } from "@/features/accounts/database/accounts-type.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { MapValues } from "@/utils/types.js"
 import { Snowflake } from "discord.js"
 
 const accountsDatabase = new AccountsDatabase(accounts, "data/accounts.json")

@@ -1,6 +1,7 @@
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { validate } from "@/lib/validation.js"
+import { MapKey, MapValue } from "@/utils/types.js"
 import { PathLike } from "fs"
 import fs from "fs/promises"
 import z from "zod"
@@ -125,12 +126,15 @@ export abstract class Database<IdType extends string, DataType> {
 type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
 
 
-export class Database2<IdSchema extends z.ZodStringFormat, DataItemRawSchema extends z.ZodObject> {
+export class Database2<
+    IdSchema extends z.ZodStringFormat, 
+    DataItemRawSchema extends z.ZodObject<z.ZodRawShape>,  
+> {
     private dataItemJsonSchema: DataItemRawSchema
 
-    public data: Map<
+    private data: Map<
         z.infer<IdSchema>, 
-        { id: z.infer<IdSchema> } & z.infer<DataItemRawSchema>
+        z.infer<DataItemRawSchema>
     >
 
     public constructor (
@@ -146,18 +150,25 @@ export class Database2<IdSchema extends z.ZodStringFormat, DataItemRawSchema ext
 
         this.data = data
     }
+
+    public get(id: MapKey<typeof this.data>) {
+        return this.data.get(id)
+    }
+
+    public async set(id: MapKey<typeof this.data>, dataItem: MapValue<typeof this.data>) {
+        this.data.set(id, dataItem)
+        const [error] = await this.save()
+        if (error) return err(error)
+        
+        return ok(dataItem)
+    }
+
+    public entries() {
+        return this.data.entries()
+    }
     
-    public toJSON(): Record<string, z.infer<DataItemRawSchema>> {
-        const itemsJson: Record<string, z.infer<DataItemRawSchema>> = {}
-
-        this.data.forEach((item, _) => {
-            const { id, ...itemWithoutId } = item
-            
-            // the use of NoIdSchema in the constructor ensures that this assertion is always correct
-            itemsJson[id] = itemWithoutId as z.infer<DataItemRawSchema>
-        })
-
-        return itemsJson
+    public toJSON(): Record<string, MapValue<typeof this.data>> {
+        return Object.fromEntries(this.data)
     }
     
     protected parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, ApiError> {
@@ -177,9 +188,9 @@ export class Database2<IdSchema extends z.ZodStringFormat, DataItemRawSchema ext
                 PrettyLog.error(`Error parsing ${id}\n${itemError.message}`)
                 continue
             }
-            data.set(id, { id, ...dataItem })
-        }
 
+            data.set(id, dataItem)
+        }
 
         return ok(data)
     }

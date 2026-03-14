@@ -1,4 +1,4 @@
-import { EmojiSchema } from "@/schemas/utils.js"
+import { EmojiSchema, NanoIdSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import z from "zod"
 
 export const ITEM_NAME_MAX_LENGTH = 70
@@ -9,13 +9,13 @@ export const ItemActionSchema = z.discriminatedUnion("type", [
     z.object({ 
         type: z.literal("give-role"),
         options: z.object({
-            roleId: z.string() // may be replaced with snowflake validation
+            roleId: SnowflakeSchema
         })
     }),
     z.object({
         type: z.literal("give-currency"),
         options: z.object({
-            currencyId: z.nanoid(),
+            currencyId: NanoIdSchema,
             amount: z.number()
         })
     })
