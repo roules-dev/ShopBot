@@ -8,7 +8,7 @@ export const DISCOUNT_CODE_MIN_LENGTH = 6
 export const DISCOUNT_CODE_MAX_LENGTH = 8
 
 export const ProductRawSchema = z.object({
-    price: z.record( // must be replaced with codec that does the record for JSON <-> Map for TS conversion
+    price: z.record(
         NanoIdSchema, 
         z.number().min(0)
     ),
@@ -28,7 +28,7 @@ export const ShopRawSchema = z.object({
         .max(SHOP_DESCRIPTION_MAX_LENGTH)
     ),
 
-    discountCodes: z.record( // must be replaced with codec that does the record for JSON <-> Map for TS conversion
+    discountCodes: z.record(
         z.string()
             .min(DISCOUNT_CODE_MIN_LENGTH)
             .max(DISCOUNT_CODE_MAX_LENGTH), 
@@ -37,7 +37,7 @@ export const ShopRawSchema = z.object({
 
     reservedTo: z.optional(SnowflakeSchema),
 
-    products: z.record( // must be replaced with codec that does the record for JSON <-> Map for TS conversion
+    products: z.record( 
         NanoIdSchema, 
         ProductRawSchema
     )

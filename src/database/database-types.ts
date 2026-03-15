@@ -152,7 +152,7 @@ export class Database2<
     }
 
     public get(id: MapKey<typeof this.data>) {
-        return this.data.get(id)
+        return Object.freeze(this.data.get(id))
     }
 
     public async set(id: MapKey<typeof this.data>, dataItem: MapValue<typeof this.data>) {
@@ -164,7 +164,7 @@ export class Database2<
     }
 
     public entries() {
-        return this.data.entries()
+        return Object.freeze(this.data)
     }
     
     public toJSON(): Record<string, MapValue<typeof this.data>> {
