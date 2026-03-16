@@ -1,5 +1,5 @@
 export type Identifiable = {
-    id: string // will be branded when Zod validation is implemented
+    id: string // will be branded once Zod validation is implemented
 }
 
 export type Labelled = {
@@ -15,3 +15,6 @@ export type MutableOrReadonly<T> = T | Readonly<T>
 export type MapKey<T> = T extends Map<infer K, unknown> ? K : never
 export type MapValue<T> = T extends Map<unknown, infer V> ? V : never
 
+export type Prettify<T> = {
+    [K in keyof T]: T[K]
+}

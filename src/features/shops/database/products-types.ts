@@ -1,4 +1,6 @@
 import { NanoId } from "@/database/database-types.js"
+import { Item } from "@/features/items/database/items-types.js"
+import { Prettify } from "@/utils/types.js"
 import { Snowflake } from "discord.js"
 
 
@@ -74,4 +76,11 @@ export interface Product {
 }
 
 export type ProductOptions = Omit<Product, "id" | "shopId">
-export type ProductOptionsOptional = Partial<ProductOptions>
+
+
+export type Product2 = Prettify<Item & {
+    price: Map<NanoId, number> // or Map<NanoId, Balance<Currency>> or Array<Balance<Currency>>
+    stock?: number
+}>
+
+// TODO : if price is an empty map -> item is free -> must add a string to locales.

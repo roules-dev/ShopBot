@@ -38,3 +38,6 @@
 - [x] improve folder structure (implement feature base folder structure)
 - [ ] products must become items, independant of shops
 - [ ] write unit tests
+
+
+<!-- idea : github CI which automates displaying available translations and the % of translation for each language -->

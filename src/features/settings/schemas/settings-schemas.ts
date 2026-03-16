@@ -17,7 +17,7 @@ const SettingVariantSchema = z.discriminatedUnion("type", [
         value: z.nullable(z.number()),
         min: z.nullish(z.number()),
         max: z.nullish(z.number()),
-    }),
+    }), // add validation on the length of value based on if min and max exist ?
 
     z.object({
         type: z.literal("channelId"),

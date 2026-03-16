@@ -16,7 +16,7 @@ export const ItemActionSchema = z.discriminatedUnion("type", [
         type: z.literal("give-currency"),
         options: z.object({
             currencyId: NanoIdSchema,
-            amount: z.number()
+            amount: z.number().min(0)
         })
     })
 ])
@@ -34,5 +34,5 @@ export const ItemRawSchema = z.object({
         .max(ITEM_DESCRIPTION_MAX_LENGTH)
     ),
 
-    action: z.optional(ItemActionSchema)
+    action: z.nullish(ItemActionSchema)
 })

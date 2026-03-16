@@ -72,8 +72,11 @@ If you have a feature idea you think will fit this bot, feel free to suggest it 
 ## 🚀 How to use
 
 This repo is the bot's source code, not a bot itself. <br>
-To use it, you must host it yourself. There are several methods to do this, some are free, some are paid (Be careful that your hosting solution allows file editing, sometimes called local database, otherwise all the bot's data will be lost if the server restarts). <br>
-Once you found the hoster for your bot, here are the steps to follow: <br>
+To use it, you must host it yourself. There are several methods to do this, some are free, some are paid
+> [!IMPORTANT]
+> Your hosting solution must allow file editing, sometimes called local database, otherwise all the bot's data will be lost when the server restarts
+
+Once you found the hosting solution for your bot, here are the steps to follow: <br>
 
 ### 🔧 Installing the bot
 
@@ -258,7 +261,7 @@ And you can do [many more things](#-documentation)... Create discount codes, add
 
 ### Multi language support ?
 
-Implemented ! It is community driven, the currently available languages are : English, French. <br>
+Implemented ! It is community driven, the currently available languages are : English, French, Spanish. <br>
 If your language is not mentionned here, you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
 
 ### New features ?
