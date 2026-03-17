@@ -1,3 +1,4 @@
+import { validateEnum, validateMinMax } from "@/lib/validation.js";
 import { SnowflakeSchema } from "@/schemas/utils.js";
 import z from "zod";
 
@@ -17,7 +18,7 @@ const SettingVariantSchema = z.discriminatedUnion("type", [
         value: z.nullable(z.number()),
         min: z.nullish(z.number()),
         max: z.nullish(z.number()),
-    }), // add validation on the length of value based on if min and max exist ?
+    }).superRefine(validateMinMax), 
 
     z.object({
         type: z.literal("channelId"),
@@ -37,11 +38,13 @@ const SettingVariantSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("enum"),
         value: z.nullable(z.string()),
-        options: z.union([
-            z.array(z.string()),
-            z.array(z.object({ label: z.string(), value: z.string() })),
-        ]),
-    })
+        options: z.array(
+            z.object({ 
+                label: z.string(), 
+                value: z.string() 
+            })
+        )
+    }).superRefine(validateEnum)
 ])
 
 

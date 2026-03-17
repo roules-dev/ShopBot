@@ -9,6 +9,12 @@ const rl = readline.createInterface({
     output: process.stdout,
 })
 
+const databasesPaths = [
+    "./data/shops.json",
+    "./data/accounts.json",
+    "./data/currencies.json"
+]
+
 
 async function setup() {
     console.log("\n\n———————————————————————————\n")
@@ -20,11 +26,15 @@ async function setup() {
     const token = await questionWithCondition(`\nBot token: `, token => token.length > 0, "Please enter a token")
     config.token = token
 
-    const resetData = await questionWithCondition("\nReset data? (y/n): ", answer => answer === "y" || answer === "n")
+    const resetData = await questionWithCondition(
+        "\nReset data? (y/n): ", 
+        answer => answer.toLocaleLowerCase() === "y" || answer.toLocaleLowerCase() === "n"
+    )
+
     if (resetData === "y") {
-        await fs.writeFile("./data/shops.json", JSON.stringify({}, null, 4))
-        await fs.writeFile("./data/accounts.json", JSON.stringify({}, null, 4))
-        await fs.writeFile("./data/currencies.json", JSON.stringify({}, null, 4))
+        for (const path of databasesPaths) {
+            await fs.writeFile(path, JSON.stringify({}, null, 4))
+        }
     }
 
     await saveConfig()

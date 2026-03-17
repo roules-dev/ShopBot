@@ -72,3 +72,6 @@
 
 //     // also update currencies and accounts
 // }
+
+
+// TODO : convert settings of type enum

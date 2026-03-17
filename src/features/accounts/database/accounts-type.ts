@@ -8,8 +8,8 @@ import { ok } from "@/lib/error-handling.js";
 import { Snowflake } from "discord.js";
 
 
-export interface Balance<Item> {
-    item: Item
+export interface Balance<T> {
+    item: T 
     amount: number
 }
 

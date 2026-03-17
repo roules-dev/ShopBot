@@ -2,7 +2,7 @@ import shops from "@/../data/shops.json" with { type: "json" }
 import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
-import { Shop, ShopOptionsOptional, ShopsDatabase } from "@/features/shops/database/shops-types.js"
+import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { t } from "@/lib/localization.js"
 import { Snowflake } from "discord.js"
@@ -75,7 +75,7 @@ const SHOP_FIELD_HANDLERS = {
     }
 }
 
-export async function updateShop(shopId: string, options: ShopOptionsOptional) {
+export async function updateShop(shopId: string, options: Partial<ShopOptions>) {
     const shop = shopsDatabase.data.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
     

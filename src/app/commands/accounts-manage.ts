@@ -11,7 +11,7 @@ export const data = new SlashCommandBuilder()
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(subcommand => subcommand
         .setName("view-account")
-        .setDescription("View user\"s account")
+        .setDescription("View user's account")
         .addUserOption(option => option
             .setName("target")
             .setDescription("The user you want to see the account of")
@@ -60,7 +60,7 @@ export const data = new SlashCommandBuilder()
         )
         .addNumberOption(option => option
             .setName("amount")
-            .setDescription("The amount of money to take. If you want to take all target\"s money, you will be able to do it later")
+            .setDescription("The amount of money to take. If you want to take all target's money, you will be able to do it later")
             .setRequired(true)
             .setMinValue(1)
         )

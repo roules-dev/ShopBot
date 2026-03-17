@@ -15,7 +15,6 @@ export const ProductRawSchema = z.object({
     stock: z.nullish(z.number().min(0))
 })
 
-
 export const ShopRawSchema = z.object({
     name: z.string()
         .min(1)

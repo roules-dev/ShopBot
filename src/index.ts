@@ -1,15 +1,13 @@
 import "@/utils/strings.js"
 import "@/lib/localization.js"
-import "dotenv/config"
 
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
 
 
-
 if (process.env["NODE_ENV"] && process.env.NODE_ENV === "development") {
 	PrettyLog.warn("Development mode enabled")
-	PrettyLog.warn("Errors won\"t be caught by the error handler")
+	PrettyLog.warn("Errors won't be caught by the error handler")
 }
 else {
 	process.on("unhandledRejection", (reason: unknown) => PrettyLog.error(`${reason}`))

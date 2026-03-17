@@ -122,9 +122,17 @@ export abstract class Database<IdType extends string, DataType> {
     }
 }
 
+// ---
+// implementation for next version
+
+export interface Balance2<T> {
+    resource: T 
+    amount: number
+}
+
+
 
 type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
-
 
 export class Database2<
     IdSchema extends z.ZodStringFormat, 

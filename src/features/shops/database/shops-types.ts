@@ -23,7 +23,6 @@ export interface Shop {
 }
 
 export type ShopOptions = Omit<Shop, "id" | "products" | "currency" | "discountCodes">
-export type ShopOptionsOptional = Partial<ShopOptions>
 
 
 export interface ShopsDatabaseJsonBody extends DatabaseJsonBody {

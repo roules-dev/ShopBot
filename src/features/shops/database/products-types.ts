@@ -1,4 +1,5 @@
-import { NanoId } from "@/database/database-types.js"
+import { Balance2, NanoId } from "@/database/database-types.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { Item } from "@/features/items/database/items-types.js"
 import { Prettify } from "@/utils/types.js"
 import { Snowflake } from "discord.js"
@@ -62,7 +63,7 @@ export function isProductActionType(
 // so no more shopId
 
 // Price system will change :
-// it"ll be a map of currencyId => price (number)
+// it'll be a map of currencyId => price (number)
 
 export interface Product {
     id: NanoId
@@ -77,10 +78,16 @@ export interface Product {
 
 export type ProductOptions = Omit<Product, "id" | "shopId">
 
+// ---
+// new implementation
 
-export type Product2 = Prettify<Item & {
-    price: Map<NanoId, number> // or Map<NanoId, Balance<Currency>> or Array<Balance<Currency>>
+export type ProductOptions2 = {
+    price: Array<Balance2<Currency>>
     stock?: number
-}>
+}
 
-// TODO : if price is an empty map -> item is free -> must add a string to locales.
+// TODO : if price is an empty array -> item is free -> must add a string to locales.
+
+export type Product2 = Prettify<{
+    item : Item 
+} & ProductOptions2>

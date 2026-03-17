@@ -100,7 +100,7 @@ Once you found the hosting solution for your bot, here are the steps to follow: 
 
 Now, we'll link the code to the bot, and upload it on the server.
 
-1. You need to have [Node.js](https://nodejs.org/en) installed on the machine where you want to host the bot.
+1. You need to have [Node.js](https://nodejs.org/en) installed on the machine where you want to host the bot. (Node version >= 22)
 2. Download the code from the [latest release](https://github.com/roules-dev/ShopBot/releases) and extract it from the ZIP file, open the folder where it's located, and open a terminal from here.
 3. Execute the following command
 
