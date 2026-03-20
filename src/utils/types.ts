@@ -1,5 +1,5 @@
-export type Identifiable = {
-    id: string // will be branded once Zod validation is implemented
+export type Identifiable<Id extends string = string> = {
+    id: Id
 }
 
 export type Labelled = {

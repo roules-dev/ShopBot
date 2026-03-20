@@ -2,7 +2,7 @@ import { validateEnum, validateMinMax } from "@/lib/validation.js";
 import { SnowflakeSchema } from "@/schemas/utils.js";
 import z from "zod";
 
-const SettingVariantSchema = z.discriminatedUnion("type", [
+export const SettingVariantSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("string"),
         value: z.nullable(z.string()),
@@ -18,7 +18,7 @@ const SettingVariantSchema = z.discriminatedUnion("type", [
         value: z.nullable(z.number()),
         min: z.nullish(z.number()),
         max: z.nullish(z.number()),
-    }).superRefine(validateMinMax), 
+    }), 
 
     z.object({
         type: z.literal("channelId"),
@@ -44,11 +44,20 @@ const SettingVariantSchema = z.discriminatedUnion("type", [
                 value: z.string() 
             })
         )
-    }).superRefine(validateEnum)
+    })
 ])
 
 
 export const SettingSchema = z.object({
     name: z.string()
-}).and(SettingVariantSchema)
+}).and(SettingVariantSchema).superRefine((data, ctx) => {
+    switch (data.type) {
+        case "number": 
+            validateMinMax(data, ctx)
+            break
+        case "enum":
+            validateEnum(data, ctx)
+            break
+    }
+})
 

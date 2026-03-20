@@ -6,7 +6,7 @@ import { PathLike } from "fs"
 import fs from "fs/promises"
 import z from "zod"
 
-export type NanoId = string
+export type NanoId = string // z.infer<typeof NanoIdSchema>
 
 const API_ERRORS = { 
     ShopDoesNotExist: {
@@ -129,7 +129,6 @@ export interface Balance2<T> {
     resource: T 
     amount: number
 }
-
 
 
 type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema

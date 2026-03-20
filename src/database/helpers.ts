@@ -1,3 +1,5 @@
+import { Shop, ShopOptions } from "@/features/shops/database/shops-types.js"
+
 type NotUndefined<T> = Exclude<T, undefined>
 
 export function update<T extends object, O extends Partial<T>>(
@@ -21,5 +23,31 @@ export function update<T extends object, O extends Partial<T>>(
             // forced cast, because TS can't correctly infer here
             entry[key as keyof T] = value as T[keyof T]
         }
+    }
+}
+
+// ---
+// should work, avoids casting :
+
+function applyKey<T extends object, K extends keyof T>(
+    entry: T,
+    key: K,
+    value: T[K],
+    handler?: (entry: T, value: T[K]) => void
+) {
+    if (handler !== undefined) handler(entry, value)
+    else entry[key] = value
+}
+
+export function update2<T extends object>(
+    entry: T,
+    options: Partial<T>,
+    handlers?: { [K in keyof T]?: (entry: T, value: T[K]) => void }
+) {
+    for (const key in options) {
+        const value = options[key]
+        if (value === undefined) continue
+
+        applyKey(entry, key, value, handlers?.[key])
     }
 }

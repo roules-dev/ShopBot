@@ -15,8 +15,9 @@ export function getSetting(id: string): Setting | undefined {
 
 
 // TODO : get rid of this "value: any" for a more type safe way of doing it
-// -> probably with some Zod validation
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// future signature: 
+
+//* setSetting<T extends SettingIdBrands, V extends SettingValueByIdBrand<T>>(id: T, value: V)
 export async function setSetting(id: string, value: any) {
     const setting = settingsDatabase.data.get(id)
     if (!setting) return err("Setting does not exist")

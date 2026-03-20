@@ -67,7 +67,7 @@ export async function removeShop(shopId: string) {
 // which means the special transformer here should not exist, 
 // because the test should be done before calling the updateShop function, not inside it.
 // We'll be able to do that once Zod validation is implemented, enabling us to work with 
-// branded strings types (thus an Id will indeed be an Id.).
+// branded strings types (thus an Id will indeed be an Id and a value for reservedTo will be a snowflake or null or undefined).
 
 const SHOP_FIELD_HANDLERS = {
     reservedTo: (shop: Shop, value: string) => {
