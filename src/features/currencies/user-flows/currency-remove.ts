@@ -1,15 +1,15 @@
+import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts-services.js"
 import { getShopsWithCurrency } from "@/features/shops/database/shops-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { t } from "@/lib/localization.js"
-import { ExtendedButtonComponent } from "@/ui-components/button.js"
-import { ExtendedComponent } from "@/ui-components/extended-components.js"
-import { showConfirmationModal } from "@/ui-components/modals.js"
-import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
-import { UserFlow } from "@/user-flows/user-flow.js"
+import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
+import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
+import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
+import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
 import { getCurrencies, removeCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
-import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts-services.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {

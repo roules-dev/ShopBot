@@ -1,11 +1,11 @@
 import { Product } from "@/features/shops/database/products-types.js";
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js";
 import { t } from "@/lib/localization.js";
-import { ExtendedButtonComponent } from "@/ui-components/button.js";
-import { ExtendedComponent } from "@/ui-components/extended-components.js";
-import { showConfirmationModal } from "@/ui-components/modals.js";
-import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js";
-import { UserFlow } from "@/user-flows/user-flow.js";
+import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
+import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js";
+import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js";
+import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js";
+import { UserFlow } from "@/lib/ui/user-flows/user-flow.js";
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js";
 import { getOrCreateAccount } from "../database/accounts-database.js";
 import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js";

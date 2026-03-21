@@ -1,5 +1,5 @@
+import { UserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { ChatInputCommandInteraction } from "discord.js"
-import { UserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 
 
 export abstract class UserFlow extends UserInterface {

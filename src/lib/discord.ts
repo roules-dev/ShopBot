@@ -1,6 +1,6 @@
 import { getSettings } from "@/features/settings/database/settings-handler.js"
 import { t } from "@/lib/localization.js"
-import { UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
+import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { Guild, MessageFlags, TextChannel } from "discord.js"
 import { PrettyLog } from "./pretty-log.js"
 
