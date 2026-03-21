@@ -1,4 +1,4 @@
-import { UserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { UserInterface, UserInterfaceInteraction } from "../user-interfaces/user-interfaces.js"
 import { ChatInputCommandInteraction } from "discord.js"
 
 

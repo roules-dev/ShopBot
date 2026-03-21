@@ -1,4 +1,4 @@
-import { Emojiable, Labelled } from "./types.js"
+import { Emojiable, Labelled } from "../lib/types/utils.js"
 
 export function formattedEmojiableName(element: Labelled & Emojiable): string
 export function formattedEmojiableName(element: Labelled & Emojiable | undefined | null): string | undefined

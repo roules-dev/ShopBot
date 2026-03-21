@@ -1,7 +1,7 @@
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ComponentSeparator, ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { ExtendedButtonComponent } from "../ui-components/button.js"
+import { ComponentSeparator, ExtendedComponent } from "../ui-components/extended-components.js"
 import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js"
 
 

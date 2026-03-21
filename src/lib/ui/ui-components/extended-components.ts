@@ -1,4 +1,4 @@
-import { UserInterfaceComponentBuilder } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { UserInterfaceComponentBuilder } from "../user-interfaces/user-interfaces.js"
 import { ButtonInteraction, ComponentType, InteractionCallbackResponse, InteractionCollector, MessageComponentInteraction, MessageComponentType, ReadonlyCollection, StringSelectMenuInteraction } from "discord.js"
 
 export abstract class ExtendedComponent {

@@ -1,7 +1,7 @@
 import { Balance2, NanoId } from "@/database/database-types.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { Item } from "@/features/items/database/items-types.js"
-import { Prettify } from "@/utils/types.js"
+import { Prettify } from "@/lib/types/utils.js"
 import { Snowflake } from "discord.js"
 
 
