@@ -3,7 +3,7 @@
 
 ### Hi 👋 <br>
 
-I created a cool bot for you !
+I created a cool bot for you !  
 Meet **ShopBot**, a bot designed to help you create your own shops and currencies, tailored to the needs of your community, your RP server, or whatever else you need.
 <sub><sup>(See [screenshots](#-screenshots))</sup></sub>
 <br>
