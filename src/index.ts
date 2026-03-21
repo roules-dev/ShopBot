@@ -4,6 +4,9 @@ import "@/lib/localization.js"
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
 
+function isTsx() {
+    return process.argv.includes('--use-ts')
+}
 
 if (process.env["NODE_ENV"] && process.env.NODE_ENV === "development") {
 	PrettyLog.warn("Development mode enabled")
@@ -15,7 +18,6 @@ else {
 	process.on("uncaughtExceptionMonitor", (reason: unknown) => PrettyLog.error(`${reason}`))
 }
 
-
 // Start the bot
-startClient()
+startClient(isTsx())
 

@@ -1,5 +1,5 @@
 import { ApiError } from "@/database/database-types.js"
-import { update } from "@/database/helpers.js"
+import { update, update2 } from "@/database/helpers.js"
 import { Product, ProductOptions } from "@/features/shops/database/products-types.js"
 import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js"
 import { err, ok } from "@/lib/error-handling.js"
@@ -42,9 +42,9 @@ export async function removeProduct(shopId: string, productId: string) {
 
 
 const PRODUCT_FIELD_HANDLERS = {
-    stock: (product: Product, stock: number) => {
-        if (stock == -1) product.stock = undefined // null instead
-        else product.stock = stock
+    stock: (stock: number | undefined) => {
+        if (stock == -1) return undefined // null instead
+        else return stock
     }
 }
 
@@ -67,9 +67,8 @@ export async function updateProduct(
 
     if (!product) return err(new ApiError("ProductDoesNotExist"))
 
-    update(product, options, PRODUCT_FIELD_HANDLERS)
+    update2(product, options, PRODUCT_FIELD_HANDLERS)
 
-    
     const [error] = await shopsDatabase.save()
     if (error) return err(error)
     

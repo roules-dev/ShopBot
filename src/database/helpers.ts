@@ -5,7 +5,7 @@ type NotUndefined<T> = Exclude<T, undefined>
 export function update<T extends object, O extends Partial<T>>(
     entry: T, 
     options: O, 
-    handlers?: {[K in keyof O]?: (entry: T, value: NotUndefined<O[K]>) => void}
+    handlers?: {[K in keyof O]?: (value: NotUndefined<O[K]>) => NotUndefined<O[K]>}
 ) {
     for (const _key in options) {
         const key = _key as keyof O // keys should only be strings
@@ -17,7 +17,7 @@ export function update<T extends object, O extends Partial<T>>(
             const handler = handlers[key]
 
             // forced cast, because TS can't correctly infer here
-            handler(entry, value as NotUndefined<O[typeof key]>)
+            entry[key as keyof T] = handler(value as NotUndefined<O[typeof key]>) as T[keyof T]
         }
         else {
             // forced cast, because TS can't correctly infer here
@@ -33,16 +33,16 @@ function applyKey<T extends object, K extends keyof T>(
     entry: T,
     key: K,
     value: T[K],
-    handler?: (entry: T, value: T[K]) => void
+    handler?: (value: T[K]) => T[K]
 ) {
-    if (handler !== undefined) handler(entry, value)
+    if (handler !== undefined) entry[key] = handler(value)
     else entry[key] = value
 }
 
 export function update2<T extends object>(
     entry: T,
     options: Partial<T>,
-    handlers?: { [K in keyof T]?: (entry: T, value: T[K]) => void }
+    handlers?: { [K in keyof T]?: (value: T[K]) => T[K] }
 ) {
     for (const key in options) {
         const value = options[key]

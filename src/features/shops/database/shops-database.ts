@@ -1,6 +1,6 @@
 import shops from "@/../data/shops.json" with { type: "json" }
 import { ApiError } from "@/database/database-types.js"
-import { update } from "@/database/helpers.js"
+import { update, update2 } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
@@ -70,8 +70,8 @@ export async function removeShop(shopId: string) {
 // branded strings types (thus an Id will indeed be an Id and a value for reservedTo will be a snowflake or null or undefined).
 
 const SHOP_FIELD_HANDLERS = {
-    reservedTo: (shop: Shop, value: string) => {
-        shop.reservedTo = value === t("defaultComponents.unset") ? undefined : value
+    reservedTo: (value: string | undefined) => {
+        return value === t("defaultComponents.unset") ? undefined : value
     }
 }
 
@@ -79,9 +79,8 @@ export async function updateShop(shopId: string, options: Partial<ShopOptions>) 
     const shop = shopsDatabase.data.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
     
-    update(shop, options, SHOP_FIELD_HANDLERS)
+    update2(shop, options, SHOP_FIELD_HANDLERS)
         
-    
     const [error] = await shopsDatabase.save()
     if (error) return err(error)
     

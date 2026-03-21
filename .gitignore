@@ -1,11 +1,10 @@
 node_modules
 .vscode
 dist
-src/test.ts
+src/scratch.ts
 logs.txt
 .temp
 *.zip
 tsconfig.tsbuildinfo
 .env
 build
-tests

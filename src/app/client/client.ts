@@ -25,10 +25,12 @@ declare module "discord.js" {
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences] })
 
 
-async function registerCommands(client: Client) {
+async function registerCommands(client: Client, isTs: boolean = false) {
     client.commands = new Collection()
     const commandsPath = path.join(__dirname, "..", "commands")
-    const commandFiles = (await fs.readdir(commandsPath)).filter((file) => file.endsWith(".js"))
+
+    const ext = isTs ? ".ts" : ".js"
+    const commandFiles = (await fs.readdir(commandsPath)).filter((file) => file.endsWith(ext))
 
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file)
@@ -40,9 +42,11 @@ async function registerCommands(client: Client) {
     PrettyLog.logLoadStep("Commands registered")
 }
 
-async function registerEvents(client: Client<boolean>) {
+async function registerEvents(client: Client, isTs: boolean = false) {
     const eventsPath = path.join(__dirname, "..", "events")
-    const eventFiles = (await fs.readdir(eventsPath)).filter((file) => file.endsWith(".js"))
+
+    const ext = isTs ? ".ts" : ".js"
+    const eventFiles = (await fs.readdir(eventsPath)).filter((file) => file.endsWith(ext))
 
     for (const file of eventFiles) {
         const filePath = path.join(eventsPath, file)
@@ -57,14 +61,14 @@ async function registerEvents(client: Client<boolean>) {
     PrettyLog.logLoadStep("Events registered")
 }
 
-export async function startClient() {
+export async function startClient(isTs: boolean = false) {
     if (!config.token) {
         PrettyLog.error("Missing token in config.json")
         process.exit(1)
     }
 
-    await registerCommands(client)
-    await registerEvents(client)
+    await registerCommands(client, isTs)
+    await registerEvents(client, isTs)
 
     await client.login(config.token)
 }
