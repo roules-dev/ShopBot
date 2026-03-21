@@ -7,9 +7,7 @@ declare global {
 }
 
 String.prototype.ellipsis = function (this : string, max: number) {
-    
     if (this.length > max) return `${this.substring(0, max - 1)}…`
-
     return this
 }
 

@@ -7,7 +7,7 @@ import { showEditModal, showSingleInputModal } from "@/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { objToString } from "@/utils/objects.js"
+import { stringifyObj } from "@/utils/objects.js"
 import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInteraction } from "discord.js"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
@@ -267,7 +267,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (interaction.guild) {
             logToDiscord(interaction.guild, 
-                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${objToString(product.action.options)})` : "none"}`
+                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${stringifyObj(product.action.options)})` : "none"}`
             )
         }
     }

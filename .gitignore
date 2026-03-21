@@ -8,3 +8,4 @@ logs.txt
 tsconfig.tsbuildinfo
 .env
 build
+tests

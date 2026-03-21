@@ -7,7 +7,6 @@ import { getOrCreateAccount, getAccountsWithCurrency, updateAccount, updateBalan
 import { Account } from "../database/accounts-type.js"
 
 export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
-
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 

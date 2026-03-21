@@ -5,10 +5,6 @@ import { Guild, MessageFlags, TextChannel } from "discord.js"
 import { PrettyLog } from "./pretty-log.js"
 
 
-
-
-
-
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
     return await interaction.reply({ content: getErrorMessage(errorMessage), flags: MessageFlags.Ephemeral })
 }
