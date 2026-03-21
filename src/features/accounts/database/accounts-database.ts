@@ -1,7 +1,7 @@
 import accounts from "@/../data/accounts.json" with { type: "json" }
 import { ApiError, NanoId } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
-import { Account, AccountBalanceTypes, AccountsDatabase, Balance } from "@/features/accounts/database/accounts-type.js"
+import { Account, AccountBalanceTypes, AccountsDatabase } from "@/features/accounts/database/accounts-type.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
 
@@ -19,7 +19,7 @@ export async function getOrCreateAccount(id: Snowflake) {
         account = accountsDatabase.data.get(id)!
     }
 
-    return ok(Object.freeze(account))
+    return ok(account)
 }
 
 
@@ -28,7 +28,7 @@ export function getAccountsWithCurrency(currencyId: string) {
     accountsDatabase.data.forEach((account: Account, id: Snowflake) => {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
     })
-    return Object.freeze(accountsWithCurrency)
+    return accountsWithCurrency
     
 }
 
@@ -41,7 +41,7 @@ export async function updateAccount(id: Snowflake, options: Partial<Account>) {
     const [error] = await accountsDatabase.save()
     if (error) return err(error)
 
-    return ok(Object.freeze(account))
+    return ok(account)
 }
 
 
@@ -59,5 +59,5 @@ export async function updateBalance<T extends keyof AccountBalanceTypes>(
     const [error] = await accountsDatabase.save()
     if (error) return err(error)
 
-    return ok(Object.freeze(account))
+    return ok(account)
 }

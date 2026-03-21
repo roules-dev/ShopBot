@@ -1,6 +1,6 @@
 import shops from "@/../data/shops.json" with { type: "json" }
 import { ApiError } from "@/database/database-types.js"
-import { update, update2 } from "@/database/helpers.js"
+import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
@@ -11,7 +11,7 @@ import { nanoid } from "nanoid"
 export const shopsDatabase = new ShopsDatabase(shops, "data/shops.json")
 
 export function getShops(): Map<string, Shop> {
-    return Object.freeze(shopsDatabase.data)
+    return shopsDatabase.data
 }
 
 export function getShopId(shopName: string): string | undefined {
@@ -48,7 +48,7 @@ export async function createShop(shopName: string, description: string, currency
     if (error) return err(error)
     
 
-    return ok(Object.freeze(newShop))
+    return ok(newShop)
 }
 
 export async function removeShop(shopId: string) {
@@ -79,12 +79,12 @@ export async function updateShop(shopId: string, options: Partial<ShopOptions>) 
     const shop = shopsDatabase.data.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
     
-    update2(shop, options, SHOP_FIELD_HANDLERS)
+    update(shop, options, SHOP_FIELD_HANDLERS)
         
     const [error] = await shopsDatabase.save()
     if (error) return err(error)
     
-    return ok(Object.freeze(shop))
+    return ok(shop)
 }
 
 export async function updateShopCurrency(shopId: string, currencyId: string) {
@@ -100,7 +100,7 @@ export async function updateShopCurrency(shopId: string, currencyId: string) {
     const [error] = await shopsDatabase.save()
     if (error) return err(error)
     
-    return ok(Object.freeze(shop))
+    return ok(shop)
 }
 
 export function getShopsWithCurrency(currencyId: string) {

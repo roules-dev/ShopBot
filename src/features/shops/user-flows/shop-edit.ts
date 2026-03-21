@@ -129,6 +129,7 @@ export class EditShopFlow extends UserFlow {
         
         const oldName = this.selectedShop?.name || ""
 
+        // TODO needs refactoring
         const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
         if (error) return await updateAsErrorMessage(interaction, error.message)

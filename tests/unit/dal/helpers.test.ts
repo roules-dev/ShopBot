@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { update, update2 } from '@/database/helpers';
+import { update } from '@/database/helpers';
 
 
 describe('DAL helpers', () => {

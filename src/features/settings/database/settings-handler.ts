@@ -31,5 +31,5 @@ export async function setSetting(id: string, value: any) {
 
     EVENTS.emit("settingUpdated", id, updatedSetting)
 
-    return ok(Object.freeze(setting))
+    return ok(setting)
 }

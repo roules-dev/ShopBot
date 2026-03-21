@@ -1,9 +1,9 @@
-import { ApiError, DatabaseError } from "@/database/database-types.js"
+import { ApiError } from "@/database/database-types.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Product } from "@/features/shops/database/products-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
-import { getOrCreateAccount, getAccountsWithCurrency, updateAccount, updateBalance } from "../database/accounts-database.js"
+import { getAccountsWithCurrency, updateAccount, updateBalance } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
 
 export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
@@ -18,7 +18,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
     const [error, account] = await updateBalance(id, "currencies", currencyId, newCurrencyBalance)
     if (error) return err(error)
 
-    return ok(Object.freeze({ account, currency }))
+    return ok({ account, currency })
 }
 
 export async function setAccountItemAmount(id: Snowflake, product: Product, amount: number) {
@@ -30,7 +30,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
     const [error, account] = await updateBalance(id, "currencies", product.id, newItemBalance)
     if (error) return err(error)
 
-    return ok(Object.freeze({ account, product }))
+    return ok({ account, product })
 }
 
 export async function emptyAccount(id: Snowflake, empty: "currencies" | "inventory" | "all") {
@@ -46,7 +46,7 @@ export async function emptyAccount(id: Snowflake, empty: "currencies" | "invento
     const [error, account] = await updateAccount(id, updatedAccount)
     if (error) return err(error)
 
-    return ok(Object.freeze(account)) 
+    return ok(account) 
 }
 
 export async function takeCurrencyFromAccounts(currencyId: string) {
@@ -61,5 +61,5 @@ export async function takeCurrencyFromAccounts(currencyId: string) {
     }
 
 
-    return ok(Object.freeze(accountsWithCurrency))
+    return ok(accountsWithCurrency)
 }

@@ -1,6 +1,6 @@
 import { ApiError } from "@/database/database-types.js"
-import { update, update2 } from "@/database/helpers.js"
-import { Product, ProductOptions } from "@/features/shops/database/products-types.js"
+import { update2 } from "@/database/helpers.js"
+import { ProductOptions } from "@/features/shops/database/products-types.js"
 import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
@@ -9,7 +9,7 @@ export function getProducts(shopId: string){
     const shop = getShops().get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
-    return ok(Object.freeze(shop.products))
+    return ok(shop.products)
 }
 
 export async function addProduct(shopId: string, options: ProductOptions) {
@@ -25,7 +25,7 @@ export async function addProduct(shopId: string, options: ProductOptions) {
     if (error) return err(error)
     
 
-    return ok(Object.freeze(product))
+    return ok(product)
 }
 
 export async function removeProduct(shopId: string, productId: string) {

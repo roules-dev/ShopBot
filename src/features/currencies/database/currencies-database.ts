@@ -9,7 +9,7 @@ import { nanoid } from "nanoid"
 const currenciesDatabase = new CurrenciesDatabase(currencies, "data/currencies.json")
 
 export function getCurrencies(): Map<string, Currency> {
-    return Object.freeze(currenciesDatabase.data)
+    return currenciesDatabase.data
 }
 
 export function getCurrencyId(currencyName: string): string | undefined {
@@ -30,7 +30,7 @@ export async function createCurrency(currencyName: string, emoji?: string) {
     const [error] = await currenciesDatabase.save()
     if (error) return err(error)
 
-    return ok(Object.freeze(newCurrency))
+    return ok(newCurrency)
 }
 
 export async function removeCurrency(currencyId: string) {
@@ -53,6 +53,6 @@ export async function updateCurrency(currencyId: string, options: CurrencyOption
     const [error] = await currenciesDatabase.save()
     if (error) return err(error)
 
-    return ok(Object.freeze(currency))
+    return ok(currency)
 }
 
