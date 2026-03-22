@@ -56,6 +56,10 @@ const DATABASE_ERRORS = {
     SaveError: {
         message: "Error saving database",
         status: 500
+    },
+    ObjectNotFound: {
+        message: "Object not found",
+        status: 404
     }
 }
 
@@ -167,10 +171,22 @@ export class Database2<
         const [error] = await this.save()
         if (error) return err(error)
         
-        return ok(dataItem)
+        return ok(Object.freeze({...dataItem}))
     }
 
-    public entries() {
+    public async patch(id: MapKey<typeof this.data>, dataItem: Partial<MapValue<typeof this.data>>) {
+        const item = this.data.get(id)
+        if (!item) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        
+        const updatedItem = {...item, ...dataItem}
+
+        const [error, updated] = await this.set(id, updatedItem)
+        if (error) return err(error)
+
+        return ok(updated)
+    }
+
+    public entries(): ReadonlyMap<MapKey<typeof this.data>, MapValue<typeof this.data>> {
         return this.data
     }
     
@@ -178,7 +194,7 @@ export class Database2<
         return Object.fromEntries(this.data)
     }
     
-    protected parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, ApiError> {
+    protected parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, DatabaseError> {
         const data: typeof this.data = new Map()
 
         for (const [_id, _dataItem] of Object.entries(databaseRaw)) {

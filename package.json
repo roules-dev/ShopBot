@@ -23,7 +23,6 @@
 
         "test": "vitest",
         "test:watch": "vitest --watch",
-        "test:coverage": "vitest --coverage",
 
         "setup": "npm i --omit=dev --silent && node ./dist/tools/setup-helper.js",
         "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",

@@ -29,7 +29,6 @@ export function getAccountsWithCurrency(currencyId: string) {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
     })
     return accountsWithCurrency
-    
 }
 
 export async function updateAccount(id: Snowflake, options: Partial<Account>) {
