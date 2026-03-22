@@ -1,5 +1,3 @@
-import { Shop, ShopOptions } from "@/features/shops/database/shops-types.js"
-
 type NotUndefined<T> = Exclude<T, undefined>
 
 export function update<T extends object, O extends Partial<T>>(

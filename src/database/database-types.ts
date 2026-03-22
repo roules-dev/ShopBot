@@ -1,6 +1,7 @@
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { MapKey, MapValue } from "@/lib/types/utils.js"
+import { AnyStringSchema } from "@/lib/types/zod.js"
 import { validate } from "@/lib/validation.js"
 import { PathLike } from "fs"
 import fs from "fs/promises"
@@ -138,7 +139,7 @@ export interface Balance2<T> {
 type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
 
 export class Database2<
-    IdSchema extends z.ZodStringFormat, 
+    IdSchema extends AnyStringSchema, 
     DataItemRawSchema extends z.ZodObject<z.ZodRawShape>,  
 > {
     private dataItemJsonSchema: DataItemRawSchema
