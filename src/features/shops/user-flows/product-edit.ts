@@ -223,7 +223,7 @@ export class EditProductFlow extends UserFlow {
 
         const oldName = formattedEmojiableName(this.selectedProduct)
 
-        const [error] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, updateOption)
+        const [error] = await updateProduct(undefined, this.selectedShop.id, this.selectedProduct.id, updateOption)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 

@@ -139,7 +139,7 @@ export class ShopCreateFlow extends UserFlow {
         if (!this.shopName) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, newShop] = await createShop(this.shopName, this.shopDescription || "", this.selectedCurrency.id, this.shopEmoji || "", this.shopReservedTo)
+        const [error, newShop] = await createShop(undefined, undefined, this.shopName, this.shopDescription || "", this.selectedCurrency.id, this.shopEmoji || "", this.shopReservedTo)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

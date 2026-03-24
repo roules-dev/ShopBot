@@ -71,14 +71,14 @@ export class AccountsDatabase extends Database<Snowflake, Account> {
 
 
     private inventoryItemFilter([id, balance]: [NanoId, Balance<ProductId>]) {
-        const [error, products] = getProducts(balance.item.shopId)
+        const [error, products] = getProducts(undefined, balance.item.shopId)
         if (error) return false
 
         return getShops().has(balance.item.shopId) && products.has(id)
     }
 
     private inventoryItemMapper([id, balance]: [NanoId, Balance<ProductId>]): [NanoId, Balance<Product>] {
-        const [error, products] = getProducts(balance.item.shopId)
+        const [error, products] = getProducts(undefined, balance.item.shopId)
         if (error) throw new Error("This should never happen since the filter should have filtered it out")
 
         const product = products.get(id)!

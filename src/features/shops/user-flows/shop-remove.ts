@@ -74,7 +74,7 @@ export class ShopRemoveFlow extends UserFlow {
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error] = await removeShop(this.selectedShop.id)
+        const [error] = await removeShop(undefined, this.selectedShop.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

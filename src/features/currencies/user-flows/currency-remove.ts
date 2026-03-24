@@ -67,7 +67,7 @@ export class CurrencyRemoveFlow extends UserFlow {
     
     getMessage(): string {  
         if (this.selectedCurrency) {
-            const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency.id)
+            const shopsWithCurrency = getShopsWithCurrency(undefined, this.selectedCurrency.id)
 
             if (shopsWithCurrency.size > 0) {
                 const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
@@ -93,7 +93,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
-        const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency?.id || "")
+        const shopsWithCurrency = getShopsWithCurrency(undefined, this.selectedCurrency?.id || "")
 
         submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
     }
@@ -108,7 +108,7 @@ export class CurrencyRemoveFlow extends UserFlow {
 
         const currencyName = this.selectedCurrency.name || ""
 
-        const [error2] = await removeCurrency(this.selectedCurrency.id)
+        const [error2] = await removeCurrency(undefined, this.selectedCurrency.id)
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))

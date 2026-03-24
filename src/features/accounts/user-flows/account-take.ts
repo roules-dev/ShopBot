@@ -92,7 +92,7 @@ export class AccountTakeFlow extends UserFlow {
 
                 if (!this.target || !this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                const [error, account] = await getOrCreateAccount(this.target.id)
+                const [error, account] = await getOrCreateAccount(undefined, this.target.id)
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.amount = account.currencies.get(this.selectedCurrency.id)?.amount || 0
@@ -145,7 +145,7 @@ export class AccountTakeFlow extends UserFlow {
 
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(this.target.id)
+        const [error, account] = await getOrCreateAccount(undefined, this.target.id)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0

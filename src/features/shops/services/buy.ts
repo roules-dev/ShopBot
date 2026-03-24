@@ -14,7 +14,7 @@ export async function processPurchase(member: GuildMember, shop: Shop, product: 
     if (!isMemberAllowedToBuy(member, shop)) {
         return err({ name: "NotAllowedToBuy" })
     }
-    const [error, account] = await getOrCreateAccount(member.id)
+    const [error, account] = await getOrCreateAccount(undefined, member.id)
     if (error) return err(error)
 
     const price = applyDiscount(product.price * quantity, discount)
@@ -26,7 +26,7 @@ export async function processPurchase(member: GuildMember, shop: Shop, product: 
     if (updatedStock != undefined && updatedStock < 0) return err({ name: "ProductNoLongerAvailable" })
 
 
-    const [error2] = await updateProduct(shop.id, product.id, { stock: updatedStock })
+    const [error2] = await updateProduct(undefined, shop.id, product.id, { stock: updatedStock })
     if (error2) return err(error2)
 
     const [error3] = await setAccountCurrencyAmount(member.id, shop.currency.id, balanceAfterBuy)
@@ -92,7 +92,7 @@ async function executeActionProduct(action: ProductAction, member: GuildMember) 
         case "give-currency": {
             const { currencyId, amount } = action.options
 
-            const [error, account] = await getOrCreateAccount(member.id)
+            const [error, account] = await getOrCreateAccount(undefined, member.id)
             if (error) return err(error)
 
             const userCurrencyAmount = account.currencies.get(currencyId)?.amount || 0

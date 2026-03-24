@@ -7,37 +7,37 @@ import { Snowflake } from "discord.js"
 
 const accountsDatabase = new AccountsDatabase(accounts, "data/accounts.json")
 
-export async function getOrCreateAccount(id: Snowflake) {
-    let account = accountsDatabase.data.get(id)
+export async function getOrCreateAccount(db = accountsDatabase, id: Snowflake) {
+    let account = db.data.get(id)
 
     if (!account) {
-        accountsDatabase.data.set(id, { currencies: new Map(), inventory: new Map() })
+        db.data.set(id, { currencies: new Map(), inventory: new Map() })
 
-        const [error] = await accountsDatabase.save()
+        const [error] = await db.save()
         if (error) return err(error)
 
-        account = accountsDatabase.data.get(id)!
+        account = db.data.get(id)!
     }
 
     return ok(account)
 }
 
 
-export function getAccountsWithCurrency(currencyId: string) {
+export function getAccountsWithCurrency(db = accountsDatabase, currencyId: string) {
     const accountsWithCurrency = new Map<Snowflake, Account>()
-    accountsDatabase.data.forEach((account: Account, id: Snowflake) => {
+    db.data.forEach((account: Account, id: Snowflake) => {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
     })
     return accountsWithCurrency
 }
 
-export async function updateAccount(id: Snowflake, options: Partial<Account>) {
-    const account = accountsDatabase.data.get(id)
+export async function updateAccount(db = accountsDatabase, id: Snowflake, options: Partial<Account>) {
+    const account = db.data.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))
     
     update(account, options)
 
-    const [error] = await accountsDatabase.save()
+    const [error] = await db.save()
     if (error) return err(error)
 
     return ok(account)
@@ -45,17 +45,18 @@ export async function updateAccount(id: Snowflake, options: Partial<Account>) {
 
 
 export async function updateBalance<T extends keyof AccountBalanceTypes>(
+    db = accountsDatabase, 
     id: Snowflake, 
     balanceType: T, 
     itemId: NanoId, 
     newBalance: AccountBalanceTypes[T]
 ) {
-    const account = accountsDatabase.data.get(id)
+    const account = db.data.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))
 
     account[balanceType].set(itemId, newBalance)
 
-    const [error] = await accountsDatabase.save()
+    const [error] = await db.save()
     if (error) return err(error)
 
     return ok(account)

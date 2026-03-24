@@ -15,7 +15,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
         amount: +amount.toFixed(2)
     }
 
-    const [error, account] = await updateBalance(id, "currencies", currencyId, newCurrencyBalance)
+    const [error, account] = await updateBalance(undefined, id, "currencies", currencyId, newCurrencyBalance)
     if (error) return err(error)
 
     return ok({ account, currency })
@@ -27,7 +27,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
         amount: +amount.toFixed(2)
     }
 
-    const [error, account] = await updateBalance(id, "currencies", product.id, newItemBalance)
+    const [error, account] = await updateBalance(undefined, id, "currencies", product.id, newItemBalance)
     if (error) return err(error)
 
     return ok({ account, product })
@@ -43,7 +43,7 @@ export async function emptyAccount(id: Snowflake, empty: "currencies" | "invento
         updatedAccount["inventory"] = new Map()
     }
 
-    const [error, account] = await updateAccount(id, updatedAccount)
+    const [error, account] = await updateAccount(undefined, id, updatedAccount)
     if (error) return err(error)
 
     return ok(account) 
@@ -53,10 +53,10 @@ export async function takeCurrencyFromAccounts(currencyId: string) {
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
-    const accountsWithCurrency = getAccountsWithCurrency(currencyId)
+    const accountsWithCurrency = getAccountsWithCurrency(undefined, currencyId)
 
     for (const [id] of accountsWithCurrency) {
-        const [error] = await updateBalance(id, "currencies", currencyId, { item: currency, amount: 0 })
+        const [error] = await updateBalance(undefined, id, "currencies", currencyId, { item: currency, amount: 0 })
         if (error) return err(error)
     }
 

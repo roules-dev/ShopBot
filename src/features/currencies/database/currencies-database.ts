@@ -8,49 +8,49 @@ import { nanoid } from "nanoid"
 
 const currenciesDatabase = new CurrenciesDatabase(currencies, "data/currencies.json")
 
-export function getCurrencies(): Map<string, Currency> {
-    return currenciesDatabase.data
+export function getCurrencies(db = currenciesDatabase): Map<string, Currency> {
+    return db.data
 }
 
-export function getCurrencyId(currencyName: string): string | undefined {
+export function getCurrencyId(db = currenciesDatabase, currencyName: string): string | undefined {
     let currencyId: string | undefined = undefined
-    currenciesDatabase.data.forEach(currency => {
+    db.data.forEach(currency => {
         if (currency.name == currencyName) currencyId = currency.id
     })
     return currencyId 
 }
 
-export async function createCurrency(currencyName: string, emoji?: string) {
-    if (getCurrencyId(currencyName) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
+export async function createCurrency(db = currenciesDatabase, currencyName: string, emoji?: string) {
+    if (getCurrencyId(db, currencyName) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid()
     const newCurrency = { id: newCurrencyId, name: currencyName, emoji }
 
-    currenciesDatabase.data.set(newCurrencyId, newCurrency)
-    const [error] = await currenciesDatabase.save()
+    db.data.set(newCurrencyId, newCurrency)
+    const [error] = await db.save()
     if (error) return err(error)
 
     return ok(newCurrency)
 }
 
-export async function removeCurrency(currencyId: string) {
-    if (!currenciesDatabase.data.has(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
+export async function removeCurrency(db = currenciesDatabase, currencyId: string) {
+    if (!db.data.has(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
 
-    currenciesDatabase.data.delete(currencyId)
-    const [error] = await currenciesDatabase.save()
+    db.data.delete(currencyId)
+    const [error] = await db.save()
     if (error) return err(error)
 
     return ok(true)
 }
 
-export async function updateCurrency(currencyId: string, options: CurrencyOptionsOptional) {  
-    const currency = currenciesDatabase.data.get(currencyId)
+export async function updateCurrency(db = currenciesDatabase, currencyId: string, options: CurrencyOptionsOptional) {  
+    const currency = db.data.get(currencyId)
     
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
     
     update(currency, options)
 
-    const [error] = await currenciesDatabase.save()
+    const [error] = await db.save()
     if (error) return err(error)
 
     return ok(currency)

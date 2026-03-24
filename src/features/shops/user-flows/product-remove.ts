@@ -194,7 +194,7 @@ export class RemoveProductFlow extends UserFlow {
 
         const oldProductName = formattedEmojiableName(this.selectedProduct)
 
-        const [error] =await removeProduct(this.selectedShop.id, this.selectedProduct.id)
+        const [error] =await removeProduct(undefined, this.selectedShop.id, this.selectedProduct.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

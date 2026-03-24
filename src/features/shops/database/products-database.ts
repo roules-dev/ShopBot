@@ -5,15 +5,15 @@ import { getShops, shopsDatabase } from "@/features/shops/database/shops-databas
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
 
-export function getProducts(shopId: string){
-    const shop = getShops().get(shopId)
+export function getProducts(db = shopsDatabase, shopId: string){
+    const shop = getShops(db).get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     return ok(shop.products)
 }
 
-export async function addProduct(shopId: string, options: ProductOptions) {
-    const shop = getShops().get(shopId)
+export async function addProduct(db = shopsDatabase, shopId: string, options: ProductOptions) {
+    const shop = getShops(db).get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const id = nanoid()
@@ -21,20 +21,20 @@ export async function addProduct(shopId: string, options: ProductOptions) {
 
     shop.products.set(id, product)
     
-    const [error] = await shopsDatabase.save()
+    const [error] = await db.save()
     if (error) return err(error)
     
 
     return ok(product)
 }
 
-export async function removeProduct(shopId: string, productId: string) {
-    const shop = getShops().get(shopId)
+export async function removeProduct(db = shopsDatabase, shopId: string, productId: string) {
+    const shop = getShops(db).get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     shop.products.delete(productId)
     
-    const [error] = await shopsDatabase.save()
+    const [error] = await db.save()
     if (error) return err(error)
     
     return ok(true)
@@ -56,11 +56,12 @@ const PRODUCT_FIELD_HANDLERS = {
 
 
 export async function updateProduct(
+    db = shopsDatabase,
     shopId: string,
     productId: string,
     options: Partial<ProductOptions>,
 ) {
-    const shop = getShops().get(shopId)
+    const shop = getShops(db).get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const product = shop.products.get(productId)
@@ -69,7 +70,7 @@ export async function updateProduct(
 
     update2(product, options, PRODUCT_FIELD_HANDLERS)
 
-    const [error] = await shopsDatabase.save()
+    const [error] = await db.save()
     if (error) return err(error)
     
     return ok(product)

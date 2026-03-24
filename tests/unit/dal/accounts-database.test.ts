@@ -1,33 +1,41 @@
+import { getOrCreateAccount, updateAccount, updateBalance } from "@/features/accounts/database/accounts-database"
+import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type"
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
-let AccountsDatabase: any
-let getOrCreateAccount: any
-let updateAccount: any
-let updateBalance: any
 
-beforeEach(async () => {
-    vi.resetModules()
+class MockAccountsDatabase extends AccountsDatabase {
+    constructor() {
+        // Pass dummy values to the parent constructor
+        super({} as any, "");
+        this.data = new Map();
+    }
 
-    vi.doMock("@/features/accounts/database/accounts-type.js", () => {
-        return {
-            AccountsDatabase: vi.fn().mockImplementation(function () {
-                this.data = new Map()
-                this.save = vi.fn().mockResolvedValue([null])
-            })
-        }
-    })
+    // Override protected + abstract methods
+    toJSON = vi.fn();
+    protected parseRaw = vi.fn().mockReturnValue([null, new Map()]);
+    save = vi.fn().mockResolvedValue([null]);
+}
 
-    AccountsDatabase = (await import("@/features/accounts/database/accounts-type.js")).AccountsDatabase
-    getOrCreateAccount = (await import("@/features/accounts/database/accounts-database.js")).getOrCreateAccount
-    updateAccount = (await import("@/features/accounts/database/accounts-database.js")).updateAccount
-    updateBalance = (await import("@/features/accounts/database/accounts-database.js")).updateBalance
-})
+function getDummyAccount(): Account {
+    return {
+        currencies: new Map([
+            ["coolCurrency", { 
+                item: {
+                    id: "coolCurrency", 
+                    name: "Cool Currency"
+                },
+                amount: 10 
+            }]
+        ]),
+        inventory: new Map()
+    }
+}
 
 describe("getOrCreateAccount", () => {
     it("creates a new account when none exists", async () => {
-        const [error, account] = await getOrCreateAccount("123")
+        const db = new MockAccountsDatabase()
+        const [error, account] = await getOrCreateAccount(db, "123")
 
-        const instance = AccountsDatabase.mock.results[0].value
 
         expect(error).toBe(null)
         expect(account).toHaveProperty("currencies")
@@ -36,46 +44,49 @@ describe("getOrCreateAccount", () => {
         expect(account).toHaveProperty("inventory")
         expect(account.inventory).toBeInstanceOf(Map)
 
-        expect(instance.data.has("123")).toBe(true)
+        expect(db.data.has("123")).toBe(true)
     })
 
     it("returns an existing account without calling save()", async () => {
-        const instance = AccountsDatabase.mock.results[0].value
+        const db = new MockAccountsDatabase()
+        const existing = getDummyAccount()
+        db.data.set("abc", existing)
 
-        const existing = { currencies: new Map([["cool_currency", { amount: 10 }]]), inventory: new Map() }
-        await instance.data.set("abc", existing)
-
-        console.log(instance.data)
-
-        const [error, account] = await getOrCreateAccount("abc")
+        const [error, account] = await getOrCreateAccount(db, "abc")
 
         expect(error).toBe(null)
         expect(account).toStrictEqual(existing)
 
-        expect(instance.save).not.toHaveBeenCalled()
+        expect(db.save).not.toHaveBeenCalled()
     })
 })
 
 describe("updating an account", () => {
     it("updateAccount: should update the account", async () => {
-        const instance = AccountsDatabase.mock.results[0].value
+        const db = new MockAccountsDatabase()
 
-        const existing = { currencies: new Map([["cool_currency", { amount: 10 }]]), inventory: new Map() }
-        await instance.data.set("abc", existing)
+        db.data.set("abc", getDummyAccount())
 
-        const [error, account] = await updateAccount("abc", { currencies: new Map([["cool_currency", { amount: 20 }]]) })
+        const [error, account] = await updateAccount(db, "abc", { currencies: new Map() })
 
         expect(error).toBe(null)
-        expect(account.currencies.get("cool_currency")).toStrictEqual({ amount: 20 })
+        expect(account.currencies.size).toBe(0)
     })
 
     it("updateBalance: should update the balance", async () => {
-        const instance = AccountsDatabase.mock.results[0].value
+        const db = new MockAccountsDatabase()
 
-        const existing = { currencies: new Map([["cool_currency", { amount: 10 }]]), inventory: new Map() }
-        await instance.data.set("abc", existing)
+        db.data.set("abc", getDummyAccount())
 
-        const [error, account] = await updateBalance("abc", "currencies", "cool_currency", { amount: 20 })
+        const balance = { 
+            item: {
+                id: "coolCurrency", 
+                name: "Cool Currency"
+            },
+            amount: 20 
+        }
+
+        const [error, account] = await updateBalance(db, "abc", "currencies", "cool_currency", balance)
 
         expect(error).toBe(null)
         expect(account.currencies.get("cool_currency")).toBeDefined()

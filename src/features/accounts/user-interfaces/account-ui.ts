@@ -38,7 +38,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        const [error, account] = await getOrCreateAccount(this.user.id)
+        const [error, account] = await getOrCreateAccount(undefined, this.user.id)
         if (error) {
             await replyErrorMessage(interaction, error.message)
             return false

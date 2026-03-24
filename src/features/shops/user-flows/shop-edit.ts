@@ -130,7 +130,7 @@ export class EditShopFlow extends UserFlow {
         const oldName = this.selectedShop?.name || ""
 
         // TODO needs refactoring
-        const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
+        const [error] = await updateShop(undefined, this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
@@ -353,7 +353,7 @@ export class EditShopCurrencyFlow extends UserFlow {
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         if (!this.selectedShop || !this.selectedCurrency) return await updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error, shop] = await updateShopCurrency(this.selectedShop.id, this.selectedCurrency.id)
+        const [error, shop] = await updateShopCurrency(undefined, undefined, this.selectedShop.id, this.selectedCurrency.id)
         
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
@@ -491,7 +491,7 @@ export class ShopReorderFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction) {
         if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
+        const [error] = await updateShopPosition(undefined, this.selectedShop.id, this.selectedPosition - 1)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {

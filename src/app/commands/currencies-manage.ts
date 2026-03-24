@@ -92,7 +92,7 @@ export async function createCurrencyCommand(client: Client, interaction: ChatInp
 
     if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
     
-    const [error2, currency] = await createCurrency(currencyName, emoji)
+    const [error2, currency] = await createCurrency(undefined, currencyName, emoji)
     if (error2) {
         return await replyErrorMessage(interaction, error2.message)
     }

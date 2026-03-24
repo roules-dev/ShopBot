@@ -127,7 +127,7 @@ export class AddProductFlow extends UserFlow {
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error, product] = await addProduct(this.selectedShop.id, { 
+        const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
             name: this.productName, 
             description: this.productDescription || "", 
             emoji: this.productEmoji || "", 
@@ -368,7 +368,7 @@ export class AddActionProductFlow extends AddProductFlow {
         
         if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error, product] = await addProduct(this.selectedShop.id, { 
+        const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
             name: this.productName, 
             description: this.productDescription || "", 
             emoji: this.productEmoji || "", 
