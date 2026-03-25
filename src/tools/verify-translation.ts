@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE_CODE, LOCALES } from "@/lib/localization.js"
+import { DEFAULT_LOCALE_CODE, LOCALES } from "@/core/i18n/i18n.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
 

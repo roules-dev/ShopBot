@@ -4,7 +4,7 @@ import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder
 import fs from "fs/promises"
 import path from "path"
 
-import { EVENTS } from "@/middleware.js"
+import { EVENTS } from "@/core/events/event-bus.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { setActivity } from "./status.js"
 const __filename = fileURLToPath(import.meta.url)

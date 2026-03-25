@@ -1,16 +1,14 @@
 import { getOrCreateAccount, updateAccount, updateBalance } from "@/features/accounts/database/accounts-database"
 import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type"
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi } from "vitest"
 
-
+    
 class MockAccountsDatabase extends AccountsDatabase {
     constructor() {
-        // Pass dummy values to the parent constructor
-        super({} as any, "");
+        super({}, "");
         this.data = new Map();
     }
 
-    // Override protected + abstract methods
     toJSON = vi.fn();
     protected parseRaw = vi.fn().mockReturnValue([null, new Map()]);
     save = vi.fn().mockResolvedValue([null]);
@@ -30,7 +28,6 @@ function getDummyAccount(): Account {
         inventory: new Map()
     }
 }
-
 describe("getOrCreateAccount", () => {
     it("creates a new account when none exists", async () => {
         const db = new MockAccountsDatabase()

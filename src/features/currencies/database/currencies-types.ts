@@ -8,7 +8,6 @@ export interface Currency {
 }
 
 export type CurrencyOptions = Omit<Currency, "id">
-export type CurrencyOptionsOptional = Partial<CurrencyOptions>
 
 export interface CurrenciesDatabaseJsonBody extends DatabaseJsonBody {
     [currencyId: NanoId]: Currency

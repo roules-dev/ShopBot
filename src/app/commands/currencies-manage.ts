@@ -3,7 +3,7 @@ import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currenci
 import { EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"

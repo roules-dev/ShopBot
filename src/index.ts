@@ -1,5 +1,5 @@
 import "@/utils/strings.js"
-import "@/lib/localization.js"
+import "@/core/i18n/i18n.js"
 
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"

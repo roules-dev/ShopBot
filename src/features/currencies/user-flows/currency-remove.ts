@@ -1,7 +1,7 @@
 import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts-services.js"
 import { getShopsWithCurrency } from "@/features/shops/database/shops-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"

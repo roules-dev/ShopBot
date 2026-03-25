@@ -1,4 +1,4 @@
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 import z from "zod"
 

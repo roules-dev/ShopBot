@@ -5,7 +5,7 @@ import { getCurrencies } from "@/features/currencies/database/currencies-databas
 import { CurrenciesDatabase } from "@/features/currencies/database/currencies-types.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { Snowflake } from "discord.js"
 import { nanoid } from "nanoid"
 

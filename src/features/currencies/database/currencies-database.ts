@@ -1,7 +1,7 @@
 import currencies from "@/../data/currencies.json" with { type: "json" }
 import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
-import { CurrenciesDatabase, Currency, CurrencyOptionsOptional } from "@/features/currencies/database/currencies-types.js"
+import { CurrenciesDatabase, Currency, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
 
@@ -43,7 +43,7 @@ export async function removeCurrency(db = currenciesDatabase, currencyId: string
     return ok(true)
 }
 
-export async function updateCurrency(db = currenciesDatabase, currencyId: string, options: CurrencyOptionsOptional) {  
+export async function updateCurrency(db = currenciesDatabase, currencyId: string, options: Partial<CurrencyOptions>) {  
     const currency = db.data.get(currencyId)
     
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))

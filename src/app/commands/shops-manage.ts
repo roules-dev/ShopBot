@@ -4,7 +4,7 @@ import { DiscountCodeCreateFlow, DiscountCodeRemoveFlow } from "@/features/shops
 import { EDIT_SHOP_OPTIONS, EditShopCurrencyFlow, EditShopFlow, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord.js"
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()

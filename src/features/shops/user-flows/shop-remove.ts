@@ -1,5 +1,5 @@
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"

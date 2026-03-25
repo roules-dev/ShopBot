@@ -4,7 +4,7 @@ import { AddActionProductFlow, AddProductFlow } from "@/features/shops/user-flow
 import { EditProductFlow, EditProductOption } from "@/features/shops/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord.js"
-import { t } from "@/lib/localization.js"
+import { t } from "@/core/i18n/i18n.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()

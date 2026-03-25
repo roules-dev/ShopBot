@@ -1,16 +1,16 @@
 import "@/utils/strings.js"
 import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js"
-import { getTranslationByKey, initI18n } from "./i18n/init.js"
-import { PrettyLog } from "./pretty-log.js"
+import { getTranslationByKey, initI18n } from "../../lib/i18n/init.js"
+import { PrettyLog } from "../../lib/pretty-log.js"
 
 import { getSetting } from "@/features/settings/database/settings-handler.js"
 import en_US_locale from "@/generated/locales/en-US.js"
 import es_ES_locale from "@/generated/locales/es-ES.js"
 import fr_locale from "@/generated/locales/fr.js"
-import { EVENTS } from "@/middleware.js"
+import { EVENTS } from "@/core/events/event-bus.js"
 
 
-declare module "./i18n/translations.js" {
+declare module "@/lib/i18n/translations.js" {
 	interface Register {
 		translations: typeof en_US_locale
 	}
