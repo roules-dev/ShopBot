@@ -110,16 +110,18 @@ export class DiscountCodeCreateFlow extends UserFlow {
     }
 }
 
-enum DiscountCodeRemoveStage {
-    SELECT_SHOP,
-    SELECT_DISCOUNT_CODE
-}
+export const DISCOUNT_CODE_REMOVE_STAGE = {
+    SELECT_SHOP: "SELECT_SHOP",
+    SELECT_DISCOUNT_CODE: "SELECT_DISCOUNT_CODE",
+} as const;
+
+export type DiscountCodeRemoveStage = keyof typeof DISCOUNT_CODE_REMOVE_STAGE;
 
 export class DiscountCodeRemoveFlow extends UserFlow {
     public override id: string = "discount-code-remove"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
-    private stage: DiscountCodeRemoveStage = DiscountCodeRemoveStage.SELECT_SHOP
+    private stage: DiscountCodeRemoveStage = DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP
     private componentsByStage: Map<DiscountCodeRemoveStage, Map<string, ExtendedComponent>> = new Map()
 
     private selectedShop: Shop | null = null
@@ -144,12 +146,12 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
     protected override getMessage(): string {
         switch (this.stage) {
-            case DiscountCodeRemoveStage.SELECT_SHOP:
+            case DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
                     shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
-            case DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE:
-                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE stage")
+            case DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE:
+                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE stage")
 
                 return t(`${this.locale}.messages.codeSelectStage`, {
                     shop: bold(this.selectedShop?.name),
@@ -189,14 +191,14 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
                 if (!shopDiscountCodes || Object.keys(shopDiscountCodes).length == 0) return updateAsErrorMessage(interaction, "The selected shop has no discount codes")
 
-                this.changeStage(DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE)
+                this.changeStage(DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE)
                 return this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(DiscountCodeRemoveStage.SELECT_SHOP, new Map())
-        this.componentsByStage.get(DiscountCodeRemoveStage.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
-        this.componentsByStage.get(DiscountCodeRemoveStage.SELECT_SHOP)?.set(submitButton.customId, submitButton)
+        this.componentsByStage.set(DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP, new Map())
+        this.componentsByStage.get(DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
+        this.componentsByStage.get(DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP)?.set(submitButton.customId, submitButton)
 
         this.components.set(shopSelectMenu.customId, shopSelectMenu)    
         this.components.set(submitButton.customId, submitButton)
@@ -239,26 +241,26 @@ export class DiscountCodeRemoveFlow extends UserFlow {
                 this.selectedShop = null
                 this.selectedDiscountCode = null
 
-                this.changeStage(DiscountCodeRemoveStage.SELECT_SHOP)
+                this.changeStage(DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP)
                 this.updateInteraction(interaction)
             },
         )
 
-        this.componentsByStage.set(DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE, new Map())
-        this.componentsByStage.get(DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE)?.set(discountCodeSelectMenu.customId, discountCodeSelectMenu)
-        this.componentsByStage.get(DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE)?.set(submitRemoveButton.customId, submitRemoveButton)
-        this.componentsByStage.get(DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE)?.set(changeShopButton.customId, changeShopButton)
+        this.componentsByStage.set(DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE, new Map())
+        this.componentsByStage.get(DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE)?.set(discountCodeSelectMenu.customId, discountCodeSelectMenu)
+        this.componentsByStage.get(DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE)?.set(submitRemoveButton.customId, submitRemoveButton)
+        this.componentsByStage.get(DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE)?.set(changeShopButton.customId, changeShopButton)
     }
 
     protected override updateComponents(): void {
-        if (this.stage == DiscountCodeRemoveStage.SELECT_SHOP) {
+        if (this.stage == DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP) {
             const submitButton = this.components.get(`${this.id}+submit`)
             if (!(submitButton instanceof ExtendedButtonComponent)) return
 
             submitButton.toggle(this.selectedShop != null)
         } 
         
-        if (this.stage == DiscountCodeRemoveStage.SELECT_DISCOUNT_CODE) {
+        if (this.stage == DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE) {
             const submitRemoveButton = this.components.get(`${this.id}+remove-discount-code`)
             if (submitRemoveButton instanceof ExtendedButtonComponent) {
                 submitRemoveButton.toggle(this.selectedDiscountCode != null)

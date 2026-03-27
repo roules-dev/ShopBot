@@ -69,11 +69,11 @@ export interface Product {
     id: NanoId
     shopId: NanoId
     name: string
-    emoji: string
-    description: string
-    stock?: number
+    emoji?: string | null
+    description?: string | null
+    stock?: number | null
     price: number 
-    action?: ProductAction
+    action?: ProductAction | null
 }
 
 export type ProductOptions = Omit<Product, "id" | "shopId">

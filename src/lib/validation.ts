@@ -11,10 +11,16 @@ export function validate<T extends z.ZodType>(schema: T, input: unknown) {
     }
 }
 
+export function is<T extends z.ZodType>(schema: T, input: unknown): input is z.infer<T> {
+    const res = schema.safeParse(input)
+    return res.success
+}
+
+
+
 function pathWithName(name: string | undefined, path: string[]) {
     return name != undefined ? [name, ...path] : path
 }
-
 
 export function validateMinMax<
     T extends {

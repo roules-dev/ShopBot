@@ -6,16 +6,19 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
-import { validate } from "@/lib/validation.js"
+import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { getCurrencies, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
+import z from "zod"
 
-export enum EditCurrencyOption {
-    NAME = "name",
-    EMOJI = "emoji"
-}
+export const EDIT_CURRENCY_OPTION = {
+    NAME: "name",
+    EMOJI: "emoji"
+} as const
+
+type EditCurrencyOption = typeof EDIT_CURRENCY_OPTION[keyof typeof EDIT_CURRENCY_OPTION]
 
 export class EditCurrencyFlow extends UserFlow {
     id = "currency-edit"
@@ -32,8 +35,8 @@ export class EditCurrencyFlow extends UserFlow {
         if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))    
 
         const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !Object.values(EditCurrencyOption).includes(subcommand as EditCurrencyOption)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
-        this.updateOption = subcommand as EditCurrencyOption
+        if (!subcommand || !is(z.enum(Object.values(EDIT_CURRENCY_OPTION)), subcommand)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
+        this.updateOption = subcommand
 
         this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
 
@@ -115,9 +118,9 @@ export class EditCurrencyFlow extends UserFlow {
 
     private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption): string {
         switch (option) {
-            case EditCurrencyOption.NAME:
+            case EDIT_CURRENCY_OPTION.NAME:
                 return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ""
-            case EditCurrencyOption.EMOJI: {
+            case EDIT_CURRENCY_OPTION.EMOJI: {
                 const emojiOption = interaction.options.getString(`new-${option}`)
                 const [error, emoji] = validate(EmojiSchema, emojiOption)
                 return error ? "" : emoji

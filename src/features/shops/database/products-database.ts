@@ -42,8 +42,8 @@ export async function removeProduct(db = shopsDatabase, shopId: string, productI
 
 
 const PRODUCT_FIELD_HANDLERS = {
-    stock: (stock: number | undefined) => {
-        if (stock == -1) return undefined // null instead
+    stock: (stock: number | undefined | null) => {
+        if (stock == -1 || stock == undefined) return null
         else return stock
     }
 }

@@ -3,6 +3,7 @@ import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { CurrenciesDatabase, Currency, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { Exact } from "@/lib/types/utils.js"
 import { nanoid } from "nanoid"
 
 
@@ -20,11 +21,11 @@ export function getCurrencyId(db = currenciesDatabase, currencyName: string): st
     return currencyId 
 }
 
-export async function createCurrency(db = currenciesDatabase, currencyName: string, emoji?: string) {
-    if (getCurrencyId(db, currencyName) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
+export async function createCurrency<T extends CurrencyOptions>(db = currenciesDatabase, options: Exact<T, CurrencyOptions>) {
+    if (getCurrencyId(db, options.name) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid()
-    const newCurrency = { id: newCurrencyId, name: currencyName, emoji }
+    const newCurrency = { id: newCurrencyId, ...options }
 
     db.data.set(newCurrencyId, newCurrency)
     const [error] = await db.save()

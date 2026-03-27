@@ -16,8 +16,8 @@ export const SettingVariantSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("number"),
         value: z.nullable(z.number()),
-        min: z.nullish(z.number()),
-        max: z.nullish(z.number()),
+        min: z.exactOptional(z.nullable(z.number())),
+        max: z.exactOptional(z.nullable(z.number())),
     }), 
 
     z.object({

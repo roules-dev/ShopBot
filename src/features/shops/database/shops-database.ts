@@ -1,11 +1,11 @@
 import shops from "@/../data/shops.json" with { type: "json" }
+import { t } from "@/core/i18n/i18n.js"
 import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
-import { CurrenciesDatabase } from "@/features/currencies/database/currencies-types.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
+import { Exact } from "@/lib/types/utils.js"
 import { Snowflake } from "discord.js"
 import { nanoid } from "nanoid"
 
@@ -23,8 +23,13 @@ export function getShopId(db = shopsDatabase, shopName: string): string | undefi
     return shopId
 }
 
-export async function createShop(shopsDb = shopsDatabase, currenciesDb = undefined, shopName: string, description: string, currencyId: string, emoji: string, reservedTo?: Snowflake) {
-    if (getShopId(shopsDb, shopName) != undefined) return err(new ApiError("ShopAlreadyExists"))
+export async function createShop<T extends ShopOptions>(
+    shopsDb = shopsDatabase, 
+    currenciesDb = undefined, 
+    options: Exact<T, ShopOptions>,
+    currencyId: Snowflake // will be removed
+) {
+    if (getShopId(shopsDb, options.name) != undefined) return err(new ApiError("ShopAlreadyExists"))
     
     const currency = getCurrencies(currenciesDb).get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
@@ -33,12 +38,9 @@ export async function createShop(shopsDb = shopsDatabase, currenciesDb = undefin
 
     const newShop = {
         id: newShopId,
-        name: shopName,
-        emoji,
-        description,
+        ...options,
         currency: currency,
         discountCodes: {},
-        reservedTo,
         products: new Map()
     }
 
@@ -71,8 +73,9 @@ export async function removeShop(db = shopsDatabase, shopId: string) {
 // branded strings types (thus an Id will indeed be an Id and a value for reservedTo will be a snowflake or null or undefined).
 
 const SHOP_FIELD_HANDLERS = {
-    reservedTo: (value: string | undefined) => {
-        return value === t("defaultComponents.unset") ? undefined : value
+    reservedTo: (value: string | undefined | null) => {
+        if (value === undefined || value === null) return null
+        return value === t("defaultComponents.unset") ? null : value
     }
 }
 
@@ -124,7 +127,10 @@ export async function updateShopPosition(db = shopsDatabase, shopId: string, ind
 
     if (shopIndex === -1) return err(new ApiError("ShopDoesNotExist"))
 
-    shopsArray.splice(index, 0, shopsArray.splice(shopIndex, 1)[0])
+    const [item] = shopsArray.splice(shopIndex, 1)
+    if (item === undefined) return err(new ApiError("ShopDoesNotExist"))
+
+    shopsArray.splice(index, 0, item);
 
     db.data = new Map(shopsArray)
 

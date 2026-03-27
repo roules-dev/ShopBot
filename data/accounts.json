@@ -1,8 +1,4 @@
 {
-    "123": {
-        "currencies": {},
-        "inventory": {}
-    },
     "628298729405022216": {
         "currencies": {
             "0f2SNbp60vAwWjhKjRR0u": {
@@ -42,5 +38,22 @@
     "650585321729425448": {
         "currencies": {},
         "inventory": {}
+    },
+    "1429578846767677511": {
+        "currencies": {
+            "0f2SNbp60vAwWjhKjRR0u": {
+                "item": "0f2SNbp60vAwWjhKjRR0u",
+                "amount": 9999451
+            }
+        },
+        "inventory": {
+            "nxtWWm9IEe3qSLh4fj5qn": {
+                "item": {
+                    "id": "nxtWWm9IEe3qSLh4fj5qn",
+                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
+                },
+                "amount": 100
+            }
+        }
     }
 }

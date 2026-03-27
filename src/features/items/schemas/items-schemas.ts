@@ -34,5 +34,5 @@ export const ItemRawSchema = z.object({
         .max(ITEM_DESCRIPTION_MAX_LENGTH)
     ),
 
-    action: z.nullish(ItemActionSchema)
+    action: z.exactOptional(z.nullable(ItemActionSchema))
 })

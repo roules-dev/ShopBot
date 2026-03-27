@@ -38,6 +38,7 @@ export abstract class UserInterface {
                 }
                 else {
                     const lastRow = rows[rows.length - 1]
+                    if (lastRow === undefined) return 
                     const lastRowFirstComponentType = lastRow.components[0]?.data.type
         
                     if (lastRowFirstComponentType && selectMenuComponents.includes(lastRowFirstComponentType)) {
@@ -187,6 +188,7 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
 
         protected abstract response: InteractionCallbackResponse | null
 
+
         protected override setup(interaction: UserInterfaceInteraction): void {
             super.setup(interaction)
             this.paginationUpdate()
@@ -214,21 +216,21 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
             super.updateInteraction(interaction)
         }
 
-        protected getPaginationButtons(): ExtendedButtonComponent[] {
-            return [
-                new ExtendedButtonComponent({
+        protected getPaginationButtons() {
+            return {
+                prev: new ExtendedButtonComponent({
                     customId: `${this.id}+previous-page`,
                     time: 120_000,
                     emoji: "⬅️",
                     style: ButtonStyle.Secondary,
                 }, (interaction: ButtonInteraction) => this.previousPage(interaction)),
-                new ExtendedButtonComponent({
+                next: new ExtendedButtonComponent({
                     customId: `${this.id}+next-page`,
                     time: 120_000,
                     emoji: "➡️",
                     style: ButtonStyle.Secondary,
                 }, (interaction: ButtonInteraction) => this.nextPage(interaction))
-            ]
+            }
         }
 
         protected getPageEmbedFields(): APIEmbedField[] {
@@ -257,11 +259,11 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
                     this.destroyComponentsCollectors()
                 }
                 
-                paginationButtons[0].toggle(this.page > 0)
-                paginationButtons[1].toggle(this.page < pageCount - 1)
+                paginationButtons.prev.toggle(this.page > 0)
+                paginationButtons.next.toggle(this.page < pageCount - 1)
 
-                this.components.set(paginationButtons[0].customId, paginationButtons[0])
-                this.components.set(paginationButtons[1].customId, paginationButtons[1])
+                this.components.set(paginationButtons.prev.customId, paginationButtons.prev)
+                this.components.set(paginationButtons.next.customId, paginationButtons.next)
 
                 if (this.response) {
                     this.createComponentsCollectors(this.response)
@@ -272,8 +274,8 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
                     this.destroyComponentsCollectors()
                 }
                 
-                this.components.delete(paginationButtons[0].customId)
-                this.components.delete(paginationButtons[1].customId)
+                this.components.delete(paginationButtons.prev.customId)
+                this.components.delete(paginationButtons.next.customId)
 
                 if (this.response) {
                     this.createComponentsCollectors(this.response)
@@ -334,7 +336,10 @@ function Multiple<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: T
         protected override setup(interaction: UserInterfaceInteraction): void {
             super.setup(interaction)
             if (!this.mode) {
-                this.mode = this.modes[Object.keys(this.modes)[0]]
+                const firstModeKey = Object.keys(this.modes)[0]
+                if (firstModeKey === undefined || this.modes[firstModeKey] === undefined) throw new Error("Incorrect Multiple UI class setup: no modes were specified")
+
+                this.mode = this.modes[firstModeKey]
             }
         }
 

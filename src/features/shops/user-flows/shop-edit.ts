@@ -189,16 +189,18 @@ export class EditShopFlow extends UserFlow {
     }
 }
 
+const EDIT_SHOP_CURRENCY_STAGE = {
+    SELECT_SHOP: "SELECT_SHOP", 
+    SELECT_CURRENCY: "SELECT_CURRENCY"
+} as const
 
-enum EditShopCurrencyStage {
-    SELECT_SHOP, SELECT_CURRENCY
-}
+type EditShopCurrencyStage = keyof typeof EDIT_SHOP_CURRENCY_STAGE
 
 export class EditShopCurrencyFlow extends UserFlow {
     public override id: string = "edit-shop-currency"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
-    private stage: EditShopCurrencyStage = EditShopCurrencyStage.SELECT_SHOP
+    private stage: EditShopCurrencyStage = EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP
     private componentsByStage: Map<EditShopCurrencyStage, Map<string, ExtendedComponent>> = new Map()
 
     private selectedShop: Shop | null = null
@@ -223,11 +225,11 @@ export class EditShopCurrencyFlow extends UserFlow {
 
     protected override getMessage(): string {
         switch (this.stage) {
-            case EditShopCurrencyStage.SELECT_SHOP:
+            case EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
                     shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
-            case EditShopCurrencyStage.SELECT_CURRENCY:
+            case EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY:
                 return t(`${this.locale}.messages.currencySelectStage`, {
                     shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
                     currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
@@ -262,14 +264,14 @@ export class EditShopCurrencyFlow extends UserFlow {
                 disabled: true,
             },
             (interaction: ButtonInteraction) => {
-                this.changeStage(EditShopCurrencyStage.SELECT_CURRENCY)
+                this.changeStage(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)
                 this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(EditShopCurrencyStage.SELECT_SHOP, new Map())
-        this.componentsByStage.get(EditShopCurrencyStage.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
-        this.componentsByStage.get(EditShopCurrencyStage.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
+        this.componentsByStage.set(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP, new Map())
+        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
+        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
 
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
@@ -311,26 +313,26 @@ export class EditShopCurrencyFlow extends UserFlow {
                 this.selectedShop = null
                 this.selectedCurrency = null
 
-                this.changeStage(EditShopCurrencyStage.SELECT_SHOP)
+                this.changeStage(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP)
                 this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(EditShopCurrencyStage.SELECT_CURRENCY, new Map())
-        this.componentsByStage.get(EditShopCurrencyStage.SELECT_CURRENCY)?.set(currencySelectMenu.customId, currencySelectMenu)
-        this.componentsByStage.get(EditShopCurrencyStage.SELECT_CURRENCY)?.set(submitCurrencyButton.customId, submitCurrencyButton)
-        this.componentsByStage.get(EditShopCurrencyStage.SELECT_CURRENCY)?.set(changeShopButton.customId, changeShopButton)
+        this.componentsByStage.set(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY, new Map())
+        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(currencySelectMenu.customId, currencySelectMenu)
+        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(submitCurrencyButton.customId, submitCurrencyButton)
+        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(changeShopButton.customId, changeShopButton)
     }
 
     protected override updateComponents(): void {
-        if (this.stage == EditShopCurrencyStage.SELECT_SHOP) {
+        if (this.stage == EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP) {
             const submitShopButton = this.components.get(`${this.id}+submit-shop`)
             if (!(submitShopButton instanceof ExtendedButtonComponent)) return
 
             submitShopButton.toggle(this.selectedShop != null)
         }
 
-        if (this.stage == EditShopCurrencyStage.SELECT_CURRENCY) {
+        if (this.stage == EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY) {
             const submitUpdateButton = this.components.get(`${this.id}+submit-currency`)
             if (submitUpdateButton instanceof ExtendedButtonComponent) {
                 submitUpdateButton.toggle(this.selectedCurrency != null)

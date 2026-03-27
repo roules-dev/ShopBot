@@ -1,10 +1,9 @@
+import { t } from "@/core/i18n/i18n.js"
 import { ITEM_DESCRIPTION_MAX_LENGTH, ITEM_NAME_MAX_LENGTH } from "@/features/items/schemas/items-schemas.js"
-import { PRODUCT_ACTION_TYPE } from "@/features/shops/database/products-types.js"
 import { AddActionProductFlow, AddProductFlow } from "@/features/shops/user-flows/product-add.js"
-import { EditProductFlow, EditProductOption } from "@/features/shops/user-flows/product-edit.js"
+import { EDIT_PRODUCT_OPTION, EditProductFlow } from "@/features/shops/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
@@ -63,7 +62,7 @@ export const data = new SlashCommandBuilder()
         .setName("edit")
         .setDescription("Edit a product")
         .addSubcommand(subcommand => subcommand
-            .setName(EditProductOption.NAME)
+            .setName(EDIT_PRODUCT_OPTION.NAME)
             .setDescription("Change Name. You will select the product later")
             .addStringOption(option => option
                 .setName("new-name")
@@ -74,7 +73,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EditProductOption.DESCRIPTION)
+            .setName(EDIT_PRODUCT_OPTION.DESCRIPTION)
             .setDescription("Change Description. You will select the product later")
             .addStringOption(option => option
                 .setName("new-description")
@@ -85,7 +84,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EditProductOption.PRICE)
+            .setName(EDIT_PRODUCT_OPTION.PRICE)
             .setDescription("Change Price. You will select the product later")
             .addNumberOption(option => option
                 .setName("new-price")
@@ -96,7 +95,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EditProductOption.EMOJI)
+            .setName(EDIT_PRODUCT_OPTION.EMOJI)
             .setDescription("Change Emoji. You will select the product later")
             .addStringOption(option => option
                 .setName("new-emoji")
@@ -105,11 +104,11 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand 
-            .setName(EditProductOption.AMOUNT)
-            .setDescription("Change Amount. You will select the product later")
+            .setName(EDIT_PRODUCT_OPTION.STOCK)
+            .setDescription("Change Stock. You will select the product later")
             .addIntegerOption(option => option
-                .setName("new-amount")
-                .setDescription("The new amount of the product (-1 for unlimited)")
+                .setName("new-stock")
+                .setDescription("The new stock of the product (-1 for unlimited)")
                 .setRequired(true)
                 .setMaxValue(99999999)
                 .setMinValue(-1)
@@ -118,7 +117,7 @@ export const data = new SlashCommandBuilder()
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
-export async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
     const subCommandGroup = interaction.options.getSubcommandGroup()
 

@@ -27,7 +27,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
         amount: +amount.toFixed(2)
     }
 
-    const [error, account] = await updateBalance(undefined, id, "currencies", product.id, newItemBalance)
+    const [error, account] = await updateBalance(undefined, id, "inventory", product.id, newItemBalance)
     if (error) return err(error)
 
     return ok({ account, product })

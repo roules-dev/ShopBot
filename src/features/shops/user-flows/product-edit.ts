@@ -6,7 +6,7 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
-import { validate } from "@/lib/validation.js"
+import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
@@ -14,27 +14,32 @@ import { updateProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import z from "zod"
 
 // TODO this needs to be refactored
 
-enum EditProductFlowStage {
-    SELECT_SHOP,
-    SELECT_PRODUCT
-}
+export const EDIT_PRODUCT_FLOW_STAGE = {
+    SELECT_SHOP: "SELECT_SHOP",
+    SELECT_PRODUCT: "SELECT_PRODUCT",
+} as const
 
-export enum EditProductOption {
-    NAME = "name",
-    DESCRIPTION = "description",
-    PRICE = "price",
-    EMOJI = "emoji",
-    AMOUNT = "amount"
-}
+export type EditProductFlowStage = keyof typeof EDIT_PRODUCT_FLOW_STAGE
+
+export const EDIT_PRODUCT_OPTION = {
+    NAME: "name",
+    DESCRIPTION: "description",
+    PRICE: "price",
+    EMOJI: "emoji",
+    STOCK: "stock",
+} as const
+
+export type EditProductOption = typeof EDIT_PRODUCT_OPTION[keyof typeof EDIT_PRODUCT_OPTION]
 
 export class EditProductFlow extends UserFlow {
     public id = "edit-product"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private stage: EditProductFlowStage = EditProductFlowStage.SELECT_SHOP
+    private stage: EditProductFlowStage = EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP
     private componentsByStage: Map<EditProductFlowStage, Map<string, ExtendedComponent>> = new Map()
 
     private updateOption: EditProductOption | null = null
@@ -52,8 +57,8 @@ export class EditProductFlow extends UserFlow {
         if (!shops.size) return replyErrorMessage(interaction, t(`${this.locale}.errorMessages.noShopsWithProducts`))
 
         const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !Object.values(EditProductOption).includes(subcommand as EditProductOption)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
-        this.updateOption = subcommand as EditProductOption
+        if (!subcommand || !is(z.enum(Object.values(EDIT_PRODUCT_OPTION)), subcommand)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
+        this.updateOption = subcommand
 
         this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
 
@@ -70,14 +75,14 @@ export class EditProductFlow extends UserFlow {
 
     protected getMessage(): string {
         switch (this.stage) {
-            case EditProductFlowStage.SELECT_SHOP:
+            case EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
                     shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
                     option: bold(this.getUpdateOptionName(this.updateOption!)),
                     value: bold(this.getUpdateValueString(this.updateOption!))
                 })
-            case EditProductFlowStage.SELECT_PRODUCT:
-                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in EditProductFlowStage.SELECT_PRODUCT stage")
+            case EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT:
+                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT stage")
 
                 return t(`${this.locale}.messages.productSelectStage`, {
                     product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
@@ -118,14 +123,14 @@ export class EditProductFlow extends UserFlow {
                 if (this.selectedShop == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 if (this.selectedShop.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
-                this.changeStage(EditProductFlowStage.SELECT_PRODUCT)
+                this.changeStage(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(EditProductFlowStage.SELECT_SHOP, new Map())
-        this.componentsByStage.get(EditProductFlowStage.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
-        this.componentsByStage.get(EditProductFlowStage.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
+        this.componentsByStage.set(EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP, new Map())
+        this.componentsByStage.get(EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
+        this.componentsByStage.get(EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
 
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
@@ -167,26 +172,26 @@ export class EditProductFlow extends UserFlow {
                 this.selectedShop = null
                 this.selectedProduct = null
 
-                this.changeStage(EditProductFlowStage.SELECT_SHOP)
+                this.changeStage(EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP)
                 this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(EditProductFlowStage.SELECT_PRODUCT, new Map())
-        this.componentsByStage.get(EditProductFlowStage.SELECT_PRODUCT)?.set(productSelectMenu.customId, productSelectMenu)
-        this.componentsByStage.get(EditProductFlowStage.SELECT_PRODUCT)?.set(submitEditButton.customId, submitEditButton)
-        this.componentsByStage.get(EditProductFlowStage.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
+        this.componentsByStage.set(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT, new Map())
+        this.componentsByStage.get(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(productSelectMenu.customId, productSelectMenu)
+        this.componentsByStage.get(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(submitEditButton.customId, submitEditButton)
+        this.componentsByStage.get(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
     }
 
     protected updateComponents(): void {
-        if (this.stage == EditProductFlowStage.SELECT_SHOP) {
+        if (this.stage == EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
             const submitShopButton = this.components.get(`${this.id}+submit-shop`)
             if (!(submitShopButton instanceof ExtendedButtonComponent)) return
 
             submitShopButton.toggle(this.selectedShop != null)
         }
 
-        if (this.stage == EditProductFlowStage.SELECT_PRODUCT) {
+        if (this.stage == EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT) {
             const submitRemoveButton = this.components.get(`${this.id}+edit-product`)
             if (submitRemoveButton instanceof ExtendedButtonComponent) {
                 submitRemoveButton.toggle(this.selectedProduct != null)
@@ -245,21 +250,21 @@ export class EditProductFlow extends UserFlow {
         const interactionOption = `new-${option}`
 
         switch (option) {
-            case EditProductOption.NAME:
-            case EditProductOption.DESCRIPTION:
+            case EDIT_PRODUCT_OPTION.NAME:
+            case EDIT_PRODUCT_OPTION.DESCRIPTION:
                 return interaction.options.getString(interactionOption)?.replaceSpaces() ?? null
-            case EditProductOption.PRICE: {
+            case EDIT_PRODUCT_OPTION.PRICE: {
                 const priceString = interaction.options.getNumber(interactionOption)?.toFixed(2)
                 if (priceString == undefined) return null
                 return +priceString
             }
-            case EditProductOption.EMOJI: {
+            case EDIT_PRODUCT_OPTION.EMOJI: {
                 const emojiOption = interaction.options.getString(interactionOption)
 
                 const [error, emoji] = validate(EmojiSchema, emojiOption)
                 return error ? null : emoji
             }
-            case EditProductOption.AMOUNT:
+            case EDIT_PRODUCT_OPTION.STOCK:
                 return interaction.options.getInteger(interactionOption)
             default:
                 assertNeverReached(option)
@@ -270,14 +275,14 @@ export class EditProductFlow extends UserFlow {
         switch (option) {
             case null:
                 return t("defaultComponents.unset")
-            case EditProductOption.NAME:
-            case EditProductOption.DESCRIPTION:
+            case EDIT_PRODUCT_OPTION.NAME:
+            case EDIT_PRODUCT_OPTION.DESCRIPTION:
                 return (this.updateOptionValue as string | null) ?? t("defaultComponents.unset")
-            case EditProductOption.PRICE:
+            case EDIT_PRODUCT_OPTION.PRICE:
                 return `${this.updateOptionValue ?? t("defaultComponents.unset")}` 
-            case EditProductOption.EMOJI:
+            case EDIT_PRODUCT_OPTION.EMOJI:
                 return (this.updateOptionValue as string | null) ?? t("defaultComponents.unset")
-            case EditProductOption.AMOUNT:
+            case EDIT_PRODUCT_OPTION.STOCK:
                 if (this.updateOptionValue == -1) return t(`${this.locale}.messages.unlimited`)
                 return `${this.updateOptionValue ?? t("defaultComponents.unset")}`
             default:

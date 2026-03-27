@@ -1,15 +1,20 @@
 import { DEFAULT_LOCALE_CODE, LOCALES } from "@/core/i18n/i18n.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
+import { is } from "@/lib/validation.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
+import z from "zod"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean, string[]] {
+function isRecord(val: unknown) {
+    return is(z.record(z.string(), z.unknown()), val)
+}
+
+function sameStructure(a: Record<string, unknown>, b: Record<string, unknown>): [boolean, string[]] {
     if (typeof a !== "object" || typeof b !== "object") {
         return [false, ["Not an object"]]
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function sameStructureRec(ref: any, tested: any, path: string[] = []): [boolean, string[]] {
+    function sameStructureRec(ref: unknown, tested: unknown, path: string[] = []): [boolean, string[]] {
         const pathString = path.join(".")
 
 
@@ -26,16 +31,13 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
             return [true, []]
         }
 
-        if (typeof ref !== "object" || typeof tested !== "object") {
-            return [false, [`Incorect type: ${pathString}`]]
+        if (!isRecord(ref) || !isRecord(tested)) {
+            return [false, [`Incorrect type: ${pathString}`]]
         }
 
         const errors: string[] = []
 
-        const refKeys = Object.keys(ref)
-
-        for (let i = 0; i < refKeys.length; i++) {
-            const key = refKeys[i]
+        for (const key in ref) {
 
             if (!Object.prototype.hasOwnProperty.call(tested, key)) {
                 errors.push(`Missing key: ${pathString}.${key}`)

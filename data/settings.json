@@ -16,11 +16,11 @@
         "name": "Activity Type",
         "value": "Listening",
         "options": [
-            "Playing",
-            "Streaming",
-            "Listening",
-            "Watching",
-            "Competing"
+            { "label": "Playing", "value": "playing" },
+            { "label": "Streaming", "value": "Streaming" },
+            { "label": "Listening", "value": "Listening" },
+            { "label": "Watching", "value": "Watching" },
+            { "label": "Competing", "value": "Competing" }
         ],
         "type": "enum"
     },

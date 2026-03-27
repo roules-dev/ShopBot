@@ -8,7 +8,7 @@ function isTsx() {
     return process.argv.includes('--use-ts')
 }
 
-if (process.env["NODE_ENV"] && process.env.NODE_ENV === "development") {
+if (process.env["NODE_ENV"] === "development") {
 	PrettyLog.warn("Development mode enabled")
 	PrettyLog.warn("Errors won't be caught by the error handler")
 }

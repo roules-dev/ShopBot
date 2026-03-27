@@ -66,7 +66,7 @@ export const data = new SlashCommandBuilder()
         )
     )
 
-export async function execute(client: Client, interaction: ChatInputCommandInteraction): Promise<void> {
+export async function execute(_client: Client, interaction: ChatInputCommandInteraction): Promise<void> {
     const subCommand = interaction.options.getSubcommand()
 
     switch (subCommand) {

@@ -14,8 +14,9 @@
                 "name": "1984",
                 "emoji": "📕",
                 "description": "A splendid novel by George Orwell",
-                "price": 5.49,
-                "shopId": "h3G8N_1F2LzI1T29bjdxJ"
+                "price": 6,
+                "shopId": "h3G8N_1F2LzI1T29bjdxJ",
+                "stock": null
             },
             "9-fiMoU-faP7vOVhO58Su": {
                 "id": "9-fiMoU-faP7vOVhO58Su",

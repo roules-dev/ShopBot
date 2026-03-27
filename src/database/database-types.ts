@@ -142,7 +142,10 @@ export class Database2<
     IdSchema extends AnyStringSchema, 
     DataItemRawSchema extends z.ZodObject<z.ZodRawShape>,  
 > {
+    private path: PathLike
     private dataItemJsonSchema: DataItemRawSchema
+
+    private idSchema: IdSchema
 
     private data: Map<
         z.infer<IdSchema>, 
@@ -151,11 +154,13 @@ export class Database2<
 
     public constructor (
         databaseRaw: DatabaseJsonBody, 
-        private path: PathLike, 
+        path: PathLike, 
         dataItemJsonSchema: NoIdSchema<DataItemRawSchema>, 
-        private idSchema: IdSchema
+        idSchema: IdSchema
     ) {
+        this.path = path
         this.dataItemJsonSchema = dataItemJsonSchema
+        this.idSchema = idSchema
 
         const [error, data] = this.parseRaw(databaseRaw)
         if (error) throw error

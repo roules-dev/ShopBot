@@ -101,7 +101,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override initEmbeds(_interaction: UserInterfaceInteraction): void {
         if (!this.selectedShop) return
 
-        const reservedToString = this.selectedShop.reservedTo !== undefined ? 
+        const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
             ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         const shopEmbed = new EmbedBuilder()
@@ -127,7 +127,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         if (!shopEmbed || !this.selectedShop) return
 
-        const reservedToString = this.selectedShop.reservedTo !== undefined ? 
+        const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
             ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         shopEmbed.setTitle(`${this.selectedShop.name}`)

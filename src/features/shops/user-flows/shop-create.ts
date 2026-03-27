@@ -54,7 +54,7 @@ export class ShopCreateFlow extends UserFlow {
     }
 
     protected override getMessage(): string {
-        const shopNameString = formattedEmojiableName({ name: this.shopName!, emoji: this.shopEmoji ?? undefined})
+        const shopNameString = formattedEmojiableName({ name: this.shopName!, emoji: this.shopEmoji })
 
         const message = t(`${this.locale}.messages.default`, {
             shop: bold(shopNameString),
@@ -139,7 +139,16 @@ export class ShopCreateFlow extends UserFlow {
         if (!this.shopName) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, newShop] = await createShop(undefined, undefined, this.shopName, this.shopDescription || "", this.selectedCurrency.id, this.shopEmoji || "", this.shopReservedTo)
+        const optionals = {
+            ...(this.shopReservedTo !== undefined ? { reservedTo: this.shopReservedTo } : {})
+        }
+
+        const [error, newShop] = await createShop(undefined, undefined, {
+            name: this.shopName,
+            emoji: this.shopEmoji,
+            description: this.shopDescription,
+            ...optionals
+        }, this.selectedCurrency.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

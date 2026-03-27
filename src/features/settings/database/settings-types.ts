@@ -2,8 +2,6 @@
 import { ApiError, Database } from "@/database/database-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
-import z from "zod"
-import { SettingVariantSchema } from "../schemas/settings-schemas.js"
 
 
 const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId", "enum"] as const
@@ -32,7 +30,7 @@ export type Setting = { id: string, name: string } & ({
     type: "userId"
 } | {
     value: string | undefined
-    options: string[] | { label: string, value: string }[]
+    options: { label: string, value: string }[]
     type: "enum"
 })
 
@@ -145,22 +143,22 @@ export class SettingsDatabase extends Database<string, Setting> {
 
 // for rework
 
-type SettingVariants = z.infer<typeof SettingVariantSchema>
+// type SettingVariants = z.infer<typeof SettingVariantSchema>
 
-type SettingType2 = SettingVariants["type"]
-type SettingValueType<T extends SettingType> = Extract<SettingVariants, { type: T }>["value"]
-
-
-type SettingIdBrands = {
-    [K in SettingType]: string & z.BRAND<`setting-${K}`>
-}[SettingType]
+// type SettingType2 = SettingVariants["type"]
+// type SettingValueType<T extends SettingType> = Extract<SettingVariants, { type: T }>["value"]
 
 
-type SettingValueByIdBrand<T> = 
-    T extends string & z.BRAND<infer B>
-        ? B extends `setting-${infer K}`
-            ? K extends SettingType
-                ? SettingValueType<K>
-                : never
-            : never
-        : never
+// type SettingIdBrands = {
+//     [K in SettingType]: string & z.BRAND<`setting-${K}`>
+// }[SettingType]
+
+
+// type SettingValueByIdBrand<T> = 
+//     T extends string & z.BRAND<infer B>
+//         ? B extends `setting-${infer K}`
+//             ? K extends SettingType
+//                 ? SettingValueType<K>
+//                 : never
+//             : never
+//         : never

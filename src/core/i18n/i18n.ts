@@ -1,5 +1,5 @@
 import "@/utils/strings.js"
-import { APIApplicationCommandOption, SlashCommandBuilder } from "discord.js"
+import { _AddUndefinedToPossiblyUndefinedPropertiesOfInterface, APIApplicationCommandOption, SlashCommandBuilder } from "discord.js"
 import { getTranslationByKey, initI18n } from "../../lib/i18n/init.js"
 import { PrettyLog } from "../../lib/pretty-log.js"
 
@@ -42,7 +42,10 @@ export async function addLocalisationToCommand(commandData: SlashCommandBuilder)
     return commandDataJson
 }
 
-async function addLocalisationToOptions(options: APIApplicationCommandOption[], path: string) {
+async function addLocalisationToOptions(
+    options: _AddUndefinedToPossiblyUndefinedPropertiesOfInterface<APIApplicationCommandOption[]>, 
+    path: string
+) {
     for (const option of options) {
         option.name_localizations = await getLocaleStrings(`${path}.${option.name}.name`)
         option.description_localizations = await getLocaleStrings(`${path}.${option.name}.description`)

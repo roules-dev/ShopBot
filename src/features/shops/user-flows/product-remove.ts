@@ -13,16 +13,18 @@ import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 
-enum RemoveProductFlowStage {
-    SELECT_SHOP,
-    SELECT_PRODUCT
-}
+export const REMOVE_PRODUCT_FLOW_STAGE = {
+    SELECT_SHOP: "SELECT_SHOP",
+    SELECT_PRODUCT: "SELECT_PRODUCT",
+} as const
+
+export type RemoveProductFlowStage = keyof typeof REMOVE_PRODUCT_FLOW_STAGE
 
 export class RemoveProductFlow extends UserFlow {
     public id = "remove-product"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private stage: RemoveProductFlowStage = RemoveProductFlowStage.SELECT_SHOP
+    private stage: RemoveProductFlowStage = REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP
     private componentsByStage: Map<RemoveProductFlowStage, Map<string, ExtendedComponent>> = new Map()
 
     private selectedShop: Shop | null = null
@@ -47,12 +49,12 @@ export class RemoveProductFlow extends UserFlow {
 
     protected getMessage(): string {
         switch (this.stage) {
-            case RemoveProductFlowStage.SELECT_SHOP:
+            case REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
                     shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
-            case RemoveProductFlowStage.SELECT_PRODUCT:
-                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in RemoveProductFlowStage.SELECT_PRODUCT stage")
+            case REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT:
+                if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT stage")
 
                 return t(`${this.locale}.messages.productSelectStage`, {
                     product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
@@ -92,14 +94,14 @@ export class RemoveProductFlow extends UserFlow {
                 if (this.selectedShop == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 if (this.selectedShop.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
-                this.changeStage(RemoveProductFlowStage.SELECT_PRODUCT)
+                this.changeStage(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(RemoveProductFlowStage.SELECT_SHOP, new Map())
-        this.componentsByStage.get(RemoveProductFlowStage.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
-        this.componentsByStage.get(RemoveProductFlowStage.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
+        this.componentsByStage.set(REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP, new Map())
+        this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
+        this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
 
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
@@ -142,26 +144,26 @@ export class RemoveProductFlow extends UserFlow {
                 this.selectedShop = null
                 this.selectedProduct = null
 
-                this.changeStage(RemoveProductFlowStage.SELECT_SHOP)
+                this.changeStage(REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP)
                 this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.set(RemoveProductFlowStage.SELECT_PRODUCT, new Map())
-        this.componentsByStage.get(RemoveProductFlowStage.SELECT_PRODUCT)?.set(productSelectMenu.customId, productSelectMenu)
-        this.componentsByStage.get(RemoveProductFlowStage.SELECT_PRODUCT)?.set(submitRemoveButton.customId, submitRemoveButton)
-        this.componentsByStage.get(RemoveProductFlowStage.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
+        this.componentsByStage.set(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT, new Map())
+        this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(productSelectMenu.customId, productSelectMenu)
+        this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(submitRemoveButton.customId, submitRemoveButton)
+        this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
     }
 
     protected updateComponents(): void {
-        if (this.stage == RemoveProductFlowStage.SELECT_SHOP) {
+        if (this.stage == REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
             const submitShopButton = this.components.get(`${this.id}+submit-shop`)
             if (!(submitShopButton instanceof ExtendedButtonComponent)) return
 
             submitShopButton.toggle(this.selectedShop != null)
         }
 
-        if (this.stage == RemoveProductFlowStage.SELECT_PRODUCT) {
+        if (this.stage == REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT) {
             const submitRemoveButton = this.components.get(`${this.id}+remove-product`)
             if (submitRemoveButton instanceof ExtendedButtonComponent) {
                 submitRemoveButton.toggle(this.selectedProduct != null)

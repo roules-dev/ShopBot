@@ -115,7 +115,7 @@ export const data = new SlashCommandBuilder()
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
-export async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
     const subCommandGroup = interaction.options.getSubcommandGroup()
 

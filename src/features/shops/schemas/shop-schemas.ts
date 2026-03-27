@@ -12,7 +12,7 @@ export const ProductRawSchema = z.object({
         NanoIdSchema, 
         z.number().min(0)
     ),
-    stock: z.nullish(z.number().min(0))
+    stock: z.exactOptional(z.nullable(z.number().min(0)))
 })
 
 export const ShopRawSchema = z.object({
@@ -34,7 +34,7 @@ export const ShopRawSchema = z.object({
         z.number().min(0)
     ),
 
-    reservedTo: z.nullish(SnowflakeSchema),
+    reservedTo: z.exactOptional(z.nullable(SnowflakeSchema)),
 
     products: z.record( 
         NanoIdSchema, 

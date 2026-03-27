@@ -1,6 +1,6 @@
 import { createCurrency } from "@/features/currencies/database/currencies-database.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies-schemas.js"
-import { EditCurrencyFlow, EditCurrencyOption } from "@/features/currencies/user-flows/currency-edit.js"
+import { EDIT_CURRENCY_OPTION, EditCurrencyFlow } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
 import { t } from "@/core/i18n/i18n.js"
@@ -37,7 +37,7 @@ export const data = new SlashCommandBuilder()
         .setName("edit")
         .setDescription("Edit a currency")
         .addSubcommand(subcommand => subcommand
-            .setName(EditCurrencyOption.NAME)
+            .setName(EDIT_CURRENCY_OPTION.NAME)
             .setDescription("Change Name. You will select the currency later")        
             .addStringOption(option => option
                 .setName("new-name")
@@ -48,7 +48,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EditCurrencyOption.EMOJI)
+            .setName(EDIT_CURRENCY_OPTION.EMOJI)
             .setDescription("Change Emoji. You will select the currency later")
             .addStringOption(option => option
                 .setName("new-emoji")
@@ -82,17 +82,17 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
     }
 }
 
-export async function createCurrencyCommand(client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
+export async function createCurrencyCommand(_client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
     const currencyName = interaction.options.getString("name")?.replaceSpaces()
     if (!currencyName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
     const emojiOption = interaction.options.getString("emoji")
     const [error, _emoji] = validate(EmojiSchema, emojiOption)
-    const emoji = error ? undefined : _emoji
+    const emoji = error ? {} : { emoji: _emoji}
 
     if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
     
-    const [error2, currency] = await createCurrency(undefined, currencyName, emoji)
+    const [error2, currency] = await createCurrency(undefined, { name: currencyName, ...emoji })
     if (error2) {
         return await replyErrorMessage(interaction, error2.message)
     }

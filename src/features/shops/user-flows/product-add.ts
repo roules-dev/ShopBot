@@ -1,7 +1,7 @@
+import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showEditModal } from "@/lib/ui/ui-components/modals.js"
@@ -73,7 +73,7 @@ export class AddProductFlow extends UserFlow {
     
     protected getMessage(): string {
         const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
-        const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji ?? undefined}))
+        const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji ?? null}))
 
         const message = t(`${this.locale}.messages.default`, {
             product: nameString,
@@ -127,12 +127,16 @@ export class AddProductFlow extends UserFlow {
     protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
+        const optionals = {
+            ...(this.productDescription ? {description: this.productDescription} : {}),
+            ...(this.productEmoji ? {emoji: this.productEmoji} : {}),
+            ...(this.productAmount ? {stock: this.productAmount} : {}),
+        }
+        
         const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
-            name: this.productName, 
-            description: this.productDescription || "", 
-            emoji: this.productEmoji || "", 
+            name: this.productName,
             price: this.productPrice,
-            stock: this.productAmount ?? undefined
+            ...optionals
         })
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
@@ -145,15 +149,17 @@ export class AddProductFlow extends UserFlow {
     }
 }
 
-enum AddActionProductFlowStage {
-    SELECT_SHOP,
-    SETUP_ACTION
-}
+const ADD_ACTION_PRODUCT_FLOW_STAGE = {
+    SELECT_SHOP: "SELECT_SHOP",
+    SETUP_ACTION: "SETUP_ACTION"
+} as const
+
+type AddActionProductFlowStage = keyof typeof ADD_ACTION_PRODUCT_FLOW_STAGE
 
 export class AddActionProductFlow extends AddProductFlow {
     public override id = "add-action-product"
 
-    private stage: AddActionProductFlowStage = AddActionProductFlowStage.SELECT_SHOP
+    private stage: AddActionProductFlowStage = ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP
     private componentsByStage: Map<AddActionProductFlowStage, Map<string, ExtendedComponent>> = new Map()
 
     private productActionType: ProductActionType | null = null
@@ -173,10 +179,10 @@ export class AddActionProductFlow extends AddProductFlow {
 
     protected override getMessage(): string {
         switch (this.stage) {
-            case AddActionProductFlowStage.SELECT_SHOP:
+            case ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP:
                 return super.getMessage()
 
-            case AddActionProductFlowStage.SETUP_ACTION: {
+            case ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION: {
                 const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
                 const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
 
@@ -229,9 +235,9 @@ export class AddActionProductFlow extends AddProductFlow {
     protected override initComponents(): void {
         super.initComponents()
 
-        this.componentsByStage.set(AddActionProductFlowStage.SELECT_SHOP, new Map(this.components))
+        this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP, new Map(this.components))
 
-        this.componentsByStage.set(AddActionProductFlowStage.SETUP_ACTION, new Map())
+        this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION, new Map())
         switch (this.productActionType) {
             case PRODUCT_ACTION_TYPE.GiveRole: {
                 const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
@@ -247,7 +253,7 @@ export class AddActionProductFlow extends AddProductFlow {
                     }
                 )
 
-                this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(roleSelectMenu.customId, roleSelectMenu)
+                this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(roleSelectMenu.customId, roleSelectMenu)
                 break
             }
             case PRODUCT_ACTION_TYPE.GiveCurrency: {
@@ -290,8 +296,8 @@ export class AddActionProductFlow extends AddProductFlow {
                     }
                 )
 
-                this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(currencySelectMenu.customId, currencySelectMenu)
-                this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(setAmountButton.customId, setAmountButton)
+                this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(currencySelectMenu.customId, currencySelectMenu)
+                this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(setAmountButton.customId, setAmountButton)
                 break
             }
             default:
@@ -323,19 +329,19 @@ export class AddActionProductFlow extends AddProductFlow {
                 this.productAction = null
                 this.actionSetupCompleted = false
 
-                this.changeStage(AddActionProductFlowStage.SELECT_SHOP)
+                this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP)
                 this.updateInteraction(interaction)
             }
         )
 
-        this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(submitButton.customId, submitButton)
-        this.componentsByStage.get(AddActionProductFlowStage.SETUP_ACTION)?.set(changeShopButton.customId, changeShopButton)
+        this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(submitButton.customId, submitButton)
+        this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(changeShopButton.customId, changeShopButton)
     }
 
     override updateComponents(): void {
-        if (this.stage == AddActionProductFlowStage.SELECT_SHOP) super.updateComponents()
+        if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) super.updateComponents()
 
-        if (this.stage == AddActionProductFlowStage.SETUP_ACTION) {
+        if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION) {
             const setAmountButton = this.components.get(`${this.id}+set-amount`)
             if (setAmountButton instanceof ExtendedButtonComponent) {
                 setAmountButton.toggle(this.productAction != null && this.productAction.type == PRODUCT_ACTION_TYPE.GiveCurrency)
@@ -361,8 +367,8 @@ export class AddActionProductFlow extends AddProductFlow {
     }
 
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (this.stage == AddActionProductFlowStage.SELECT_SHOP) {
-            this.changeStage(AddActionProductFlowStage.SETUP_ACTION)
+        if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
+            this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)
             return this.updateInteraction(interaction)
         }
         
@@ -370,8 +376,8 @@ export class AddActionProductFlow extends AddProductFlow {
 
         const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
             name: this.productName, 
-            description: this.productDescription || "", 
-            emoji: this.productEmoji || "", 
+            description: this.productDescription, 
+            emoji: this.productEmoji, 
             price: this.productPrice,
             action: this.productAction 
         })

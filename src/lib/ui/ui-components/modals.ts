@@ -1,6 +1,5 @@
 import { t } from "@/core/i18n/i18n.js"
 import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
-import z from "zod"
 
 const YES = "yes"
 const NO = "no"
@@ -57,19 +56,18 @@ type ModalOptions = {
 }
 
 
-
-// TODO : add the possibility to pass a Zod schema as a parameter to validate the input
 export async function showSingleInputModal(
     interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
-    { id, title, inputLabel, placeholder, required, minLength, maxLength }: ModalOptions,
-    schema?: z.ZodType
+    { id, title, inputLabel, placeholder, required, minLength, maxLength }: ModalOptions
 ): Promise<[ModalSubmitInteraction, string]> {
     const modal = new ModalBuilder()
         .setCustomId(id)
         .setTitle(title)
 
+    const INPUT_ID = `${id}-input`
+
     const input = new TextInputBuilder()
-        .setCustomId(`${id}-input`)
+        .setCustomId(INPUT_ID)
         .setPlaceholder(placeholder)
         .setStyle(TextInputStyle.Short)
         .setRequired(required)
@@ -93,20 +91,19 @@ export async function showSingleInputModal(
     await modalSubmit.deferUpdate()
     // catch
     
-    if (!modalSubmit.isFromMessage()) return [modalSubmit, ""] // returns err()
+    if (!modalSubmit.isFromMessage()) return [modalSubmit, ""] // return err()
 
-    const inputValue = modalSubmit.fields.getTextInputValue(`${id}-input`)
-
-    // add schema validation
+    const inputValue = modalSubmit.fields.getTextInputValue(INPUT_ID)
     
-    return [modalSubmit, inputValue] // change to result pattern; here return ok()
+    return [modalSubmit, inputValue] // return ok()
 }
+
 
 
 type EditModalOptions = {
     edit: string,
-    previousValue?: string,
-    required?: boolean
+    previousValue?: string | undefined,
+    required?: boolean | undefined
     minLength?: number
     maxLength?: number
 }
@@ -129,4 +126,3 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
         maxLength: maxLength ?? 120
     })
 }
-

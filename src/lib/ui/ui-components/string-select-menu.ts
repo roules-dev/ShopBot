@@ -54,9 +54,10 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     }
 
     onCollect(interaction: StringSelectMenuInteraction): void {
-        if (!interaction.isStringSelectMenu()) return
+        if (!interaction.isStringSelectMenu()) return this.update(interaction)
 
         const selectedValue = interaction.values[0]
+        if (selectedValue === undefined) return
 
         if (this.pageCount > 1 && selectedValue in SELECT_PAGE_OPTIONS) {
             switch (selectedValue) {
@@ -74,7 +75,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
 
 
         const selected = this.map.get(selectedValue)
-        if (selected == undefined) return
+        if (selected == undefined) return this.update(interaction)
 
         this.callback(interaction, selected)    
 

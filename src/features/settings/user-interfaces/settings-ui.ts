@@ -327,10 +327,14 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     private getEnumEditorComponent(setting: Setting & { type: "enum"}) {
-        const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === "object"
-        const optionsMap = optionsAreObjects
-            ? new Map((setting.options as Record<string, string>[]).map(option => [option.value, {id: option.value, name: option.label}]))
-            : new Map((setting.options as string[]).map(option => [option, {id: option, name: option}]))
+        const optionsMap = new Map((setting.options).map(
+            option => [
+                option.value, {
+                    id: option.value, 
+                    name: option.label
+                }
+            ])
+        )
 
         const optionSelectMenu = new ExtendedStringSelectMenuComponent(
             {

@@ -213,13 +213,13 @@ export const locale = {
                                 }
                             }
                         },
-                        "amount": {
-                            "name": "amount",
-                            "description": "Change amount. You will select the product later",
+                        "stock": {
+                            "name": "stock",
+                            "description": "Change stock. You will select the product later",
                             "options": {
-                                "new-amount": {
-                                    "name": "new-amount",
-                                    "description": "The new amount of the product (-1 for unlimited)"
+                                "new-stock": {
+                                    "name": "new-stock",
+                                    "description": "The new stock of the product (-1 for unlimited)"
                                 }
                             }
                         }
@@ -590,7 +590,7 @@ export const locale = {
                 "emoji": "emoji",
                 "price": "price",
                 "description": "description",
-                "amount": "amount"
+                "stock": "stock"
             }
         },
         "shopCreate": {

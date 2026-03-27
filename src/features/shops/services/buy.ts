@@ -54,8 +54,8 @@ function userBalanceAfterBuy(account: Account, currency: Currency, price: number
 }
 
 function itemStockAfterBuy(product: Product, quantity: number) {
-    if (product.stock == undefined) {
-        return undefined
+    if (product.stock == undefined || product.stock == null) {
+        return null
     }
 
     return product.stock - quantity

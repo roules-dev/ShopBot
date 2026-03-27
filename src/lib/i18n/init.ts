@@ -1,8 +1,8 @@
 import { Register } from "./translations.js"
 
 export type RegisteredTranslations = Register extends { translations: infer T }
-  ? T 
-  : LanguageMessages
+    ? T 
+    : LanguageMessages
 
 type I18nMessage = string
 
@@ -23,8 +23,6 @@ export type DotPathsFor<T extends object = RegisteredTranslations> = {
         ? Join<K, DotPathsFor<T[K]>>
         : never
 }[keyof T]
-
-type x = DotPathsFor<RegisteredTranslations>
 
 type ExtractParamArgs<S extends string> = 
     S extends `${string}{${infer Param}}${infer Rest}`
@@ -78,7 +76,7 @@ export function initI18n({
         for (const locale of orderedLocales()) {
             const translationFile = translations[locale]
             if (translationFile == null) continue
-            const translation = getTranslation(locale, translationFile, key, args)
+            const translation = getTranslation(translationFile, key, args)
             if (translation) return translation
         }
         return key
@@ -96,7 +94,6 @@ export function initI18n({
 }
 
 function getTranslation<S extends DotPathsFor, A extends Params<S>>(
-    locale: string,
     translations: LanguageMessages,
     key: S,
     args?: A
@@ -118,6 +115,8 @@ export function getTranslationByKey(obj: LanguageMessages, key: string) {
 
     for (let i = 0; i <= keys.length - 1; i++) {
         const k = keys[i]
+        if (k == undefined) return undefined
+        
         const newObj = currentObj[k]
         if (newObj == null) return undefined
 
