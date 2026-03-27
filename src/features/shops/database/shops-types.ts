@@ -14,8 +14,8 @@ import { Snowflake } from "discord.js"
 export interface Shop {
     id: NanoId
     name: string
-    emoji?: string | null
-    description?: string | null
+    emoji: string | null
+    description: string | null
     currency: Currency
     discountCodes: {[code: string]: number}
     reservedTo?: Snowflake | null

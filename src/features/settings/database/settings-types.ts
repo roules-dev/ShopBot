@@ -9,27 +9,27 @@ const settingTypes = ["string", "bool", "number", "channelId", "roleId", "userId
 type SettingType = typeof settingTypes[number]
 
 export type Setting = { id: string, name: string } & ({
-    value: string | undefined
+    value: string | null
     type: "string"
 } | {
-    value: boolean | undefined
+    value: boolean | null
     type: "bool"
 } | {
-    value: number | undefined
+    value: number | null
     type: "number",
-    min?: number,
-    max?: number
+    min?: number | null,
+    max?: number | null
 } | {
-    value: Snowflake | undefined
+    value: Snowflake | null
     type: "channelId"
 } | {
-    value: Snowflake | undefined
+    value: Snowflake | null
     type: "roleId"
 } | {
-    value: Snowflake | undefined
+    value: Snowflake | null
     type: "userId"
 } | {
-    value: string | undefined
+    value: string | null
     options: { label: string, value: string }[]
     type: "enum"
 })
@@ -91,11 +91,6 @@ export class SettingsDatabase extends Database<string, Setting> {
 
             if(settings.has(id)) return err(new ApiError("DuplicateSettingName"))
 
-            if (value === null) {
-                settings.set(id, { ...(setting as Setting), value: undefined })
-                continue
-            }
-
             switch (setting.type) {
                 case "channelId":
                 case "roleId":
@@ -117,8 +112,8 @@ export class SettingsDatabase extends Database<string, Setting> {
                     if (!(typeof value === "number")) return err(new ApiError("InvalidSettingType"))
 
                     let clampedvalue = value as number
-                    if (setting.min !== undefined) clampedvalue = Math.max(clampedvalue, setting.min)
-                    if (setting.max !== undefined) clampedvalue = Math.min(clampedvalue, setting.max)
+                    if (setting.min !== undefined && setting.min !== null) clampedvalue = Math.max(clampedvalue, setting.min)
+                    if (setting.max !== undefined && setting.max !== null) clampedvalue = Math.min(clampedvalue, setting.max)
 
                     settings.set(id, { ...setting, value: value as number, type: setting.type })
                     break

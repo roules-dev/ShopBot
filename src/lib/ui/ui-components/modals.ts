@@ -102,8 +102,8 @@ export async function showSingleInputModal(
 
 type EditModalOptions = {
     edit: string,
-    previousValue?: string | undefined,
-    required?: boolean | undefined
+    previousValue?: string | undefined | null,
+    required?: boolean | undefined | null
     minLength?: number
     maxLength?: number
 }

@@ -87,12 +87,12 @@ export async function createCurrencyCommand(_client: Client, interaction: ChatIn
     if (!currencyName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
     const emojiOption = interaction.options.getString("emoji")
-    const [error, _emoji] = validate(EmojiSchema, emojiOption)
-    const emoji = error ? {} : { emoji: _emoji}
+    const [_, emoji] = validate(EmojiSchema, emojiOption)
+    // TODO : for now inputing a wrong emoji fails silently, should give a warning instead
 
     if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
     
-    const [error2, currency] = await createCurrency(undefined, { name: currencyName, ...emoji })
+    const [error2, currency] = await createCurrency(undefined, { name: currencyName, emoji })
     if (error2) {
         return await replyErrorMessage(interaction, error2.message)
     }

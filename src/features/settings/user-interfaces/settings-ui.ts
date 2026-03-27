@@ -97,7 +97,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         settings.forEach(setting => {
             const { name, type, value } = setting
 
-            if (value === undefined || value === "") {
+            if (value === null || value === "") {
                 fields.push({ name, value: t(`${this.locale}.embeds.settings.unsetSetting`), inline: true })
                 return
             }

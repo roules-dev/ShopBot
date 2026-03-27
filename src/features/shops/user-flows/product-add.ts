@@ -27,7 +27,7 @@ export class AddProductFlow extends UserFlow {
     protected productPrice: number | null = null
     protected productEmoji: string | null = null
     protected productDescription: string | null = null
-    protected productAmount: number | null = null
+    protected productStock: number | null = null
 
     protected selectedShop: Shop | null = null
 
@@ -48,7 +48,7 @@ export class AddProductFlow extends UserFlow {
         
         const productEmoji = error ? null : this.productEmoji
 
-        const productAmount = interaction.options.getInteger("amount")
+        const productStock = interaction.options.getInteger("stock")
 
         if (!productName || productPrice == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     
@@ -59,7 +59,7 @@ export class AddProductFlow extends UserFlow {
         this.productEmoji = productEmoji
         this.productDescription = productDescription
 
-        this.productAmount = productAmount
+        this.productStock = productStock
 
         this.initComponents()
         this.updateComponents()
@@ -128,13 +128,13 @@ export class AddProductFlow extends UserFlow {
         if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const optionals = {
-            ...(this.productDescription ? {description: this.productDescription} : {}),
-            ...(this.productEmoji ? {emoji: this.productEmoji} : {}),
-            ...(this.productAmount ? {stock: this.productAmount} : {}),
+            ...(this.productStock ? {stock: this.productStock} : {}),
         }
         
         const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
             name: this.productName,
+            emoji: this.productEmoji,
+            description: this.productDescription,
             price: this.productPrice,
             ...optionals
         })
@@ -285,7 +285,7 @@ export class AddActionProductFlow extends AddProductFlow {
                         const amount = parseInt(input)
                         if (isNaN(amount) || amount < 0) return this.updateInteraction(modalSubmit)
 
-                        // Weirdly implemented
+                        // Weirdly (horribly) implemented
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, {
                             currencyId: (this.productAction!.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId,
                             amount

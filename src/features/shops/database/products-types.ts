@@ -69,8 +69,8 @@ export interface Product {
     id: NanoId
     shopId: NanoId
     name: string
-    emoji?: string | null
-    description?: string | null
+    emoji: string | null
+    description: string | null
     stock?: number | null
     price: number 
     action?: ProductAction | null
