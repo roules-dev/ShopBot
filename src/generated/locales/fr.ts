@@ -155,9 +155,9 @@ export const locale = {
                             "name": "emoji",
                             "description": "L'emoji du produit (optionnel)"
                         },
-                        "amount": {
-                            "name": "quantite",
-                            "description": "La quantité du produit (optionnel)"
+                        "stock": {
+                            "name": "stock",
+                            "description": "Le stock du produit (optionnel)"
                         },
                         "action": {
                             "name": "action",
@@ -213,13 +213,13 @@ export const locale = {
                                 }
                             }
                         },
-                        "amount": {
-                            "name": "montant",
-                            "description": "Changer la quantité. Vous sélectionnerez le produit plus tard",
+                        "stock": {
+                            "name": "stock",
+                            "description": "Changer le stock. Vous sélectionnerez le produit plus tard",
                             "options": {
-                                "new-amount": {
-                                    "name": "nouveau-montant",
-                                    "description": "La nouvelle quantité du produit (-1 pour illimité)"
+                                "new-stock": {
+                                    "name": "nouveau-stock",
+                                    "description": "Le nouveau stock du produit (-1 pour illimité)"
                                 }
                             }
                         }
@@ -564,7 +564,7 @@ export const locale = {
                 "emoji": "emoji",
                 "price": "prix",
                 "description": "description",
-                "amount": "montant"
+                "stock": "stock"
             }
         },
         "shopCreate": {

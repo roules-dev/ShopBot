@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE_CODE, LOCALES } from "@/core/i18n/i18n.js"
+import { DEFAULT_LOCALE_CODE } from "@/core/i18n/i18n.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { is } from "@/lib/validation.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
@@ -95,9 +95,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         process.exit(1)
     }
 
+    const defaultLocale = await loadLocaleFile(DEFAULT_LOCALE_CODE)
     const locale = await loadLocaleFile(localeCode)
 
-    const [same, errors] = sameStructure(LOCALES[DEFAULT_LOCALE_CODE], locale)
+    const [same, errors] = sameStructure(defaultLocale, locale)
 
     if (same) {
         PrettyLog.success(`The locale ${localeCode} does not miss any translation`)

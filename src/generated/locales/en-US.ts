@@ -155,9 +155,9 @@ export const locale = {
                             "name": "emoji",
                             "description": "The emoji of the product (optional)"
                         },
-                        "amount": {
-                            "name": "amount",
-                            "description": "The amount of the product (optional)"
+                        "stock": {
+                            "name": "stock",
+                            "description": "The stock of the product (optional)"
                         },
                         "action": {
                             "name": "action",
