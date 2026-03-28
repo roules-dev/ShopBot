@@ -1,6 +1,6 @@
+import { t } from "@/core/i18n/i18n.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
@@ -9,9 +9,9 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { toStringOrUndefined } from "@/utils/strings.js"
 import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
+import z from "zod"
 import { getSettings, setSetting } from "../database/settings-handler.js"
 import { Setting } from "../database/settings-types.js"
-import z from "zod"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {
@@ -120,11 +120,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     private enumOptionDisplay(setting: Setting & { type: "enum" }) {
-        const optionsAreObjects = setting.options[0] !== undefined && typeof setting.options[0] === "object"
-        
-        const displayValue = optionsAreObjects ? 
-            (setting.options as { label: string, value: string }[]).find(option => option.value === setting.value)?.label : 
-            setting.value
+        const displayValue = setting.options.find(option => option.value === setting.value)?.label
 
         return displayValue ?? setting.value ?? t(`${this.locale}.embeds.settings.unsetSetting`)
     }

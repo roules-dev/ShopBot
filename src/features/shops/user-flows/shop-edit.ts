@@ -1,8 +1,8 @@
+import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
@@ -13,6 +13,10 @@ import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+
+//! --------------------------------
+// TODO this needs to be refactored
+//! --------------------------------
 
 
 export const EDIT_SHOP_OPTIONS = {

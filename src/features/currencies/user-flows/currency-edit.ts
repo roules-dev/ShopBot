@@ -1,6 +1,6 @@
+import { t } from "@/core/i18n/i18n.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
@@ -9,9 +9,9 @@ import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfac
 import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
+import z from "zod"
 import { getCurrencies, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
-import z from "zod"
 
 export const EDIT_CURRENCY_OPTION = {
     NAME: "name",

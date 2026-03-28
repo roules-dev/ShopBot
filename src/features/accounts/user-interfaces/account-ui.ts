@@ -1,7 +1,7 @@
+import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"

@@ -1,6 +1,6 @@
+import { t } from "@/core/i18n/i18n.js";
 import { Product } from "@/features/shops/database/products-types.js";
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js";
-import { t } from "@/core/i18n/i18n.js";
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js";
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js";

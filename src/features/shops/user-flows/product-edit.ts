@@ -1,6 +1,6 @@
+import { t } from "@/core/i18n/i18n.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
@@ -10,13 +10,15 @@ import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
+import z from "zod"
 import { updateProduct } from "../database/products-database.js"
 import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import z from "zod"
 
+//! --------------------------------
 // TODO this needs to be refactored
+//! --------------------------------
 
 export const EDIT_PRODUCT_FLOW_STAGE = {
     SELECT_SHOP: "SELECT_SHOP",

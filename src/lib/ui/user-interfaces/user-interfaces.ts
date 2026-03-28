@@ -1,11 +1,12 @@
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MentionableSelectMenuInteraction, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, RoleSelectMenuInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { ExtendedButtonComponent } from "../ui-components/button.js"
 import { ComponentSeparator, ExtendedComponent } from "../ui-components/extended-components.js"
-import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js"
-
 
 export type UserInterfaceInteraction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction
+
+export type UserInterfaceComponentInteraction = StringSelectMenuInteraction | UserSelectMenuInteraction | RoleSelectMenuInteraction | MentionableSelectMenuInteraction | ChannelSelectMenuInteraction | ButtonInteraction
 export type UserInterfaceComponentBuilder = ButtonBuilder | StringSelectMenuBuilder | RoleSelectMenuBuilder | ChannelSelectMenuBuilder | UserSelectMenuBuilder
 
 const selectMenuComponents = [ComponentType.MentionableSelect, ComponentType.StringSelect, ComponentType.RoleSelect, ComponentType.UserSelect, ComponentType.ChannelSelect]
@@ -122,14 +123,14 @@ export abstract class MessageUserInterface extends UserInterface {
 
     public async display(interaction: UserInterfaceInteraction) {
         const success = await this.predisplay(interaction)
-        if (!success) return
+        if (!success) return await replyErrorMessage(interaction)
 
         this.setup(interaction)
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
         this.createComponentsCollectors(response)
 
-        return
+        return response
     }
 }
 
@@ -154,7 +155,7 @@ export abstract class EmbedUserInterface extends MessageUserInterface {
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), embeds: this.getEmbeds(), flags: MessageFlags.Ephemeral, withResponse: true })
         this.createComponentsCollectors(response)
 
-        return
+        return response
     }
 
     protected override getInteractionUpdateOptions(): InteractionEditReplyOptions {
@@ -199,7 +200,7 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
             this.page = 0
         }
 
-        public override async display(interaction: UserInterfaceInteraction): Promise<void> {
+        public override async display(interaction: UserInterfaceInteraction) {
             await this.predisplay(interaction)
             this.setup(interaction)
 
@@ -208,7 +209,7 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
 
             this.response = response
 
-            return
+            return response
         }
 
         protected override async updateInteraction(interaction: UserInterfaceInteraction) {

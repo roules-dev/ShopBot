@@ -31,8 +31,10 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
         super()
         this.customId = options.customId
         this.component = componentBuilder
+
+        this.component
             .setCustomId(options.customId)
-            .setPlaceholder(options.placeholder) as SelectMenuBuilders<T>
+            .setPlaceholder(options.placeholder) 
         
         this.callback = callback
         this.time = options.time
@@ -56,7 +58,7 @@ interface ExtendedChannelSelectOptions extends ExtendedSelectMenuOptions {
 
 
 export class ExtendedChannelSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.ChannelSelect> {
-    override componentType = ComponentType.ChannelSelect
+    override componentType = ComponentType.ChannelSelect as const
     
     constructor({ customId, placeholder, time, channelTypes }: ExtendedChannelSelectOptions, 
         callback: (interaction: ChannelSelectMenuInteraction, selectedChannelId: Snowflake) => void
@@ -68,7 +70,7 @@ export class ExtendedChannelSelectMenuComponent extends ExtendedSelectMenuCompon
 }
 
 export class ExtendedRoleSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.RoleSelect> {
-    override componentType = ComponentType.RoleSelect
+    override componentType = ComponentType.RoleSelect as const
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
         callback: (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => void
     ) {
@@ -78,7 +80,7 @@ export class ExtendedRoleSelectMenuComponent extends ExtendedSelectMenuComponent
 
 
 export class ExtendedUserSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.UserSelect> {
-    override componentType = ComponentType.UserSelect
+    override componentType = ComponentType.UserSelect as const
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
         callback: (interaction: UserSelectMenuInteraction, selectedUserId: Snowflake) => void
     ) {

@@ -4,8 +4,6 @@ import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringS
 import { ExtendedComponent } from "./extended-components.js"
 
 
-
-
 const API_MAX_SELECT_MENU_OPTIONS = 25
 const MAX_OPTIONS_PER_PAGE = API_MAX_SELECT_MENU_OPTIONS - 2
 
@@ -21,7 +19,7 @@ export interface ExtendedSelectMenuOptions {
 }
 
 export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled & Emojiable> extends ExtendedComponent {
-    componentType = ComponentType.StringSelect
+    componentType = ComponentType.StringSelect as const
     customId: string
     component: StringSelectMenuBuilder
     map: MutableOrReadonly<Map<string, T>>

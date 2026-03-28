@@ -13,11 +13,11 @@ import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
+import z from "zod"
 import { addProduct } from "../database/products-database.js"
 import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import z from "zod"
 
 
 export class AddProductFlow extends UserFlow {

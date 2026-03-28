@@ -18,7 +18,7 @@ type ExtendButtonOptions = {
 
 
 export class ExtendedButtonComponent extends ExtendedComponent {
-    componentType = ComponentType.Button
+    componentType = ComponentType.Button as const
     customId: string
     component: ButtonBuilder
     callback: (interaction: ButtonInteraction) => void

@@ -39,6 +39,8 @@ export type ProductActionJsonBody = {
     }
 }[ProductActionType]
 
+//! ------------
+// TODO refactor
 export function createProductAction<Type extends ProductActionType>(
     type: Type,
     options: ProductActionOptions<Type>,
@@ -56,7 +58,7 @@ export function isProductActionType(
         actionType as ProductActionType,
     )
 }
-
+//! ------------
 
 
 // Product will become Item, independant of shops
