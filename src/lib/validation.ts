@@ -7,7 +7,7 @@ export function validate<T extends z.ZodType>(schema: T, input: unknown) {
     if (res.success) {
         return ok(res.data)
     } else {
-        return err(z.prettifyError(res.error))
+        return err(res.error)
     }
 }
 

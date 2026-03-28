@@ -3,7 +3,7 @@ import { assertNeverReached } from "@/lib/error-handling.js"
 import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator } from "@/lib/ui/ui-components/extended-components.js"
-import { showEditModal, showSingleInputModal } from "@/lib/ui/ui-components/modals.js"
+import { showSingleInputModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { MessageUserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
@@ -12,6 +12,7 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInte
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
 import { processPurchase } from "../services/buy.js"
+import z from "zod"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -91,18 +92,18 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 time: 120_000,
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmit, quantityInput] = await showEditModal(
+                const [modalSubmit, [error, quantity]] = await showValidatedEditModal(
                     interaction,
                     {
                         edit: t(`${this.locale}.components.editQuantityModalTitle`),
                         previousValue: this.quantity.toString(),
                         required: true
-                    }
+                    },
+                    z.coerce.number().int().min(1).transform(n => Math.floor(n))
                 )
-
-                const quantity = parseInt(quantityInput)
-                if (isNaN(quantity) || quantity < 1) return this.updateInteraction(modalSubmit)
                 
+                if (error) return replyErrorMessage(modalSubmit, error.message)
+
                 this.quantity = quantity
                 this.updateInteraction(modalSubmit)
             }
@@ -182,7 +183,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private async handleSetDiscountCodeInteraction(interaction: ButtonInteraction) {
         const modalId = `${this.id}+set-discount-code-modal`
 
-        const [modalSubmit, input] = await showSingleInputModal(interaction, {
+        const [modalSubmit, [error, input]] = await showSingleInputModal(interaction, {
             id: modalId,
             title: t(`${this.locale}.components.setDiscountCodeModal.title`),
             inputLabel: t(`${this.locale}.components.setDiscountCodeModal.input`),
@@ -191,6 +192,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
             minLength: 6,
             maxLength: 8
         })
+
+        if (error) return replyErrorMessage(modalSubmit, error.message)
 
         const shopDiscountCodes = this.selectedShop.discountCodes
         if (!shopDiscountCodes[input]) return this.updateInteraction(modalSubmit)

@@ -1,4 +1,4 @@
-interface ErrorLike<N = string> {
+export interface ErrorLike<N = string> {
     name: N
     message: string
 }

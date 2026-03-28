@@ -4,7 +4,7 @@ import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { showEditModal } from "@/lib/ui/ui-components/modals.js"
+import { showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
@@ -17,6 +17,7 @@ import { addProduct } from "../database/products-database.js"
 import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import z from "zod"
 
 
 export class AddProductFlow extends UserFlow {
@@ -280,12 +281,14 @@ export class AddActionProductFlow extends AddProductFlow {
                         time: 120_000
                     },
                     async (interaction: ButtonInteraction) => {
-                        const [modalSubmit, input] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: "0" })
+                        const [modalSubmit, [error, amount]] = await showValidatedEditModal(
+                            interaction, 
+                            { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: "0" },
+                            z.coerce.number().int().min(0).transform(n => Math.floor(n))
+                        )
 
-                        const amount = parseInt(input)
-                        if (isNaN(amount) || amount < 0) return this.updateInteraction(modalSubmit)
+                        if (error) return replyErrorMessage(modalSubmit, error.message)
 
-                        // Weirdly (horribly) implemented
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, {
                             currencyId: (this.productAction!.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId,
                             amount

@@ -4,7 +4,7 @@ import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from 
 import { t } from "@/core/i18n/i18n.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { showEditModal } from "@/lib/ui/ui-components/modals.js"
+import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
@@ -95,8 +95,10 @@ export class ShopCreateFlow extends UserFlow {
                 time: 120_000
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmit, newShopName] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editNameModalTitle`), previousValue: this.shopName || undefined })
+                const [modalSubmit, [error, newShopName]] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editNameModalTitle`), previousValue: this.shopName || undefined })
                 
+                if (error) return updateAsErrorMessage(modalSubmit, error.message)
+
                 this.shopName = newShopName
                 this.updateInteraction(modalSubmit)
             }
@@ -111,11 +113,14 @@ export class ShopCreateFlow extends UserFlow {
                 time: 120_000
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmit, newShopEmoji] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editEmojiModalTitle`), previousValue: this.shopEmoji || undefined })
-                
-                const [error, emoji] = validate(EmojiSchema, newShopEmoji)
+                const [modalSubmit, [error, emoji]] = await showValidatedEditModal(
+                    interaction, { edit: t(`${this.locale}.components.editEmojiModalTitle`), previousValue: this.shopEmoji || undefined },
+                    EmojiSchema
+                )
 
-                this.shopEmoji = error ? this.shopEmoji : emoji
+                if (error) return replyErrorMessage(modalSubmit, error.message)
+
+                this.shopEmoji = emoji
                 this.updateInteraction(modalSubmit)
             }
         )
