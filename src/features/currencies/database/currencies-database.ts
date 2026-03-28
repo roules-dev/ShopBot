@@ -3,7 +3,7 @@ import { ApiError } from "@/database/database-types.js"
 import { update } from "@/database/helpers.js"
 import { CurrenciesDatabase, Currency, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { Exact } from "@/lib/types/utils.js"
+import { Exact } from "@/lib/types/index.js"
 import { nanoid } from "nanoid"
 
 

@@ -5,7 +5,7 @@ import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { Exact } from "@/lib/types/utils.js"
+import { Exact } from "@/lib/types/index.js"
 import { Snowflake } from "discord.js"
 import { nanoid } from "nanoid"
 

@@ -1,4 +1,4 @@
-import { Emojiable, Identifiable, Labelled, MutableOrReadonly } from "@/lib/types/utils.js"
+import { Emojiable, Identifiable, Labelled, MutableOrReadonly } from "@/lib/types/index.js"
 import { subMap } from "@/utils/maps.js"
 import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"

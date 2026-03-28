@@ -1,6 +1,6 @@
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { MapKey, MapValue } from "@/lib/types/utils.js"
+import { DeepReadonly, MapKey, MapValue } from "@/lib/types/index.js"
 import { AnyStringSchema } from "@/lib/types/zod.js"
 import { validate } from "@/lib/validation.js"
 import { PathLike } from "fs"
@@ -54,6 +54,10 @@ const API_ERRORS = {
 
 
 const DATABASE_ERRORS = {
+    InvalidDatabase: {
+        message: "Invalid database",
+        status: 500
+    },
     SaveError: {
         message: "Error saving database",
         status: 500
@@ -169,15 +173,21 @@ export class Database2<
     }
 
     public get(id: MapKey<typeof this.data>) {
-        return this.data.get(id)
+        const item = this.data.get(id)
+        if (item === undefined) return undefined
+
+        return this.data.get(id) as DeepReadonly<MapValue<typeof this.data>>
     }
 
-    public async set(id: MapKey<typeof this.data>, dataItem: MapValue<typeof this.data>) {
+    public async set(
+        id: MapKey<typeof this.data>, 
+        dataItem: MapValue<typeof this.data>
+    ) {
         this.data.set(id, dataItem)
         const [error] = await this.save()
         if (error) return err(error)
         
-        return ok(Object.freeze({...dataItem}))
+        return ok(Object.freeze({...dataItem}) as DeepReadonly<MapValue<typeof this.data>>)
     }
 
     public async patch(id: MapKey<typeof this.data>, dataItem: Partial<MapValue<typeof this.data>>) {
@@ -192,42 +202,89 @@ export class Database2<
         return ok(updated)
     }
 
-    public entries(): ReadonlyMap<MapKey<typeof this.data>, MapValue<typeof this.data>> {
-        return this.data
+    public async delete(id: MapKey<typeof this.data>) {
+        if (!this.data.has(id)) {
+            return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        }
+
+        const backup = new Map(this.data)
+
+        this.data.delete(id)
+
+        const [error] = await this.save()
+        if (error) {
+            this.data = backup
+            return err(error)
+        }
+
+        return ok(true)
+    }
+
+    public list() {
+        return this.data as DeepReadonly<Map<MapKey<typeof this.data>, MapValue<typeof this.data>>>
     }
     
-    public toJSON(): Record<string, MapValue<typeof this.data>> {
+    private toJSON(): Record<string, MapValue<typeof this.data>> {
         return Object.fromEntries(this.data)
     }
     
-    protected parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, DatabaseError> {
+    private parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, DatabaseError> {
         const data: typeof this.data = new Map()
+        const errors: string[] = []
 
         for (const [_id, _dataItem] of Object.entries(databaseRaw)) {
             const [idError, id] = validate(this.idSchema, _id)
 
             if (idError) {
-                PrettyLog.error(`Error parsing ${_id}\n${idError.message}`)
+                errors.push(`Invalid id "${_id}": ${idError.message}`)
                 continue
             }
 
             const [itemError, dataItem] = validate(this.dataItemJsonSchema, _dataItem)
 
             if (itemError) {
-                PrettyLog.error(`Error parsing ${id}\n${itemError.message}`)
+                errors.push(`Error parsing ${id}\n${itemError.message}`)
                 continue
             }
 
             data.set(id, dataItem)
         }
 
+        if (data.size === 0 && errors.length > 0) {
+            return err(new DatabaseError(
+                "InvalidDatabase",
+                this.path,
+                `All entries failed validation:\n${errors.join("\n")}`
+            ))
+        }
+
+        if (errors.length > 0) {
+            PrettyLog.warn(`Some entries failed to load:\n${errors.join("\n")}`)
+        }
+
         return ok(data)
     }
+
+
+    private writeLock: Promise<void> = Promise.resolve()
     
-    public async save() {
+    private async save() {
+        this.writeLock = this.writeLock.then(async () => {
+            try {
+                const tempPath = `${this.path}.tmp`
+
+                await fs.writeFile(tempPath, JSON.stringify(this.toJSON(), null, 4))
+                await fs.rename(tempPath, this.path)
+
+            } catch (e) {
+                throw e instanceof Error
+                    ? e
+                    : new Error(`Unknown error while saving database ${this.path}`)
+            }
+        })
+
         try {
-            await fs.writeFile(this.path, JSON.stringify(this.toJSON(), null, 4))
-    
+            await this.writeLock
             return ok(true)
         } catch (e) {
             if (e instanceof Error) return err(e)

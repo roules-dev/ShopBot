@@ -1,7 +1,7 @@
 import { Balance2, NanoId } from "@/database/database-types.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { Item } from "@/features/items/database/items-types.js"
-import { Prettify } from "@/lib/types/utils.js"
+import { Simplify } from "@/lib/types/index.js"
 import { Snowflake } from "discord.js"
 
 
@@ -90,6 +90,6 @@ export type ProductOptions2 = {
 
 // TODO : if price is an empty array -> item is free -> must add a string to locales.
 
-export type Product2 = Prettify<{
+export type Product2 = Simplify<{
     item : Item 
 } & ProductOptions2>
