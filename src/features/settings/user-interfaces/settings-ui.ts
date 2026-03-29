@@ -6,12 +6,13 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedChannelSelectMenuComponent, ExtendedRoleSelectMenuComponent, ExtendedUserSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { PaginatedEmbedUserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { toStringOrUndefined } from "@/utils/strings.js"
 import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
 import z from "zod"
 import { getSettings, setSetting } from "../database/settings-handler.js"
 import { Setting } from "../database/settings-types.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {

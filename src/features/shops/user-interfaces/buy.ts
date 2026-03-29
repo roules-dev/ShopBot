@@ -1,18 +1,19 @@
+import { t } from "@/core/i18n/i18n.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { t } from "@/core/i18n/i18n.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator } from "@/lib/ui/ui-components/extended-components.js"
 import { showSingleInputModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { MessageUserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { MessageUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { stringifyObj } from "@/utils/objects.js"
 import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInteraction } from "discord.js"
+import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
 import { processPurchase } from "../services/buy.js"
-import z from "zod"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {

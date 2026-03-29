@@ -7,12 +7,12 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 //! --------------------------------
 // TODO this needs to be refactored

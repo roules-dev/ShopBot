@@ -1,8 +1,8 @@
 import { getSettings } from "@/features/settings/database/settings-handler.js"
 import { t } from "@/core/i18n/i18n.js"
-import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { Guild, MessageFlags, TextChannel } from "discord.js"
 import { PrettyLog } from "./pretty-log.js"
+import { UserInterfaceInteraction } from "./ui/types/ui.js"
 
 
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {

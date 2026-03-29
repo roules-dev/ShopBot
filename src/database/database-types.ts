@@ -1,4 +1,4 @@
-import { Database } from "@/app/interfaces/database.js"
+import { Database } from "@/core/interfaces/database.js"
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { DeepReadonly, MapKey, MapValue } from "@/lib/types/index.js"

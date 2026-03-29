@@ -8,7 +8,6 @@ import { showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
@@ -18,6 +17,7 @@ import { addProduct } from "../database/products-database.js"
 import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 
 export class AddProductFlow extends UserFlow {

@@ -4,10 +4,11 @@ import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { ObjectValues, PaginatedMultipleEmbedUserInterface, UserInterfaceInteraction } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { getOrCreateAccount } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"

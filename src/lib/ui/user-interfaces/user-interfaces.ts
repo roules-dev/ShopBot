@@ -1,15 +1,9 @@
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChatInputCommandInteraction, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MentionableSelectMenuInteraction, MessageComponentInteraction, MessageFlags, ModalSubmitInteraction, RoleSelectMenuBuilder, RoleSelectMenuInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
+import { ActionRowBuilder, APIEmbedField, ButtonInteraction, ButtonStyle, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
+import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
 import { ExtendedButtonComponent } from "../ui-components/button.js"
 import { ComponentSeparator, ExtendedComponent } from "../ui-components/extended-components.js"
-
-export type UserInterfaceInteraction = ChatInputCommandInteraction | MessageComponentInteraction | ModalSubmitInteraction
-
-export type UserInterfaceComponentInteraction = StringSelectMenuInteraction | UserSelectMenuInteraction | RoleSelectMenuInteraction | MentionableSelectMenuInteraction | ChannelSelectMenuInteraction | ButtonInteraction
-export type UserInterfaceComponentBuilder = ButtonBuilder | StringSelectMenuBuilder | RoleSelectMenuBuilder | ChannelSelectMenuBuilder | UserSelectMenuBuilder
-
-const selectMenuComponents = [ComponentType.MentionableSelect, ComponentType.StringSelect, ComponentType.RoleSelect, ComponentType.UserSelect, ComponentType.ChannelSelect]
 
 export abstract class UserInterface {
     public abstract id: string

@@ -1,5 +1,5 @@
 import { InteractionCallbackResponse, InteractionCollector, MessageComponentInteraction, MessageComponentType, ReadonlyCollection } from "discord.js"
-import { UserInterfaceComponentBuilder, UserInterfaceComponentInteraction } from "../user-interfaces/user-interfaces.js"
+import { UserInterfaceComponentBuilder, UserInterfaceComponentInteraction } from "../types/ui.js"
 
 
 export abstract class ExtendedComponent {
