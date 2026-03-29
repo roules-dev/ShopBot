@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ApiError, Database } from "@/database/database-types.js"
+import { ApiError, DatabaseLegacy } from "@/database/database-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
 
@@ -58,7 +58,7 @@ export type SettingsJsonBody = {
     [id: string]: SettingJsonBody
 }
 
-export class SettingsDatabase extends Database<string, Setting> {
+export class SettingsDatabase extends DatabaseLegacy<string, Setting> {
 
     public constructor (databaseRaw: SettingsJsonBody, path: string) {
         super(databaseRaw, path)

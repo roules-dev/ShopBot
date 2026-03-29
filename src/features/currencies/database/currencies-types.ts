@@ -1,4 +1,4 @@
-import { Database, DatabaseJsonBody, NanoId } from "@/database/database-types.js"
+import { DatabaseJsonBody, DatabaseLegacy, NanoId } from "@/database/database-types.js"
 import { ok } from "@/lib/error-handling.js"
 
 export interface Currency {
@@ -14,7 +14,7 @@ export interface CurrenciesDatabaseJsonBody extends DatabaseJsonBody {
 }
 
 
-export class CurrenciesDatabase extends Database<NanoId, Currency> {
+export class CurrenciesDatabase extends DatabaseLegacy<NanoId, Currency> {
     public toJSON(): CurrenciesDatabaseJsonBody {
         const currencies: CurrenciesDatabaseJsonBody = Object.fromEntries(this.data)
         return currencies

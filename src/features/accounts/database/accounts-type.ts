@@ -1,4 +1,4 @@
-import { Database, DatabaseJsonBody, NanoId } from "@/database/database-types.js";
+import { DatabaseJsonBody, DatabaseLegacy, NanoId } from "@/database/database-types.js";
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
 import { Currency } from "@/features/currencies/database/currencies-types.js"; // external dependency, should be refactored
 import { getProducts } from "@/features/shops/database/products-database.js"; // external dependency, should be refactored
@@ -34,7 +34,7 @@ export interface AccountsDatabaseJsonBody extends DatabaseJsonBody {
     }
 }
 
-export class AccountsDatabase extends Database<Snowflake, Account> {
+export class AccountsDatabase extends DatabaseLegacy<Snowflake, Account> {
     public toJSON(): AccountsDatabaseJsonBody {
         const accountsJson: AccountsDatabaseJsonBody = {}
 

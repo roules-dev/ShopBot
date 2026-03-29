@@ -1,3 +1,4 @@
+import { Database } from "@/app/interfaces/database.js"
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { DeepReadonly, MapKey, MapValue } from "@/lib/types/index.js"
@@ -98,7 +99,7 @@ export class DatabaseError extends Error {
 
 export type DatabaseJsonBody = Record<string, unknown>
 
-export abstract class Database<IdType extends string, DataType> {
+export abstract class DatabaseLegacy<IdType extends string, DataType extends object> {
     public path: string
     public data: Map<IdType, DataType>
 
@@ -142,10 +143,10 @@ export interface Balance2<T> {
 
 type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
 
-export class Database2<
+export class JsonDatabase<
     IdSchema extends AnyStringSchema, 
     DataItemRawSchema extends z.ZodObject<z.ZodRawShape>,  
-> {
+> implements Database<z.infer<IdSchema>, z.infer<DataItemRawSchema>> {
     private path: PathLike
     private dataItemJsonSchema: DataItemRawSchema
 
