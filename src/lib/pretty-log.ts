@@ -1,10 +1,5 @@
 import fs from "node:fs/promises"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
 import { now } from "./now/now.js"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 export class PrettyLog {
     private static loadStepCount = 1
@@ -67,18 +62,25 @@ export class PrettyLog {
         return `\x1b[3m${message}\x1b[0m`
     }
 
+    private static writeLock: Promise<void> = Promise.resolve()
 
     private static async saveLogs(message: string) {
+        this.writeLock = this.writeLock.then(async () => {
+            try {
+                const sanatizedMessage = message.replace(new RegExp(/\\x1b\[\d+m/, "gm"), "")
+                await fs.appendFile("./logs.txt", `[${now()}] ${sanatizedMessage}\n`)
+            } catch (e) {
+                throw e instanceof Error
+                    ? e
+                    : new Error(`Unknown error while saving logs`)
+            }
+        })
+
         try {
-            const sanatizedMessage = message.replace(new RegExp(/\\x1b\[\d+m/, "gm"), "")
-            await fs.appendFile(path.join(__dirname, "..", "..", "logs.txt"), `[${this.getNowTimeString()}] ${sanatizedMessage}\n`)
+            await this.writeLock
         } catch (error) {
             console.log(`Failed to save logs: ${error}`)
         }
-    }
-
-    private static getNowTimeString(): string {
-        return now()
     }
 }
 
