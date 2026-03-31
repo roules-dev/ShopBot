@@ -1,7 +1,7 @@
-import { DateTime } from "luxon"
 import fs from "node:fs/promises"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { now } from "./now/now.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -77,8 +77,8 @@ export class PrettyLog {
         }
     }
 
-    private static getNowTimeString(): string | null {
-        return DateTime.now().setZone("Europe/Paris").toSQL({ includeOffset: false })
+    private static getNowTimeString(): string {
+        return now()
     }
 }
 
