@@ -8,9 +8,10 @@ import { bold, GuildMember, roleMention } from "discord.js"
 import { updateProduct } from "../database/products-database.js"
 import { Product, ProductAction } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
-export async function processPurchase(member: GuildMember, shop: Shop, product: Product, quantity: number, discount: number) {
+export async function processPurchase(member: GuildMember, shop: DeepReadonly<Shop>, product: Product, quantity: number, discount: number) {
     if (!isMemberAllowedToBuy(member, shop)) {
         return err({ name: "NotAllowedToBuy" })
     }
@@ -47,7 +48,7 @@ export async function processPurchase(member: GuildMember, shop: Shop, product: 
     return ok("")
 }
 
-function userBalanceAfterBuy(account: Account, currency: Currency, price: number) {
+function userBalanceAfterBuy(account: DeepReadonly<Account>, currency: Currency, price: number) {
     const userCurrencyAmount = account.currencies.get(currency.id)?.amount || 0
 
     return userCurrencyAmount - price
@@ -65,7 +66,7 @@ export function applyDiscount(price: number, discount: number) {
     return Math.round(price * (1 - discount / 100))
 }
 
-function isMemberAllowedToBuy(member: GuildMember, shop: Shop) {
+function isMemberAllowedToBuy(member: GuildMember, shop: DeepReadonly<Shop>) {
     if (shop.reservedTo == undefined) return true
 
     return (member.roles.cache.has(shop.reservedTo) || member.permissions.has("Administrator"))

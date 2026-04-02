@@ -14,13 +14,14 @@ import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
 import { processPurchase } from "../services/buy.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
     public override id = "buy-product-ui"
     protected override components = new Map()
 
-    private selectedShop: Shop
+    private selectedShop: DeepReadonly<Shop>
     private selectedProduct: Product | null = null
 
     private quantity: number = 1
@@ -30,7 +31,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     private locale = "userInterfaces.buy" as const
 
-    constructor (selectedShop: Shop) {
+    constructor (selectedShop: DeepReadonly<Shop>) {
         super()
         this.selectedShop = selectedShop
     }

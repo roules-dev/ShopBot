@@ -8,13 +8,14 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { createDiscountCode, getShops, removeDiscountCode } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
 export class DiscountCodeCreateFlow extends UserFlow {
     public override id: string = "discount-code-create"
     protected override components: Map<string, ExtendedComponent> = new Map()
-
-    private selectedShop: Shop | null = null
+    
+    private selectedShop: DeepReadonly<Shop> | null = null
     private discountCode: string | null = null
     private discountAmount: number | null = null
 
@@ -51,7 +52,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -59,7 +60,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -124,7 +125,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     private stage: DiscountCodeRemoveStage = DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP
     private componentsByStage: Map<DiscountCodeRemoveStage, Map<string, ExtendedComponent>> = new Map()
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
     private selectedDiscountCode: string | null = null
 
     private response: InteractionCallbackResponse | null = null
@@ -163,7 +164,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -171,7 +172,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }

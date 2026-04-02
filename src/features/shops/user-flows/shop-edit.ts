@@ -13,6 +13,7 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Inte
 import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 //! --------------------------------
 // TODO this needs to be refactored
@@ -47,7 +48,7 @@ export class EditShopFlow extends UserFlow {
     public override id: string = "edit-shop"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
 
     private updateOption: EditShopOption | null = null
     private updateOptionValue: string | null = null
@@ -89,14 +90,14 @@ export class EditShopFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>({
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>({
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
                 time: 120_000,
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             },
@@ -207,7 +208,7 @@ export class EditShopCurrencyFlow extends UserFlow {
     private stage: EditShopCurrencyStage = EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP
     private componentsByStage: Map<EditShopCurrencyStage, Map<string, ExtendedComponent>> = new Map()
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
     private selectedCurrency: Currency | null = null
 
     private response: InteractionCallbackResponse | null = null
@@ -244,7 +245,7 @@ export class EditShopCurrencyFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -252,7 +253,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             },
@@ -377,7 +378,7 @@ export class ShopReorderFlow extends UserFlow {
     public id = "shop-reorder"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
     private selectedPosition: number | null = null
 
     protected locale = "userFlows.shopReorder" as const
@@ -408,7 +409,7 @@ export class ShopReorderFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -416,7 +417,7 @@ export class ShopReorderFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 const shopsArray = Array.from(getShops().keys())
                 const shopIndex = shopsArray.findIndex(id => id === selected.id)

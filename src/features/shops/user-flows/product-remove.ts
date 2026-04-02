@@ -12,6 +12,7 @@ import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 export const REMOVE_PRODUCT_FLOW_STAGE = {
     SELECT_SHOP: "SELECT_SHOP",
@@ -27,7 +28,7 @@ export class RemoveProductFlow extends UserFlow {
     private stage: RemoveProductFlowStage = REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP
     private componentsByStage: Map<RemoveProductFlowStage, Map<string, ExtendedComponent>> = new Map()
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
     private selectedProduct: Product | null = null
 
     private response: InteractionCallbackResponse | null = null
@@ -67,7 +68,7 @@ export class RemoveProductFlow extends UserFlow {
     }
 
     protected initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -75,7 +76,7 @@ export class RemoveProductFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }

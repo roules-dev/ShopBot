@@ -1,4 +1,4 @@
-import { Emojiable, Identifiable, Labelled, MutableOrReadonly } from "@/lib/types/index.js"
+import { Emojiable, Identifiable, Labelled, MutableOrReadonlyMap } from "@/lib/types/index.js"
 import { subMap } from "@/utils/maps.js"
 import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
@@ -22,7 +22,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     componentType = ComponentType.StringSelect as const
     customId: string
     component: StringSelectMenuBuilder
-    map: MutableOrReadonly<Map<string, T>>
+    map: MutableOrReadonlyMap<string, T>
     placeholder: string
 
     update: (interaction: StringSelectMenuInteraction) => void
@@ -33,7 +33,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
     pageCount: number = 1
 
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions,
-        map: MutableOrReadonly<Map<string, T>>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+        map: MutableOrReadonlyMap<string, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
     ) {
         super()
         this.customId = customId
@@ -81,7 +81,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
 
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 
-    private createSelectMenu(id: string, placeholder: string, map: Map<string, T>): StringSelectMenuBuilder {
+    private createSelectMenu(id: string, placeholder: string, map: MutableOrReadonlyMap<string, T>): StringSelectMenuBuilder {
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId(id)
             .setPlaceholder(placeholder)
@@ -90,7 +90,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
         return selectMenu
     }
 
-    private getStringSelectOptions(map: Map<string, T>): StringSelectMenuOptionBuilder[] { 
+    private getStringSelectOptions(map: MutableOrReadonlyMap<string, T>): StringSelectMenuOptionBuilder[] { 
         
         const pageSwitchOptions = []
 
@@ -137,7 +137,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
         return options
     }
 
-    public updateMap(map: Map<string, T>) {
+    public updateMap(map: MutableOrReadonlyMap<string, T>) {
         this.map = map
         this.component.setOptions(this.getStringSelectOptions(map))
     }

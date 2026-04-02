@@ -9,6 +9,7 @@ import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, In
 import { getOrCreateAccount } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"
@@ -29,7 +30,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     protected override response: InteractionCallbackResponse | null = null
 
     private user: User
-    private account: Account | null = null
+    private account: DeepReadonly<Account> | null = null
 
     private locale = "userInterfaces.account" as const
 

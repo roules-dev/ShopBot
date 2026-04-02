@@ -15,6 +15,7 @@ import { Product } from "../database/products-types.js"
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 //! --------------------------------
 // TODO this needs to be refactored
@@ -47,7 +48,7 @@ export class EditProductFlow extends UserFlow {
     private updateOption: EditProductOption | null = null
     private updateOptionValue: string | number | null = null
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
     private selectedProduct: Product | null = null
 
     private response: InteractionCallbackResponse | null = null
@@ -98,7 +99,7 @@ export class EditProductFlow extends UserFlow {
     }
 
     protected initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -106,7 +107,7 @@ export class EditProductFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }

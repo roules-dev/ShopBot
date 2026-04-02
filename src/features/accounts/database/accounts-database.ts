@@ -1,22 +1,22 @@
 import accounts from "@/../data/accounts.json" with { type: "json" }
 import { ApiError, NanoId } from "@/database/database-types.js"
-import { update } from "@/database/helpers.js"
 import { Account, AccountBalanceTypes, AccountsDatabase } from "@/features/accounts/database/accounts-type.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 import { Snowflake } from "discord.js"
 
 const accountsDatabase = new AccountsDatabase(accounts, "data/accounts.json")
 
 export async function getOrCreateAccount(db = accountsDatabase, id: Snowflake) {
-    let account = db.data.get(id)
+    let account = db.get(id)
 
     if (!account) {
-        db.data.set(id, { currencies: new Map(), inventory: new Map() })
+        db.set(id, { currencies: new Map(), inventory: new Map() })
 
         const [error] = await db.save()
         if (error) return err(error)
 
-        account = db.data.get(id)!
+        account = db.get(id)!
     }
 
     return ok(account)
@@ -24,23 +24,24 @@ export async function getOrCreateAccount(db = accountsDatabase, id: Snowflake) {
 
 
 export function getAccountsWithCurrency(db = accountsDatabase, currencyId: string) {
-    const accountsWithCurrency = new Map<Snowflake, Account>()
-    db.data.forEach((account: Account, id: Snowflake) => {
+    const accountsWithCurrency = new Map<Snowflake, DeepReadonly<Account>>()
+    db.list().forEach((account, id) => {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
     })
     return accountsWithCurrency
 }
 
 export async function updateAccount(db = accountsDatabase, id: Snowflake, options: Partial<Account>) {
-    const account = db.data.get(id)
+    const account = db.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))
     
-    update(account, options)
+    const [error1, updated] = await db.patch(id, options)
+    if (error1) return err(error1)
 
-    const [error] = await db.save()
-    if (error) return err(error)
+    const [error2] = await db.save()
+    if (error2) return err(error2)
 
-    return ok(account)
+    return ok(updated)
 }
 
 
@@ -51,13 +52,17 @@ export async function updateBalance<T extends keyof AccountBalanceTypes>(
     itemId: NanoId, 
     newBalance: AccountBalanceTypes[T]
 ) {
-    const account = db.data.get(id)
+    const account = db.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))
 
-    account[balanceType].set(itemId, newBalance)
-
-    const [error] = await db.save()
+    const [error, updated] = await updateAccount(db, id, {
+        // TODO: remove as any
+        [balanceType]: new Map(account[balanceType]).set(itemId, newBalance as any) // Type level immutability prevents this operation, so this must be modified
+    })
     if (error) return err(error)
 
-    return ok(account)
+    const [error2] = await db.save()
+    if (error2) return err(error2)
+
+    return ok(updated)
 }

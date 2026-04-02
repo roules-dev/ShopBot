@@ -7,13 +7,14 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, bold } from "discord.js"
 import { getShops, removeShop } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
 export class ShopRemoveFlow extends UserFlow {
     public id = "shop-remove"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
 
     protected locale = "userFlows.shopRemove" as const
 
@@ -34,7 +35,7 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
     protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -42,7 +43,7 @@ export class ShopRemoveFlow extends UserFlow {
             }, 
             getShops(), 
             (interaction) => this.updateInteraction(interaction),
-                (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+                (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }

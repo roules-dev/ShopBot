@@ -18,6 +18,7 @@ import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductA
 import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
 export class AddProductFlow extends UserFlow {
@@ -30,7 +31,7 @@ export class AddProductFlow extends UserFlow {
     protected productDescription: string | null = null
     protected productStock: number | null = null
 
-    protected selectedShop: Shop | null = null
+    protected selectedShop: DeepReadonly<Shop> | null = null
 
     protected response: InteractionCallbackResponse | null = null
 
@@ -88,7 +89,7 @@ export class AddProductFlow extends UserFlow {
     }
 
     protected initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<Shop>(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -96,7 +97,7 @@ export class AddProductFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Shop): void => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }

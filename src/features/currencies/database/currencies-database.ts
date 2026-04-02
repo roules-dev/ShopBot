@@ -1,7 +1,6 @@
 import currencies from "@/../data/currencies.json" with { type: "json" }
 import { ApiError } from "@/database/database-types.js"
-import { update } from "@/database/helpers.js"
-import { CurrenciesDatabase, Currency, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
+import { CurrenciesDatabase, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Exact } from "@/lib/types/index.js"
 import { nanoid } from "nanoid"
@@ -9,13 +8,13 @@ import { nanoid } from "nanoid"
 
 const currenciesDatabase = new CurrenciesDatabase(currencies, "data/currencies.json")
 
-export function getCurrencies(db = currenciesDatabase): Map<string, Currency> {
-    return db.data
+export function getCurrencies(db = currenciesDatabase) {
+    return db.list()
 }
 
-export function getCurrencyId(db = currenciesDatabase, currencyName: string): string | undefined {
+export function getCurrencyId(db = currenciesDatabase, currencyName: string) {
     let currencyId: string | undefined = undefined
-    db.data.forEach(currency => {
+    db.list().forEach(currency => {
         if (currency.name == currencyName) currencyId = currency.id
     })
     return currencyId 
@@ -27,7 +26,7 @@ export async function createCurrency<T extends CurrencyOptions>(db = currenciesD
     const newCurrencyId = nanoid()
     const newCurrency = { id: newCurrencyId, ...options }
 
-    db.data.set(newCurrencyId, newCurrency)
+    db.set(newCurrencyId, newCurrency)
     const [error] = await db.save()
     if (error) return err(error)
 
@@ -35,9 +34,9 @@ export async function createCurrency<T extends CurrencyOptions>(db = currenciesD
 }
 
 export async function removeCurrency(db = currenciesDatabase, currencyId: string) {
-    if (!db.data.has(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
+    if (!db.get(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
 
-    db.data.delete(currencyId)
+    db.delete(currencyId)
     const [error] = await db.save()
     if (error) return err(error)
 
@@ -45,15 +44,16 @@ export async function removeCurrency(db = currenciesDatabase, currencyId: string
 }
 
 export async function updateCurrency(db = currenciesDatabase, currencyId: string, options: Partial<CurrencyOptions>) {  
-    const currency = db.data.get(currencyId)
+    const currency = db.get(currencyId)
     
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
     
-    update(currency, options)
+    const [error1, updated] = await db.patch(currencyId, options)
+    if (error1) return err(error1)
 
-    const [error] = await db.save()
-    if (error) return err(error)
+    const [error2] = await db.save()
+    if (error2) return err(error2)
 
-    return ok(currency)
+    return ok(updated)
 }
 

@@ -10,7 +10,7 @@
 ## Code Refactoring
 <!-- need for Identity Map ?? -->
 1. complete DAL rework : Zod schema validation for raw data, readonly data, on demand hydratation of data, partial cache (redis ?)
-1. better separation of concerns : DAL (which will more regorously implement CRUD operations) and services for non-DAL operations (this will make the code more maintainable, and ready for future API implementation), UI should not be responsible for verifying data
+1. better separation of concerns : DAL (which will more regorously implement CRUD operations) and services for non-DAL operations (this will make the code more maintainable, and ready for future API implementation), UI should not be responsible for verifying command data
 1. write tests
 
 

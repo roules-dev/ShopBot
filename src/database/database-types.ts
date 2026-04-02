@@ -99,7 +99,10 @@ export class DatabaseError extends Error {
 
 export type DatabaseJsonBody = Record<string, unknown>
 
-export abstract class DatabaseLegacy<IdType extends string, DataType extends object> {
+export abstract class DatabaseLegacy<
+    IdType extends string, 
+    DataType extends object
+> implements Database<IdType, DataType> {
     public path: string
     public data: Map<IdType, DataType>
 
@@ -112,6 +115,69 @@ export abstract class DatabaseLegacy<IdType extends string, DataType extends obj
 
         this.data = data
     }
+
+    public size() {
+        return this.data.size
+    }
+
+    public get(id: MapKey<typeof this.data>) {
+        const item = this.data.get(id)
+        if (item === undefined) return undefined
+
+        return item as DeepReadonly<MapValue<typeof this.data>>
+    }
+
+    public async set(
+        id: MapKey<typeof this.data>, 
+        dataItem: MapValue<typeof this.data>
+    ) {
+        this.data.set(id, dataItem)
+
+        const [error] = await this.save()
+        if (error) return err(error)
+        
+        return ok(Object.freeze({...dataItem}) as DeepReadonly<MapValue<typeof this.data>>)
+    }
+
+    public async patch(id: MapKey<typeof this.data>, dataItemOptions: Partial<MapValue<typeof this.data>>) {
+        const item = this.data.get(id)
+        if (!item) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        
+        const updatedItem = { ...item, ...dataItemOptions }
+
+        const [error, updated] = await this.set(id, updatedItem)
+        if (error) return err(error)
+
+        console.log(updated)
+        console.log(updatedItem)
+
+        return ok(updated)
+    }
+
+
+
+    public async delete(id: MapKey<typeof this.data>) {
+        if (!this.data.has(id)) {
+            return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        }
+
+        const backup = new Map(this.data)
+
+        this.data.delete(id)
+
+        const [error] = await this.save()
+        if (error) {
+            this.data = backup
+            return err(error)
+        }
+
+        return ok(true)
+    }
+
+    public list() {
+        return this.data as unknown as DeepReadonly<Map<MapKey<typeof this.data>, MapValue<typeof this.data>>>
+    }
+
     
     public abstract toJSON(): DatabaseJsonBody 
     
@@ -225,6 +291,10 @@ export class JsonDatabase<
         return this.data as DeepReadonly<Map<MapKey<typeof this.data>, MapValue<typeof this.data>>>
     }
     
+    public size(): number {
+        return this.data.size
+    }
+
     private toJSON(): Record<string, MapValue<typeof this.data>> {
         return Object.fromEntries(this.data)
     }

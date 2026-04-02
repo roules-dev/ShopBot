@@ -11,6 +11,7 @@ import { Shop } from "../database/shops-types.js"
 import { BuyProductUserInterface } from "./buy.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
@@ -18,7 +19,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override components: Map<string, ExtendedComponent> = new Map()
     protected override embed: EmbedBuilder | null = null
 
-    private selectedShop: Shop | null = null
+    private selectedShop: DeepReadonly<Shop> | null = null
 
     protected override page: number = 0
     protected override response: InteractionCallbackResponse | null = null
@@ -44,7 +45,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override getMessage(): string { return "" }
 
     protected override initComponents(): void {
-        const selectShopMenu = new ExtendedStringSelectMenuComponent(
+        const selectShopMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
             { 
                 customId : `${this.id}+select-shop`, 
                 placeholder: t("defaultComponents.selectShop"), 
@@ -52,7 +53,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            async (interaction: StringSelectMenuInteraction, selected: Shop) => {
+            async (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>) => {
                 this.page = 0
                 this.selectedShop = selected
                 this.updateInteraction(interaction) 

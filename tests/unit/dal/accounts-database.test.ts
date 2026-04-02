@@ -1,18 +1,18 @@
-import { getOrCreateAccount, updateAccount, updateBalance } from "@/features/accounts/database/accounts-database"
-import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type"
-import { describe, it, expect, vi } from "vitest"
+    import { getOrCreateAccount, updateAccount, updateBalance } from "@/features/accounts/database/accounts-database";
+    import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type";
+    import { describe, expect, it, vi } from "vitest";
 
-    
-class MockAccountsDatabase extends AccountsDatabase {
-    constructor() {
-        super({}, "");
-        this.data = new Map();
+        
+    class MockAccountsDatabase extends AccountsDatabase {
+        constructor() {
+            super({}, "");
+            this.data = new Map();
+        }
+
+        toJSON = vi.fn();
+        protected parseRaw = vi.fn().mockReturnValue([null, new Map()]);
+        save = vi.fn().mockResolvedValue([null]);
     }
-
-    toJSON = vi.fn();
-    protected parseRaw = vi.fn().mockReturnValue([null, new Map()]);
-    save = vi.fn().mockResolvedValue([null]);
-}
 
 function getDummyAccount(): Account {
     return {
@@ -20,6 +20,7 @@ function getDummyAccount(): Account {
             ["coolCurrency", { 
                 item: {
                     id: "coolCurrency", 
+                    emoji: "🪙",
                     name: "Cool Currency"
                 },
                 amount: 10 
@@ -35,13 +36,16 @@ describe("getOrCreateAccount", () => {
 
 
         expect(error).toBe(null)
+        expect(account).not.toBe(null)
+        if (error) return
+
         expect(account).toHaveProperty("currencies")
         expect(account.currencies).toBeInstanceOf(Map)
         
         expect(account).toHaveProperty("inventory")
         expect(account.inventory).toBeInstanceOf(Map)
 
-        expect(db.data.has("123")).toBe(true)
+        expect(db.get("123")).not.toBe(undefined)
     })
 
     it("returns an existing account without calling save()", async () => {
@@ -66,7 +70,10 @@ describe("updating an account", () => {
 
         const [error, account] = await updateAccount(db, "abc", { currencies: new Map() })
 
+        console.log(account)
+
         expect(error).toBe(null)
+        if (error) return
         expect(account.currencies.size).toBe(0)
     })
 
@@ -78,16 +85,19 @@ describe("updating an account", () => {
         const balance = { 
             item: {
                 id: "coolCurrency", 
+                emoji: "🪙",
                 name: "Cool Currency"
             },
             amount: 20 
         }
 
-        const [error, account] = await updateBalance(db, "abc", "currencies", "cool_currency", balance)
+        const [error, account] = await updateBalance(db, "abc", "currencies", "coolCurrency", balance)
 
         expect(error).toBe(null)
-        expect(account.currencies.get("cool_currency")).toBeDefined()
-        expect(account.currencies.get("cool_currency").amount).toStrictEqual(20)
+        if (error) return
+
+        expect(account.currencies.get("coolCurrency")).toBeDefined()
+        expect(account.currencies.get("coolCurrency")?.amount).toStrictEqual(20)
     })
 })
 

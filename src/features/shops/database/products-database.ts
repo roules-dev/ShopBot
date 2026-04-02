@@ -6,20 +6,22 @@ import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
 
 export function getProducts(db = shopsDatabase, shopId: string){
-    const shop = getShops(db).get(shopId)
+    const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     return ok(shop.products)
 }
 
 export async function addProduct(db = shopsDatabase, shopId: string, options: ProductOptions) {
-    const shop = getShops(db).get(shopId)
+    const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const id = nanoid()
-    const product = Object.assign({ id, shopId }, options)
+    // TODO: remove as any
+    const product = Object.assign({ id, shopId }, options) as any // Type level immutability prevents this operation, so this must be modified
 
-    shop.products.set(id, product)
+    // TODO: remove as any
+    (shop.products as any).set(id, product) // Type level immutability prevents this operation, so this must be modified
     
     const [error] = await db.save()
     if (error) return err(error)
@@ -29,10 +31,11 @@ export async function addProduct(db = shopsDatabase, shopId: string, options: Pr
 }
 
 export async function removeProduct(db = shopsDatabase, shopId: string, productId: string) {
-    const shop = getShops(db).get(shopId)
-    if (!shop) return err(new ApiError("ShopDoesNotExist"))
+    const shop = db.get(shopId)
+    if (!shop) return err(new ApiError("ShopDoesNotExist"));
 
-    shop.products.delete(productId)
+    // TODO: remove as any
+    (shop.products as any).delete(productId) // Type level immutability prevents this operation, so this must be modified
     
     const [error] = await db.save()
     if (error) return err(error)
