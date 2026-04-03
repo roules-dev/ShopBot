@@ -4,3 +4,5 @@ export * from './helpers.js'
 export * from './constraints.js'
 export * from './readonly.js'
 export * from './zod.js'
+
+export type TODO = any

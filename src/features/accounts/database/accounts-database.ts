@@ -55,11 +55,11 @@ export async function updateBalance<T extends keyof AccountBalanceTypes>(
     const account = db.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))
 
-    const [error, updated] = await updateAccount(db, id, {
-        // TODO: remove as any
-        [balanceType]: new Map(account[balanceType]).set(itemId, newBalance as any) // Type level immutability prevents this operation, so this must be modified
+    const [error1, updated] = await db.update(id, draft => {
+        draft[balanceType].set(itemId, newBalance)
     })
-    if (error) return err(error)
+
+    if (error1) return err(error1)
 
     const [error2] = await db.save()
     if (error2) return err(error2)

@@ -70,8 +70,6 @@ describe("updating an account", () => {
 
         const [error, account] = await updateAccount(db, "abc", { currencies: new Map() })
 
-        console.log(account)
-
         expect(error).toBe(null)
         if (error) return
         expect(account.currencies.size).toBe(0)

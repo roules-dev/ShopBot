@@ -5,7 +5,7 @@ import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { DeepReadonly, Exact } from "@/lib/types/index.js"
+import { DeepReadonly, Exact, TODO } from "@/lib/types/index.js"
 import { Snowflake } from "discord.js"
 import { nanoid } from "nanoid"
 
@@ -127,13 +127,13 @@ export async function updateShopPosition(db = shopsDatabase, shopId: string, ind
 
     if (shopIndex === -1) return err(new ApiError("ShopDoesNotExist"))
 
-    const [item] = shopsArray.splice(shopIndex, 1)
-    if (item === undefined) return err(new ApiError("ShopDoesNotExist"))
+    const [shop] = shopsArray.splice(shopIndex, 1)
+    if (shop === undefined) return err(new ApiError("ShopDoesNotExist"))
 
-    shopsArray.splice(index, 0, item);
+    shopsArray.splice(index, 0, shop);
 
-    // TODO: remove as any
-    db.data = new Map(shopsArray) as any // Type level immutability prevents this operation, so this must be modified
+    // TODO: remove as TODO
+    db.data = new Map(shopsArray) as TODO // Type level immutability prevents this operation, so this must be modified
 
     const [error] = await db.save()
     if (error) return err(error)
@@ -142,28 +142,31 @@ export async function updateShopPosition(db = shopsDatabase, shopId: string, ind
 }
 
 export async function createDiscountCode(db = shopsDatabase, shopId: string, discountCode: string, discountAmount: number) {
-    // TODO: remove as any
-    const shop = getShops(db).get(shopId) as any // Type level immutability prevents this operation, so this must be modified
+    const shop = db.get(shopId) 
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
-    shop.discountCodes[discountCode] = discountAmount
+    const [error1, _] = await db.update(shopId, draft => {
+        draft.discountCodes[discountCode] = discountAmount
+    })
+    if (error1) return err(error1)
 
-    
-    const [error] = await db.save()
-    if (error) return err(error)
+    const [error2] = await db.save()
+    if (error2) return err(error2)
     
     return ok(true)
 }
 
 export async function removeDiscountCode(db = shopsDatabase, shopId: string, discountCode: string) {
-    // TODO: remove as any
-    const shop = getShops(db).get(shopId) as any // Type level immutability prevents this operation, so this must be modified
+    const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
-    delete shop.discountCodes[discountCode]
-    
-    const [error] = await db.save()
-    if (error) return err(error)
+    const [error1, _] = await db.update(shopId, draft => {
+        delete draft.discountCodes[discountCode]
+    })
+    if (error1) return err(error1)
+
+    const [error2] = await db.save()
+    if (error2) return err(error2)
     
     return ok(true)
 }

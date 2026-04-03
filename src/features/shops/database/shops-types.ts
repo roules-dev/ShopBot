@@ -9,6 +9,7 @@ import {
     isProductActionType,
 } from "@/features/shops/database/products-types.js"
 import { ok } from "@/lib/error-handling.js"
+import { TODO } from "@/lib/types/index.js"
 import { Snowflake } from "discord.js"
 
 export interface Shop {
@@ -39,7 +40,7 @@ export class ShopsDatabase extends DatabaseLegacy<NanoId, Shop> {
 
         this.data.forEach((shop, shopId) => {
             const { currency: _, ...shopWithoutCurrency } = shop
-            shopsJson[shopId] = { ...shopWithoutCurrency, products: Object.fromEntries(shop.products) as any, currencyId: shop.currency.id }
+            shopsJson[shopId] = { ...shopWithoutCurrency, products: Object.fromEntries(shop.products) as TODO, currencyId: shop.currency.id }
         })
 
         return shopsJson
@@ -64,7 +65,7 @@ export class ShopsDatabase extends DatabaseLegacy<NanoId, Shop> {
                     })
                 )
 
-            shops.set(shopId, { ...shop, products, currency } as any) // horrible casting, but will soon be removed
+            shops.set(shopId, { ...shop, products, currency } as TODO) // horrible casting, but will soon be removed
             // new db implementation uses Zod validation, there will be no need for wacky manual validation anymore
         }
 

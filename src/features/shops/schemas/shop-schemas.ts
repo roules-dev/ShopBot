@@ -41,3 +41,5 @@ export const ShopRawSchema = z.object({
         ProductRawSchema
     )
 })
+
+export type ShopRaw = z.infer<typeof ShopRawSchema>

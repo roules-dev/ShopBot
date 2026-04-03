@@ -50,6 +50,10 @@ const API_ERRORS = {
     DuplicateSettingName: {
         message: "Provided setting name already exists",
         status: 400
+    },
+    UnexpectedError: {
+        message: "Unexpected error",
+        status: 500
     }
 } as const
 
@@ -148,8 +152,18 @@ export abstract class DatabaseLegacy<
         const [error, updated] = await this.set(id, updatedItem)
         if (error) return err(error)
 
-        console.log(updated)
-        console.log(updatedItem)
+        return ok(updated)
+    }
+
+    // quite elementary implementation, no validation, but this is legacy, it'll be replaced
+    public async update(id: MapKey<typeof this.data>, fn: (draft: MapValue<typeof this.data>) => void) {
+        const item = this.data.get(id)
+        if (!item) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+
+        fn(item)
+
+        const [error, updated] = await this.set(id, item)
+        if (error) return err(error)
 
         return ok(updated)
     }
@@ -264,6 +278,19 @@ export class JsonDatabase<
         const updatedItem = {...item, ...dataItem}
 
         const [error, updated] = await this.set(id, updatedItem)
+        if (error) return err(error)
+
+        return ok(updated)
+    }
+
+    // TODO : add (partial) validation, mutation tracking, rollback on error 
+    public async update(id: MapKey<typeof this.data>, fn: (draft: MapValue<typeof this.data>) => void) {
+        const item = this.data.get(id)
+        if (!item) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+
+        fn(item)
+
+        const [error, updated] = await this.set(id, item)
         if (error) return err(error)
 
         return ok(updated)

@@ -1,3 +1,5 @@
+import { TODO } from "@/lib/types/index.js"
+
 type NotUndefined<T> = Exclude<T, undefined>
 
 export function update<T extends object, O extends Partial<T>>(
@@ -15,7 +17,7 @@ export function update<T extends object, O extends Partial<T>>(
             const handler = handlers[key]
 
             // forced cast, because TS can't correctly infer here
-            entry[key as keyof T] = handler(value as NotUndefined<O[typeof key]>) as any as T[keyof T]
+            entry[key as keyof T] = handler(value as NotUndefined<O[typeof key]>) as TODO as T[keyof T]
         }
         else {
             // forced cast, because TS can't correctly infer here
@@ -49,3 +51,4 @@ export function update2<T extends object>(
         applyKey(entry, key, value, handlers?.[key])
     }
 }
+// TODO: I think eventually we should get rid of this function.

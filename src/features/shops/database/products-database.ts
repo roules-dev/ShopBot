@@ -1,7 +1,7 @@
 import { ApiError } from "@/database/database-types.js"
 import { update2 } from "@/database/helpers.js"
 import { ProductOptions } from "@/features/shops/database/products-types.js"
-import { getShops, shopsDatabase } from "@/features/shops/database/shops-database.js"
+import { shopsDatabase } from "@/features/shops/database/shops-database.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
 
@@ -17,28 +17,34 @@ export async function addProduct(db = shopsDatabase, shopId: string, options: Pr
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const id = nanoid()
-    // TODO: remove as any
-    const product = Object.assign({ id, shopId }, options) as any // Type level immutability prevents this operation, so this must be modified
 
-    // TODO: remove as any
-    (shop.products as any).set(id, product) // Type level immutability prevents this operation, so this must be modified
-    
-    const [error] = await db.save()
-    if (error) return err(error)
-    
+    const [error1, updatedShop] = await db.update(shopId, draft => {
+        const product = Object.assign({ id, shopId }, options)
+        draft.products.set(id, product)
 
-    return ok(product)
+    })
+    if (error1) return err(error1)
+
+    const [error2] = await db.save()
+    if (error2) return err(error2)
+    
+    const updatedProduct = updatedShop.products.get(id)
+    if (!updatedProduct) return err(new ApiError("UnexpectedError"))
+
+    return ok(updatedProduct)
 }
 
 export async function removeProduct(db = shopsDatabase, shopId: string, productId: string) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"));
 
-    // TODO: remove as any
-    (shop.products as any).delete(productId) // Type level immutability prevents this operation, so this must be modified
-    
-    const [error] = await db.save()
-    if (error) return err(error)
+    const [error1] = await db.update(shopId, draft => {
+        draft.products.delete(productId)
+    })
+    if (error1) return err(error1)
+
+    const [error2] = await db.save()
+    if (error2) return err(error2)
     
     return ok(true)
 }
@@ -64,7 +70,7 @@ export async function updateProduct(
     productId: string,
     options: Partial<ProductOptions>,
 ) {
-    const shop = getShops(db).get(shopId)
+    const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const product = shop.products.get(productId)

@@ -9,8 +9,7 @@ export interface Database<
     get(id: Id): DeepReadonly<DataItemRaw> | undefined
     set(id: Id, dataItem: DataItemRaw): Promise<Result<DeepReadonly<DataItemRaw>, Error>>
     patch(id: Id, dataItem: Partial<DataItemRaw>): Promise<Result<DeepReadonly<DataItemRaw>, Error>>
+    update(id: Id, fn: (draft: DataItemRaw) => void): Promise<Result<DeepReadonly<DataItemRaw>, Error>>
     delete(id: Id): Promise<Result<boolean, Error>>
     list(): DeepReadonly<Map<Id, DataItemRaw>>
 }
-// upsert ?
-// need a method that can update a map inside a data item
