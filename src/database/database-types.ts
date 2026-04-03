@@ -192,6 +192,31 @@ export abstract class DatabaseLegacy<
         return this.data as unknown as DeepReadonly<Map<MapKey<typeof this.data>, MapValue<typeof this.data>>>
     }
 
+    public async reorder(id: MapKey<typeof this.data>, newIndex: number) {
+        if (!this.data.has(id)) {
+            return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        }
+            
+        if (newIndex < 0 || newIndex > this.size() - 1) return err(new ApiError("InvalidPosition"))
+        
+        const shopsArray = Array.from(this.data)
+        const shopIndex = shopsArray.findIndex(([_id, ]) => _id === id)
+        
+        if (shopIndex === -1) return err(new ApiError("ShopDoesNotExist"))
+        
+        const [shop] = shopsArray.splice(shopIndex, 1)
+        if (shop === undefined) return err(new ApiError("ShopDoesNotExist"))
+    
+        shopsArray.splice(newIndex, 0, shop);
+    
+        this.data = new Map(shopsArray)
+    
+        const [error] = await this.save()
+        if (error) return err(error)
+    
+        return ok(true)
+    }
+
     
     public abstract toJSON(): DatabaseJsonBody 
     

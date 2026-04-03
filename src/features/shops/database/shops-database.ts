@@ -5,7 +5,7 @@ import { update } from "@/database/helpers.js"
 import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { DeepReadonly, Exact, TODO } from "@/lib/types/index.js"
+import { DeepReadonly, Exact } from "@/lib/types/index.js"
 import { Snowflake } from "discord.js"
 import { nanoid } from "nanoid"
 
@@ -119,26 +119,7 @@ export function getShopsWithCurrency(db = shopsDatabase, currencyId: string) {
 }
 
 export async function updateShopPosition(db = shopsDatabase, shopId: string, index: number) {
-    if (!db.get(shopId)) return err(new ApiError("ShopDoesNotExist"))
-    if (index < 0 || index > db.size() - 1) return err(new ApiError("InvalidPosition"))
-
-    const shopsArray = Array.from(db.list())
-    const shopIndex = shopsArray.findIndex(([id, ]) => id === shopId)
-
-    if (shopIndex === -1) return err(new ApiError("ShopDoesNotExist"))
-
-    const [shop] = shopsArray.splice(shopIndex, 1)
-    if (shop === undefined) return err(new ApiError("ShopDoesNotExist"))
-
-    shopsArray.splice(index, 0, shop);
-
-    // TODO: remove as TODO
-    db.data = new Map(shopsArray) as TODO // Type level immutability prevents this operation, so this must be modified
-
-    const [error] = await db.save()
-    if (error) return err(error)
-
-    return ok(true)
+    return await db.reorder(shopId, index)
 }
 
 export async function createDiscountCode(db = shopsDatabase, shopId: string, discountCode: string, discountAmount: number) {
