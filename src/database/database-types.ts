@@ -2,7 +2,7 @@ import { Database } from "@/core/interfaces/database.js"
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { DeepReadonly, MapKey, MapValue } from "@/lib/types/index.js"
-import { AnyStringSchema } from "@/lib/types/zod.js"
+import { AnyStringSchema, RecordSchema } from "@/lib/types/zod.js"
 import { validate } from "@/lib/validation.js"
 import { PathLike } from "fs"
 import fs from "fs/promises"
@@ -105,7 +105,7 @@ export type DatabaseJsonBody = Record<string, unknown>
 
 export abstract class DatabaseLegacy<
     IdType extends string, 
-    DataType extends object
+    DataType extends Record<string, unknown>
 > implements Database<IdType, DataType> {
     public path: string
     public data: Map<IdType, DataType>
@@ -245,12 +245,9 @@ export interface Balance2<T> {
     amount: number
 }
 
-
-type NoIdSchema<Schema extends z.ZodTypeAny> = z.infer<Schema> extends { id: any } ? never : Schema
-
 export class JsonDatabase<
     IdSchema extends AnyStringSchema, 
-    DataItemRawSchema extends z.ZodObject<z.ZodRawShape>,  
+    DataItemRawSchema extends RecordSchema,  
 > implements Database<z.infer<IdSchema>, z.infer<DataItemRawSchema>> {
     private path: PathLike
     private dataItemJsonSchema: DataItemRawSchema
@@ -265,7 +262,7 @@ export class JsonDatabase<
     public constructor (
         databaseRaw: DatabaseJsonBody, 
         path: PathLike, 
-        dataItemJsonSchema: NoIdSchema<DataItemRawSchema>, 
+        dataItemJsonSchema: DataItemRawSchema, 
         idSchema: IdSchema
     ) {
         this.path = path

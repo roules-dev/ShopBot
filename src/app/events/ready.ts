@@ -3,11 +3,6 @@ import { Events, Client } from "discord.js"
 import { setActivity } from "../client/status.js"
 
 
-
-
-
-
-
 export const name = Events.ClientReady
 export const once = true
 

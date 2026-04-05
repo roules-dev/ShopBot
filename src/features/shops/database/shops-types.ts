@@ -12,7 +12,7 @@ import { ok } from "@/lib/error-handling.js"
 import { TODO } from "@/lib/types/index.js"
 import { Snowflake } from "discord.js"
 
-export interface Shop {
+export type Shop = {
     id: NanoId
     name: string
     emoji: string | null

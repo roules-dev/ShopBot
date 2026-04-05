@@ -3,7 +3,7 @@ import { DeepReadonly } from "@/lib/types/readonly.js";
 
 export interface Database<
     Id extends string, 
-    DataItemRaw extends object,  
+    DataItemRaw extends Record<string, unknown> 
 > {
     size(): number
     get(id: Id): DeepReadonly<DataItemRaw> | undefined

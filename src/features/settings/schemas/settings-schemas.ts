@@ -2,40 +2,58 @@ import { validateEnum, validateMinMax } from "@/lib/validation.js";
 import { SnowflakeSchema } from "@/schemas/utils.js";
 import z from "zod";
 
+const BaseSetting = {
+    name: z.string(),
+}
+
+function withBase<T extends z.ZodRawShape>(shape: T) {
+    return z.object({
+        ...BaseSetting,
+        ...shape,
+    })
+}
+
 export const SettingVariantSchema = z.discriminatedUnion("type", [
-    z.object({
+    withBase({
+        id: z.string().brand("setting-string"),
         type: z.literal("string"),
         value: z.nullable(z.string()),
     }),
 
-    z.object({
+    withBase({
+        id: z.string().brand("setting-bool"),
         type: z.literal("bool"),
         value: z.nullable(z.boolean()),
     }),
 
-    z.object({
+    withBase({
+        id: z.string().brand("setting-number"),
         type: z.literal("number"),
         value: z.nullable(z.number()),
         min: z.exactOptional(z.nullable(z.number())),
         max: z.exactOptional(z.nullable(z.number())),
     }), 
 
-    z.object({
+    withBase({
+        id: z.string().brand("setting-channelId"),
         type: z.literal("channelId"),
         value: z.nullable(SnowflakeSchema),
     }),
 
-    z.object({
+    withBase({
+        id: z.string().brand("setting-roleId"),
         type: z.literal("roleId"),
         value: z.nullable(SnowflakeSchema),
     }),
 
-    z.object({
+    withBase({
+        id: z.string().brand("setting-userId"),
         type: z.literal("userId"),
         value: z.nullable(SnowflakeSchema),
     }),
 
-    z.object({
+    withBase({
+        id: z.string().brand("setting-enum"),
         type: z.literal("enum"),
         value: z.nullable(z.string()),
         options: z.array(
@@ -47,10 +65,7 @@ export const SettingVariantSchema = z.discriminatedUnion("type", [
     })
 ])
 
-
-export const SettingSchema = z.object({
-    name: z.string()
-}).and(SettingVariantSchema).superRefine((data, ctx) => {
+export const SettingSchema = SettingVariantSchema.superRefine((data, ctx) => {
     switch (data.type) {
         case "number": 
             validateMinMax(data, ctx)
@@ -60,4 +75,3 @@ export const SettingSchema = z.object({
             break
     }
 })
-

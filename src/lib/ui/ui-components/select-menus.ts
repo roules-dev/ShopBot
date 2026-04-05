@@ -1,4 +1,6 @@
-import { ComponentType, RoleSelectMenuBuilder, ChannelSelectMenuBuilder, UserSelectMenuBuilder, RoleSelectMenuInteraction, ChannelSelectMenuInteraction, UserSelectMenuInteraction, Snowflake, ReadonlyCollection, MessageComponentInteraction, ChannelType } from "discord.js"
+import { validate } from "@/lib/validation.js"
+import { BrandedSnowflake, SnowflakeSchema } from "@/schemas/utils.js"
+import { ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ComponentType, MessageComponentInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
 import { ExtendedSelectMenuOptions } from "./string-select-menu.js"
 
@@ -21,11 +23,11 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
     override customId: string
     override component: SelectMenuBuilders<T>
 
-    callback: (interaction: SelectMenuInteractions<T>, selected: Snowflake) => void
+    callback: (interaction: SelectMenuInteractions<T>, selected: BrandedSnowflake) => void
     time: number
 
     constructor(options: ExtendedSelectMenuOptions, 
-        callback: (interaction: SelectMenuInteractions<T>, selected: Snowflake) => void,
+        callback: (interaction: SelectMenuInteractions<T>, selected: BrandedSnowflake) => void,
         componentBuilder: SelectMenuBuilders<T>
     ) {
         super()
@@ -45,7 +47,10 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
         const selected = interaction.values[0]
         if (selected == undefined) return
 
-        this.callback(interaction, selected)    
+        const [error, selectedId] = validate(SnowflakeSchema, selected)
+        if (error) return
+
+        this.callback(interaction, selectedId)    
     }
 
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
@@ -61,7 +66,7 @@ export class ExtendedChannelSelectMenuComponent extends ExtendedSelectMenuCompon
     override componentType = ComponentType.ChannelSelect as const
     
     constructor({ customId, placeholder, time, channelTypes }: ExtendedChannelSelectOptions, 
-        callback: (interaction: ChannelSelectMenuInteraction, selectedChannelId: Snowflake) => void
+        callback: (interaction: ChannelSelectMenuInteraction, selectedChannelId: BrandedSnowflake) => void
     ) {
         super({ customId, time, placeholder}, callback, new ChannelSelectMenuBuilder())
 
@@ -72,7 +77,7 @@ export class ExtendedChannelSelectMenuComponent extends ExtendedSelectMenuCompon
 export class ExtendedRoleSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.RoleSelect> {
     override componentType = ComponentType.RoleSelect as const
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
-        callback: (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => void
+        callback: (interaction: RoleSelectMenuInteraction, selectedRoleId: BrandedSnowflake) => void
     ) {
         super({ customId, time, placeholder }, callback, new RoleSelectMenuBuilder())
     }
@@ -82,7 +87,7 @@ export class ExtendedRoleSelectMenuComponent extends ExtendedSelectMenuComponent
 export class ExtendedUserSelectMenuComponent extends ExtendedSelectMenuComponent<ComponentType.UserSelect> {
     override componentType = ComponentType.UserSelect as const
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions, 
-        callback: (interaction: UserSelectMenuInteraction, selectedUserId: Snowflake) => void
+        callback: (interaction: UserSelectMenuInteraction, selectedUserId: BrandedSnowflake) => void
     ) {
         super({ customId, time, placeholder }, callback, new UserSelectMenuBuilder())
     }

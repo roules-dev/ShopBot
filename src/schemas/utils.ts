@@ -11,4 +11,6 @@ export const SnowflakeSchema = z
     .regex(SNOWFLAKE_REGEX, "Invalid snowflake")
     .brand("Snowflake")
 
+export type BrandedSnowflake = z.infer<typeof SnowflakeSchema>
+
 export const NanoIdSchema = z.nanoid().brand("NanoId")

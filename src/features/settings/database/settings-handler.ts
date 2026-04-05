@@ -1,35 +1,40 @@
-import settings from "@/../data/settings.json" with { type: "json" }
-import { Setting, Settings, SettingsDatabase } from "@/features/settings/database/settings-types.js"
+import fs from "fs/promises"
 import { err, ok } from "@/lib/error-handling.js"
 import { EVENTS } from "@/core/events/event-bus.js"
+import { JsonDatabase } from "@/database/database-types.js"
+import { SettingSchema } from "../schemas/settings-schemas.js"
+import z from "zod"
+import { SettingIdBrands, SettingValueByIdBrand } from "./settings-types.js"
 
-const settingsDatabase = new SettingsDatabase(settings, "data/settings.json")
+const settingsDatabasePath = "./data/settings.json"
+const settingsDatabaseRaw = JSON.parse(await fs.readFile(settingsDatabasePath, "utf-8"))
 
-export function getSettings(): Settings {
-    return settingsDatabase.data
+
+const settingsDatabase = new JsonDatabase(settingsDatabaseRaw, settingsDatabasePath, SettingSchema, z.string())
+
+export function getSettings() {
+    return settingsDatabase.list()
 }
 
-export function getSetting(id: string): Setting | undefined {
-    return settingsDatabase.data.get(id)
+export function getSetting(id: string) {
+    return settingsDatabase.get(id)
 }
 
-
-// TODO : get rid of this "value: any" for a more type safe way of doing it
-// future signature: 
-
-//* setSetting<T extends SettingIdBrands, V extends SettingValueByIdBrand<T>>(id: T, value: V)
-export async function setSetting(id: string, value: any) {
-    const setting = settingsDatabase.data.get(id)
+export async function setSetting<
+    BrandedId extends SettingIdBrands, 
+    SettingValue extends SettingValueByIdBrand<BrandedId>
+>(
+    id: BrandedId, 
+    value: SettingValue
+) {
+    const setting = settingsDatabase.get(id)
     if (!setting) return err("Setting does not exist")
 
-    const updatedSetting = {...setting, value: value}
-
-    settingsDatabase.data.set(id, updatedSetting)
-
-    const [error] = await  settingsDatabase.save()
+    const [error, updated] = await settingsDatabase.patch(id, { value: value })
     if (error) return err(error)
 
-    EVENTS.emit("settingUpdated", id, updatedSetting)
+    EVENTS.emit("settingUpdated", id, updated)
 
     return ok(setting)
+
 }

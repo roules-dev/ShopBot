@@ -1,18 +1,20 @@
 import { t } from "@/core/i18n/i18n.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedChannelSelectMenuComponent, ExtendedRoleSelectMenuComponent, ExtendedUserSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { BrandedSnowflake } from "@/schemas/utils.js"
 import { toStringOrUndefined } from "@/utils/strings.js"
-import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
+import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
 import z from "zod"
 import { getSettings, setSetting } from "../database/settings-handler.js"
 import { Setting } from "../database/settings-types.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {
@@ -22,7 +24,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected response: InteractionCallbackResponse | null = null
 
-    private selectedSetting: Setting | null = null
+    private selectedSetting: DeepReadonly<Setting> | null = null
 
     protected override page = 0
 
@@ -39,11 +41,11 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     protected override initComponents(): unknown {
-        const settingSelectMenu = new ExtendedStringSelectMenuComponent(
+        const settingSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Setting>>(
             { customId: "settings-select-menu", placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
             getSettings(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Setting) => {
+            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Setting>) => {
                 this.selectedSetting = selected
                 this.updateInteraction(interaction)
             }
@@ -120,13 +122,13 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return fields
     }
 
-    private enumOptionDisplay(setting: Setting & { type: "enum" }) {
+    private enumOptionDisplay(setting: DeepReadonly<Setting> & { type: "enum" }) {
         const displayValue = setting.options.find(option => option.value === setting.value)?.label
 
         return displayValue ?? setting.value ?? t(`${this.locale}.embeds.settings.unsetSetting`)
     }
 
-    private getSettingEditorComponents(setting: Setting): ExtendedComponent[] {
+    private getSettingEditorComponents(setting: DeepReadonly<Setting>): ExtendedComponent[] {
         const components: ExtendedComponent[] = []
 
         switch (setting.type) {
@@ -164,7 +166,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 time: 120_000
             },
             async (interaction: MessageComponentInteraction) => {
-                const [error, updatedSetting] = await setSetting(setting.id, undefined)
+                const [error, updatedSetting] = await setSetting(setting.id, null)
                 if (error) return replyErrorMessage(interaction, error.message)
                     
                 this.selectedSetting = updatedSetting
@@ -280,7 +282,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                 }),
                 time: 120_000,
                 channelTypes: [ChannelType.GuildText]
-            }, async (interaction: ChannelSelectMenuInteraction, selectedChannelId: Snowflake) => {
+            }, async (interaction: ChannelSelectMenuInteraction, selectedChannelId: BrandedSnowflake) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedChannelId)
                 if (error) return replyErrorMessage(interaction, error.message)
                 
@@ -299,7 +301,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                     type: t(`${this.locale}.components.selector.types.role`)
                 }), 
                 time: 120_000 
-            }, async (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => {
+            }, async (interaction: RoleSelectMenuInteraction, selectedRoleId: BrandedSnowflake) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedRoleId)
                 if (error) return replyErrorMessage(interaction, error.message)
                 
@@ -318,7 +320,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                     type: t(`${this.locale}.components.selector.types.user`)
                 }), 
                 time: 120_000 
-            }, async (interaction: UserSelectMenuInteraction, selectedUserId: Snowflake) => {
+            }, async (interaction: UserSelectMenuInteraction, selectedUserId: BrandedSnowflake) => {
                 const [error, updatedSetting] = await setSetting(setting.id, selectedUserId)
                 if (error) return replyErrorMessage(interaction, error.message)
 
@@ -328,7 +330,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         )
     }
 
-    private getEnumEditorComponent(setting: Setting & { type: "enum"}) {
+    private getEnumEditorComponent(setting: DeepReadonly<Setting> & { type: "enum"}) {
         const optionsMap = new Map((setting.options).map(
             option => [
                 option.value, {

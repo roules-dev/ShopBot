@@ -1,7 +1,7 @@
 import { DatabaseJsonBody, DatabaseLegacy, NanoId } from "@/database/database-types.js"
 import { ok } from "@/lib/error-handling.js"
 
-export interface Currency {
+export type Currency = {
     id: NanoId
     name: string
     emoji: string | null
