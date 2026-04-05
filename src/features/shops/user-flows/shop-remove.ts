@@ -4,10 +4,10 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, bold } from "discord.js"
-import { getShops, removeShop } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
+import { ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, bold } from "discord.js"
 
 
 export class ShopRemoveFlow extends UserFlow {
@@ -75,7 +75,7 @@ export class ShopRemoveFlow extends UserFlow {
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error] = await removeShop(undefined, this.selectedShop.id)
+        const [error] = await removeShop(this.selectedShop.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

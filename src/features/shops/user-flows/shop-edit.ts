@@ -1,5 +1,4 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
@@ -10,10 +9,11 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "@/core/services/shops/shops.services.js"
 
 //! --------------------------------
 // TODO this needs to be refactored
@@ -135,7 +135,7 @@ export class EditShopFlow extends UserFlow {
         const oldName = this.selectedShop?.name || ""
 
         // TODO needs refactoring
-        const [error] = await updateShop(undefined, this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
+        const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
@@ -360,7 +360,7 @@ export class EditShopCurrencyFlow extends UserFlow {
     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
         if (!this.selectedShop || !this.selectedCurrency) return await updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error, shop] = await updateShopCurrency(undefined, undefined, this.selectedShop.id, this.selectedCurrency.id)
+        const [error, shop] = await updateShopCurrency(this.selectedShop.id, this.selectedCurrency.id)
         
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
@@ -498,7 +498,7 @@ export class ShopReorderFlow extends UserFlow {
     protected override async success(interaction: ButtonInteraction) {
         if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await updateShopPosition(undefined, this.selectedShop.id, this.selectedPosition - 1)
+        const [error] = await updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {

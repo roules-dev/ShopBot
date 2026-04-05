@@ -1,10 +1,10 @@
 import { ApiError } from "@/database/database-types.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Product } from "@/features/shops/database/products-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Snowflake } from "discord.js"
-import { getAccountsWithCurrency, updateAccount, updateBalance } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
+import { updateBalance, updateAccount, getAccountsWithCurrency } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 
 export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
     const currency = getCurrencies().get(currencyId)
@@ -15,7 +15,7 @@ export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string
         amount: +amount.toFixed(2)
     }
 
-    const [error, account] = await updateBalance(undefined, id, "currencies", currencyId, newCurrencyBalance)
+    const [error, account] = await updateBalance(id, "currencies", currencyId, newCurrencyBalance)
     if (error) return err(error)
 
     return ok({ account, currency })
@@ -27,7 +27,7 @@ export async function setAccountItemAmount(id: Snowflake, product: Product, amou
         amount: +amount.toFixed(2)
     }
 
-    const [error, account] = await updateBalance(undefined, id, "inventory", product.id, newItemBalance)
+    const [error, account] = await updateBalance(id, "inventory", product.id, newItemBalance)
     if (error) return err(error)
 
     return ok({ account, product })
@@ -43,7 +43,7 @@ export async function emptyAccount(id: Snowflake, empty: "currencies" | "invento
         updatedAccount["inventory"] = new Map()
     }
 
-    const [error, account] = await updateAccount(undefined, id, updatedAccount)
+    const [error, account] = await updateAccount(id, updatedAccount)
     if (error) return err(error)
 
     return ok(account) 
@@ -53,10 +53,10 @@ export async function takeCurrencyFromAccounts(currencyId: string) {
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
-    const accountsWithCurrency = getAccountsWithCurrency(undefined, currencyId)
+    const accountsWithCurrency = getAccountsWithCurrency(currencyId)
 
     for (const [id] of accountsWithCurrency) {
-        const [error] = await updateBalance(undefined, id, "currencies", currencyId, { item: currency, amount: 0 })
+        const [error] = await updateBalance(id, "currencies", currencyId, { item: currency, amount: 0 })
         if (error) return err(error)
     }
 

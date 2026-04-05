@@ -60,7 +60,8 @@
                 "emoji": "🥖",
                 "description": "A real authentic French Baguette",
                 "price": 0.9,
-                "shopId": "-hw7m2WLOmaNKPSbFdajZ"
+                "shopId": "-hw7m2WLOmaNKPSbFdajZ",
+                "stock": null
             },
             "w9zcCjKIt-yDjhXi2TLMB": {
                 "id": "w9zcCjKIt-yDjhXi2TLMB",

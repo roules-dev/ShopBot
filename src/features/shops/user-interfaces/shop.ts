@@ -6,12 +6,12 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getShops } from "../database/shops-database.js"
-import { Shop } from "../database/shops-types.js"
-import { BuyProductUserInterface } from "./buy.js"
+import { getShops } from "@/core/services/shops/shops.services.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { Shop } from "../database/shops-types.js"
+import { BuyProductUserInterface } from "./buy.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {

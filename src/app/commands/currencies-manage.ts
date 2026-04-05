@@ -1,4 +1,3 @@
-import { createCurrency } from "@/features/currencies/database/currencies-database.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies-schemas.js"
 import { EDIT_CURRENCY_OPTION, EditCurrencyFlow } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
@@ -8,6 +7,7 @@ import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
+import { createCurrency } from "@/core/services/currencies/currencies.services.js"
 
 
 export const data = new SlashCommandBuilder()
@@ -92,7 +92,7 @@ export async function createCurrencyCommand(_client: Client, interaction: ChatIn
 
     if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
     
-    const [error2, currency] = await createCurrency(undefined, { name: currencyName, emoji })
+    const [error2, currency] = await createCurrency({ name: currencyName, emoji })
     if (error2) {
         return await replyErrorMessage(interaction, error2.message)
     }

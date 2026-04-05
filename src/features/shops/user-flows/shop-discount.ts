@@ -6,9 +6,9 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
-import { createDiscountCode, getShops, removeDiscountCode } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { getShops, createDiscountCode, removeDiscountCode } from "@/core/services/shops/shops.services.js"
 
 
 export class DiscountCodeCreateFlow extends UserFlow {
@@ -96,7 +96,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await createDiscountCode(undefined, this.selectedShop.id, this.discountCode, this.discountAmount)
+        const [error] = await createDiscountCode(this.selectedShop.id, this.discountCode, this.discountAmount)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
@@ -292,7 +292,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.selectedDiscountCode) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await removeDiscountCode(undefined, this.selectedShop.id, this.selectedDiscountCode)
+        const [error] = await removeDiscountCode(this.selectedShop.id, this.selectedDiscountCode)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 

@@ -3,7 +3,7 @@
         "currencies": {
             "0f2SNbp60vAwWjhKjRR0u": {
                 "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 49137.9
+                "amount": 49136.9
             },
             "7kiuf_CPO2ocrr75mTXuV": {
                 "item": "7kiuf_CPO2ocrr75mTXuV",
@@ -22,6 +22,13 @@
                 "item": {
                     "id": "SQWzMyipYZO3fnCmhAttr",
                     "shopId": "h3G8N_1F2LzI1T29bjdxJ"
+                },
+                "amount": 1
+            },
+            "Uasu0unlCLGnsJNQb_3S0": {
+                "item": {
+                    "id": "Uasu0unlCLGnsJNQb_3S0",
+                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
                 },
                 "amount": 1
             }

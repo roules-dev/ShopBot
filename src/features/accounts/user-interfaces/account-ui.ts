@@ -1,15 +1,15 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
-import { getOrCreateAccount } from "../database/accounts-database.js"
 import { Account } from "../database/accounts-type.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"
@@ -40,7 +40,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        const [error, account] = await getOrCreateAccount(undefined, this.user.id)
+        const [error, account] = await getOrCreateAccount(this.user.id)
         if (error) {
             await replyErrorMessage(interaction, error.message)
             return false

@@ -1,21 +1,21 @@
-import { getOrCreateAccount } from "@/features/accounts/database/accounts-database.js"
 import { Account } from "@/features/accounts/database/accounts-type.js"
 import { setAccountCurrencyAmount, setAccountItemAmount } from "@/features/accounts/services/accounts-services.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { t } from "@/core/i18n/i18n.js"
 import { bold, GuildMember, roleMention } from "discord.js"
-import { updateProduct } from "../database/products-database.js"
 import { Product, ProductAction } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { updateProduct } from "@/core/services/shops/products.services.js"
 
 
 export async function processPurchase(member: GuildMember, shop: DeepReadonly<Shop>, product: Product, quantity: number, discount: number) {
     if (!isMemberAllowedToBuy(member, shop)) {
         return err({ name: "NotAllowedToBuy" })
     }
-    const [error, account] = await getOrCreateAccount(undefined, member.id)
+    const [error, account] = await getOrCreateAccount(member.id)
     if (error) return err(error)
 
     const price = applyDiscount(product.price * quantity, discount)
@@ -27,7 +27,7 @@ export async function processPurchase(member: GuildMember, shop: DeepReadonly<Sh
     if (updatedStock != undefined && updatedStock < 0) return err({ name: "ProductNoLongerAvailable" })
 
 
-    const [error2] = await updateProduct(undefined, shop.id, product.id, { stock: updatedStock })
+    const [error2] = await updateProduct(shop.id, product.id, { stock: updatedStock })
     if (error2) return err(error2)
 
     const [error3] = await setAccountCurrencyAmount(member.id, shop.currency.id, balanceAfterBuy)
@@ -93,7 +93,7 @@ async function executeActionProduct(action: ProductAction, member: GuildMember) 
         case "give-currency": {
             const { currencyId, amount } = action.options
 
-            const [error, account] = await getOrCreateAccount(undefined, member.id)
+            const [error, account] = await getOrCreateAccount(member.id)
             if (error) return err(error)
 
             const userCurrencyAmount = account.currencies.get(currencyId)?.amount || 0

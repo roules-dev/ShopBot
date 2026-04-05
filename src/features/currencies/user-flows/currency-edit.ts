@@ -10,8 +10,8 @@ import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import z from "zod"
-import { getCurrencies, updateCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
+import { getCurrencies, updateCurrency } from "@/core/services/currencies/currencies.services.js"
 
 export const EDIT_CURRENCY_OPTION = {
     NAME: "name",
@@ -99,7 +99,7 @@ export class EditCurrencyFlow extends UserFlow {
         
         const oldName = this.selectedCurrency.name
 
-        const [error] = await updateCurrency(undefined, this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
+        const [error] = await updateCurrency(this.selectedCurrency.id, { [this.updateOption.toString()]: this.updateOptionValue } )
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 

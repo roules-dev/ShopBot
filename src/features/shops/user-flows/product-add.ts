@@ -1,7 +1,10 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { addProduct } from "@/core/services/shops/products.services.js"
+import { getShops } from "@/core/services/shops/shops.services.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
@@ -13,12 +16,9 @@ import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import z from "zod"
-import { addProduct } from "../database/products-database.js"
 import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
-import { getShops } from "../database/shops-database.js"
 import { Shop } from "../database/shops-types.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 
 
 export class AddProductFlow extends UserFlow {
@@ -133,7 +133,7 @@ export class AddProductFlow extends UserFlow {
             ...(this.productStock ? {stock: this.productStock} : {}),
         }
         
-        const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
+        const [error, product] = await addProduct(this.selectedShop.id, { 
             name: this.productName,
             emoji: this.productEmoji,
             description: this.productDescription,
@@ -378,7 +378,7 @@ export class AddActionProductFlow extends AddProductFlow {
         
         if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error, product] = await addProduct(undefined, this.selectedShop.id, { 
+        const [error, product] = await addProduct(this.selectedShop.id, { 
             name: this.productName, 
             description: this.productDescription, 
             emoji: this.productEmoji, 

@@ -9,7 +9,6 @@ import { SettingIdBrands, SettingValueByIdBrand } from "./settings-types.js"
 const settingsDatabasePath = "./data/settings.json"
 const settingsDatabaseRaw = JSON.parse(await fs.readFile(settingsDatabasePath, "utf-8"))
 
-
 const settingsDatabase = new JsonDatabase(settingsDatabaseRaw, settingsDatabasePath, SettingSchema, z.string())
 
 export function getSettings() {

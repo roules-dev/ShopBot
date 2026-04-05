@@ -1,5 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { createShop } from "@/core/services/shops/shops.services.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -11,7 +12,6 @@ import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
-import { createShop } from "../database/shops-database.js"
 
 export class ShopCreateFlow extends UserFlow {
     public id = "shop-create"
@@ -148,7 +148,7 @@ export class ShopCreateFlow extends UserFlow {
             ...(this.shopReservedTo !== undefined ? { reservedTo: this.shopReservedTo } : {})
         }
 
-        const [error, newShop] = await createShop(undefined, undefined, {
+        const [error, newShop] = await createShop({
             name: this.shopName,
             emoji: this.shopEmoji,
             description: this.shopDescription,

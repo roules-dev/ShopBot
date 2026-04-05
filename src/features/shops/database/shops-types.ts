@@ -1,5 +1,5 @@
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { DatabaseJsonBody, DatabaseLegacy, NanoId } from "@/database/database-types.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import {
     Product,

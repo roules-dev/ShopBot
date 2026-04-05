@@ -1,13 +1,11 @@
-import accounts from "@/../data/accounts.json" with { type: "json" }
 import { ApiError, NanoId } from "@/database/database-types.js"
 import { Account, AccountBalanceTypes, AccountsDatabase } from "@/features/accounts/database/accounts-type.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { Snowflake } from "discord.js"
 
-const accountsDatabase = new AccountsDatabase(accounts, "data/accounts.json")
 
-export async function getOrCreateAccount(db = accountsDatabase, id: Snowflake) {
+export async function dbGetOrCreateAccount(db: AccountsDatabase, id: Snowflake) {
     let account = db.get(id)
 
     if (!account) {
@@ -23,7 +21,7 @@ export async function getOrCreateAccount(db = accountsDatabase, id: Snowflake) {
 }
 
 
-export function getAccountsWithCurrency(db = accountsDatabase, currencyId: string) {
+export function dbGetAccountsWithCurrency(db: AccountsDatabase, currencyId: string) {
     const accountsWithCurrency = new Map<Snowflake, DeepReadonly<Account>>()
     db.list().forEach((account, id) => {
         if (account.currencies.has(currencyId)) accountsWithCurrency.set(id, account)
@@ -31,7 +29,7 @@ export function getAccountsWithCurrency(db = accountsDatabase, currencyId: strin
     return accountsWithCurrency
 }
 
-export async function updateAccount(db = accountsDatabase, id: Snowflake, options: Partial<Account>) {
+export async function dbUpdateAccount(db: AccountsDatabase, id: Snowflake, options: Partial<Account>) {
     const account = db.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))
     
@@ -45,8 +43,8 @@ export async function updateAccount(db = accountsDatabase, id: Snowflake, option
 }
 
 
-export async function updateBalance<T extends keyof AccountBalanceTypes>(
-    db = accountsDatabase, 
+export async function dbUpdateBalance<T extends keyof AccountBalanceTypes>(
+    db: AccountsDatabase, 
     id: Snowflake, 
     balanceType: T, 
     itemId: NanoId, 

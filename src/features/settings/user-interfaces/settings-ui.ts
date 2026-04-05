@@ -1,7 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -24,7 +23,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected response: InteractionCallbackResponse | null = null
 
-    private selectedSetting: DeepReadonly<Setting> | null = null
+    private selectedSetting: Setting | null = null
 
     protected override page = 0
 
@@ -41,11 +40,11 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     protected override initComponents(): unknown {
-        const settingSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Setting>>(
+        const settingSelectMenu = new ExtendedStringSelectMenuComponent<Setting>(
             { customId: "settings-select-menu", placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
             getSettings(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Setting>) => {
+            (interaction: StringSelectMenuInteraction, selected: Setting) => {
                 this.selectedSetting = selected
                 this.updateInteraction(interaction)
             }
@@ -122,13 +121,13 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return fields
     }
 
-    private enumOptionDisplay(setting: DeepReadonly<Setting> & { type: "enum" }) {
+    private enumOptionDisplay(setting: Setting & { type: "enum" }) {
         const displayValue = setting.options.find(option => option.value === setting.value)?.label
 
         return displayValue ?? setting.value ?? t(`${this.locale}.embeds.settings.unsetSetting`)
     }
 
-    private getSettingEditorComponents(setting: DeepReadonly<Setting>): ExtendedComponent[] {
+    private getSettingEditorComponents(setting: Setting): ExtendedComponent[] {
         const components: ExtendedComponent[] = []
 
         switch (setting.type) {
@@ -330,7 +329,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         )
     }
 
-    private getEnumEditorComponent(setting: DeepReadonly<Setting> & { type: "enum"}) {
+    private getEnumEditorComponent(setting: Setting & { type: "enum"}) {
         const optionsMap = new Map((setting.options).map(
             option => [
                 option.value, {

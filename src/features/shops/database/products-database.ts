@@ -1,18 +1,18 @@
 import { ApiError } from "@/database/database-types.js"
 import { update2 } from "@/database/helpers.js"
 import { ProductOptions } from "@/features/shops/database/products-types.js"
-import { shopsDatabase } from "@/features/shops/database/shops-database.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
+import { ShopsDatabase } from "./shops-types.js"
 
-export function getProducts(db = shopsDatabase, shopId: string){
+export function dbGetProducts(db: ShopsDatabase, shopId: string){
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     return ok(shop.products)
 }
 
-export async function addProduct(db = shopsDatabase, shopId: string, options: ProductOptions) {
+export async function dbAddProduct(db: ShopsDatabase, shopId: string, options: ProductOptions) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
@@ -34,7 +34,7 @@ export async function addProduct(db = shopsDatabase, shopId: string, options: Pr
     return ok(updatedProduct)
 }
 
-export async function removeProduct(db = shopsDatabase, shopId: string, productId: string) {
+export async function dbRemoveProduct(db: ShopsDatabase, shopId: string, productId: string) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"));
 
@@ -64,8 +64,8 @@ const PRODUCT_FIELD_HANDLERS = {
 // stock, for a specific shop
 
 
-export async function updateProduct(
-    db = shopsDatabase,
+export async function dbUpdateProduct(
+    db: ShopsDatabase,
     shopId: string,
     productId: string,
     options: Partial<ProductOptions>,

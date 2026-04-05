@@ -1,6 +1,5 @@
 import { t } from "@/core/i18n/i18n.js"
 import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts-services.js"
-import { getShopsWithCurrency } from "@/features/shops/database/shops-database.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -8,8 +7,9 @@ import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
-import { getCurrencies, removeCurrency } from "../database/currencies-database.js"
 import { Currency } from "../database/currencies-types.js"
+import { getCurrencies, removeCurrency } from "@/core/services/currencies/currencies.services.js"
+import { getShopsWithCurrency } from "@/core/services/shops/shops.services.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -67,7 +67,7 @@ export class CurrencyRemoveFlow extends UserFlow {
     
     getMessage(): string {  
         if (this.selectedCurrency) {
-            const shopsWithCurrency = getShopsWithCurrency(undefined, this.selectedCurrency.id)
+            const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency.id)
 
             if (shopsWithCurrency.size > 0) {
                 const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
@@ -93,7 +93,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
-        const shopsWithCurrency = getShopsWithCurrency(undefined, this.selectedCurrency?.id || "")
+        const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency?.id || "")
 
         submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
     }
@@ -108,7 +108,7 @@ export class CurrencyRemoveFlow extends UserFlow {
 
         const currencyName = this.selectedCurrency.name || ""
 
-        const [error2] = await removeCurrency(undefined, this.selectedCurrency.id)
+        const [error2] = await removeCurrency(this.selectedCurrency.id)
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))

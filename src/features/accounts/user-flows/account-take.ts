@@ -1,5 +1,4 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -8,8 +7,9 @@ import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, User, bold, userMention } from "discord.js"
-import { getOrCreateAccount } from "../database/accounts-database.js"
 import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts-services.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 
 
 export class AccountTakeFlow extends UserFlow {
@@ -92,7 +92,7 @@ export class AccountTakeFlow extends UserFlow {
 
                 if (!this.target || !this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                const [error, account] = await getOrCreateAccount(undefined, this.target.id)
+                const [error, account] = await getOrCreateAccount(this.target.id)
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.amount = account.currencies.get(this.selectedCurrency.id)?.amount || 0
@@ -145,7 +145,7 @@ export class AccountTakeFlow extends UserFlow {
 
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(undefined, this.target.id)
+        const [error, account] = await getOrCreateAccount(this.target.id)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0

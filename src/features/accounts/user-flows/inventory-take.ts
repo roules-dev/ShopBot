@@ -1,14 +1,14 @@
-import { t } from "@/core/i18n/i18n.js";
-import { Product } from "@/features/shops/database/products-types.js";
-import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js";
-import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js";
-import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js";
-import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js";
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js";
-import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js";
-import { getOrCreateAccount } from "../database/accounts-database.js";
-import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js";
+import { t } from "@/core/i18n/i18n.js"
+import { Product } from "@/features/shops/database/products-types.js"
+import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
+import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
+import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
+import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js"
+import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 
 
 // TODO: implement inventory take / bulk take
@@ -56,7 +56,7 @@ export class InventoryTakeFlow extends UserFlow {
 
     protected override async initComponents() {
         if (!this.target) throw new Error("Unexpected error: target is null")
-        const [error, account] = await getOrCreateAccount(undefined, this.target.id)
+        const [error, account] = await getOrCreateAccount(this.target.id)
 
         if (error) throw error
 
@@ -101,7 +101,7 @@ export class InventoryTakeFlow extends UserFlow {
             async (interaction: ButtonInteraction) => {
                 if (!this.selectedItem || !this.target) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                const [error, account] = await getOrCreateAccount(undefined, this.target.id)
+                const [error, account] = await getOrCreateAccount(this.target.id)
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.amount = account.currencies.get(this.selectedItem.id)?.amount || 0
@@ -154,7 +154,7 @@ export class InventoryTakeFlow extends UserFlow {
 
         if (!this.selectedItem || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(undefined, this.target.id)
+        const [error, account] = await getOrCreateAccount(this.target.id)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const currentBalance = account.currencies.get(this.selectedItem.id)?.amount || 0

@@ -1,11 +1,11 @@
-import { DatabaseJsonBody, DatabaseLegacy, NanoId } from "@/database/database-types.js";
-import { getCurrencies } from "@/features/currencies/database/currencies-database.js"; // external dependency, should be refactored
-import { Currency } from "@/features/currencies/database/currencies-types.js"; // external dependency, should be refactored
-import { getProducts } from "@/features/shops/database/products-database.js"; // external dependency, should be refactored
-import { Product } from "@/features/shops/database/products-types.js"; // external dependency, should be refactored
-import { getShops } from "@/features/shops/database/shops-database.js"; // external dependency, should be refactored
-import { ok } from "@/lib/error-handling.js";
-import { Snowflake } from "discord.js";
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { getProducts } from "@/core/services/shops/products.services.js"
+import { getShops } from "@/core/services/shops/shops.services.js"
+import { NanoId, DatabaseJsonBody, DatabaseLegacy } from "@/database/database-types.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { Product } from "@/features/shops/database/products-types.js"
+import { Snowflake } from "discord.js"
+import { ok } from "@/lib/error-handling.js"
 
 
 export interface Balance<T> {
@@ -71,14 +71,14 @@ export class AccountsDatabase extends DatabaseLegacy<Snowflake, Account> {
 
 
     private inventoryItemFilter([id, balance]: [NanoId, Balance<ProductId>]) {
-        const [error, products] = getProducts(undefined, balance.item.shopId)
+        const [error, products] = getProducts(balance.item.shopId)
         if (error) return false
 
         return getShops().has(balance.item.shopId) && products.has(id)
     }
 
     private inventoryItemMapper([id, balance]: [NanoId, Balance<ProductId>]): [NanoId, Balance<Product>] {
-        const [error, products] = getProducts(undefined, balance.item.shopId)
+        const [error, products] = getProducts(balance.item.shopId)
         if (error) throw new Error("This should never happen since the filter should have filtered it out")
 
         const product = products.get(id)!

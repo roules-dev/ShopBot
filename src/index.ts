@@ -1,5 +1,6 @@
 import "@/utils/strings.js"
 import "@/core/i18n/i18n.js"
+import "@/core/database/init-databases.js"
 
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"

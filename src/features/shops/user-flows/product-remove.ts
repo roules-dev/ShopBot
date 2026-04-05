@@ -7,12 +7,13 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
-import { removeProduct } from "../database/products-database.js"
-import { Product } from "../database/products-types.js"
-import { getShops } from "../database/shops-database.js"
+
 import { Shop } from "../database/shops-types.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { removeProduct } from "@/core/services/shops/products.services.js"
+import { getShops } from "@/core/services/shops/shops.services.js"
+import { Product } from "../database/products-types.js"
 
 export const REMOVE_PRODUCT_FLOW_STAGE = {
     SELECT_SHOP: "SELECT_SHOP",
@@ -197,7 +198,7 @@ export class RemoveProductFlow extends UserFlow {
 
         const oldProductName = formattedEmojiableName(this.selectedProduct)
 
-        const [error] =await removeProduct(undefined, this.selectedShop.id, this.selectedProduct.id)
+        const [error] =await removeProduct(this.selectedShop.id, this.selectedProduct.id)
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

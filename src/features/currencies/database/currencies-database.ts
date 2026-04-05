@@ -1,4 +1,3 @@
-import currencies from "@/../data/currencies.json" with { type: "json" }
 import { ApiError } from "@/database/database-types.js"
 import { CurrenciesDatabase, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
@@ -6,13 +5,8 @@ import { Exact } from "@/lib/types/index.js"
 import { nanoid } from "nanoid"
 
 
-const currenciesDatabase = new CurrenciesDatabase(currencies, "data/currencies.json")
 
-export function getCurrencies(db = currenciesDatabase) {
-    return db.list()
-}
-
-export function getCurrencyId(db = currenciesDatabase, currencyName: string) {
+export function dbGetCurrencyId(db: CurrenciesDatabase, currencyName: string) {
     let currencyId: string | undefined = undefined
     db.list().forEach(currency => {
         if (currency.name == currencyName) currencyId = currency.id
@@ -20,8 +14,8 @@ export function getCurrencyId(db = currenciesDatabase, currencyName: string) {
     return currencyId 
 }
 
-export async function createCurrency<T extends CurrencyOptions>(db = currenciesDatabase, options: Exact<T, CurrencyOptions>) {
-    if (getCurrencyId(db, options.name) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
+export async function dbCreateCurrency<T extends CurrencyOptions>(db: CurrenciesDatabase, options: Exact<T, CurrencyOptions>) {
+    if (dbGetCurrencyId(db, options.name) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid()
     const newCurrency = { id: newCurrencyId, ...options }
@@ -33,7 +27,7 @@ export async function createCurrency<T extends CurrencyOptions>(db = currenciesD
     return ok(newCurrency)
 }
 
-export async function removeCurrency(db = currenciesDatabase, currencyId: string) {
+export async function dbRemoveCurrency(db: CurrenciesDatabase, currencyId: string) {
     if (!db.get(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
 
     db.delete(currencyId)
@@ -43,7 +37,7 @@ export async function removeCurrency(db = currenciesDatabase, currencyId: string
     return ok(true)
 }
 
-export async function updateCurrency(db = currenciesDatabase, currencyId: string, options: Partial<CurrencyOptions>) {  
+export async function dbUpdateCurrency(db: CurrenciesDatabase, currencyId: string, options: Partial<CurrencyOptions>) {  
     const currency = db.get(currencyId)
     
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
