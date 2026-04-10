@@ -12,11 +12,10 @@ import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-m
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/utils.js"
+import { BrandedNanoId, EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
 import z from "zod"
-import { createProductAction, isProductActionType, PRODUCT_ACTION_TYPE, ProductAction, ProductActionOptions, ProductActionType } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 
@@ -219,7 +218,7 @@ export class AddActionProductFlow extends AddProductFlow {
                             && productActionAsGiveCurrency != undefined 
 
                         const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : "Unset"
-                        const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId) : undefined
+                        const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId as BrandedNanoId) : undefined
                         const currencyString = currency?.name || "[ ]"
 
                         actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
@@ -265,7 +264,7 @@ export class AddActionProductFlow extends AddProductFlow {
                         placeholder: t("defaultComponents.selectCurrency"),
                         time: 120_000
                     },
-                    getCurrencies(),
+                    getCurrencies(), // TODO hydration needed
                     (interaction) => this.updateInteraction(interaction),
                     (interaction: StringSelectMenuInteraction, selected: Currency): void => {
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, { currencyId: selected.id, amount: -1 })

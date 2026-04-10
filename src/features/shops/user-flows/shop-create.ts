@@ -9,7 +9,7 @@ import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/mo
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/utils.js"
+import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
@@ -67,7 +67,7 @@ export class ShopCreateFlow extends UserFlow {
     protected override initComponents(): void {
         const selectCurrencyMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(),
+            getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
@@ -145,7 +145,7 @@ export class ShopCreateFlow extends UserFlow {
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const optionals = {
-            ...(this.shopReservedTo !== undefined ? { reservedTo: this.shopReservedTo } : {})
+            ...(this.shopReservedTo !== undefined ? { reservedTo: SnowflakeSchema.parse(this.shopReservedTo) } : {})
         }
 
         const [error, newShop] = await createShop({
@@ -153,7 +153,7 @@ export class ShopCreateFlow extends UserFlow {
             emoji: this.shopEmoji,
             description: this.shopDescription,
             ...optionals
-        }, this.selectedCurrency.id)
+        })
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

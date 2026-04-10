@@ -9,13 +9,15 @@ import { APIRole, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, M
 import { setAccountCurrencyAmount } from "../services/accounts-services.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
+import { validate } from "@/lib/validation.js"
 
 
 export class AccountGiveFlow extends UserFlow {
     public id = "account-give"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    protected selectedCurrency: Currency | null = null
+    protected selectedCurrency: Currency | null = null 
     
     private target: User | null = null
     protected amount: number | null = null
@@ -92,11 +94,13 @@ export class AccountGiveFlow extends UserFlow {
         
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(this.target.id)
+        const targetId = SnowflakeSchema.parse(this.target.id)
+
+        const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
-        const [error2, _] = await setAccountCurrencyAmount(this.target.id, this.selectedCurrency.id, currentBalance + this.amount)
+        const currentBalance = account.currencies[this.selectedCurrency.id] || 0
+        const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, currentBalance + this.amount)
 
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
@@ -163,11 +167,14 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
 
         for (const userId of targetUsersIds) {
-            const [error, account] = await getOrCreateAccount(userId)
+            const [error, targetId] = validate(SnowflakeSchema, userId)
             if (error) return updateAsErrorMessage(interaction, error.message)
+
+            const [error1, account] = await getOrCreateAccount(targetId)
+            if (error1) return updateAsErrorMessage(interaction, error1.message)
             
-            const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
-            const [error2, _] = await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
+            const currentBalance = account.currencies[this.selectedCurrency.id] || 0
+            const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, currentBalance + this.amount)
 
             if (error2) return updateAsErrorMessage(interaction, error2.message)
         }

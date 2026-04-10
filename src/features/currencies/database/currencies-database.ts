@@ -1,52 +1,50 @@
+import { CurrenciesDatabase } from "@/core/database/database.types.js"
 import { ApiError } from "@/database/database-types.js"
-import { CurrenciesDatabase, CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Exact } from "@/lib/types/index.js"
+import { BrandedNanoId } from "@/schemas/utils.js"
 import { nanoid } from "nanoid"
 
 
 
-export function dbGetCurrencyId(db: CurrenciesDatabase, currencyName: string) {
-    let currencyId: string | undefined = undefined
-    db.list().forEach(currency => {
-        if (currency.name == currencyName) currencyId = currency.id
-    })
-    return currencyId 
+
+export function dbHasCurrencyWithName(db: CurrenciesDatabase, currencyName: string) {
+    for (const [_id, currency] of db.list()) {
+        if (currency.name === currencyName) {
+            return true
+        }
+    }
+    return false
 }
 
-export async function dbCreateCurrency<T extends CurrencyOptions>(db: CurrenciesDatabase, options: Exact<T, CurrencyOptions>) {
-    if (dbGetCurrencyId(db, options.name) != undefined) return err(new ApiError("CurrencyAlreadyExists"))
+export async function dbCreateCurrency<T extends Currency>(db: CurrenciesDatabase, options: Exact<T, Currency>) {
+    if (dbHasCurrencyWithName(db, options.name)) return err(new ApiError("CurrencyAlreadyExists"))
     
-    const newCurrencyId = nanoid()
+    const newCurrencyId = nanoid<BrandedNanoId>()
     const newCurrency = { id: newCurrencyId, ...options }
 
-    db.set(newCurrencyId, newCurrency)
-    const [error] = await db.save()
+    const [error] = await db.set(newCurrencyId, newCurrency)
     if (error) return err(error)
 
     return ok(newCurrency)
 }
 
-export async function dbRemoveCurrency(db: CurrenciesDatabase, currencyId: string) {
+export async function dbRemoveCurrency(db: CurrenciesDatabase, currencyId: BrandedNanoId) {
     if (!db.get(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
 
-    db.delete(currencyId)
-    const [error] = await db.save()
+    const [error] = await db.delete(currencyId)
     if (error) return err(error)
 
     return ok(true)
 }
 
-export async function dbUpdateCurrency(db: CurrenciesDatabase, currencyId: string, options: Partial<CurrencyOptions>) {  
+export async function dbUpdateCurrency(db: CurrenciesDatabase, currencyId: BrandedNanoId, options: Partial<Currency>) {  
     const currency = db.get(currencyId)
-    
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
     
-    const [error1, updated] = await db.patch(currencyId, options)
-    if (error1) return err(error1)
-
-    const [error2] = await db.save()
-    if (error2) return err(error2)
+    const [error, updated] = await db.patch(currencyId, options)
+    if (error) return err(error)
 
     return ok(updated)
 }

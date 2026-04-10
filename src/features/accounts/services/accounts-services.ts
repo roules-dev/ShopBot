@@ -1,46 +1,46 @@
-import { ApiError } from "@/database/database-types.js"
-import { Product } from "@/features/shops/database/products-types.js"
-import { err, ok } from "@/lib/error-handling.js"
-import { Snowflake } from "discord.js"
+import { ApiError, NanoId } from "@/database/database-types.js"
+import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { Account } from "../database/accounts-type.js"
 import { updateBalance, updateAccount, getAccountsWithCurrency } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { BrandedNanoId, BrandedSnowflake } from "@/schemas/utils.js"
+import { getItems } from "@/core/services/items/items.services.js"
 
-export async function setAccountCurrencyAmount(id: Snowflake, currencyId: string, amount: number) {
+export async function setAccountCurrencyAmount(id: BrandedSnowflake, currencyId: BrandedNanoId, amount: number) {
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
-    const newCurrencyBalance = { 
-        item: currency, 
-        amount: +amount.toFixed(2)
-    }
-
-    const [error, account] = await updateBalance(id, "currencies", currencyId, newCurrencyBalance)
+    const [error, account] = await updateBalance(id, "currencies", currencyId, +amount.toFixed(2))
     if (error) return err(error)
 
     return ok({ account, currency })
 }
 
-export async function setAccountItemAmount(id: Snowflake, product: Product, amount: number) {
-    const newItemBalance = { 
-        item: product, 
-        amount: +amount.toFixed(2)
-    }
+export async function setAccountItemAmount(id: BrandedSnowflake, itemId: NanoId, amount: number) {
+    const item = getItems().get(itemId)
+    if (!item) return err(new ApiError("ItemDoesNotExist"))
 
-    const [error, account] = await updateBalance(id, "inventory", product.id, newItemBalance)
+    const [error, account] = await updateBalance(id, "inventory", itemId, +amount.toFixed(2))
     if (error) return err(error)
 
-    return ok({ account, product })
+    return ok({ account, item: itemId })
 }
 
-export async function emptyAccount(id: Snowflake, empty: "currencies" | "inventory" | "all") {
+export async function emptyAccount(id: BrandedSnowflake, empty: keyof Account | "all") {
     let updatedAccount: Partial<Account> = {}
 
-    if (empty === "currencies" || empty === "all") {
-        updatedAccount["currencies"] = new Map()
-    }
-    if (empty === "inventory" || empty === "all") {
-        updatedAccount["inventory"] = new Map()
+    switch (empty) {
+        case "currencies":
+            updatedAccount.currencies = {}
+            break
+        case "inventory":
+            updatedAccount.inventory = {}
+            break
+        case "all":
+            updatedAccount = { currencies: {}, inventory: {} }
+            break
+        default:
+            assertNeverReached(empty)
     }
 
     const [error, account] = await updateAccount(id, updatedAccount)
@@ -49,14 +49,14 @@ export async function emptyAccount(id: Snowflake, empty: "currencies" | "invento
     return ok(account) 
 }
 
-export async function takeCurrencyFromAccounts(currencyId: string) {
+export async function takeCurrencyFromAccounts(currencyId: BrandedNanoId) {
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
     const accountsWithCurrency = getAccountsWithCurrency(currencyId)
 
     for (const [id] of accountsWithCurrency) {
-        const [error] = await updateBalance(id, "currencies", currencyId, { item: currency, amount: 0 })
+        const [error] = await updateBalance(id, "currencies", currencyId, 0)
         if (error) return err(error)
     }
 

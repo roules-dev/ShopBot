@@ -287,7 +287,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 placeholder: t("defaultComponents.selectCurrency"),
                 time: 120_000,
             },
-            getCurrencies(),
+            getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency

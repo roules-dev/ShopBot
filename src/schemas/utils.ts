@@ -14,3 +14,5 @@ export const SnowflakeSchema = z
 export type BrandedSnowflake = z.infer<typeof SnowflakeSchema>
 
 export const NanoIdSchema = z.nanoid().brand("NanoId")
+
+export type BrandedNanoId = z.infer<typeof NanoIdSchema>

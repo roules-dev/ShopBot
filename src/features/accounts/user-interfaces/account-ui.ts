@@ -1,15 +1,15 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { Account } from "../database/accounts-type.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"
@@ -40,7 +40,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        const [error, account] = await getOrCreateAccount(this.user.id)
+        const [error, account] = await getOrCreateAccount(SnowflakeSchema.parse(this.user.id))
         if (error) {
             await replyErrorMessage(interaction, error.message)
             return false
@@ -130,13 +130,15 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     protected override getInputSize(): number {
         switch (this.mode) {
             case this.modes.CURRENCIES:
-                return getCurrencies().size
+                return Object.keys(this.account?.currencies ?? {}).length
             case this.modes.INVENTORY:
-                return this.account?.inventory.size ?? 0
+                return Object.keys(this.account?.inventory ?? {}).length
         }
     }
 
     private getAccountFields(): APIEmbedField[] {
+        // TODO need hydration
+
         if (!this.account || !this.account.currencies.size) return [{ name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }]
         const fields: APIEmbedField[] = []
 
@@ -150,6 +152,8 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     private getInventoryFields(): APIEmbedField[] { 
+        // TODO need hydration
+
         if (!this.account || !this.account.inventory.size) return [{ name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }]
         const fields: APIEmbedField[] = []
 

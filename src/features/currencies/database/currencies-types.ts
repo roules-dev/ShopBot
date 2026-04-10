@@ -1,26 +1,20 @@
-import { DatabaseJsonBody, DatabaseLegacy, NanoId } from "@/database/database-types.js"
-import { ok } from "@/lib/error-handling.js"
-
-export type Currency = {
-    id: NanoId
-    name: string
-    emoji: string | null
-}
-
-export type CurrencyOptions = Omit<Currency, "id">
-
-export interface CurrenciesDatabaseJsonBody extends DatabaseJsonBody {
-    [currencyId: NanoId]: Currency
-}
+import z from "zod"
+import { CurrencyRawSchema } from "../schemas/currencies-schemas.js"
 
 
-export class CurrenciesDatabase extends DatabaseLegacy<NanoId, Currency> {
-    public toJSON(): CurrenciesDatabaseJsonBody {
-        const currencies: CurrenciesDatabaseJsonBody = Object.fromEntries(this.data)
-        return currencies
-    }
+export type Currency = z.infer<typeof CurrencyRawSchema>
+// export interface CurrenciesDatabaseJsonBody extends DatabaseJsonBody {
+//     [currencyId: NanoId]: Currency
+// }
 
-    protected parseRaw(databaseRaw: CurrenciesDatabaseJsonBody){
-        return ok(new Map(Object.entries(databaseRaw)))
-    }
-}
+
+// export class CurrenciesDatabase extends DatabaseLegacy<NanoId, Currency> {
+//     public toJSON(): CurrenciesDatabaseJsonBody {
+//         const currencies: CurrenciesDatabaseJsonBody = Object.fromEntries(this.data)
+//         return currencies
+//     }
+
+//     protected parseRaw(databaseRaw: CurrenciesDatabaseJsonBody){
+//         return ok(new Map(Object.entries(databaseRaw)))
+//     }
+// }

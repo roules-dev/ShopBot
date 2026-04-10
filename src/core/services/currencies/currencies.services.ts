@@ -1,29 +1,26 @@
 import { currenciesDatabase } from "@/core/database/init-databases.js"
-import { dbGetCurrencyId, dbCreateCurrency, dbRemoveCurrency, dbUpdateCurrency } from "@/features/currencies/database/currencies-database.js"
-import { CurrencyOptions } from "@/features/currencies/database/currencies-types.js"
+import { dbCreateCurrency, dbRemoveCurrency, dbUpdateCurrency } from "@/features/currencies/database/currencies-database.js"
+import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { Exact } from "@/lib/types/constraints.js"
+import { BrandedNanoId } from "@/schemas/utils.js"
 
 export function getCurrencies() {
     return currenciesDatabase.list()
 }
 
-export function getCurrencyId(currencyName: string) {
-    return dbGetCurrencyId(currenciesDatabase, currencyName)
-}
-
-export function createCurrency<T extends CurrencyOptions>(
-    options: Exact<T, CurrencyOptions>
+export function createCurrency<T extends Currency>(
+    options: Exact<T, Currency>
 ) {
     return dbCreateCurrency(currenciesDatabase, options)
 }
 
-export function removeCurrency(currencyId: string) {
+export function removeCurrency(currencyId: BrandedNanoId) {
     return dbRemoveCurrency(currenciesDatabase, currencyId)
 }
 
 export function updateCurrency(
-    currencyId: string,
-    options: Partial<CurrencyOptions>
+    currencyId: BrandedNanoId,
+    options: Partial<Currency>
 ) {
     return dbUpdateCurrency(currenciesDatabase, currencyId, options)
 }

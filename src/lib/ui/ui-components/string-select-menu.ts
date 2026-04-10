@@ -1,4 +1,4 @@
-import { Emojiable, Identifiable, Labelled, MutableOrReadonlyMap } from "@/lib/types/index.js"
+import { Emojiable, Labelled, MutableOrReadonlyMap } from "@/lib/types/index.js"
 import { subMap } from "@/utils/maps.js"
 import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
@@ -18,7 +18,7 @@ export interface ExtendedSelectMenuOptions {
     time: number
 }
 
-export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled & Emojiable> extends ExtendedComponent {
+export class ExtendedStringSelectMenuComponent<T extends Labelled & Emojiable> extends ExtendedComponent {
     componentType = ComponentType.StringSelect as const
     customId: string
     component: StringSelectMenuBuilder
@@ -48,7 +48,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
             this.pageCount = Math.ceil(map.size / (MAX_OPTIONS_PER_PAGE - 2))
         }
 
-        this.component = this.createSelectMenu(customId, placeholder, map)
+        this.component = this.createSelectMenu(placeholder, map)
     }
 
     onCollect(interaction: StringSelectMenuInteraction): void {
@@ -67,7 +67,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
                     break
             }
 
-            this.component = this.createSelectMenu(this.customId, this.placeholder, this.map)
+            this.component = this.createSelectMenu(this.placeholder, this.map)
             return this.update(interaction)
         }
 
@@ -81,9 +81,9 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
 
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 
-    private createSelectMenu(id: string, placeholder: string, map: MutableOrReadonlyMap<string, T>): StringSelectMenuBuilder {
+    private createSelectMenu(placeholder: string, map: MutableOrReadonlyMap<string, T>): StringSelectMenuBuilder {
         const selectMenu = new StringSelectMenuBuilder()
-            .setCustomId(id)
+            .setCustomId(this.customId)
             .setPlaceholder(placeholder)
             .addOptions(this.getStringSelectOptions(map))
     

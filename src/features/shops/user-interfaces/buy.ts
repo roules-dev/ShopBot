@@ -13,8 +13,8 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInte
 import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
-import { processPurchase } from "../services/buy.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
+import { processPurchase } from "@/core/services/shops/buy.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -22,7 +22,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     protected override components = new Map()
 
     private selectedShop: DeepReadonly<Shop>
-    private selectedProduct: Product | null = null
+    private selectedProduct: Product | null = null // hydration needed
 
     private quantity: number = 1
 

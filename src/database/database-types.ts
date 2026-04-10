@@ -4,11 +4,12 @@ import { PrettyLog } from "@/lib/pretty-log.js"
 import { DeepReadonly, MapKey, MapValue } from "@/lib/types/index.js"
 import { AnyStringSchema, RecordSchema } from "@/lib/types/zod.js"
 import { validate } from "@/lib/validation.js"
+import { NanoIdSchema } from "@/schemas/utils.js"
 import { PathLike } from "fs"
 import fs from "fs/promises"
 import z from "zod"
 
-export type NanoId = string // z.infer<typeof NanoIdSchema>
+export type NanoId = z.infer<typeof NanoIdSchema>
 
 const API_ERRORS = { 
     ShopDoesNotExist: {
@@ -31,6 +32,11 @@ const API_ERRORS = {
     CurrencyAlreadyExists: {
         message: "Currency already exists",
         status: 409
+    },
+
+    ItemDoesNotExist: {
+        message: "Item does not exist",
+        status: 404
     },
 
     ProductDoesNotExist: {
@@ -59,6 +65,7 @@ const API_ERRORS = {
 
 
 const DATABASE_ERRORS = {
+    
     InvalidDatabase: {
         message: "Invalid database",
         status: 500
@@ -70,6 +77,10 @@ const DATABASE_ERRORS = {
     ObjectNotFound: {
         message: "Object not found",
         status: 404
+    },
+    UnexpectedError: {
+        message: "Unexpected error",
+        status: 500
     }
 }
 
@@ -199,17 +210,17 @@ export abstract class DatabaseLegacy<
             
         if (newIndex < 0 || newIndex > this.size() - 1) return err(new ApiError("InvalidPosition"))
         
-        const shopsArray = Array.from(this.data)
-        const shopIndex = shopsArray.findIndex(([_id, ]) => _id === id)
+        const itemsArray = Array.from(this.data)
+        const itemIndex = itemsArray.findIndex(([_id, ]) => _id === id)
         
-        if (shopIndex === -1) return err(new ApiError("ShopDoesNotExist"))
+        if (itemIndex === -1) return err(new ApiError("ShopDoesNotExist"))
         
-        const [shop] = shopsArray.splice(shopIndex, 1)
-        if (shop === undefined) return err(new ApiError("ShopDoesNotExist"))
+        const [item] = itemsArray.splice(itemIndex, 1)
+        if (item === undefined) return err(new ApiError("ShopDoesNotExist"))
     
-        shopsArray.splice(newIndex, 0, shop);
+        itemsArray.splice(newIndex, 0, item);
     
-        this.data = new Map(shopsArray)
+        this.data = new Map(itemsArray)
     
         const [error] = await this.save()
         if (error) return err(error)
@@ -240,7 +251,7 @@ export abstract class DatabaseLegacy<
 // ---
 // implementation for next version
 
-export interface Balance2<T> {
+export interface Balance<T> {
     resource: T 
     amount: number
 }
@@ -309,8 +320,19 @@ export class JsonDatabase<
     public async update(id: MapKey<typeof this.data>, fn: (draft: MapValue<typeof this.data>) => void) {
         const item = this.data.get(id)
         if (!item) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        
+        try {
+            fn(item)
 
-        fn(item)
+            // TODO : validate item after update, if invalid, throw error with validation details
+
+        } catch (e) {
+            // TODO : rollback
+            if (e instanceof Error) {
+                return err(e)
+            }
+            return err(new DatabaseError("UnexpectedError", this.path, `Unknown error during update function execution: ${JSON.stringify(e)}`))
+        }
 
         const [error, updated] = await this.set(id, item)
         if (error) return err(error)
@@ -339,6 +361,33 @@ export class JsonDatabase<
     public list() {
         return this.data as DeepReadonly<Map<MapKey<typeof this.data>, MapValue<typeof this.data>>>
     }
+
+    // not a big fan of this function being in the database class
+    public async reorder(id: MapKey<typeof this.data>, newIndex: number) {
+        if (!this.data.has(id)) {
+            return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        }
+            
+        if (newIndex < 0 || newIndex > this.size() - 1) return err(new ApiError("InvalidPosition"))
+        
+        const itemsArray = Array.from(this.data)
+        const itemIndex = itemsArray.findIndex(([_id, ]) => _id === id)
+        
+        if (itemIndex === -1) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+        
+        const [item] = itemsArray.splice(itemIndex, 1)
+        if (item === undefined) return err(new DatabaseError("ObjectNotFound", this.path, `id: ${id}`))
+    
+        itemsArray.splice(newIndex, 0, item);
+    
+        this.data = new Map(itemsArray)
+    
+        const [error] = await this.save()
+        if (error) return err(error)
+    
+        return ok(true)
+    }
+
     
     public size(): number {
         return this.data.size

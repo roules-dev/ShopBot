@@ -1,121 +1,67 @@
-import { t } from "@/core/i18n/i18n.js"
-import { ApiError } from "@/database/database-types.js"
-import { update } from "@/database/helpers.js"
-import { CurrenciesDatabase } from "@/features/currencies/database/currencies-types.js"
-import { Shop, ShopOptions, ShopsDatabase } from "@/features/shops/database/shops-types.js"
+import { ShopsDatabase } from "@/core/database/database.types.js"
+import { ApiError, NanoId } from "@/database/database-types.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { DeepReadonly, Exact } from "@/lib/types/index.js"
-import { Snowflake } from "discord.js"
+import { Exact } from "@/lib/types/constraints.js"
 import { nanoid } from "nanoid"
+import { ShopOptions } from "./shops-types.js"
 
-export function dbGetShopId(db: ShopsDatabase, shopName: string) {
-    let shopId: string | undefined = undefined
-    db.list().forEach(shop => {
-        if (shop.name === shopName) shopId = shop.id
-    })
-    return shopId
+export function dbHasShopWithName(db: ShopsDatabase, shopName: string) {
+    for (const [_id, shop] of db.list()) {
+        if (shop.name === shopName) {
+            return true
+        }
+    }
+    return false
 }
 
 export async function dbCreateShop<T extends ShopOptions> (
-    shopsDb: ShopsDatabase, 
-    currenciesDb: CurrenciesDatabase, 
-    options: Exact<T, ShopOptions>,
-    currencyId: Snowflake // will be removed
+    shopsDb: ShopsDatabase,
+    options: Exact<T, ShopOptions>
 ) {
-    if (dbGetShopId(shopsDb, options.name) != undefined) return err(new ApiError("ShopAlreadyExists"))
-    
-    const currency = currenciesDb.get(currencyId)
-    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
+    if (dbHasShopWithName(shopsDb, options.name)) return err(new ApiError("ShopAlreadyExists"))
 
-    const newShopId = nanoid()    
+    const newShopId = nanoid<NanoId>()    
 
     const newShop = {
-        id: newShopId,
         ...options,
-        currency: currency,
         discountCodes: {},
-        products: new Map()
+        products: {}
     }
-
-    shopsDb.set(newShopId, newShop)
-
     
-    const [error] = await shopsDb.save()
+    const [error] = await shopsDb.set(newShopId, newShop)
     if (error) return err(error)
     
 
     return ok(newShop)
 }
 
-export async function dbRemoveShop(db: ShopsDatabase, shopId: string) {
+export async function dbRemoveShop(db: ShopsDatabase, shopId: NanoId) {
     if (!db.get(shopId)) return err(new ApiError("ShopDoesNotExist"))
 
-    db.delete(shopId)
-
-    const [error] = await db.save()
+    const [error] = await db.delete(shopId)
     if (error) return err(error)
 
     return ok(true)
 }
 
 
-// works, but the updateShop function dbShould only receive validated fields, 
-// which means the special transformer here should not exist, 
-// because the test should be done before calling the updateShop function,db not inside it.
-// We'll be able to do that once Zod validation is implemented, enabling us to work with 
-// branded strings types (thus an Id will indeed be an Id and a value for reservedTo will be a snowflake or null or undefined).
 
-const SHOP_FIELD_HANDLERS = {
-    reservedTo: (value: string | undefined | null) => {
-        if (value === undefined || value === null) return null
-        return value === t("defaultComponents.unset") ? null : value
-    }
-}
-
-export async function dbUpdateShop(db: ShopsDatabase, shopId: string, options: Partial<ShopOptions>) {
+export async function dbUpdateShop(db: ShopsDatabase, shopId: NanoId, options: Partial<ShopOptions>) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
-    
-    update(shop, options, SHOP_FIELD_HANDLERS) // TODO change this
-        
-    const [error] = await db.save()
+
+    const [error, updatedShop] = await db.patch(shopId, options)
     if (error) return err(error)
     
-    return ok(shop)
+    return ok(updatedShop)
 }
 
-export async function dbUpdateShopCurrency(shopsDb: ShopsDatabase, currenciesDb: CurrenciesDatabase, shopId: string, currencyId: string) {
-    const shop = shopsDb.get(shopId)
-    if (!shop) return err(new ApiError("ShopDoesNotExist"))
-    
-    const currency = currenciesDb.get(currencyId)
-    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
-    const [error1, updated] = await shopsDb.patch(shopId, { currency })
-    if (error1) return err(error1)
-
-    const [error2] = await shopsDb.save()
-    if (error2) return err(error2)
-    
-    return ok(updated)
-}
-
-export function dbGetShopsWithCurrency(db: ShopsDatabase, currencyId: string) {
-    const shopsWithCurrency: Map<string, DeepReadonly<Shop>> = new Map()
-
-    db.list().forEach((shop, shopId) => {
-        if (shop.currency.id == currencyId) {
-                shopsWithCurrency.set(shopId, shop)
-        }
-    })
-    return shopsWithCurrency
-}
-
-export async function dbUpdateShopPosition(db: ShopsDatabase, shopId: string, index: number) {
+export async function dbUpdateShopPosition(db: ShopsDatabase, shopId: NanoId, index: number) {
     return await db.reorder(shopId, index)
 }
 
-export async function dbCreateDiscountCode(db: ShopsDatabase, shopId: string, discountCode: string, discountAmount: number) {
+export async function dbCreateDiscountCode(db: ShopsDatabase, shopId: NanoId, discountCode: string, discountAmount: number) {
     const shop = db.get(shopId) 
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
@@ -124,13 +70,10 @@ export async function dbCreateDiscountCode(db: ShopsDatabase, shopId: string, di
     })
     if (error1) return err(error1)
 
-    const [error2] = await db.save()
-    if (error2) return err(error2)
-    
     return ok(true)
 }
 
-export async function dbRemoveDiscountCode(db: ShopsDatabase, shopId: string, discountCode: string) {
+export async function dbRemoveDiscountCode(db: ShopsDatabase, shopId: NanoId, discountCode: string) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
@@ -139,8 +82,6 @@ export async function dbRemoveDiscountCode(db: ShopsDatabase, shopId: string, di
     })
     if (error1) return err(error1)
 
-    const [error2] = await db.save()
-    if (error2) return err(error2)
     
     return ok(true)
 }

@@ -10,6 +10,7 @@ import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFla
 import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts-services.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
 
 
 export class AccountTakeFlow extends UserFlow {
@@ -58,7 +59,7 @@ export class AccountTakeFlow extends UserFlow {
     protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(),
+            getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
                 this.selectedCurrency = selectedCurrency
@@ -92,10 +93,10 @@ export class AccountTakeFlow extends UserFlow {
 
                 if (!this.target || !this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                const [error, account] = await getOrCreateAccount(this.target.id)
+                const [error, account] = await getOrCreateAccount(SnowflakeSchema.parse(this.target.id))
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
-                this.amount = account.currencies.get(this.selectedCurrency.id)?.amount || 0
+                this.amount = account.currencies[this.selectedCurrency.id] || 0
                 this.success(interaction)
             }
         )
@@ -115,7 +116,7 @@ export class AccountTakeFlow extends UserFlow {
 
                 if (!this.target) return updateAsErrorMessage(modalSubmitInteraction, t("errorMessages.insufficientParameters"))                    
 
-                const [error] = await emptyAccount(this.target.id, "currencies")
+                const [error] = await emptyAccount(SnowflakeSchema.parse(this.target.id), "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
                 await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target.id) }))
@@ -145,13 +146,15 @@ export class AccountTakeFlow extends UserFlow {
 
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(this.target.id)
+        const targetId = SnowflakeSchema.parse(this.target.id)
+
+        const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
         const newBalance = Math.max(currentBalance - this.amount, 0)
         
-        const [error2, _] = await setAccountCurrencyAmount(this.target.id, this.selectedCurrency.id, newBalance)
+        const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, newBalance)
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         const successMessage = t(

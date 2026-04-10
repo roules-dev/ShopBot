@@ -11,7 +11,7 @@ export abstract class UserFlow extends UserInterface {
 // TODO : rework UserFlows to get more generic
 // * should have a constructor that takes the interaction
 //    * the constructor is responsible for validating that the interaction has all the correct parameters and makes them available to the flow
-
+// * should hide some of the work that is done in the start method of current flows (call init and update components, create collectors, etc) (same way as for message UI)
 
 // export abstract class UserFlow2 extends UserInterface {
 //     constructor(interaction: ChatInputCommandInteraction) 
