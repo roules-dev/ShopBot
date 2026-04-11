@@ -13,6 +13,9 @@ import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
+// TODO : Update: shops no longer have a default currency
+
+
 export class ShopCreateFlow extends UserFlow {
     public id = "shop-create"
     protected components: Map<string, ExtendedComponent> = new Map()

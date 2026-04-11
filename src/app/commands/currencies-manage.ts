@@ -100,7 +100,5 @@ export async function createCurrencyCommand(_client: Client, interaction: ChatIn
     const currencyNameString = bold(formattedEmojiableName(currency))
     await replySuccessMessage(interaction, t("userFlows.currencyCreate.messages.success", { currency: currencyNameString }))
 
-
-
 }
 

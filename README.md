@@ -1,4 +1,4 @@
-# ShopBot 2
+# ShopBot 3
 ## Introduction
 
 ### Hi 👋 <br>
@@ -125,6 +125,7 @@ If you have any problem with it, feel free to message me on Discord, or open an 
 
 <br>
 
+<!-- TODO : Update documentation -->
 ## 📝 Documentation
 
 ### Main features and commands (Admin only)

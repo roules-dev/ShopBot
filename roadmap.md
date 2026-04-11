@@ -1,4 +1,4 @@
-# RoadMap and planned features
+# Roadmap and planned features
 
 ## Roadmap
 
