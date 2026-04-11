@@ -1,7 +1,7 @@
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop-schemas.js"
 import { ShopCreateFlow } from "@/features/shops/user-flows/shop-create.js"
 import { DiscountCodeCreateFlow, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
-import { EDIT_SHOP_OPTIONS, EditShopCurrencyFlow, EditShopFlow, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
+import { EDIT_SHOP_OPTIONS, EditShopFlow, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { t } from "@/core/i18n/i18n.js"
@@ -86,10 +86,6 @@ export const data = new SlashCommandBuilder()
                 .setDescription("The new tole the shop will be reserved to. Leave empty to delete")
             )
         )
-        .addSubcommand(subcommand => subcommand
-            .setName("currency")
-            .setDescription("Change Currency. You will select the shop later")
-        )
     )
     .addSubcommand(subcommand => subcommand
         .setName("create-discount-code")
@@ -137,12 +133,6 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             break
         default:
             if (subCommandGroup == "edit") {
-                if (subCommand == "currency") {
-                    const editShopCurrencyFlow = new EditShopCurrencyFlow()
-                    editShopCurrencyFlow.start(interaction)
-                    break
-                }
-
                 const editShopFlow = new EditShopFlow()
                 editShopFlow.start(interaction)
                 break

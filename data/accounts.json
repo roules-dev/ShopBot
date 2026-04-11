@@ -1,37 +1,13 @@
 {
     "628298729405022216": {
         "currencies": {
-            "0f2SNbp60vAwWjhKjRR0u": {
-                "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 49136.9
-            },
-            "7kiuf_CPO2ocrr75mTXuV": {
-                "item": "7kiuf_CPO2ocrr75mTXuV",
-                "amount": 10000000
-            }
+            "0f2SNbp60vAwWjhKjRR0u": 49136.9,
+            "7kiuf_CPO2ocrr75mTXuV": 10000000
         },
         "inventory": {
-            "nxtWWm9IEe3qSLh4fj5qn": {
-                "item": {
-                    "id": "nxtWWm9IEe3qSLh4fj5qn",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 17
-            },
-            "SQWzMyipYZO3fnCmhAttr": {
-                "item": {
-                    "id": "SQWzMyipYZO3fnCmhAttr",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 1
-            },
-            "Uasu0unlCLGnsJNQb_3S0": {
-                "item": {
-                    "id": "Uasu0unlCLGnsJNQb_3S0",
-                    "shopId": "-hw7m2WLOmaNKPSbFdajZ"
-                },
-                "amount": 1
-            }
+            "nxtWWm9IEe3qSLh4fj5qn": 17,
+            "SQWzMyipYZO3fnCmhAttr": 1,
+            "Uasu0unlCLGnsJNQb_3S0": 1
         }
     },
     "1109842206832988272": {
@@ -48,19 +24,10 @@
     },
     "1429578846767677511": {
         "currencies": {
-            "0f2SNbp60vAwWjhKjRR0u": {
-                "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 9999451
-            }
+            "0f2SNbp60vAwWjhKjRR0u": 9999451
         },
         "inventory": {
-            "nxtWWm9IEe3qSLh4fj5qn": {
-                "item": {
-                    "id": "nxtWWm9IEe3qSLh4fj5qn",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 100
-            }
+            "nxtWWm9IEe3qSLh4fj5qn": 100
         }
     }
 }

@@ -67,7 +67,7 @@ export class ShopCreateFlow extends UserFlow {
     protected override initComponents() {
         const selectCurrencyMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(), // TODO hydration needed
+            getCurrencies(), 
             (interaction) => this.updateInteraction(interaction),
             (interaction: StringSelectMenuInteraction, selectedCurrency: Currency) => {
                 this.selectedCurrency = selectedCurrency

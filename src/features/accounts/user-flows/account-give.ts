@@ -1,15 +1,17 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
-import { APIRole, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, StringSelectMenuInteraction, User, bold, roleMention, userMention } from "discord.js"
+import { APIRole, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, User, bold, roleMention, userMention } from "discord.js"
 import { setAccountCurrencyAmount } from "../services/accounts-services.js"
 
 
@@ -17,7 +19,7 @@ export class AccountGiveFlow extends UserFlow {
     public id = "account-give"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    protected selectedCurrency: Currency | null = null 
+    protected selectedCurrency: Currency & Identifiable<NanoId> | null = null 
     
     private target: User | null = null
     protected amount: number | null = null
@@ -60,7 +62,7 @@ export class AccountGiveFlow extends UserFlow {
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
             getCurrencies(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency) => {
+            (interaction, selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             }

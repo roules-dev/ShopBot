@@ -1,12 +1,13 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, bold } from "discord.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, bold } from "discord.js"
 import { Shop } from "../database/shops-types.js"
 
 
@@ -14,7 +15,7 @@ export class ShopRemoveFlow extends UserFlow {
     public id = "shop-remove"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
 
     protected locale = "userFlows.shopRemove" as const
 

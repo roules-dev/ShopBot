@@ -1,8 +1,9 @@
 import { t } from "@/core/i18n/i18n.js"
 import { createDiscountCode, getShops, removeDiscountCode } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
@@ -15,7 +16,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
     public override id: string = "discount-code-create"
     protected override components: Map<string, ExtendedComponent> = new Map()
     
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
     private discountCode: string | null = null
     private discountAmount: number | null = null
 
@@ -125,7 +126,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     private stage: DiscountCodeRemoveStage = DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP
     private componentsByStage: Map<DiscountCodeRemoveStage, Map<string, ExtendedComponent>> = new Map()
 
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
     private selectedDiscountCode: string | null = null
 
     private response: InteractionCallbackResponse | null = null

@@ -6,7 +6,7 @@
     },
     "9-fiMoU-faP7vOVhO58Su": {
         "name": "Between Past and Future",
-        "emoji": null,
+        "emoji": "📖",
         "description": "Hannah Arendt"
     },
     "SQWzMyipYZO3fnCmhAttr": {
@@ -67,59 +67,26 @@
     "5qpg3DPSth4IG1pAyesc5": {
         "name": "Boss",
         "emoji": "🧑",
-        "description": "Earn the boss role by buying this !",
-        "action": {
-            "type": "give-role",
-            "options": {
-                "roleId": "1197195793191420035"
-            }
-        }
+        "description": "Earn the boss role by buying this !"
     },
     "iU_U1_JAKqJ1xXj8ePrRf": {
         "name": "Earn 50 $",
         "emoji": "💵",
-        "description": "totally not a scam",
-        "action": {
-            "type": "give-currency",
-            "options": {
-                "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 50
-            }
-        }
+        "description": "totally not a scam"
     },
     "m3AmJIuCmlpXYh89Kf-HZ": {
         "name": "admin give 10000$",
         "emoji": "💵",
-        "description": null,
-        "action": {
-            "type": "give-currency",
-            "options": {
-                "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 10000
-            }
-        }
+        "description": null
     },
     "l4b1O42OyoCD1coPstpVx": {
         "name": "Earn Cool Guy Role",
         "emoji": "😎",
-        "description": "You will be ultra cool",
-        "action": {
-            "type": "give-role",
-            "options": {
-                "roleId": "1358489735542341683"
-            }
-        }
+        "description": "You will be ultra cool"
     },
     "XNOw9i0NJGzCbXqSLAWOo": {
         "name": "earn 1 $ but it's very expensive",
         "emoji": "🤑",
-        "description": "if u can, do it",
-        "action": {
-            "type": "give-currency",
-            "options": {
-                "currencyId": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 1000001
-            }
-        }
+        "description": "if u can, do it"
     }
 }

@@ -1,4 +1,4 @@
-import { JsonDatabase } from "@/database/database-types.js";
+import { JsonDatabase } from "@/database/json-database.js";
 import { AccountRawSchema } from "@/features/accounts/schemas/accounts-schemas.js";
 import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies-schemas.js";
 import { ItemRawSchema } from "@/features/items/schemas/items-schemas.js";

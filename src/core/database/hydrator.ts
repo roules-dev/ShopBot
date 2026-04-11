@@ -1,11 +1,15 @@
-import { ApiError, Balance, NanoId } from "@/database/database-types.js"
+
+import { NanoId, ApiError, Balance } from "@/database/database-types.js"
+import { Account } from "@/features/accounts/database/accounts-type.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { Item } from "@/features/items/database/items-types.js"
 import { Product } from "@/features/shops/database/products-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
-import { BrandedSnowflake, NanoIdSchema } from "@/schemas/utils.js"
-import { AccountsDatabase, CurrenciesDatabase, ItemsDatabase, ShopsDatabase } from "./database.types.js"
+import { Labelled, Identifiable } from "@/lib/types/core.js"
 import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
-import { Item } from "@/features/items/database/items-types.js"
+import { NanoIdSchema, BrandedSnowflake } from "@/schemas/utils.js"
+import { CurrenciesDatabase, ItemsDatabase, ShopsDatabase, AccountsDatabase } from "./database.types.js"
+
 
 
 export class Hydrator {
@@ -129,12 +133,12 @@ export class Hydrator {
         const [error1, shopWithProducts] = this.hydrateShop(shopId)
         if (error1) return err(error1)
 
-        const resolvedProducts: Map<NanoId, AwaitedObjectResultReturn<Hydrator, "resolveProductItem">> = new Map()
+        const resolvedProducts: Map<NanoId, AwaitedObjectResultReturn<Hydrator, "resolveProductItem"> & Labelled & Identifiable<NanoId>> = new Map()
         for (const productId of shopWithProducts.products.keys()) {
             const [error, resolvedProduct] = this.resolveProductItem(shopId, productId)
             if (error) return err(error)
 
-            resolvedProducts.set(productId, resolvedProduct)
+            resolvedProducts.set(productId, {...resolvedProduct, name: resolvedProduct.item.name, id: productId})
         }
 
         return ok({
@@ -143,12 +147,11 @@ export class Hydrator {
         })
     }
 
-    public hydrateAccount(id: BrandedSnowflake) {
-        const accountRaw = this.accountsDb.get(id)
-        if (!accountRaw) return err(new ApiError("AccountDoesNotExist"))
 
+    // if required: maybe inject id inside items and currencies ?
+    public getHydratedAccountCurrencies(account: Pick<Account, "currencies">) {
         const currencies: Map<NanoId, Balance<Currency>> = new Map()
-        for (const [_currencyId, amount] of Object.entries(accountRaw.currencies)) {
+        for (const [_currencyId, amount] of Object.entries(account.currencies)) {
             const currencyId = NanoIdSchema.parse(_currencyId)
 
             const currency = this.currenciesDb.get(currencyId)
@@ -156,9 +159,12 @@ export class Hydrator {
             
             currencies.set(currencyId, { amount, resource: currency })
         }
+        return ok(currencies)
+    }
 
+    public getHydratedAccountInventory(account: Pick<Account, "inventory">) {
         const inventory: Map<NanoId, Balance<Item>> = new Map()
-        for (const [_itemId, amount] of Object.entries(accountRaw.inventory)) {
+        for (const [_itemId, amount] of Object.entries(account.inventory)) {
             const itemId = NanoIdSchema.parse(_itemId)
 
             const item = this.itemsDb.get(itemId)
@@ -166,11 +172,22 @@ export class Hydrator {
             
             inventory.set(itemId, { amount, resource: item })
         }
+        return ok(inventory)
+    }
+
+    public hydrateAccount(id: BrandedSnowflake) {
+        const accountRaw = this.accountsDb.get(id)
+        if (!accountRaw) return err(new ApiError("AccountDoesNotExist"))
+
+        const [error1, currencies] = this.getHydratedAccountCurrencies(accountRaw)
+        if (error1) return err(error1)
+
+        const [error2, inventory] = this.getHydratedAccountInventory(accountRaw)
+        if (error2) return err(error2)
 
         return ok({
             currencies,
             inventory
         }) 
-        // if required: maybe inject id inside items and currencies
     }
 }

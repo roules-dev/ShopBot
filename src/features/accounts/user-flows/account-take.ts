@@ -1,15 +1,17 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
-import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, User, bold, userMention } from "discord.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js"
 import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts-services.js"
 
 
@@ -17,7 +19,7 @@ export class AccountTakeFlow extends UserFlow {
     public id = "account-take"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedCurrency: Currency | null = null
+    private selectedCurrency: Currency & Identifiable<NanoId> | null = null
     
     private target: User | null = null
     private amount: number | null = null
@@ -59,9 +61,9 @@ export class AccountTakeFlow extends UserFlow {
     protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(), // TODO hydration needed
+            getCurrencies(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency) => {
+            (interaction, selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             }
@@ -151,7 +153,7 @@ export class AccountTakeFlow extends UserFlow {
         const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
+        const currentBalance = account.currencies[this.selectedCurrency.id] || 0
         const newBalance = Math.max(currentBalance - this.amount, 0)
         
         const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, newBalance)

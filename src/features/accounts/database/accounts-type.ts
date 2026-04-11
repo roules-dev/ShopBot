@@ -24,10 +24,10 @@ export type Account = z.infer<typeof AccountRawSchema>
 
 //         this.data.forEach((account, userId) => {
 //             const currencies = Object.fromEntries(Array.from(account.currencies.entries())
-//                 .map(([id, balance]) => [id, { item: balance.item.id, amount: balance.amount } as Balance<NanoId>]))
+//                 .map(([id, balance]) => [id, { item: balance.resource.id, amount: balance.amount } as Balance<NanoId>]))
 
 //             const inventory = Object.fromEntries(Array.from(account.inventory.entries())
-//                 .map(([id, balance]) => [id, { item: { id: balance.item.id, shopId: balance.item.shopId }, amount: balance.amount } as Balance<ProductId>]))
+//                 .map(([id, balance]) => [id, { item: { id: balance.resource.id, shopId: balance.resource.shopId }, amount: balance.amount } as Balance<ProductId>]))
 
 //             accountsJson[userId] = { currencies, inventory }
 //         })
@@ -55,14 +55,14 @@ export type Account = z.infer<typeof AccountRawSchema>
 
 
 //     private inventoryItemFilter([id, balance]: [NanoId, Balance<ProductId>]) {
-//         const [error, products] = getProducts(balance.item.shopId)
+//         const [error, products] = getProducts(balance.resource.shopId)
 //         if (error) return false
 
-//         return getShops().has(balance.item.shopId) && products.has(id)
+//         return getShops().has(balance.resource.shopId) && products.has(id)
 //     }
 
 //     private inventoryItemMapper([id, balance]: [NanoId, Balance<ProductId>]): [NanoId, Balance<Product>] {
-//         const [error, products] = getProducts(balance.item.shopId)
+//         const [error, products] = getProducts(balance.resource.shopId)
 //         if (error) throw new Error("This should never happen since the filter should have filtered it out")
 
 //         const product = products.get(id)!

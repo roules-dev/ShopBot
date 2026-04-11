@@ -10,6 +10,8 @@ import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { Account } from "../database/accounts-type.js"
+import { HYDRATOR } from "@/core/database/init-databases.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"
@@ -137,30 +139,34 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     private getAccountFields(): APIEmbedField[] {
-        // TODO need hydration
+        const emptyAccountField = { name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }
+        if (!this.account) return [emptyAccountField]
 
-        if (!this.account || !this.account.currencies.size) return [{ name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }]
+        const [error, currencies] = HYDRATOR.getHydratedAccountCurrencies(this.account)
+        if (error) return [emptyAccountField]
+
+        if (currencies.size === 0) return [emptyAccountField]
         const fields: APIEmbedField[] = []
 
-        this.account.currencies.forEach(currencyBalance => {
-            const emojiString = currencyBalance.item.emoji != null ? `${currencyBalance.item.emoji} ` : ""
-
-            fields.push({ name: `${emojiString}${currencyBalance.item.name}`, value: `${currencyBalance.amount}`, inline: true })
+        currencies.forEach(currencyBalance => {
+            fields.push({ name: formattedEmojiableName(currencyBalance.resource), value: `${currencyBalance.amount}`, inline: true })
         })
 
         return fields
     }
 
     private getInventoryFields(): APIEmbedField[] { 
-        // TODO need hydration
+        const emptyInventoryField = { name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }
+        if (!this.account) return [emptyInventoryField]
 
-        if (!this.account || !this.account.inventory.size) return [{ name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }]
+        const [error, inventory] = HYDRATOR.getHydratedAccountInventory(this.account)
+        if (error) return [emptyInventoryField]
+
+        if (inventory.size === 0) return [emptyInventoryField]
         const fields: APIEmbedField[] = []
 
-        this.account.inventory.forEach(productBalance => {
-            const emojiString = productBalance.item.emoji != null ? `${productBalance.item.emoji} ` : ""
-
-            fields.push({ name: `${emojiString}${productBalance.item.name}`, value: `${productBalance.amount}`, inline: true })
+        inventory.forEach(itemBalance => {
+            fields.push({ name: formattedEmojiableName(itemBalance.resource), value: `${itemBalance.amount}`, inline: true })
         })
 
         return fields

@@ -3,7 +3,6 @@ import { updateProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -16,6 +15,9 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Inte
 import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
+import { NanoId } from "@/database/database-types.js"
+import { Identifiable, Labelled } from "@/lib/types/core.js"
+import { HYDRATOR } from "@/core/database/init-databases.js"
 
 //! --------------------------------
 // TODO this needs to be refactored
@@ -48,8 +50,8 @@ export class EditProductFlow extends UserFlow {
     private updateOption: EditProductOption | null = null
     private updateOptionValue: string | number | null = null
 
-    private selectedShop: DeepReadonly<Shop> | null = null
-    private selectedProduct: Product | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
+    private selectedProduct: Product & Identifiable<NanoId> & Labelled | null = null
 
     private response: InteractionCallbackResponse | null = null
 
@@ -124,7 +126,7 @@ export class EditProductFlow extends UserFlow {
             },
             (interaction: ButtonInteraction) => {
                 if (this.selectedShop == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-                if (this.selectedShop.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
+                if (Object.keys(this.selectedShop.products).length == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
                 this.changeStage(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
@@ -201,8 +203,10 @@ export class EditProductFlow extends UserFlow {
             }
 
             const selectProductMenu = this.components.get(`${this.id}+select-product`)
-            if (selectProductMenu instanceof ExtendedStringSelectMenuComponent) {
-                selectProductMenu.updateMap(this.selectedShop?.products || new Map())
+            if (selectProductMenu instanceof ExtendedStringSelectMenuComponent && this.selectedShop) {
+                const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
+                if (error) throw error
+                selectProductMenu.updateMap(shop.products)
             }
         }
     }

@@ -1,13 +1,19 @@
 import { Product } from "@/features/shops/database/products-types.js"
 import { Shop } from "@/features/shops/database/shops-types.js"
+import { ErrorLike, Result } from "@/lib/error-handling.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { GuildMember } from "discord.js"
 
-
-export async function processPurchase(_member: GuildMember, _shop: DeepReadonly<Shop>, _product: DeepReadonly<Product>, _quantity: number, _discount: number) {
+// TODO : once implemented remove return type
+export async function processPurchase(
+    _member: GuildMember, 
+    _shop: DeepReadonly<Shop>, 
+    _product: DeepReadonly<Product>, 
+    _quantity: number, 
+    _discount: number
+): Promise<Result<string, ErrorLike<"ProductNoLongerAvailable"> | ErrorLike<"NotAllowedToBuy"> | { name: "NotEnoughMoney", message: string, currencyName: string } | ErrorLike<"ApiError"> | ErrorLike<"DatabaseError">>> {
     
     throw new Error("Not implemented yet")
-
 
     // if (!isMemberAllowedToBuy(member, shop)) {
     //     return err({ name: "NotAllowedToBuy" })

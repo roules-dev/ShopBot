@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { ITEM_DESCRIPTION_MAX_LENGTH, ITEM_NAME_MAX_LENGTH } from "@/features/items/schemas/items-schemas.js"
-import { AddActionProductFlow, AddProductFlow } from "@/features/shops/user-flows/product-add.js"
+import { AddProductFlow } from "@/features/shops/user-flows/product-add.js"
 import { EDIT_PRODUCT_OPTION, EditProductFlow } from "@/features/shops/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord.js"
@@ -124,9 +124,9 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
     switch (subCommand) {
         case "add":
             if (interaction.options.getString("action") != null) {
-                const addActionProductFlow = new AddActionProductFlow()
-                addActionProductFlow.start(interaction)
-
+                // const addActionProductFlow = new AddActionProductFlow()
+                // addActionProductFlow.start(interaction)
+                await replyErrorMessage(interaction, "Not implemented yet")
                 break
             }
 

@@ -1,14 +1,15 @@
-import { JsonDatabase } from "@/database/database-types.js"
 import { AccountRawSchema } from "@/features/accounts/schemas/accounts-schemas.js"
 import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies-schemas.js"
 import { ItemRawSchema } from "@/features/items/schemas/items-schemas.js"
 import { ShopRawSchema } from "@/features/shops/schemas/shop-schemas.js"
 import { NanoIdSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import fs from "fs/promises"
+import { Hydrator } from "./hydrator.js"
+import { JsonDatabase } from "@/database/json-database.js"
 
-const accountsDatabasePath = "./data/accounts2.json"
-const currenciesDatabasePath = "./data/currencies2.json"
-const shopsDatabasePath = "./data/shops2.json"
+const accountsDatabasePath = "./data/accounts.json"
+const currenciesDatabasePath = "./data/currencies.json"
+const shopsDatabasePath = "./data/shops.json"
 const itemsDatabasePath = "./data/items.json"
 
 const accountsDatabaseRaw = JSON.parse(await fs.readFile(accountsDatabasePath, "utf-8"))
@@ -23,6 +24,6 @@ const itemsDatabase = new JsonDatabase(itemsDatabaseRaw, itemsDatabasePath, Item
 
 export { accountsDatabase, currenciesDatabase, itemsDatabase, shopsDatabase }
 
-// const HYDRATOR = new Hydrator(currenciesDatabase, itemsDatabase, shopsDatabase, accountsDatabase)
+const HYDRATOR = new Hydrator(currenciesDatabase, itemsDatabase, shopsDatabase, accountsDatabase)
 
-// export { HYDRATOR }
+export { HYDRATOR }

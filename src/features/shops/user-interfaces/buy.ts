@@ -1,8 +1,10 @@
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { processPurchase } from "@/core/services/shops/buy.js"
+import { NanoId } from "@/database/database-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator } from "@/lib/ui/ui-components/extended-components.js"
@@ -11,7 +13,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { MessageUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { stringifyObj } from "@/utils/objects.js"
-import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
@@ -21,8 +23,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
     public override id = "buy-product-ui"
     protected override components = new Map()
 
-    private selectedShop: DeepReadonly<Shop>
-    private selectedProduct: Product | null = null // hydration needed
+    private selectedShop: Shop & Identifiable<NanoId>
+    private selectedProduct: Product & Identifiable<NanoId> & Labelled | null = null
 
     private quantity: number = 1
 
@@ -31,13 +33,13 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     private locale = "userInterfaces.buy" as const
 
-    constructor (selectedShop: DeepReadonly<Shop>) {
+    constructor (selectedShop: Shop & Identifiable<NanoId>) {
         super()
         this.selectedShop = selectedShop
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        if (!this.selectedShop.products.size) {
+        if (Object.keys(this.selectedShop.products).length === 0) {
             await replyErrorMessage(interaction, t("errorMessages.noProducts"))
             return false
         }
@@ -46,6 +48,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     protected override getMessage(): string {
         const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ""
+
         const priceString = this.priceString() != "" ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ""
 
         const message = t(`${this.locale}.messages.default`, {
@@ -58,15 +61,18 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     protected override initComponents() {
+        const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
+        if (error) throw error
+
         const selectProductMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
                 placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000,
             },
-            this.selectedShop.products,
+            shop.products,
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Product) => {
+            (interaction, selected) => {
                 this.selectedProduct = selected
                 this.updateInteraction(interaction)
             }
@@ -227,7 +233,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
             
             case "NotEnoughMoney":
-                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(this.selectedShop.currency.name) }))
+                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(error.currencyName) }))
             
             case "ProductNoLongerAvailable":
                 return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
@@ -237,23 +243,22 @@ export class BuyProductUserInterface extends MessageUserInterface {
         }
     }
 
+    // TODO : displaying price is now trickier because of the multi-currency price
     private priceString(): string {
-        if (!this.selectedProduct) return ""
+        // if (!this.selectedProduct) return ""
 
-        const priceAsString = this.getPrice().toFixed(2)
+        // const priceAsString = "TODO"
 
-        const originalPriceAsString = this.selectedProduct.price.toFixed(2)
-        if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${this.selectedShop.currency.name}**`
+        // const originalPriceAsString = this.selectedProduct.price.toFixed(2)
+        // if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${this.selectedShop.currency.name}**`
 
-        return `**${priceAsString} ${this.selectedShop.currency.name}**`
+        // return `**${priceAsString} ${this.selectedShop.currency.name}**`
+        return ""
     }
 
-    private getPrice() {
-        if (!this.selectedProduct) return 0
-        return this.quantity * this.selectedProduct.price * (1 - this.discount / 100)
-    }
 
-    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product, appendix?: string) {
+    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product & Labelled, appendix?: string) {
+
         const productName = formattedEmojiableName(product)
         const shopName = this.selectedShop.name
         const priceString = this.priceString()

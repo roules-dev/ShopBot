@@ -1,18 +1,16 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "@/core/services/shops/shops.services.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { getShops, updateShop, updateShopPosition } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, roleMention } from "discord.js"
 import { Shop } from "../database/shops-types.js"
 
 //! --------------------------------
@@ -48,7 +46,7 @@ export class EditShopFlow extends UserFlow {
     public override id: string = "edit-shop"
     protected override components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
 
     private updateOption: EditShopOption | null = null
     private updateOptionValue: string | null = null
@@ -194,202 +192,24 @@ export class EditShopFlow extends UserFlow {
     }
 }
 
-const EDIT_SHOP_CURRENCY_STAGE = {
-    SELECT_SHOP: "SELECT_SHOP", 
-    SELECT_CURRENCY: "SELECT_CURRENCY"
-} as const
-
-type EditShopCurrencyStage = keyof typeof EDIT_SHOP_CURRENCY_STAGE
-
-export class EditShopCurrencyFlow extends UserFlow {
-    public override id: string = "edit-shop-currency"
-    protected override components: Map<string, ExtendedComponent> = new Map()
-
-    private stage: EditShopCurrencyStage = EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP
-    private componentsByStage: Map<EditShopCurrencyStage, Map<string, ExtendedComponent>> = new Map()
-
-    private selectedShop: DeepReadonly<Shop> | null = null
-    private selectedCurrency: Currency | null = null
-
-    private response: InteractionCallbackResponse | null = null
-
-    protected locale = "userFlows.shopChangeCurrency" as const
-
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
-        const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
-
-        this.initComponents()
-        this.updateComponents()
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.response = response
-        this.createComponentsCollectors(response)
-        return
-    }
-
-    protected override getMessage(): string {
-        switch (this.stage) {
-            case EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP:
-                return t(`${this.locale}.messages.shopSelectStage`, {
-                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
-                })
-            case EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY:
-                return t(`${this.locale}.messages.currencySelectStage`, {
-                    shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
-                    currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
-                })
-            default:
-                assertNeverReached(this.stage)
-        }
-    }
-
-    protected override initComponents() {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
-            {
-                customId: `${this.id}+select-shop`,
-                placeholder: t("defaultComponents.selectShop"),
-                time: 120_000,
-            },
-            getShops(),
-            (interaction) => this.updateInteraction(interaction),
-            (interaction, selected) => {
-                this.selectedShop = selected
-                this.updateInteraction(interaction)
-            },
-        )
-
-        const submitShopButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+submit-shop`,
-                time: 120_000,
-                label: t("defaultComponents.submitShopButton"),
-                emoji: {name: "✅"},
-                style: ButtonStyle.Success,
-                disabled: true,
-            },
-            (interaction) => {
-                this.changeStage(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)
-                this.updateInteraction(interaction)
-            }
-        )
-
-        this.componentsByStage.set(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP, new Map())
-        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
-        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
-
-        this.components.set(shopSelectMenu.customId, shopSelectMenu)
-        this.components.set(submitShopButton.customId, submitShopButton)
-
-        const currencySelectMenu = new ExtendedStringSelectMenuComponent(
-            {
-                customId: `${this.id}+select-currency`,
-                placeholder: t("defaultComponents.selectCurrency"),
-                time: 120_000,
-            },
-            getCurrencies(), // TODO hydration needed
-            (interaction) => this.updateInteraction(interaction),
-            (interaction, selectedCurrency) => {
-                this.selectedCurrency = selectedCurrency
-                this.updateInteraction(interaction)
-            },
-        )
-        const submitCurrencyButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+submit-currency`,
-                time: 120_000,
-                label: t(`${this.locale}.components.submitButton`),
-                emoji: {name: "✅"},
-                style: ButtonStyle.Success,
-                disabled: true
-            },
-            (interaction) => this.success(interaction)
-        )
-
-        const changeShopButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+change-shop`,
-                time: 120_000,
-                label: t("defaultComponents.changeShopButton"),
-                emoji: {name: "📝"},
-                style: ButtonStyle.Secondary
-            },
-            (interaction: ButtonInteraction) => {
-                this.selectedShop = null
-                this.selectedCurrency = null
-
-                this.changeStage(EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP)
-                this.updateInteraction(interaction)
-            }
-        )
-
-        this.componentsByStage.set(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY, new Map())
-        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(currencySelectMenu.customId, currencySelectMenu)
-        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(submitCurrencyButton.customId, submitCurrencyButton)
-        this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(changeShopButton.customId, changeShopButton)
-    }
-
-    protected override updateComponents() {
-        if (this.stage == EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP) {
-            const submitShopButton = this.components.get(`${this.id}+submit-shop`)
-            if (!(submitShopButton instanceof ExtendedButtonComponent)) return
-
-            submitShopButton.toggle(this.selectedShop != null)
-        }
-
-        if (this.stage == EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY) {
-            const submitUpdateButton = this.components.get(`${this.id}+submit-currency`)
-            if (submitUpdateButton instanceof ExtendedButtonComponent) {
-                submitUpdateButton.toggle(this.selectedCurrency != null)
-            }
-        }
-    }
-
-    private changeStage(newStage: EditShopCurrencyStage) {
-        this.stage = newStage
-
-        this.destroyComponentsCollectors()
-
-        this.components = this.componentsByStage.get(newStage) || new Map()
-        this.updateComponents()
-
-        if (!this.response) return
-        this.createComponentsCollectors(this.response)
-    }
-
-    protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (!this.selectedShop || !this.selectedCurrency) return await updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-        const [error, shop] = await updateShopCurrency(this.selectedShop.id, this.selectedCurrency.id)
-        
-        if (error) return await updateAsErrorMessage(interaction, error.message)
-
-        const message = t(`${this.locale}.messages.success`, { 
-            shop: bold(shop.name), 
-            currency: bold(this.selectedCurrency.name)
-        })
-
-        return await updateAsSuccessMessage(interaction, message)
-    }
-}
-
 
 export class ShopReorderFlow extends UserFlow {
     public id = "shop-reorder"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
     private selectedPosition: number | null = null
 
     protected locale = "userFlows.shopReorder" as const
 
     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+        const firstShopEntry = shops.entries().next().value
+        if (!firstShopEntry) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
         this.initComponents()
 
-        this.selectedShop = shops.values().next().value!
+        this.selectedShop = { ...firstShopEntry[1], id: firstShopEntry[0] }
         this.selectedPosition = 0 + 1
 
         this.updateComponents()

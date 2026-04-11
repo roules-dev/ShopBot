@@ -1,8 +1,10 @@
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { Item } from "@/features/items/database/items-types.js"
-import { Product } from "@/features/shops/database/products-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
@@ -21,7 +23,7 @@ export class InventoryTakeFlow extends UserFlow {
     public id = "account-take"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedItem: Item | null = null
+    private selectedItem: Item & Identifiable<NanoId> | null = null
     
     private target: User | null = null
     private amount: number | null = null
@@ -64,11 +66,12 @@ export class InventoryTakeFlow extends UserFlow {
         const [error, account] = await getOrCreateAccount(targetId)
         if (error) throw error
 
-        const inventory = account.inventory // TODO hydration needed
+        const [error2, inventory] = HYDRATOR.getHydratedAccountInventory(account)
+        if (error2) throw error2
 
-        const inventoryMap = new Map<string, Product & { amount: number }>()
+        const inventoryMap = new Map<NanoId, Item>()
         for (const [itemId, itemBalance] of inventory) {
-            inventoryMap.set(itemId, { ...itemBalance.item, amount: itemBalance.amount }  )
+            inventoryMap.set(itemId, itemBalance.resource)
         }
 
         const itemSelectMenu = new ExtendedStringSelectMenuComponent(

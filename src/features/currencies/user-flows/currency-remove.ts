@@ -37,7 +37,7 @@ export class CurrencyRemoveFlow extends UserFlow {
                 placeholder: t("defaultComponents.selectCurrency"),
                 time: 120_000
             }, 
-            getCurrencies(), // TODO hydration needed
+            getCurrencies(), 
             (interaction) => this.updateInteraction(interaction),
             (interaction, selectedCurrency) => {
             this.selectedCurrency = selectedCurrency

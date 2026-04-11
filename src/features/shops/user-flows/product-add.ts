@@ -1,23 +1,22 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { addProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { Identifiable } from "@/lib/types/core.js"
+import { TODO } from "@/lib/types/index.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
-import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake } from "discord.js"
-import z from "zod"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 import { Shop } from "../database/shops-types.js"
-import { NanoId } from "@/database/database-types.js"
+
+// TODO: must be updated to support multi-currency products
 
 
 export class AddProductFlow extends UserFlow {
@@ -30,7 +29,7 @@ export class AddProductFlow extends UserFlow {
     protected productDescription: string | null = null
     protected productStock: number | null = null
 
-    protected selectedShop: DeepReadonly<Shop> | null = null
+    protected selectedShop: Shop & Identifiable<NanoId> | null = null
 
     protected response: InteractionCallbackResponse | null = null
 
@@ -74,12 +73,12 @@ export class AddProductFlow extends UserFlow {
     
     protected getMessage(): string {
         const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
-        const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji ?? null}))
+        const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji}))
 
         const message = t(`${this.locale}.messages.default`, {
             product: nameString,
             price: `${this.productPrice!}`,
-            currency: this.selectedShop?.currency.name || "[ ]",
+            currency: "[ ]", 
             shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
             description: descString
         })
@@ -132,17 +131,15 @@ export class AddProductFlow extends UserFlow {
             ...(this.productStock ? {stock: this.productStock} : {}),
         }
         
-        const [error, product] = await addProduct(this.selectedShop.id, { 
-            name: this.productName,
-            emoji: this.productEmoji,
-            description: this.productDescription,
-            price: this.productPrice,
+        const [error, _] = await addProduct(this.selectedShop.id, {
+            itemId: "" as TODO,
+            price: {},
             ...optionals
         })
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
         const message = t(`${this.locale}.messages.success`, {
-            product: product.name,
+            product: "TODO: Item Name",
             shop: bold(this.selectedShop.name)
         })
 
@@ -150,252 +147,252 @@ export class AddProductFlow extends UserFlow {
     }
 }
 
-const ADD_ACTION_PRODUCT_FLOW_STAGE = {
-    SELECT_SHOP: "SELECT_SHOP",
-    SETUP_ACTION: "SETUP_ACTION"
-} as const
+// const ADD_ACTION_PRODUCT_FLOW_STAGE = {
+//     SELECT_SHOP: "SELECT_SHOP",
+//     SETUP_ACTION: "SETUP_ACTION"
+// } as const
 
-type AddActionProductFlowStage = keyof typeof ADD_ACTION_PRODUCT_FLOW_STAGE
+// type AddActionProductFlowStage = keyof typeof ADD_ACTION_PRODUCT_FLOW_STAGE
 
-export class AddActionProductFlow extends AddProductFlow {
-    public override id = "add-action-product"
+// export class AddActionProductFlow extends AddProductFlow {
+//     public override id = "add-action-product"
 
-    private stage: AddActionProductFlowStage = ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP
-    private componentsByStage: Map<AddActionProductFlowStage, Map<string, ExtendedComponent>> = new Map()
+//     private stage: AddActionProductFlowStage = ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP
+//     private componentsByStage: Map<AddActionProductFlowStage, Map<string, ExtendedComponent>> = new Map()
 
-    private productActionType: ProductActionType | null = null
-    private productAction: ProductAction| null = null
+//     private productActionType: ProductActionType | null = null
+//     private productAction: ProductAction | null = null
 
-    private actionSetupCompleted: boolean = false
+//     private actionSetupCompleted: boolean = false
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
-        const productActionType = interaction.options.getString("action")
+//     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+//         const productActionType = interaction.options.getString("action")
 
-        if (productActionType != null && !isProductActionType(productActionType)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+//         if (productActionType != null && !isProductActionType(productActionType)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        this.productActionType = productActionType
+//         this.productActionType = productActionType
 
-        return await super.start(interaction)
-    }
+//         return await super.start(interaction)
+//     }
 
-    protected override getMessage(): string {
-        switch (this.stage) {
-            case ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP:
-                return super.getMessage()
+//     protected override getMessage(): string {
+//         switch (this.stage) {
+//             case ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP:
+//                 return super.getMessage()
 
-            case ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION: {
-                const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
-                const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
+//             case ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION: {
+//                 const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
+//                 const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
 
-                const productString = t(`${this.locale}.messages.default`, {
-                    product: productNameString,
-                    price: `${this.productPrice!}`,
-                    currency: this.selectedShop?.currency.name || "[ ]",
-                    shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
-                    description: descString
-                })
+//                 const productString = t(`${this.locale}.messages.default`, {
+//                     product: productNameString,
+//                     price: `${this.productPrice!}`,
+//                     currency: this.selectedShop?.currency.name || "[ ]",
+//                     shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
+//                     description: descString
+//                 })
 
-                let actionString = ""
+//                 let actionString = ""
                 
-                // TODO: refactor
-                switch (this.productActionType) {
-                    case PRODUCT_ACTION_TYPE.GiveRole: {
-                        const roleMentionString = 
-                            (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole> | undefined)?.roleId ? 
-                            roleMention((this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole>).roleId) : 
-                            t("defaultComponents.unset")
+//                 // TODO: refactor
+//                 switch (this.productActionType) {
+//                     case PRODUCT_ACTION_TYPE.GiveRole: {
+//                         const roleMentionString = 
+//                             (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole> | undefined)?.roleId ? 
+//                             roleMention((this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole>).roleId) : 
+//                             t("defaultComponents.unset")
 
-                        actionString = t(`${this.locale}.messages.actions.giveRole`, { role: roleMentionString })
-                        break
-                    }
+//                         actionString = t(`${this.locale}.messages.actions.giveRole`, { role: roleMentionString })
+//                         break
+//                     }
 
-                    case PRODUCT_ACTION_TYPE.GiveCurrency: {
-                        const productActionAsGiveCurrency = (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>)
-                        const isProductActionGiveCurrency = this.productAction != null 
-                            && this.productAction?.options != undefined 
-                            && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).amount !== undefined 
-                            && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId !== undefined 
-                            && productActionAsGiveCurrency != undefined 
+//                     case PRODUCT_ACTION_TYPE.GiveCurrency: {
+//                         const productActionAsGiveCurrency = (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>)
+//                         const isProductActionGiveCurrency = this.productAction != null 
+//                             && this.productAction?.options != undefined 
+//                             && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).amount !== undefined 
+//                             && (this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId !== undefined 
+//                             && productActionAsGiveCurrency != undefined 
 
-                        const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : "Unset"
-                        const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId as NanoId) : undefined
-                        const currencyString = currency?.name || "[ ]"
+//                         const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : "Unset"
+//                         const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId as NanoId) : undefined
+//                         const currencyString = currency?.name || "[ ]"
 
-                        actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
-                        break
-                    }
-                    default:
-                        break
-                }
+//                         actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
+//                         break
+//                     }
+//                     default:
+//                         break
+//                 }
 
-                return `${productString}\n${t(`${this.locale}.messages.action`)} ${actionString}`
-            }
-        }
-    }
+//                 return `${productString}\n${t(`${this.locale}.messages.action`)} ${actionString}`
+//             }
+//         }
+//     }
 
-    protected override initComponents() {
-        super.initComponents()
+//     protected override initComponents() {
+//         super.initComponents()
 
-        this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP, new Map(this.components))
+//         this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP, new Map(this.components))
 
-        this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION, new Map())
-        switch (this.productActionType) {
-            case PRODUCT_ACTION_TYPE.GiveRole: {
-                const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
-                    {
-                        customId: `${this.id}+select-role`,
-                        placeholder: t("defaultComponents.selectRole"),
-                        time: 120_000
-                    },
-                    (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => {
-                        this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveRole, { roleId: selectedRoleId })
-                        this.actionSetupCompleted = true
-                        this.updateInteraction(interaction)
-                    }
-                )
+//         this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION, new Map())
+//         switch (this.productActionType) {
+//             case PRODUCT_ACTION_TYPE.GiveRole: {
+//                 const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
+//                     {
+//                         customId: `${this.id}+select-role`,
+//                         placeholder: t("defaultComponents.selectRole"),
+//                         time: 120_000
+//                     },
+//                     (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => {
+//                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveRole, { roleId: selectedRoleId })
+//                         this.actionSetupCompleted = true
+//                         this.updateInteraction(interaction)
+//                     }
+//                 )
 
-                this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(roleSelectMenu.customId, roleSelectMenu)
-                break
-            }
-            case PRODUCT_ACTION_TYPE.GiveCurrency: {
-                const currencySelectMenu = new ExtendedStringSelectMenuComponent(
-                    {
-                        customId: `${this.id}+select-currency`,
-                        placeholder: t("defaultComponents.selectCurrency"),
-                        time: 120_000
-                    },
-                    getCurrencies(), // TODO hydration needed
-                    (interaction) => this.updateInteraction(interaction),
-                    (interaction , selected) => {
-                        this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, { currencyId: selected.id, amount: -1 })
-                        this.updateInteraction(interaction)
-                    }
-                )
+//                 this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(roleSelectMenu.customId, roleSelectMenu)
+//                 break
+//             }
+//             case PRODUCT_ACTION_TYPE.GiveCurrency: {
+//                 const currencySelectMenu = new ExtendedStringSelectMenuComponent(
+//                     {
+//                         customId: `${this.id}+select-currency`,
+//                         placeholder: t("defaultComponents.selectCurrency"),
+//                         time: 120_000
+//                     },
+//                     getCurrencies(), 
+//                     (interaction) => this.updateInteraction(interaction),
+//                     (interaction , selected) => {
+//                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, { currencyId: selected.id, amount: -1 })
+//                         this.updateInteraction(interaction)
+//                     }
+//                 )
 
-                const setAmountButton = new ExtendedButtonComponent(
-                    {
-                        customId: `${this.id}+set-amount`,
-                        label: t(`${this.locale}.components.setAmountButton`),
-                        emoji: { name: "🪙" },
-                        style: ButtonStyle.Secondary,
-                        time: 120_000
-                    },
-                    async (interaction: ButtonInteraction) => {
-                        const [modalSubmit, [error, amount]] = await showValidatedEditModal(
-                            interaction, 
-                            { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: "0" },
-                            z.coerce.number().int().min(0).transform(n => Math.floor(n))
-                        )
+//                 const setAmountButton = new ExtendedButtonComponent(
+//                     {
+//                         customId: `${this.id}+set-amount`,
+//                         label: t(`${this.locale}.components.setAmountButton`),
+//                         emoji: { name: "🪙" },
+//                         style: ButtonStyle.Secondary,
+//                         time: 120_000
+//                     },
+//                     async (interaction: ButtonInteraction) => {
+//                         const [modalSubmit, [error, amount]] = await showValidatedEditModal(
+//                             interaction, 
+//                             { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: "0" },
+//                             z.coerce.number().int().min(0).transform(n => Math.floor(n))
+//                         )
 
-                        if (error) return replyErrorMessage(modalSubmit, error.message)
+//                         if (error) return replyErrorMessage(modalSubmit, error.message)
 
-                        this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, {
-                            currencyId: (this.productAction!.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId,
-                            amount
-                        })
+//                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, {
+//                             currencyId: (this.productAction!.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveCurrency>).currencyId,
+//                             amount
+//                         })
 
-                        this.actionSetupCompleted = true
-                        this.updateInteraction(modalSubmit)
-                    }
-                )
+//                         this.actionSetupCompleted = true
+//                         this.updateInteraction(modalSubmit)
+//                     }
+//                 )
 
-                this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(currencySelectMenu.customId, currencySelectMenu)
-                this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(setAmountButton.customId, setAmountButton)
-                break
-            }
-            default:
-                break   
-        }
+//                 this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(currencySelectMenu.customId, currencySelectMenu)
+//                 this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(setAmountButton.customId, setAmountButton)
+//                 break
+//             }
+//             default:
+//                 break   
+//         }
 
-        const submitButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+submit`,
-                label: t(`${this.locale}.components.submitButton`),
-                emoji: "✅",
-                style: ButtonStyle.Success,
-                disabled: true,
-                time: 120_000
-            },
-            (interaction: ButtonInteraction) => this.success(interaction)
-        )
+//         const submitButton = new ExtendedButtonComponent(
+//             {
+//                 customId: `${this.id}+submit`,
+//                 label: t(`${this.locale}.components.submitButton`),
+//                 emoji: "✅",
+//                 style: ButtonStyle.Success,
+//                 disabled: true,
+//                 time: 120_000
+//             },
+//             (interaction: ButtonInteraction) => this.success(interaction)
+//         )
 
-        const changeShopButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+change-shop`,
-                label: t("defaultComponents.changeShopButton"),
-                emoji: {name: "📝"},
-                style: ButtonStyle.Secondary,
-                time: 120_000
-            },
-            (interaction: ButtonInteraction) => {
-                this.selectedShop = null
-                this.productAction = null
-                this.actionSetupCompleted = false
+//         const changeShopButton = new ExtendedButtonComponent(
+//             {
+//                 customId: `${this.id}+change-shop`,
+//                 label: t("defaultComponents.changeShopButton"),
+//                 emoji: {name: "📝"},
+//                 style: ButtonStyle.Secondary,
+//                 time: 120_000
+//             },
+//             (interaction: ButtonInteraction) => {
+//                 this.selectedShop = null
+//                 this.productAction = null
+//                 this.actionSetupCompleted = false
 
-                this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP)
-                this.updateInteraction(interaction)
-            }
-        )
+//                 this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP)
+//                 this.updateInteraction(interaction)
+//             }
+//         )
 
-        this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(submitButton.customId, submitButton)
-        this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(changeShopButton.customId, changeShopButton)
-    }
+//         this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(submitButton.customId, submitButton)
+//         this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(changeShopButton.customId, changeShopButton)
+//     }
 
-    override updateComponents() {
-        if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) super.updateComponents()
+//     override updateComponents() {
+//         if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) super.updateComponents()
 
-        if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION) {
-            const setAmountButton = this.components.get(`${this.id}+set-amount`)
-            if (setAmountButton instanceof ExtendedButtonComponent) {
-                setAmountButton.toggle(this.productAction != null && this.productAction.type == PRODUCT_ACTION_TYPE.GiveCurrency)
-            }
+//         if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION) {
+//             const setAmountButton = this.components.get(`${this.id}+set-amount`)
+//             if (setAmountButton instanceof ExtendedButtonComponent) {
+//                 setAmountButton.toggle(this.productAction != null && this.productAction.type == PRODUCT_ACTION_TYPE.GiveCurrency)
+//             }
 
-            const submitButton = this.components.get(`${this.id}+submit`)
-            if (submitButton instanceof ExtendedButtonComponent) {
-                submitButton.toggle(this.productAction != null && this.actionSetupCompleted)
-            }
-        }
-    }
-    private changeStage(newStage: AddActionProductFlowStage) {
-        this.stage = newStage
+//             const submitButton = this.components.get(`${this.id}+submit`)
+//             if (submitButton instanceof ExtendedButtonComponent) {
+//                 submitButton.toggle(this.productAction != null && this.actionSetupCompleted)
+//             }
+//         }
+//     }
+//     private changeStage(newStage: AddActionProductFlowStage) {
+//         this.stage = newStage
 
-        this.destroyComponentsCollectors()
+//         this.destroyComponentsCollectors()
 
-        this.components = this.componentsByStage.get(newStage) || new Map()
-        this.updateComponents()
+//         this.components = this.componentsByStage.get(newStage) || new Map()
+//         this.updateComponents()
 
 
-        if (!this.response) return
-        this.createComponentsCollectors(this.response)
-    }
+//         if (!this.response) return
+//         this.createComponentsCollectors(this.response)
+//     }
 
-    protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
-        if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
-            this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)
-            return this.updateInteraction(interaction)
-        }
+//     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
+//         if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
+//             this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)
+//             return this.updateInteraction(interaction)
+//         }
         
-        if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+//         if (!(this.selectedShop && this.productName && this.productPrice != null && this.productAction)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error, product] = await addProduct(this.selectedShop.id, { 
-            name: this.productName, 
-            description: this.productDescription, 
-            emoji: this.productEmoji, 
-            price: this.productPrice,
-            action: this.productAction 
-        })
+//         const [error, product] = await addProduct(this.selectedShop.id, { 
+//             name: this.productName, 
+//             description: this.productDescription, 
+//             emoji: this.productEmoji, 
+//             price: this.productPrice,
+//             action: this.productAction 
+//         })
 
-        if (error) return await updateAsErrorMessage(interaction, error.message)
+//         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
-            product: product.name,
-            shop: bold(this.selectedShop.name)
-        })
+//         const message = t(`${this.locale}.messages.success`, {
+//             product: product.name,
+//             shop: bold(this.selectedShop.name)
+//         })
 
-        const withActionMessage = t(`${this.locale}.messages.withAction`, { action: bold(`${this.productActionType}`) })
+//         const withActionMessage = t(`${this.locale}.messages.withAction`, { action: bold(`${this.productActionType}`) })
 
-        return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}`)
+//         return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}`)
 
-    }
-}
+//     }
+// }
 

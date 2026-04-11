@@ -1,7 +1,9 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies, updateCurrency } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -29,7 +31,7 @@ export class EditCurrencyFlow extends UserFlow {
     id = "currency-edit"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedCurrency: Currency | null = null
+    private selectedCurrency: Currency  & Identifiable<NanoId> | null = null
     private updateOption: EditCurrencyOption | null = null
     private updateOptionValue: string | null = null
 
@@ -66,7 +68,7 @@ export class EditCurrencyFlow extends UserFlow {
     protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(), // TODO hydration needed
+            getCurrencies(), 
             (interaction) => this.updateInteraction(interaction),
             (interaction , selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
