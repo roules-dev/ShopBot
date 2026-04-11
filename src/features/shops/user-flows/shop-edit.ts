@@ -1,7 +1,11 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "@/core/services/shops/shops.services.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
@@ -10,10 +14,6 @@ import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, StringSelectMenuInteraction } from "discord.js"
 import { Shop } from "../database/shops-types.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { getShops, updateShop, updateShopCurrency, updateShopPosition } from "@/core/services/shops/shops.services.js"
 
 //! --------------------------------
 // TODO this needs to be refactored
@@ -89,15 +89,15 @@ export class EditShopFlow extends UserFlow {
         return message
     }
 
-    protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>({
+    protected override initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent({
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
                 time: 120_000,
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             },
@@ -119,7 +119,7 @@ export class EditShopFlow extends UserFlow {
         this.components.set(submitButton.customId, submitButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
@@ -244,8 +244,8 @@ export class EditShopCurrencyFlow extends UserFlow {
         }
     }
 
-    protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -253,7 +253,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             },
@@ -268,7 +268,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 style: ButtonStyle.Success,
                 disabled: true,
             },
-            (interaction: ButtonInteraction) => {
+            (interaction) => {
                 this.changeStage(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)
                 this.updateInteraction(interaction)
             }
@@ -281,7 +281,7 @@ export class EditShopCurrencyFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
 
-        const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
+        const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-currency`,
                 placeholder: t("defaultComponents.selectCurrency"),
@@ -289,7 +289,7 @@ export class EditShopCurrencyFlow extends UserFlow {
             },
             getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
+            (interaction, selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             },
@@ -303,7 +303,7 @@ export class EditShopCurrencyFlow extends UserFlow {
                 style: ButtonStyle.Success,
                 disabled: true
             },
-            (interaction: ButtonInteraction) => this.success(interaction)
+            (interaction) => this.success(interaction)
         )
 
         const changeShopButton = new ExtendedButtonComponent(
@@ -329,7 +329,7 @@ export class EditShopCurrencyFlow extends UserFlow {
         this.componentsByStage.get(EDIT_SHOP_CURRENCY_STAGE.SELECT_CURRENCY)?.set(changeShopButton.customId, changeShopButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         if (this.stage == EDIT_SHOP_CURRENCY_STAGE.SELECT_SHOP) {
             const submitShopButton = this.components.get(`${this.id}+submit-shop`)
             if (!(submitShopButton instanceof ExtendedButtonComponent)) return
@@ -345,7 +345,7 @@ export class EditShopCurrencyFlow extends UserFlow {
         }
     }
 
-    private changeStage(newStage: EditShopCurrencyStage): void {
+    private changeStage(newStage: EditShopCurrencyStage) {
         this.stage = newStage
 
         this.destroyComponentsCollectors()
@@ -408,8 +408,8 @@ export class ShopReorderFlow extends UserFlow {
         return message
     }
 
-    protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -417,7 +417,7 @@ export class ShopReorderFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 const shopsArray = Array.from(getShops().keys())
                 const shopIndex = shopsArray.findIndex(id => id === selected.id)
@@ -478,7 +478,7 @@ export class ShopReorderFlow extends UserFlow {
         this.components.set(submitNewPositionButton.customId, submitNewPositionButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitNewPositionButton = this.components.get(`${this.id}+submit-new-position`)
         if (submitNewPositionButton instanceof ExtendedButtonComponent) {
             submitNewPositionButton.toggle(this.selectedShop != null && this.selectedPosition != null)

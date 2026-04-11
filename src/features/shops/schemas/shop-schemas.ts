@@ -23,7 +23,9 @@ export const ProductActionSchema = z.discriminatedUnion("type", [
     })
 ])
 
+
 export const ProductRawSchema = z.object({
+    itemId: NanoIdSchema,
     price: z.record(
         NanoIdSchema, 
         z.number().min(0)

@@ -12,7 +12,7 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
@@ -98,8 +98,8 @@ export class EditProductFlow extends UserFlow {
         }
     }
 
-    protected initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -107,7 +107,7 @@ export class EditProductFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -138,14 +138,14 @@ export class EditProductFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
 
-        const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>(
+        const productSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
                 placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000
             }, new Map(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Product): void => {
+            (interaction, selected) => {
                 this.selectedProduct = selected
                 this.updateInteraction(interaction)
             }
@@ -186,7 +186,7 @@ export class EditProductFlow extends UserFlow {
         this.componentsByStage.get(EDIT_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
     }
 
-    protected updateComponents(): void {
+    protected updateComponents() {
         if (this.stage == EDIT_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
             const submitShopButton = this.components.get(`${this.id}+submit-shop`)
             if (!(submitShopButton instanceof ExtendedButtonComponent)) return
@@ -207,7 +207,7 @@ export class EditProductFlow extends UserFlow {
         }
     }
 
-    private changeStage(newStage: EditProductFlowStage): void {
+    private changeStage(newStage: EditProductFlowStage) {
         this.stage = newStage
 
         this.destroyComponentsCollectors()

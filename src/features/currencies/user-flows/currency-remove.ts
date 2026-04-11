@@ -30,8 +30,8 @@ export class CurrencyRemoveFlow extends UserFlow {
         return 
     }
 
-    initComponents(): void {
-        const currencySelect = new ExtendedStringSelectMenuComponent<Currency>(
+    initComponents() {
+        const currencySelect = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-currency`,
                 placeholder: t("defaultComponents.selectCurrency"),
@@ -39,7 +39,7 @@ export class CurrencyRemoveFlow extends UserFlow {
             }, 
             getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
-            (interaction, selectedCurrency): void => {
+            (interaction, selectedCurrency) => {
             this.selectedCurrency = selectedCurrency
             this.updateInteraction(interaction)
         })
@@ -90,7 +90,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         return message
     }
 
-    protected updateComponents(): void {
+    protected updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 

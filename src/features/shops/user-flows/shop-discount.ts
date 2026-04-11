@@ -1,14 +1,14 @@
 import { t } from "@/core/i18n/i18n.js"
+import { createDiscountCode, getShops, removeDiscountCode } from "@/core/services/shops/shops.services.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { Shop } from "../database/shops-types.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { getShops, createDiscountCode, removeDiscountCode } from "@/core/services/shops/shops.services.js"
 
 
 export class DiscountCodeCreateFlow extends UserFlow {
@@ -51,8 +51,8 @@ export class DiscountCodeCreateFlow extends UserFlow {
         return message
     }
 
-    protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -60,7 +60,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -82,7 +82,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         this.components.set(submitButton.customId, submitButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
@@ -163,8 +163,8 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         }
     }
 
-    protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -172,7 +172,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -212,7 +212,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
             },
             new Map(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: string): void => {
+            (interaction: StringSelectMenuInteraction, selected: string) => {
                 this.selectedDiscountCode = selected
                 this.updateInteraction(interaction)
             }
@@ -253,7 +253,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         this.componentsByStage.get(DISCOUNT_CODE_REMOVE_STAGE.SELECT_DISCOUNT_CODE)?.set(changeShopButton.customId, changeShopButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         if (this.stage == DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP) {
             const submitButton = this.components.get(`${this.id}+submit`)
             if (!(submitButton instanceof ExtendedButtonComponent)) return
@@ -274,7 +274,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         }
     }
 
-    private changeStage(newStage: DiscountCodeRemoveStage): void {
+    private changeStage(newStage: DiscountCodeRemoveStage) {
         this.stage = newStage
 
         this.destroyComponentsCollectors()

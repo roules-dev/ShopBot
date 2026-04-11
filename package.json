@@ -15,7 +15,7 @@
         "build:prod": "npm run generate:locales && npm run clean:build-dist --silent && tsc -p tsconfig.build.json && node ./scripts/build.mjs",
 
         "dev": "npx nodemon --watch src --ext ts,js --exec \"npx tsx src/index.ts --use-ts\"",
-        "start:ts": "tsx src/index.ts --use-ts",
+        "start:ts": "npm run prebuild && tsx src/index.ts --use-ts",
         "start": "npm run build && npm run serve",
         "serve": "node --env-file-if-exists=.env --enable-source-maps dist/index.js",
         "deploy": "node ./dist/app/deploy-commands.js",

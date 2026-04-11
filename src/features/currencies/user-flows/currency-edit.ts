@@ -63,12 +63,12 @@ export class EditCurrencyFlow extends UserFlow {
         return message
     }
 
-    protected override initComponents(): void {
-        const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
+    protected override initComponents() {
+        const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
             getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
-            (interaction , selectedCurrency): void => {
+            (interaction , selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             }
@@ -91,7 +91,7 @@ export class EditCurrencyFlow extends UserFlow {
         
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 

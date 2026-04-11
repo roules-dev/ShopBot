@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { addProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
@@ -12,12 +12,12 @@ import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-m
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
-import { BrandedNanoId, EmojiSchema } from "@/schemas/utils.js"
+import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, roleMention, RoleSelectMenuInteraction, Snowflake } from "discord.js"
 import z from "zod"
 import { Shop } from "../database/shops-types.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database-types.js"
 
 
 export class AddProductFlow extends UserFlow {
@@ -87,8 +87,8 @@ export class AddProductFlow extends UserFlow {
         return message
     }
 
-    protected initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -96,7 +96,7 @@ export class AddProductFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -118,7 +118,7 @@ export class AddProductFlow extends UserFlow {
         this.components.set(submitShopButton.customId, submitShopButton)
     }
 
-    protected updateComponents(): void {
+    protected updateComponents() {
         const submitShopButton = this.components.get(`${this.id}+submit-shop`)
         if (!(submitShopButton instanceof ExtendedButtonComponent)) return
 
@@ -218,7 +218,7 @@ export class AddActionProductFlow extends AddProductFlow {
                             && productActionAsGiveCurrency != undefined 
 
                         const amountString = (isProductActionGiveCurrency && productActionAsGiveCurrency.amount >= 0) ? productActionAsGiveCurrency.amount : "Unset"
-                        const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId as BrandedNanoId) : undefined
+                        const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId as NanoId) : undefined
                         const currencyString = currency?.name || "[ ]"
 
                         actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
@@ -233,7 +233,7 @@ export class AddActionProductFlow extends AddProductFlow {
         }
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
         super.initComponents()
 
         this.componentsByStage.set(ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP, new Map(this.components))
@@ -247,7 +247,7 @@ export class AddActionProductFlow extends AddProductFlow {
                         placeholder: t("defaultComponents.selectRole"),
                         time: 120_000
                     },
-                    (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake): void => {
+                    (interaction: RoleSelectMenuInteraction, selectedRoleId: Snowflake) => {
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveRole, { roleId: selectedRoleId })
                         this.actionSetupCompleted = true
                         this.updateInteraction(interaction)
@@ -258,7 +258,7 @@ export class AddActionProductFlow extends AddProductFlow {
                 break
             }
             case PRODUCT_ACTION_TYPE.GiveCurrency: {
-                const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
+                const currencySelectMenu = new ExtendedStringSelectMenuComponent(
                     {
                         customId: `${this.id}+select-currency`,
                         placeholder: t("defaultComponents.selectCurrency"),
@@ -266,7 +266,7 @@ export class AddActionProductFlow extends AddProductFlow {
                     },
                     getCurrencies(), // TODO hydration needed
                     (interaction) => this.updateInteraction(interaction),
-                    (interaction: StringSelectMenuInteraction, selected: Currency): void => {
+                    (interaction , selected) => {
                         this.productAction = createProductAction(PRODUCT_ACTION_TYPE.GiveCurrency, { currencyId: selected.id, amount: -1 })
                         this.updateInteraction(interaction)
                     }
@@ -341,7 +341,7 @@ export class AddActionProductFlow extends AddProductFlow {
         this.componentsByStage.get(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)?.set(changeShopButton.customId, changeShopButton)
     }
 
-    override updateComponents(): void {
+    override updateComponents() {
         if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) super.updateComponents()
 
         if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION) {
@@ -356,7 +356,7 @@ export class AddActionProductFlow extends AddProductFlow {
             }
         }
     }
-    private changeStage(newStage: AddActionProductFlowStage): void {
+    private changeStage(newStage: AddActionProductFlowStage) {
         this.stage = newStage
 
         this.destroyComponentsCollectors()

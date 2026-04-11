@@ -1,4 +1,4 @@
-import { Emojiable, Labelled, MutableOrReadonlyMap } from "@/lib/types/index.js"
+import { Emojiable, Identifiable, Labelled, MutableOrReadonlyMap } from "@/lib/types/index.js"
 import { subMap } from "@/utils/maps.js"
 import { ComponentType, MessageComponentInteraction, ReadonlyCollection, StringSelectMenuBuilder, StringSelectMenuInteraction, StringSelectMenuOptionBuilder } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
@@ -18,22 +18,22 @@ export interface ExtendedSelectMenuOptions {
     time: number
 }
 
-export class ExtendedStringSelectMenuComponent<T extends Labelled & Emojiable> extends ExtendedComponent {
+export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labelled & Emojiable> extends ExtendedComponent {
     componentType = ComponentType.StringSelect as const
     customId: string
     component: StringSelectMenuBuilder
-    map: MutableOrReadonlyMap<string, T>
+    map: MutableOrReadonlyMap<Id, T>
     placeholder: string
 
     update: (interaction: StringSelectMenuInteraction) => void
-    callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+    callback: (interaction: StringSelectMenuInteraction, selected: T & Identifiable<Id>) => void
     time: number
 
     selectPage: number = 0
     pageCount: number = 1
 
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions,
-        map: MutableOrReadonlyMap<string, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+        map: MutableOrReadonlyMap<Id, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T & Identifiable<Id>) => void
     ) {
         super()
         this.customId = customId
@@ -54,7 +54,7 @@ export class ExtendedStringSelectMenuComponent<T extends Labelled & Emojiable> e
     onCollect(interaction: StringSelectMenuInteraction): void {
         if (!interaction.isStringSelectMenu()) return this.update(interaction)
 
-        const selectedValue = interaction.values[0]
+        const selectedValue = interaction.values[0] as Id
         if (selectedValue === undefined) return
 
         if (this.pageCount > 1 && selectedValue in SELECT_PAGE_OPTIONS) {
@@ -75,7 +75,7 @@ export class ExtendedStringSelectMenuComponent<T extends Labelled & Emojiable> e
         const selected = this.map.get(selectedValue)
         if (selected == undefined) return this.update(interaction)
 
-        this.callback(interaction, selected)    
+        this.callback(interaction, {...selected, id: selectedValue})    
 
     }
 
@@ -137,7 +137,7 @@ export class ExtendedStringSelectMenuComponent<T extends Labelled & Emojiable> e
         return options
     }
 
-    public updateMap(map: MutableOrReadonlyMap<string, T>) {
+    public updateMap(map: MutableOrReadonlyMap<Id, T>) {
         this.map = map
         this.component.setOptions(this.getStringSelectOptions(map))
     }

@@ -38,6 +38,10 @@ const API_ERRORS = {
         message: "Item does not exist",
         status: 404
     },
+    ItemAlreadyExists: {
+        message: "Item already exists",
+        status: 409
+    },
 
     ProductDoesNotExist: {
         message: "Product does not exist",

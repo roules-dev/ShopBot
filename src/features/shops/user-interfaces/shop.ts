@@ -1,15 +1,15 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getShops } from "@/core/services/shops/shops.services.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
+import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getShops } from "@/core/services/shops/shops.services.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { Shop } from "../database/shops-types.js"
 import { BuyProductUserInterface } from "./buy.js"
 
@@ -44,8 +44,8 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override getMessage(): string { return "" }
 
-    protected override initComponents(): void {
-        const selectShopMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const selectShopMenu = new ExtendedStringSelectMenuComponent(
             { 
                 customId : `${this.id}+select-shop`, 
                 placeholder: t("defaultComponents.selectShop"), 
@@ -53,7 +53,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            async (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>) => {
+            async (interaction, selected) => {
                 this.page = 0
                 this.selectedShop = selected
                 this.updateInteraction(interaction) 
@@ -100,7 +100,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         this.components.set(showAccountButton.customId, showAccountButton)
     }
 
-    protected override initEmbeds(_interaction: UserInterfaceInteraction): void {
+    protected override initEmbeds(_interaction: UserInterfaceInteraction) {
         if (!this.selectedShop) return
 
         const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 

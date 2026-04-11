@@ -54,7 +54,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         return ""
     }
 
-    protected override initEmbeds(interaction: UserInterfaceInteraction): void {
+    protected override initEmbeds(interaction: UserInterfaceInteraction) {
         this.mode = this.modes.CURRENCIES
         const currenciesEmbed = new EmbedBuilder()
             .setTitle(t(`${this.locale}.embeds.account.title`, { user: this.user.displayName }))
@@ -78,7 +78,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.mode = this.modes.CURRENCIES
     }
 
-    protected override updateEmbeds(): void {
+    protected override updateEmbeds() {
         const currentModeEmbed = this.embedByMode.get(this.mode)
         if (!currentModeEmbed) return
 
@@ -86,7 +86,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.embed = currentModeEmbed
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
         const showAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-account`,
@@ -115,7 +115,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.components.set(showInventoryButton.customId, showInventoryButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const showAccountButton = this.components.get(`${this.id}+show-account`)
         if (showAccountButton instanceof ExtendedButtonComponent) {
             showAccountButton.toggle(this.mode != this.modes.CURRENCIES)

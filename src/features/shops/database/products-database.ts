@@ -1,8 +1,8 @@
 import { ShopsDatabase } from "@/core/database/database.types.js"
 import { ApiError, NanoId } from "@/database/database-types.js"
-import { ProductOptions } from "@/features/shops/database/products-types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
+import { Product } from "./products-types.js"
 
 export function dbGetProducts(db: ShopsDatabase, shopId: NanoId){
     const shop = db.get(shopId)
@@ -11,7 +11,7 @@ export function dbGetProducts(db: ShopsDatabase, shopId: NanoId){
     return ok(shop.products)
 }
 
-export async function dbAddProduct(db: ShopsDatabase, shopId: NanoId, options: ProductOptions) {
+export async function dbAddProduct(db: ShopsDatabase, shopId: NanoId, options: Product) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
@@ -45,7 +45,7 @@ export async function dbUpdateProduct(
     db: ShopsDatabase,
     shopId: NanoId,
     productId: NanoId,
-    options: Partial<ProductOptions>,
+    options: Partial<Product>,
 ) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))

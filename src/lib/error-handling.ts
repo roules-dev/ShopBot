@@ -17,7 +17,7 @@ export function err<const N extends string, E extends ErrorLike<N>>(
 ) {
 
     if (typeof errorOrMessage === "string") {
-        return [{ name: "Error typo", message: errorOrMessage }, null]
+        return [{ name: "Error", message: errorOrMessage }, null]
     }
 
     if ("message" in errorOrMessage) {

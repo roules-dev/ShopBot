@@ -1,4 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { Item } from "@/features/items/database/items-types.js"
 import { Product } from "@/features/shops/database/products-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -6,11 +8,9 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js"
 import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js"
-import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { Item } from "@/features/items/database/items-types.js"
-import { SnowflakeSchema } from "@/schemas/utils.js"
 
 
 // TODO: implement inventory take / bulk take
@@ -75,7 +75,7 @@ export class InventoryTakeFlow extends UserFlow {
             { customId: `${this.id}+select-item`, placeholder: t("defaultComponents.selectItem"), time: 120_000 },
             inventoryMap,
             (interaction) => this.updateInteraction(interaction),
-            (interaction, selectedItem): void => {
+            (interaction, selectedItem) => {
                 this.selectedItem = selectedItem
                 this.updateInteraction(interaction)
             }
@@ -141,7 +141,7 @@ export class InventoryTakeFlow extends UserFlow {
         this.components.set(emptyInventoryButton.customId, emptyInventoryButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (submitButton instanceof ExtendedButtonComponent) {
             submitButton.toggle(this.selectedItem != null)

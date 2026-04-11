@@ -40,11 +40,11 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
     }
 
     protected override initComponents(): unknown {
-        const settingSelectMenu = new ExtendedStringSelectMenuComponent<Setting>(
+        const settingSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: "settings-select-menu", placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
             getSettings(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Setting) => {
+            (interaction, selected) => {
                 this.selectedSetting = selected
                 this.updateInteraction(interaction)
             }
@@ -193,7 +193,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return components
     }
 
-    private clearEditComponents(): void {
+    private clearEditComponents() {
         const editSettingsComponentsIds = [...this.components.keys()].filter(id => id.startsWith("edit-setting"))
         if (editSettingsComponentsIds.length === 0) return
         for (const id of editSettingsComponentsIds) {

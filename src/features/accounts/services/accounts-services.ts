@@ -1,12 +1,12 @@
+import { getAccountsWithCurrency, updateAccount, updateBalance } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { getItems } from "@/core/services/items/items.services.js"
 import { ApiError, NanoId } from "@/database/database-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
+import { BrandedSnowflake } from "@/schemas/utils.js"
 import { Account } from "../database/accounts-type.js"
-import { updateBalance, updateAccount, getAccountsWithCurrency } from "@/core/services/accounts/accounts.services.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { BrandedNanoId, BrandedSnowflake } from "@/schemas/utils.js"
-import { getItems } from "@/core/services/items/items.services.js"
 
-export async function setAccountCurrencyAmount(id: BrandedSnowflake, currencyId: BrandedNanoId, amount: number) {
+export async function setAccountCurrencyAmount(id: BrandedSnowflake, currencyId: NanoId, amount: number) {
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
@@ -49,7 +49,7 @@ export async function emptyAccount(id: BrandedSnowflake, empty: keyof Account | 
     return ok(account) 
 }
 
-export async function takeCurrencyFromAccounts(currencyId: BrandedNanoId) {
+export async function takeCurrencyFromAccounts(currencyId: NanoId) {
     const currency = getCurrencies().get(currencyId)
     if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 

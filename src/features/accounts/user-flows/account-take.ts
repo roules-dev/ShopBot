@@ -1,4 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -6,11 +8,9 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, User, bold, userMention } from "discord.js"
 import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts-services.js"
-import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { SnowflakeSchema } from "@/schemas/utils.js"
 
 
 export class AccountTakeFlow extends UserFlow {
@@ -61,7 +61,7 @@ export class AccountTakeFlow extends UserFlow {
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
             getCurrencies(), // TODO hydration needed
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
+            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             }
@@ -129,7 +129,7 @@ export class AccountTakeFlow extends UserFlow {
         this.components.set(emptyAccountButton.customId, emptyAccountButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (submitButton instanceof ExtendedButtonComponent) {
             submitButton.toggle(this.selectedCurrency != null)

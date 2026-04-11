@@ -13,8 +13,12 @@ export abstract class UserFlow extends UserInterface {
 //    * the constructor is responsible for validating that the interaction has all the correct parameters and makes them available to the flow
 // * should hide some of the work that is done in the start method of current flows (call init and update components, create collectors, etc) (same way as for message UI)
 
-// export abstract class UserFlow2 extends UserInterface {
-//     constructor(interaction: ChatInputCommandInteraction) 
-//     public abstract start(interaction: ChatInputCommandInteraction): Promise<unknown> 
-//     protected abstract success(interaction: UserInterfaceInteraction): Promise<unknown>
-// }
+export abstract class UserFlow2<T extends Record<string, unknown>> extends UserInterface {
+    protected parameters: T
+    constructor(parameters: T) {
+        super()
+        this.parameters = parameters
+    }
+    public abstract start(interaction: ChatInputCommandInteraction): Promise<unknown> 
+    protected abstract success(interaction: UserInterfaceInteraction): Promise<unknown>
+}

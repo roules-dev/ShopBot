@@ -1,6 +1,8 @@
 import { t } from "@/core/i18n/i18n.js"
+import { processPurchase } from "@/core/services/shops/buy.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator } from "@/lib/ui/ui-components/extended-components.js"
@@ -13,8 +15,6 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInte
 import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { processPurchase } from "@/core/services/shops/buy.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -57,7 +57,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         return `${message} ${priceString}.${discountCodeString}`
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
         const selectProductMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
@@ -66,7 +66,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             },
             this.selectedShop.products,
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Product): void => {
+            (interaction: StringSelectMenuInteraction, selected: Product) => {
                 this.selectedProduct = selected
                 this.updateInteraction(interaction)
             }
@@ -156,7 +156,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.components.set(discountCodeButton.customId, discountCodeButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const isProductSelected = this.selectedProduct != null 
         
         const buyButton = this.components.get(`${this.id}+buy`)
