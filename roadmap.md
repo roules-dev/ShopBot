@@ -1,4 +1,8 @@
-# RoadMap and planned features
+# Roadmap and planned features
+
+> [!NOTE]
+> I’m currently working on this project on my own (pull requests are welcome), alongside my studies, which take up a lot of my time.  
+> So I’m not necessarily making very rapid progress on the objectives set out in this roadmap
 
 ## Roadmap
 
@@ -17,12 +21,12 @@
 - [x] Shops reserved for specific roles
 - [x] New settings system
 - [x] Products with a set stock
-- [ ] ability to buy a set amount ([#17](https://github.com/roules-dev/ShopBot/issues/17))
+- [ ] (v3 done) ability to buy a set amount ([#17](https://github.com/roules-dev/ShopBot/issues/17))
 - [x] multi language support
 - [ ] permanently displayed shops ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] allowing users to display inventory publicly ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] log admin actions to the log channel ([#18](https://github.com/roules-dev/ShopBot/issues/18))
-- [ ] multi-currency items (and thus no more shop-wide currency / leave it optional ?) ([#13](https://github.com/roules-dev/ShopBot/issues/13))
+- [ ] (v3) multi-currency items (and thus no more shop-wide currency / leave it optional ?) ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
 
 ### Code refactoring
