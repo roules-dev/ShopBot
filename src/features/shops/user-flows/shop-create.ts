@@ -9,7 +9,7 @@ import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/mo
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
-import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
+import { BrandedEmoji, EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
 
@@ -22,7 +22,7 @@ export class ShopCreateFlow extends UserFlow {
 
     private selectedCurrency: Currency | null = null
     private shopName: string | null = null
-    private shopEmoji: string | null = null
+    private shopEmoji: BrandedEmoji | null = null
     private shopDescription: string | null = null
     private shopReservedTo: Snowflake | undefined = undefined
 

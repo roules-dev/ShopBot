@@ -5,12 +5,12 @@ import { Currency } from "@/features/currencies/database/currencies-types.js"
 import { Item } from "@/features/items/database/items-types.js"
 import { Product } from "@/features/shops/database/products-types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
-import { Labelled, Identifiable } from "@/lib/types/core.js"
+import { Labelled, Identifiable, Emojiable } from "@/lib/types/core.js"
 import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
 import { NanoIdSchema, BrandedSnowflake } from "@/schemas/utils.js"
 import { CurrenciesDatabase, ItemsDatabase, ShopsDatabase, AccountsDatabase } from "./database.types.js"
 
-
+export type HydratedPrice = Map<NanoId, Balance<Currency>>
 
 export class Hydrator {
     private currenciesDb: CurrenciesDatabase
@@ -68,7 +68,7 @@ export class Hydrator {
     }
 
     public getHydratedProductPrice(product: Product) {
-        let hydratedPrice: Map<NanoId, Balance<Currency>> = new Map()
+        let hydratedPrice: HydratedPrice = new Map()
         for (const [_currencyId, amount] of Object.entries(product.price)) {
             const currencyId = NanoIdSchema.parse(_currencyId)
 
@@ -133,12 +133,12 @@ export class Hydrator {
         const [error1, shopWithProducts] = this.hydrateShop(shopId)
         if (error1) return err(error1)
 
-        const resolvedProducts: Map<NanoId, AwaitedObjectResultReturn<Hydrator, "resolveProductItem"> & Labelled & Identifiable<NanoId>> = new Map()
+        const resolvedProducts: Map<NanoId, AwaitedObjectResultReturn<Hydrator, "resolveProductItem"> & Labelled & Identifiable<NanoId> & Emojiable> = new Map()
         for (const productId of shopWithProducts.products.keys()) {
             const [error, resolvedProduct] = this.resolveProductItem(shopId, productId)
             if (error) return err(error)
 
-            resolvedProducts.set(productId, {...resolvedProduct, name: resolvedProduct.item.name, id: productId})
+            resolvedProducts.set(productId, {...resolvedProduct, name: resolvedProduct.item.name, emoji: resolvedProduct.item.emoji, id: productId})
         }
 
         return ok({

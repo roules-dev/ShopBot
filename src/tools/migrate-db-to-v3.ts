@@ -188,11 +188,16 @@ async function migrateAccounts() {
 async function migrateCurrencies() {
     const newCurrencies: Record<string, z.infer<typeof CurrencyRawSchema>> = {}
 
-    for (const [currencyId, currency] of Object.entries(currencies)) {
-        const { id: _, ...newCurrency } = currency
-        newCurrencies[currencyId] = newCurrency
+    try {
+        for (const [currencyId, currency] of Object.entries(currencies)) {
+            const { id: _, ...newCurrency } = currency
+            newCurrencies[currencyId] = CurrencyRawSchema.parse(newCurrency)
+        }
+    } catch (error) {
+        PrettyLog.error(`Migration of currencies failed, not saving changes.\n`)
+        PrettyLog.error(`${error}`)
+        return
     }
-
     await save(currenciesPath, newCurrencies)
 }
 

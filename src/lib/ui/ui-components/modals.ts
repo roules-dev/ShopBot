@@ -153,13 +153,13 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
     })
 }
 
-export async function showValidatedEditModal<T>(    
+export async function showValidatedEditModal<T extends z.ZodType>(    
     interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     options: EditModalOptions,
-    schema: z.ZodType<T>
+    schema: T
 ): Promise<[
     ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<T, z.ZodError | ErrorLike<"Error">>
+    Result<z.output<T>, z.ZodError | ErrorLike<"Error">>
 ]>  {
     const [modalSubmit, [error, inputValue]] = await showEditModal(interaction, options)
     if (error) return [modalSubmit, err(error)]

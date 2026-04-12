@@ -16,6 +16,7 @@ import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 import { Shop } from "../database/shops-types.js"
 
+// TODO: must be updated for the new system (products only hold an itemId and some metadata)
 // TODO: must be updated to support multi-currency products
 
 

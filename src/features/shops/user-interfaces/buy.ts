@@ -4,6 +4,7 @@ import { processPurchase } from "@/core/services/shops/buy.js"
 import { NanoId } from "@/database/database-types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -17,6 +18,7 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
 import { Product } from "../database/products-types.js"
 import { Shop } from "../database/shops-types.js"
+import { applyQuantity, formatPrice } from "../services/price.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -243,17 +245,17 @@ export class BuyProductUserInterface extends MessageUserInterface {
         }
     }
 
-    // TODO : displaying price is now trickier because of the multi-currency price
+
     private priceString(): string {
-        // if (!this.selectedProduct) return ""
+        if (!this.selectedProduct) return "No product selected"
 
-        // const priceAsString = "TODO"
+        const [error, price] = HYDRATOR.getHydratedProductPrice(this.selectedProduct)
+        if (error) {
+            PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
+            return "❌ error displaying price"
+        }    
 
-        // const originalPriceAsString = this.selectedProduct.price.toFixed(2)
-        // if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${this.selectedShop.currency.name}**`
-
-        // return `**${priceAsString} ${this.selectedShop.currency.name}**`
-        return ""
+        return formatPrice(applyQuantity(price, this.quantity), this.discount)
     }
 
 

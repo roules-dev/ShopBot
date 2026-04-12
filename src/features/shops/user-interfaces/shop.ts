@@ -4,6 +4,7 @@ import { getShops } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database-types.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -14,6 +15,7 @@ import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention } from "discord.js"
 import { Shop } from "../database/shops-types.js"
 import { BuyProductUserInterface } from "./buy.js"
+import { formatPrice } from "../services/price.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
@@ -160,10 +162,15 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
                 product.stock == 0 ? ` (${t(`${this.locale}.embeds.shop.outOfStock`)})` : 
                 ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 
-            // TODO Price formatting with multiple currencies
+            const [error, price] = HYDRATOR.getHydratedProductPrice(product)
+            if (error) {
+                PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
+                return
+            }
+
             fields.push({ 
                 name: formattedEmojiableName(product.item),
-                value: `${t(`${this.locale}.embeds.shop.price`)} **TODO PRICE**${amountString}\n${descString}`, 
+                value: `${t(`${this.locale}.embeds.shop.price`)} **${formatPrice(price)}**${amountString}\n${descString}`, 
                 inline: true 
             })
         })

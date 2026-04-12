@@ -4,7 +4,7 @@ import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js
 import { replyErrorMessage } from "@/lib/discord.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
-// TODO : should probably belong to shops-manage command as a subcommand group instead of being a separate command
+// TODO : product commands probably belongs to shops-manage command as a subcommand group instead of being a separate command
 
 export const data = new SlashCommandBuilder()
     .setName("products-manage") 
