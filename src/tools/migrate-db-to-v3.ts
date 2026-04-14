@@ -62,8 +62,15 @@ type OldAccount =  {
     }}
 }
 
+// ---
 
+const isRanAsScript = process.argv[1] === fileURLToPath(import.meta.url)
 
+function log(fn: () => unknown) {
+    if (isRanAsScript) {
+        fn()
+    }
+}
 
 
 const save = async (path: string, content: object): Promise<boolean> => {
@@ -112,7 +119,7 @@ async function migrateShops() {
                 const { action: productAction, ...newProductWithoutPriceWithoutIdWithoutAction } = newProductWithoutPriceWithoutId
                 const [error, actionParsed] = validate(ProductActionSchema, productAction)
                 if (error) {
-                    PrettyLog.warn(`Error parsing action of product ${productId} in shop ${shopId}\n${z.prettifyError(error)}`)
+                    log(() => PrettyLog.warn(`Error parsing action of product ${productId} in shop ${shopId}\n${z.prettifyError(error)}`))
                 } else {
                     action = actionParsed
                 }
@@ -133,14 +140,14 @@ async function migrateShops() {
             const [error1, newProductValidated] = validate(ProductRawSchema, newProduct)
 
             if (error1) {
-                PrettyLog.error(`Invalid Product: ${productId}\n${z.prettifyError(error1)}`)
+                log(() => PrettyLog.error(`Invalid Product: ${productId}\n${z.prettifyError(error1)}`))
                 errorCount++
                 continue
             }
 
             const [error2, itemValidated] = validate(ItemRawSchema, item)
             if (error2) {
-                PrettyLog.error(`Invalid Item for product ${productId} in shop ${shopId}\n${z.prettifyError(error2)}`)
+                log(() => PrettyLog.error(`Invalid Item for product ${productId} in shop ${shopId}\n${z.prettifyError(error2)}`))
                 errorCount++
                 continue
             }
@@ -153,7 +160,8 @@ async function migrateShops() {
 
         const [error3, newShopValidated] = validate(ShopRawSchema, { ...newShop, products: newProducts })
         if (error3) {
-            PrettyLog.error(`Invalid Shop: ${shopId}\n${error3.message}`)
+            log(() => PrettyLog.error(`Invalid Shop: ${shopId}\n${error3.message}`))
+            errorCount++
             continue
         }
 
@@ -161,7 +169,7 @@ async function migrateShops() {
     }
 
     if (errorCount > 0) {
-        PrettyLog.error(`Migration failed with ${errorCount} errors, not saving changes.`)
+        log(() => PrettyLog.error(`Migration failed with ${errorCount} errors, not saving changes.`))
         return { items: undefined, shops: undefined }
     }
 
@@ -182,7 +190,7 @@ async function migrateAccounts() {
         newAccounts[accountId] = newAccount
     }
 
-    await save(accountsPath, newAccounts)
+    return await save(accountsPath, newAccounts)
 }
 
 async function migrateCurrencies() {
@@ -194,11 +202,14 @@ async function migrateCurrencies() {
             newCurrencies[currencyId] = CurrencyRawSchema.parse(newCurrency)
         }
     } catch (error) {
-        PrettyLog.error(`Migration of currencies failed, not saving changes.\n`)
-        PrettyLog.error(`${error}`)
-        return
+        log(() => {
+            PrettyLog.error(`Migration of currencies failed, not saving changes.\n`)
+            PrettyLog.error(`${error}`)
+        })
+        return false
     }
-    await save(currenciesPath, newCurrencies)
+    
+    return await save(currenciesPath, newCurrencies)
 }
 
 
@@ -206,29 +217,32 @@ const dbInfoPath = "data/_database.json"
 
 const toBackup = [accountsPath, currenciesPath, shopsPath]
 
-export async function migrateDBtoV3() {
+async function migrateAll() {
     for (const path of toBackup) {
         const data = await fs.readFile(path, "utf-8")
         await fs.writeFile(path.replace(".json", ".backup.json"), data)
     }
-    await migrateDBtoNanoid()
+    if(!(await migrateDBtoNanoid())) return false
 
 
     const { items, shops } = await migrateShops()
 
-    if (items) {
-        await save(itemsPath, items)
-    }
-    if (shops) {
-        await save(shopsPath, shops)
+    if (items === undefined || shops === undefined) {
+        return false
     }
 
-    await migrateAccounts()
-    await migrateCurrencies()
+    if (!(await save(itemsPath, items))) return false
+    if (!(await save(shopsPath, shops))) return false
+    
 
-    await save(dbInfoPath, { version: "3" })
+    if (!(await migrateAccounts())) return false
+    if (!(await migrateCurrencies())) return false
 
-    PrettyLog.success("Migration completed")
+    if(!(await save(dbInfoPath, { version: "3" }))) return false
+
+    log(() => PrettyLog.success("Migration completed"))
+
+    return true
 }
 
 export async function restoreDBfromBackup() {
@@ -236,27 +250,47 @@ export async function restoreDBfromBackup() {
         const data = await fs.readFile(path.replace(".json", ".backup.json"), "utf-8")
         await fs.writeFile(path, data)
     }
+}
 
+export async function getDbVersion() {
+    const dbInfo: any = JSON.parse(await fs.readFile(dbInfoPath, "utf-8"))
+
+    if (typeof dbInfo === "object" && 
+        dbInfo !== null && 
+        "version" in dbInfo && 
+        typeof dbInfo.version === "number"
+    ) {
+        return dbInfo.version
+    }
+
+    return undefined
+}
+export async function migrateDBtoV3() {
+    const version = await getDbVersion()
+    if (version == 3) {
+        log(() => PrettyLog.success("Database is already at version 3"))
+        return "alreadyDone" as const
+    }
+
+    return await migrateAll() ? "success" as const : "failure" as const
+    
 }
 
 async function main() {
-    if (process.argv[2] === "restore") {
+    if (process.argv[2] === "--restore") {
         await restoreDBfromBackup()
         PrettyLog.success("Database restored from backup")
         await save(dbInfoPath, { version: "2" })
         return
     } 
 
-    const dbInfo: unknown = JSON.parse(await fs.readFile(dbInfoPath, "utf-8"))
-
-    if (typeof dbInfo === "object" && dbInfo !== null && "version" in dbInfo && dbInfo.version === "3") {
-        PrettyLog.success("Database is already at version 3")
-        return
+    const result = await migrateDBtoV3()
+    if (result == "failure") {
+        PrettyLog.info("Migration failed, you can restore your data by executing this function again with the --restore flag")
     }
-
-    await migrateDBtoV3()
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+
+if (isRanAsScript) {
     await main()
 }

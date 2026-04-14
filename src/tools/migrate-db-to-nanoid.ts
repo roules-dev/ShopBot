@@ -53,8 +53,10 @@ export async function migrateDBtoNanoid() {
 
 
     for (const { dataString, path } of dbs) {
-        await save(path, JSON.parse(dataString))
+        if(!(await save(path, JSON.parse(dataString)))) return false
     }
+    
+    return true
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

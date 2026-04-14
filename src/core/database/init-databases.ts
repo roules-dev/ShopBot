@@ -6,6 +6,11 @@ import { NanoIdSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import fs from "fs/promises"
 import { Hydrator } from "./hydrator.js"
 import { JsonDatabase } from "@/database/json-database.js"
+import { getDbVersion } from "@/tools/migrate-db-to-v3.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { REQUIRED_DB_VERSION } from "@/global-settings.js"
+
+checkDbVersion()
 
 const accountsDatabasePath = "./data/accounts.json"
 const currenciesDatabasePath = "./data/currencies.json"
@@ -27,3 +32,15 @@ export { accountsDatabase, currenciesDatabase, itemsDatabase, shopsDatabase }
 const HYDRATOR = new Hydrator(currenciesDatabase, itemsDatabase, shopsDatabase, accountsDatabase)
 
 export { HYDRATOR }
+
+
+
+async function checkDbVersion() {
+    const dbVersion = await getDbVersion()
+    if (dbVersion !== REQUIRED_DB_VERSION) {
+        PrettyLog.error(`Outdated database (required: ${REQUIRED_DB_VERSION}, current: ${dbVersion}); please update with 'npm run update-db'`)
+        PrettyLog.info("Exiting...")
+        
+        process.exit(1)
+    }
+}

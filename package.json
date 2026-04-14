@@ -26,7 +26,7 @@
 
         "setup": "npm i --omit=dev --silent && node ./dist/tools/setup-helper.js",
         "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
-        "migrate-db-to-v3": "node ./dist/tools/migrate-db-to-v3.js",
+        "update-db": "node ./dist/tools/migrate-db-to-v3.js",
         "verify-translation": "node ./dist/tools/verify-translation.js",
         "generate:locales": "node ./scripts/generate-locales.mjs"
     },

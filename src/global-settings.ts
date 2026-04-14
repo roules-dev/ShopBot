@@ -1,0 +1,1 @@
+export const REQUIRED_DB_VERSION = 3
