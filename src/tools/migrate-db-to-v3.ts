@@ -2,7 +2,6 @@ import { NanoId } from "@/database/database.types.js"
 import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
 import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
 import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js"
-import { ProductActionSchema, ProductRawSchema, ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { validate } from "@/lib/validation.js"
 import fs from "fs/promises"
@@ -11,6 +10,8 @@ import z from "zod"
 import { migrateDBtoNanoid } from "./migrate-db-to-nanoid.js"
 import { fileURLToPath } from "url"
 import { NanoIdSchema } from "@/schemas/utils.js"
+import { ProductRawSchema, ProductActionSchema } from "@/features/shops/schemas/products.schemas.js"
+import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 
 // Legacy types
 export interface Product {
