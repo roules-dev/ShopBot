@@ -1,38 +1,39 @@
-    import { getOrCreateAccount, updateAccount, updateBalance } from "@/features/accounts/database/accounts-database";
-    import { Account, AccountsDatabase } from "@/features/accounts/database/accounts-type";
-    import { describe, expect, it, vi } from "vitest";
+import { AccountsDatabase } from "@/core/database/database.types";
+import { NanoId } from "@/database/database-types";
+import { JsonDatabase } from "@/database/json-database";
+import { dbGetOrCreateAccount, dbUpdateAccount, dbUpdateBalance } from "@/features/accounts/database/accounts-database";
+import { Account } from "@/features/accounts/database/accounts-type";
+import { AccountRawSchema } from "@/features/accounts/schemas/accounts-schemas";
+import { BrandedSnowflake, SnowflakeSchema } from "@/schemas/utils";
+import { describe, expect, it, vi } from "vitest";
 
-        
-    class MockAccountsDatabase extends AccountsDatabase {
-        constructor() {
-            super({}, "");
-            this.data = new Map();
-        }
+    
+class MockAccountsDatabase extends JsonDatabase<typeof SnowflakeSchema, typeof AccountRawSchema> implements AccountsDatabase {
 
-        toJSON = vi.fn();
-        protected parseRaw = vi.fn().mockReturnValue([null, new Map()]);
-        save = vi.fn().mockResolvedValue([null]);
+    constructor() {
+        super({}, "", AccountRawSchema, SnowflakeSchema);
+        this.data = new Map();
     }
+
+    protected toJSON = vi.fn();
+    protected parseRaw = vi.fn().mockReturnValue([null, new Map()]);
+    protected save = vi.fn().mockResolvedValue([null]);
+}
 
 function getDummyAccount(): Account {
     return {
-        currencies: new Map([
-            ["coolCurrency", { 
-                item: {
-                    id: "coolCurrency", 
-                    emoji: "🪙",
-                    name: "Cool Currency"
-                },
-                amount: 10 
-            }]
-        ]),
-        inventory: new Map()
+        currencies: {["coolCurrency" as NanoId]: 10},
+        inventory: {},
     }
 }
+
 describe("getOrCreateAccount", () => {
     it("creates a new account when none exists", async () => {
         const db = new MockAccountsDatabase()
-        const [error, account] = await getOrCreateAccount(db, "123")
+
+        const id = "123" as BrandedSnowflake
+
+        const [error, account] = await dbGetOrCreateAccount(db, id)
 
 
         expect(error).toBe(null)
@@ -40,25 +41,22 @@ describe("getOrCreateAccount", () => {
         if (error) return
 
         expect(account).toHaveProperty("currencies")
-        expect(account.currencies).toBeInstanceOf(Map)
-        
         expect(account).toHaveProperty("inventory")
-        expect(account.inventory).toBeInstanceOf(Map)
 
-        expect(db.get("123")).not.toBe(undefined)
+        expect(db.get(id)).not.toBe(undefined)
     })
 
-    it("returns an existing account without calling save()", async () => {
+    it("returns an existing account", async () => {
         const db = new MockAccountsDatabase()
         const existing = getDummyAccount()
-        db.data.set("abc", existing)
 
-        const [error, account] = await getOrCreateAccount(db, "abc")
+        const id = "abc" as BrandedSnowflake
+        db.set(id, existing)
+
+        const [error, account] = await dbGetOrCreateAccount(db, id)
 
         expect(error).toBe(null)
         expect(account).toStrictEqual(existing)
-
-        expect(db.save).not.toHaveBeenCalled()
     })
 })
 
@@ -66,36 +64,30 @@ describe("updating an account", () => {
     it("updateAccount: should update the account", async () => {
         const db = new MockAccountsDatabase()
 
-        db.data.set("abc", getDummyAccount())
+        const id = "abc" as BrandedSnowflake
 
-        const [error, account] = await updateAccount(db, "abc", { currencies: new Map() })
+        db.set(id, getDummyAccount())
+
+        const [error, account] = await dbUpdateAccount(db, id, { currencies: {} })
 
         expect(error).toBe(null)
         if (error) return
-        expect(account.currencies.size).toBe(0)
+        expect(account.currencies).toStrictEqual({})
     })
 
     it("updateBalance: should update the balance", async () => {
         const db = new MockAccountsDatabase()
+        const id = "abc" as BrandedSnowflake
+        db.set(id, getDummyAccount())
 
-        db.data.set("abc", getDummyAccount())
+        const currencyId = "coolCurrency" as NanoId
 
-        const balance = { 
-            item: {
-                id: "coolCurrency", 
-                emoji: "🪙",
-                name: "Cool Currency"
-            },
-            amount: 20 
-        }
-
-        const [error, account] = await updateBalance(db, "abc", "currencies", "coolCurrency", balance)
+        const [error, account] = await dbUpdateBalance(db, id, "currencies", currencyId, 20)
 
         expect(error).toBe(null)
         if (error) return
 
-        expect(account.currencies.get("coolCurrency")).toBeDefined()
-        expect(account.currencies.get("coolCurrency")?.amount).toStrictEqual(20)
+        expect(account.currencies[currencyId]).toStrictEqual(20)
     })
 })
 

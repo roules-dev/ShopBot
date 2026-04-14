@@ -19,7 +19,7 @@ export class JsonDatabase<
 
     private idSchema: IdSchema
 
-    private data: Map<
+    protected data: Map<
         z.infer<IdSchema>, 
         z.infer<DataItemRawSchema>
     >
@@ -147,11 +147,11 @@ export class JsonDatabase<
         return this.data.size
     }
 
-    private toJSON(): Record<string, MapValue<typeof this.data>> {
+    protected toJSON(): Record<string, MapValue<typeof this.data>> {
         return Object.fromEntries(this.data)
     }
     
-    private parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, DatabaseError> {
+    protected parseRaw(databaseRaw: DatabaseJsonBody): Result<typeof this.data, DatabaseError> {
         const data: typeof this.data = new Map()
         const errors: string[] = []
 
@@ -191,7 +191,7 @@ export class JsonDatabase<
 
     private writeLock: Promise<void> = Promise.resolve()
     
-    private async save() {
+    protected async save() {
         this.writeLock = this.writeLock.then(async () => {
             try {
                 const tempPath = `${this.path}.tmp`
