@@ -1,9 +1,9 @@
 import { EmojiSchema } from "@/schemas/utils.js"
 import z from "zod"
 
+
 export const ITEM_NAME_MAX_LENGTH = 70
 export const ITEM_DESCRIPTION_MAX_LENGTH = 300
-
 
 export const ItemRawSchema = z.object({
     name: z.string()

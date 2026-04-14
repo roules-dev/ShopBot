@@ -8,7 +8,7 @@ import { AnyStringSchema, RecordSchema } from "@/lib/types/zod.js"
 import { validate } from "@/lib/validation.js"
 import { PathLike } from "fs"
 import z from "zod"
-import { DatabaseJsonBody, DatabaseError, ApiError } from "./database-types.js"
+import { DatabaseJsonBody, DatabaseError, ApiError } from "./database.types.js"
 
 export class JsonDatabase<
     IdSchema extends AnyStringSchema, 

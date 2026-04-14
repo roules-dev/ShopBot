@@ -1,7 +1,7 @@
 import { shopsDatabase } from "@/core/database/init-databases.js"
-import { NanoId } from "@/database/database-types.js"
-import { dbGetProducts, dbAddProduct, dbRemoveProduct, dbUpdateProduct } from "@/features/shops/database/products-database.js"
-import { Product } from "@/features/shops/database/products-types.js"
+import { NanoId } from "@/database/database.types.js"
+import { dbGetProducts, dbAddProduct, dbRemoveProduct, dbUpdateProduct } from "@/features/shops/database/products.database.js"
+import { Product } from "@/features/shops/database/products.types.js"
 
 
 export function getProducts(shopId: NanoId) {

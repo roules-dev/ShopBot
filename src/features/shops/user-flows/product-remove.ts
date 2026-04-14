@@ -11,9 +11,9 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Inte
 import { removeProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { Product } from "../database/products-types.js"
-import { Shop } from "../database/shops-types.js"
-import { NanoId } from "@/database/database-types.js"
+import { Product } from "../database/products.types.js"
+import { Shop } from "../database/shops.types.js"
+import { NanoId } from "@/database/database.types.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { HYDRATOR } from "@/core/database/init-databases.js"
 

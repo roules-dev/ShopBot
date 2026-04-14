@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies, updateCurrency } from "@/core/services/currencies/currencies.services.js"
-import { NanoId } from "@/database/database-types.js"
+import { NanoId } from "@/database/database.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
@@ -13,7 +13,7 @@ import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags } from "discord.js"
 import z from "zod"
-import { Currency } from "../database/currencies-types.js"
+import { Currency } from "../database/currencies.types.js"
 
 //! -----------------------
 //     TODO : refactor

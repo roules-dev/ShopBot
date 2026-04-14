@@ -1,5 +1,5 @@
 import z from "zod"
-import { ProductActionSchema, ProductRawSchema } from "../schemas/shop-schemas.js"
+import { ProductActionSchema, ProductRawSchema } from "../schemas/shop.schemas.js"
 
 export type Product = z.infer<typeof ProductRawSchema>
 

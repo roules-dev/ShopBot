@@ -1,8 +1,8 @@
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { NanoId } from "@/database/database-types.js"
-import { Item } from "@/features/items/database/items-types.js"
+import { NanoId } from "@/database/database.types.js"
+import { Item } from "@/features/items/database/items.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -12,7 +12,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js"
-import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js"
+import { emptyAccount, setAccountItemAmount } from "../services/accounts.services.js"
 
 
 // TODO: implement inventory take / bulk take

@@ -1,10 +1,10 @@
 import { getAccountsWithCurrency, updateAccount, updateBalance } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { getItems } from "@/core/services/items/items.services.js"
-import { ApiError, NanoId } from "@/database/database-types.js"
+import { ApiError, NanoId } from "@/database/database.types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
-import { Account } from "../database/accounts-type.js"
+import { Account } from "../database/accounts.type.js"
 
 export async function setAccountCurrencyAmount(id: BrandedSnowflake, currencyId: NanoId, amount: number) {
     const currency = getCurrencies().get(currencyId)

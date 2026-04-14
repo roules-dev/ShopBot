@@ -1,7 +1,7 @@
 import { itemsDatabase } from "@/core/database/init-databases.js";
-import { NanoId } from "@/database/database-types.js";
-import { dbCreateItem, dbDeleteItem, dbUpdateItem } from "@/features/items/database/items-database.js";
-import { Item } from "@/features/items/database/items-types.js";
+import { NanoId } from "@/database/database.types.js";
+import { dbCreateItem, dbDeleteItem, dbUpdateItem } from "@/features/items/database/items.database.js";
+import { Item } from "@/features/items/database/items.types.js";
 import { Exact } from "@/lib/types/constraints.js";
 
 export function getItems() {

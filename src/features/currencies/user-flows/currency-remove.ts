@@ -7,7 +7,7 @@ import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, ModalSubmitInteraction } from "discord.js"
-import { Currency } from "../database/currencies-types.js"
+import { Currency } from "../database/currencies.types.js"
 
 export class CurrencyRemoveFlow extends UserFlow {
     id = "currency-remove"

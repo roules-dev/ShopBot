@@ -1,10 +1,10 @@
 import { ItemsDatabase } from "@/core/database/database.types.js"
-import { ApiError, NanoId } from "@/database/database-types.js"
+import { ApiError, NanoId } from "@/database/database.types.js"
 import { err } from "@/lib/error-handling.js"
 import { Exact } from "@/lib/types/constraints.js"
 import { ok } from "assert"
 import { nanoid } from "nanoid"
-import { Item } from "./items-types.js"
+import { Item } from "./items.types.js"
 
 export function dbHasItemWithName(db: ItemsDatabase, itemName: string) {
     for (const [_id, item] of db.list()) {

@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { addProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
-import { NanoId } from "@/database/database-types.js"
+import { NanoId } from "@/database/database.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { TODO } from "@/lib/types/index.js"
@@ -14,7 +14,7 @@ import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
-import { Shop } from "../database/shops-types.js"
+import { Shop } from "../database/shops.types.js"
 
 // TODO: must be updated for the new system (products only hold an itemId and some metadata)
 // TODO: must be updated to support multi-currency products

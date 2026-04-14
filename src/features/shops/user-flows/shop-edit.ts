@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getShops, updateShop, updateShopPosition } from "@/core/services/shops/shops.services.js"
-import { NanoId } from "@/database/database-types.js"
+import { NanoId } from "@/database/database.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
@@ -11,7 +11,7 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, roleMention } from "discord.js"
-import { Shop } from "../database/shops-types.js"
+import { Shop } from "../database/shops.types.js"
 
 //! --------------------------------
 // TODO this needs to be refactored

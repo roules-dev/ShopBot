@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
-import { NanoId } from "@/database/database-types.js"
+import { NanoId } from "@/database/database.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -8,7 +8,7 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, bold } from "discord.js"
-import { Shop } from "../database/shops-types.js"
+import { Shop } from "../database/shops.types.js"
 
 
 export class ShopRemoveFlow extends UserFlow {

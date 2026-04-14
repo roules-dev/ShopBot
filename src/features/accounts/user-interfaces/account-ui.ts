@@ -9,7 +9,7 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
-import { Account } from "../database/accounts-type.js"
+import { Account } from "../database/accounts.type.js"
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 

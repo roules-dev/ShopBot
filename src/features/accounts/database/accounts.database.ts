@@ -1,6 +1,6 @@
 import { AccountsDatabase } from "@/core/database/database.types.js"
-import { ApiError, NanoId } from "@/database/database-types.js"
-import { Account } from "@/features/accounts/database/accounts-type.js"
+import { ApiError, NanoId } from "@/database/database.types.js"
+import { Account } from "@/features/accounts/database/accounts.type.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"

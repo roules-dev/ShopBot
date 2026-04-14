@@ -1,9 +1,9 @@
 import { ShopsDatabase } from "@/core/database/database.types.js"
-import { ApiError, NanoId } from "@/database/database-types.js"
+import { ApiError, NanoId } from "@/database/database.types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Exact } from "@/lib/types/constraints.js"
 import { nanoid } from "nanoid"
-import { ShopOptions } from "./shops-types.js"
+import { ShopOptions } from "./shops.types.js"
 
 export function dbHasShopWithName(db: ShopsDatabase, shopName: string) {
     for (const [_id, shop] of db.list()) {

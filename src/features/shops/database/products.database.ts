@@ -1,8 +1,8 @@
 import { ShopsDatabase } from "@/core/database/database.types.js"
-import { ApiError, NanoId } from "@/database/database-types.js"
+import { ApiError, NanoId } from "@/database/database.types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { nanoid } from "nanoid"
-import { Product } from "./products-types.js"
+import { Product } from "./products.types.js"
 
 export function dbGetProducts(db: ShopsDatabase, shopId: NanoId){
     const shop = db.get(shopId)

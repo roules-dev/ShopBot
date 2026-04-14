@@ -1,6 +1,6 @@
 import { CurrenciesDatabase } from "@/core/database/database.types.js"
-import { ApiError, NanoId } from "@/database/database-types.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { ApiError, NanoId } from "@/database/database.types.js"
+import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Exact } from "@/lib/types/index.js"
 import { nanoid } from "nanoid"

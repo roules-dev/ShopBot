@@ -1,7 +1,7 @@
 import { accountsDatabase } from "@/core/database/init-databases.js";
-import { NanoId } from "@/database/database-types.js";
-import { dbGetAccountsWithCurrency, dbGetOrCreateAccount, dbUpdateAccount, dbUpdateBalance } from "@/features/accounts/database/accounts-database.js";
-import { Account } from "@/features/accounts/database/accounts-type.js";
+import { NanoId } from "@/database/database.types.js";
+import { dbGetAccountsWithCurrency, dbGetOrCreateAccount, dbUpdateAccount, dbUpdateBalance } from "@/features/accounts/database/accounts.database.js";
+import { Account } from "@/features/accounts/database/accounts.type.js";
 import { BrandedSnowflake } from "@/schemas/utils.js";
 
 export function getOrCreateAccount(id: BrandedSnowflake) {

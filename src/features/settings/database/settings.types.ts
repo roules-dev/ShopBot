@@ -1,5 +1,5 @@
 import z from "zod"
-import { SettingVariantSchema } from "../schemas/settings-schemas.js"
+import { SettingVariantSchema } from "../schemas/settings.schemas.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 
 

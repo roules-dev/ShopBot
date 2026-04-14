@@ -1,7 +1,7 @@
 import { currenciesDatabase } from "@/core/database/init-databases.js"
-import { NanoId } from "@/database/database-types.js"
-import { dbCreateCurrency, dbDeleteCurrency, dbUpdateCurrency } from "@/features/currencies/database/currencies-database.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { NanoId } from "@/database/database.types.js"
+import { dbCreateCurrency, dbDeleteCurrency, dbUpdateCurrency } from "@/features/currencies/database/currencies.database.js"
+import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { Exact } from "@/lib/types/constraints.js"
 
 export function getCurrencies() {

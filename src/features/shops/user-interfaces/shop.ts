@@ -1,7 +1,7 @@
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
-import { NanoId } from "@/database/database-types.js"
+import { NanoId } from "@/database/database.types.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
@@ -13,7 +13,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention } from "discord.js"
-import { Shop } from "../database/shops-types.js"
+import { Shop } from "../database/shops.types.js"
 import { BuyProductUserInterface } from "./buy.js"
 import { formatPrice } from "../services/price.js"
 

@@ -1,4 +1,4 @@
-import { Setting } from "@/features/settings/database/settings-types.js"
+import { Setting } from "@/features/settings/database/settings.types.js"
 import { EventBus } from "@/lib/events.js"
 
 

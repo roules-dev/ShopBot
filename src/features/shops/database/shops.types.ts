@@ -1,5 +1,5 @@
 import z from "zod"
-import { ShopRawSchema } from "../schemas/shop-schemas.js"
+import { ShopRawSchema } from "../schemas/shop.schemas.js"
 
 export type Shop = z.infer<typeof ShopRawSchema>
 

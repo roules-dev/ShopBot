@@ -1,4 +1,4 @@
-import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop-schemas.js"
+import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { ShopCreateFlow } from "@/features/shops/user-flows/shop-create.js"
 import { DiscountCodeCreateFlow, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
 import { EDIT_SHOP_OPTIONS, EditShopFlow, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"

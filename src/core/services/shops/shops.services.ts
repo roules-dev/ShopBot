@@ -1,7 +1,7 @@
 import { shopsDatabase,  } from "@/core/database/init-databases.js"
-import { NanoId } from "@/database/database-types.js"
-import { dbCreateShop, dbRemoveShop, dbUpdateShop, dbUpdateShopPosition, dbCreateDiscountCode, dbRemoveDiscountCode } from "@/features/shops/database/shops-database.js"
-import { ShopOptions } from "@/features/shops/database/shops-types.js"
+import { NanoId } from "@/database/database.types.js"
+import { dbCreateShop, dbRemoveShop, dbUpdateShop, dbUpdateShopPosition, dbCreateDiscountCode, dbRemoveDiscountCode } from "@/features/shops/database/shops.database.js"
+import { ShopOptions } from "@/features/shops/database/shops.types.js"
 import { Exact } from "@/lib/types/constraints.js"
 
 

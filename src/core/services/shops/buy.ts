@@ -1,5 +1,5 @@
-import { Product } from "@/features/shops/database/products-types.js"
-import { Shop } from "@/features/shops/database/shops-types.js"
+import { Product } from "@/features/shops/database/products.types.js"
+import { Shop } from "@/features/shops/database/shops.types.js"
 import { ErrorLike, Result } from "@/lib/error-handling.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { GuildMember } from "discord.js"

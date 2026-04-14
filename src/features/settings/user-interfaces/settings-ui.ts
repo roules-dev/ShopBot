@@ -12,8 +12,8 @@ import { BrandedSnowflake } from "@/schemas/utils.js"
 import { toStringOrUndefined } from "@/utils/strings.js"
 import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"
 import z from "zod"
-import { getSettings, setSetting } from "../database/settings-handler.js"
-import { Setting } from "../database/settings-types.js"
+import { getSettings, setSetting } from "../database/settings.database.js"
+import { Setting } from "../database/settings.types.js"
 
 
 export class SettingsInterface extends PaginatedEmbedUserInterface {

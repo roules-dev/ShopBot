@@ -1,4 +1,4 @@
-import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies-schemas.js"
+import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies.schemas.js"
 import { EDIT_CURRENCY_OPTION, EditCurrencyFlow } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
