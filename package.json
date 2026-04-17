@@ -14,7 +14,7 @@
         "build:clean": "npm run clean:dist --silent && npm run build",
         "build:prod": "npm run generate:locales && npm run clean:build-dist --silent && tsc -p tsconfig.build.json && node ./scripts/build.mjs",
 
-        "dev": "npx nodemon --watch src --ext ts,js --exec \"npx tsx src/index.ts --use-ts\"",
+        "dev": "npx tsx watch src/index.ts --use-ts",
         "start:ts": "npm run prebuild && tsx src/index.ts --use-ts",
         "start": "npm run build && npm run serve",
         "serve": "node --env-file-if-exists=.env --enable-source-maps dist/index.js",
@@ -35,6 +35,7 @@
         "@types/node": "^25.0.3",
         "tsc-alias": "^1.8.16",
         "tsx": "^4.21.0",
+        "typescript": "^6.0.3",
         "vitest": "^4.1.0",
         "zip-a-folder": "^4.0.4"
     },
