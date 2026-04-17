@@ -6,8 +6,8 @@
     "type": "module",
     "main": "dist/index.js",
     "scripts": {
-        "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
-        "clean:build-dist": "(rd /s /q \"build/dist\" || rm -rf \"build/dist\") && mkdir \"build/dist\"",
+        "clean:dist": "(if exist dist rd /s /q dist || rm -rf dist) && mkdir dist",
+        "clean:build-dist": "(if exist \"build/dist\" rd /s /q \"build/dist\" || rm -rf \"build/dist\") && mkdir \"build/dist\"",
 
         "prebuild": "npm run generate:locales",
         "build": "tsc -p tsconfig.json && npx tsc-alias",

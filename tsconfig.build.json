@@ -1,10 +1,16 @@
 {
     "extends": "./tsconfig.json",
     "exclude": [
-        "src/scratch.ts"
+        "src/scratch.ts",
+        "node_modules", 
+        "dist",
+        "**/*.test.ts", 
+        "vitest.config.ts"
     ],
     "compilerOptions": {
         "outDir": "./build/dist",
         "sourceMap": false
-    }
+    },
+    "resolveJsonModule": true,
+    "esModuleInterop": true
 }
