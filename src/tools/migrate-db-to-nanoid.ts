@@ -53,10 +53,17 @@ export async function migrateDBtoNanoid() {
 
 
     for (const { dataString, path } of dbs) {
-        await save(path, JSON.parse(dataString))
+        if(!(await save(path, JSON.parse(dataString)))) return false
     }
+    
+    return true
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    for (const {path} of dbs) {
+        const data = await fs.readFile(path, "utf-8")
+        await fs.writeFile(path.replace(".json", ".backup.json"), data)
+    }
+
     migrateDBtoNanoid()
 }

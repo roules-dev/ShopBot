@@ -6,16 +6,16 @@
     "type": "module",
     "main": "dist/index.js",
     "scripts": {
-        "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
-        "clean:build-dist": "(rd /s /q \"build/dist\" || rm -rf \"build/dist\") && mkdir \"build/dist\"",
+        "clean:dist": "(if exist dist rd /s /q dist || rm -rf dist) && mkdir dist",
+        "clean:build-dist": "(if exist \"build/dist\" rd /s /q \"build/dist\" || rm -rf \"build/dist\") && mkdir \"build/dist\"",
 
         "prebuild": "npm run generate:locales",
         "build": "tsc -p tsconfig.json && npx tsc-alias",
         "build:clean": "npm run clean:dist --silent && npm run build",
         "build:prod": "npm run generate:locales && npm run clean:build-dist --silent && tsc -p tsconfig.build.json && node ./scripts/build.mjs",
 
-        "dev": "npx nodemon --watch src --ext ts,js --exec \"npx tsx src/index.ts --use-ts\"",
-        "start:ts": "tsx src/index.ts --use-ts",
+        "dev": "npx tsx watch src/index.ts --use-ts",
+        "start:ts": "npm run prebuild && tsx src/index.ts --use-ts",
         "start": "npm run build && npm run serve",
         "serve": "node --env-file-if-exists=.env --enable-source-maps dist/index.js",
         "deploy": "node ./dist/app/deploy-commands.js",
@@ -26,6 +26,7 @@
 
         "setup": "npm i --omit=dev --silent && node ./dist/tools/setup-helper.js",
         "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
+        "update-db": "node ./dist/tools/migrate-db-to-v3.js",
         "verify-translation": "node ./dist/tools/verify-translation.js",
         "generate:locales": "node ./scripts/generate-locales.mjs"
     },
@@ -34,6 +35,7 @@
         "@types/node": "^25.0.3",
         "tsc-alias": "^1.8.16",
         "tsx": "^4.21.0",
+        "typescript": "^6.0.3",
         "vitest": "^4.1.0",
         "zip-a-folder": "^4.0.4"
     },

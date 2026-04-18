@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { createShop } from "@/core/services/shops/shops.services.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -9,9 +9,12 @@ import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/mo
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/utils.js"
+import { BrandedEmoji, EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Snowflake, StringSelectMenuInteraction } from "discord.js"
+
+// TODO : Update: shops no longer have a default currency
+
 
 export class ShopCreateFlow extends UserFlow {
     public id = "shop-create"
@@ -19,7 +22,7 @@ export class ShopCreateFlow extends UserFlow {
 
     private selectedCurrency: Currency | null = null
     private shopName: string | null = null
-    private shopEmoji: string | null = null
+    private shopEmoji: BrandedEmoji | null = null
     private shopDescription: string | null = null
     private shopReservedTo: Snowflake | undefined = undefined
 
@@ -64,12 +67,12 @@ export class ShopCreateFlow extends UserFlow {
         return message
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
         const selectCurrencyMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(),
+            getCurrencies(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
+            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             },
@@ -131,7 +134,7 @@ export class ShopCreateFlow extends UserFlow {
         this.components.set(changeShopEmojiButton.customId, changeShopEmojiButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
@@ -145,7 +148,7 @@ export class ShopCreateFlow extends UserFlow {
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const optionals = {
-            ...(this.shopReservedTo !== undefined ? { reservedTo: this.shopReservedTo } : {})
+            ...(this.shopReservedTo !== undefined ? { reservedTo: SnowflakeSchema.parse(this.shopReservedTo) } : {})
         }
 
         const [error, newShop] = await createShop({
@@ -153,7 +156,7 @@ export class ShopCreateFlow extends UserFlow {
             emoji: this.shopEmoji,
             description: this.shopDescription,
             ...optionals
-        }, this.selectedCurrency.id)
+        })
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 

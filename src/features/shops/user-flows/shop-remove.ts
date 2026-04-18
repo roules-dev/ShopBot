@@ -1,20 +1,21 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { Shop } from "../database/shops-types.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
-import { ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction, ButtonStyle, ButtonInteraction, bold } from "discord.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, bold } from "discord.js"
+import { Shop } from "../database/shops.types.js"
 
 
 export class ShopRemoveFlow extends UserFlow {
     public id = "shop-remove"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
 
     protected locale = "userFlows.shopRemove" as const
 
@@ -34,8 +35,8 @@ export class ShopRemoveFlow extends UserFlow {
         return t(`${this.locale}.messages.default`, { shop: this.selectedShop?.name || t("defaultComponents.selectShop")})
     }
 
-    protected override initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -43,7 +44,7 @@ export class ShopRemoveFlow extends UserFlow {
             }, 
             getShops(), 
             (interaction) => this.updateInteraction(interaction),
-                (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+                (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -62,7 +63,7 @@ export class ShopRemoveFlow extends UserFlow {
         this.components.set(submitButton.customId, submitButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 

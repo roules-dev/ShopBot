@@ -1,7 +1,7 @@
 import z from "zod";
 import { err, ok } from "./error-handling.js";
 
-export function validate<T extends z.ZodType>(schema: T, input: unknown) {
+export function     validate<T extends z.ZodType>(schema: T, input: unknown) {
     const res = schema.safeParse(input)
 
     if (res.success) {

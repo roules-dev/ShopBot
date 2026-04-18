@@ -1,10 +1,16 @@
-import { JsonDatabase } from "@/database/database-types.js"
-import { AccountsDatabase } from "@/features/accounts/database/accounts-type.js"
-import { CurrenciesDatabase } from "@/features/currencies/database/currencies-types.js"
-import { ItemRawSchema } from "@/features/items/schemas/items-schemas.js"
-import { ShopsDatabase } from "@/features/shops/database/shops-types.js"
-import { NanoIdSchema } from "@/schemas/utils.js"
+import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
+import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
+import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js"
+import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
+import { NanoIdSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import fs from "fs/promises"
+import { Hydrator } from "./hydrator.js"
+import { JsonDatabase } from "@/database/json-database.js"
+import { getDbVersion } from "@/tools/migrate-db-to-v3.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { REQUIRED_DB_VERSION } from "@/global-settings.js"
+
+checkDbVersion()
 
 const accountsDatabasePath = "./data/accounts.json"
 const currenciesDatabasePath = "./data/currencies.json"
@@ -16,15 +22,25 @@ const currenciesDatabaseRaw = JSON.parse(await fs.readFile(currenciesDatabasePat
 const shopsDatabaseRaw = JSON.parse(await fs.readFile(shopsDatabasePath, "utf-8"))
 const itemsDatabaseRaw = JSON.parse(await fs.readFile(itemsDatabasePath, "utf-8"))
 
-// const accountsDatabase = new JsonDatabase(accountsDatabaseRaw, accountsDatabasePath, AccountRawSchema, SnowflakeSchema)
-// const currenciesDatabase = new JsonDatabase(currenciesDatabaseRaw, currenciesDatabasePath, CurrencyRawSchema, NanoIdSchema)
-// const shopsDatabase = new JsonDatabase(shopsDatabaseRaw, shopsDatabasePath, ShopRawSchema, NanoIdSchema)
+const accountsDatabase = new JsonDatabase(accountsDatabaseRaw, accountsDatabasePath, AccountRawSchema, SnowflakeSchema)
+const currenciesDatabase = new JsonDatabase(currenciesDatabaseRaw, currenciesDatabasePath, CurrencyRawSchema, NanoIdSchema)
+const shopsDatabase = new JsonDatabase(shopsDatabaseRaw, shopsDatabasePath, ShopRawSchema, NanoIdSchema)
 const itemsDatabase = new JsonDatabase(itemsDatabaseRaw, itemsDatabasePath, ItemRawSchema, NanoIdSchema)
 
-// legacy (for now order matters because hydration happens inside the db classes, after the refactor this will be fixed, hydration will be on demand)
-const currenciesDatabase = new CurrenciesDatabase(currenciesDatabaseRaw, "data/currencies.json")
-const shopsDatabase = new ShopsDatabase(shopsDatabaseRaw, "data/shops.json")
-const accountsDatabase = new AccountsDatabase(accountsDatabaseRaw, "data/accounts.json")
-
-
 export { accountsDatabase, currenciesDatabase, itemsDatabase, shopsDatabase }
+
+const HYDRATOR = new Hydrator(currenciesDatabase, itemsDatabase, shopsDatabase, accountsDatabase)
+
+export { HYDRATOR }
+
+
+
+async function checkDbVersion() {
+    const dbVersion = await getDbVersion()
+    if (dbVersion !== REQUIRED_DB_VERSION) {
+        PrettyLog.error(`Outdated database (required: ${REQUIRED_DB_VERSION}, current: ${dbVersion}); please update with 'npm run update-db'`)
+        PrettyLog.info("Exiting...")
+        
+        process.exit(1)
+    }
+}

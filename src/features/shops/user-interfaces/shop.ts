@@ -1,17 +1,21 @@
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
+import { getShops } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database.types.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { Identifiable } from "@/lib/types/core.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
-import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention, StringSelectMenuInteraction } from "discord.js"
-import { getShops } from "@/core/services/shops/shops.services.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
-import { Shop } from "../database/shops-types.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
+import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention } from "discord.js"
+import { Shop } from "../database/shops.types.js"
 import { BuyProductUserInterface } from "./buy.js"
+import { formatPrice } from "../services/price.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
@@ -19,7 +23,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override components: Map<string, ExtendedComponent> = new Map()
     protected override embed: EmbedBuilder | null = null
 
-    private selectedShop: DeepReadonly<Shop> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
 
     protected override page: number = 0
     protected override response: InteractionCallbackResponse | null = null
@@ -30,12 +34,14 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
         const shops = getShops()
-        if (!shops.size) {
+        const firstShopEntry = shops.entries().next().value
+
+        if (!firstShopEntry) {
             replyErrorMessage(interaction, t("errorMessages.noShops"))
             return false
         }
 
-        this.selectedShop = shops.values().next().value!
+        this.selectedShop = { ...firstShopEntry[1], id: firstShopEntry[0] }
 
         this.member = interaction.member as GuildMember ?? null
 
@@ -44,8 +50,8 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override getMessage(): string { return "" }
 
-    protected override initComponents(): void {
-        const selectShopMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected override initComponents() {
+        const selectShopMenu = new ExtendedStringSelectMenuComponent(
             { 
                 customId : `${this.id}+select-shop`, 
                 placeholder: t("defaultComponents.selectShop"), 
@@ -53,7 +59,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            async (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>) => {
+            async (interaction, selected) => {
                 this.page = 0
                 this.selectedShop = selected
                 this.updateInteraction(interaction) 
@@ -93,14 +99,14 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         )
 
         
-        buyButton.toggle(this.selectedShop != null && this.selectedShop.products.size > 0 && !this.isBuyButtonDisabled())
+        buyButton.toggle(this.selectedShop != null && Object.keys(this.selectedShop.products).length > 0 && !this.isBuyButtonDisabled())
 
         this.components.set(selectShopMenu.customId, selectShopMenu)
         this.components.set(buyButton.customId, buyButton)
         this.components.set(showAccountButton.customId, showAccountButton)
     }
 
-    protected override initEmbeds(_interaction: UserInterfaceInteraction): void {
+    protected override initEmbeds(_interaction: UserInterfaceInteraction) {
         if (!this.selectedShop) return
 
         const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
@@ -120,7 +126,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override updateComponents() {
         const buyButton = this.components.get(`${this.id}+buy`)
         if (buyButton instanceof ExtendedButtonComponent && this.selectedShop != null) {
-            buyButton.toggle(this.selectedShop.products.size > 0  && !this.isBuyButtonDisabled())
+            buyButton.toggle(Object.keys(this.selectedShop.products).length > 0 && !this.isBuyButtonDisabled())
         }
     }
 
@@ -141,21 +147,30 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     }
 
 
-    protected override getEmbedFields(): APIEmbedField[] {
+    protected override getEmbedFields() {
         if (this.selectedShop == null) return []
-        if (this.selectedShop.products.size == 0) return [{ name: "\u200b", value: `🛒 ${italic(t(`${this.locale}.embeds.shop.noProduct`))}` }]
+        if (Object.keys(this.selectedShop.products).length == 0) return [{ name: "\u200b", value: `🛒 ${italic(t(`${this.locale}.embeds.shop.noProduct`))}` }]
 
         const fields: APIEmbedField[] = []
 
-        this.selectedShop.products.forEach(product => {
-            const descString = product.description ? product.description : "\u200b"
+        const [error, hydratedShop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
+        if (error) throw error 
+
+        hydratedShop.products.forEach(product => {
+            const descString = product.item.description ? product.item.description : "\u200b"
             const amountString = product.stock == undefined ?  "" : 
                 product.stock == 0 ? ` (${t(`${this.locale}.embeds.shop.outOfStock`)})` : 
                 ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 
+            const [error, price] = HYDRATOR.getHydratedProductPrice(product)
+            if (error) {
+                PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
+                return
+            }
+
             fields.push({ 
-                name: formattedEmojiableName(product),
-                value: `${t(`${this.locale}.embeds.shop.price`)} **${product.price} ${this.selectedShop!.currency.name}**${amountString}\n${descString}`, 
+                name: formattedEmojiableName(product.item),
+                value: `${t(`${this.locale}.embeds.shop.price`)} **${formatPrice(price)}**${amountString}\n${descString}`, 
                 inline: true 
             })
         })
@@ -164,7 +179,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     }
 
     protected override getInputSize(): number {
-        return this.selectedShop ? this.selectedShop.products.size : 0
+        return this.selectedShop ? Object.keys(this.selectedShop.products).length : 0
     }
 
 

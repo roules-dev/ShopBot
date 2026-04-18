@@ -18,22 +18,22 @@ export interface ExtendedSelectMenuOptions {
     time: number
 }
 
-export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled & Emojiable> extends ExtendedComponent {
+export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labelled & Emojiable> extends ExtendedComponent {
     componentType = ComponentType.StringSelect as const
     customId: string
     component: StringSelectMenuBuilder
-    map: MutableOrReadonlyMap<string, T>
+    map: MutableOrReadonlyMap<Id, T>
     placeholder: string
 
     update: (interaction: StringSelectMenuInteraction) => void
-    callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+    callback: (interaction: StringSelectMenuInteraction, selected: T & Identifiable<Id>) => void
     time: number
 
     selectPage: number = 0
     pageCount: number = 1
 
     constructor({ customId, placeholder, time }: ExtendedSelectMenuOptions,
-        map: MutableOrReadonlyMap<string, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T) => void
+        map: MutableOrReadonlyMap<Id, T>, update: (interaction: StringSelectMenuInteraction) => void, callback: (interaction: StringSelectMenuInteraction, selected: T & Identifiable<Id>) => void
     ) {
         super()
         this.customId = customId
@@ -48,13 +48,13 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
             this.pageCount = Math.ceil(map.size / (MAX_OPTIONS_PER_PAGE - 2))
         }
 
-        this.component = this.createSelectMenu(customId, placeholder, map)
+        this.component = this.createSelectMenu(placeholder, map)
     }
 
     onCollect(interaction: StringSelectMenuInteraction): void {
         if (!interaction.isStringSelectMenu()) return this.update(interaction)
 
-        const selectedValue = interaction.values[0]
+        const selectedValue = interaction.values[0] as Id
         if (selectedValue === undefined) return
 
         if (this.pageCount > 1 && selectedValue in SELECT_PAGE_OPTIONS) {
@@ -67,7 +67,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
                     break
             }
 
-            this.component = this.createSelectMenu(this.customId, this.placeholder, this.map)
+            this.component = this.createSelectMenu(this.placeholder, this.map)
             return this.update(interaction)
         }
 
@@ -75,15 +75,15 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
         const selected = this.map.get(selectedValue)
         if (selected == undefined) return this.update(interaction)
 
-        this.callback(interaction, selected)    
+        this.callback(interaction, {...selected, id: selectedValue})    
 
     }
 
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
 
-    private createSelectMenu(id: string, placeholder: string, map: MutableOrReadonlyMap<string, T>): StringSelectMenuBuilder {
+    private createSelectMenu(placeholder: string, map: MutableOrReadonlyMap<string, T>): StringSelectMenuBuilder {
         const selectMenu = new StringSelectMenuBuilder()
-            .setCustomId(id)
+            .setCustomId(this.customId)
             .setPlaceholder(placeholder)
             .addOptions(this.getStringSelectOptions(map))
     
@@ -137,7 +137,7 @@ export class ExtendedStringSelectMenuComponent<T extends Identifiable & Labelled
         return options
     }
 
-    public updateMap(map: MutableOrReadonlyMap<string, T>) {
+    public updateMap(map: MutableOrReadonlyMap<Id, T>) {
         this.map = map
         this.component.setOptions(this.getStringSelectOptions(map))
     }

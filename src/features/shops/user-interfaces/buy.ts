@@ -1,6 +1,11 @@
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
+import { processPurchase } from "@/core/services/shops/buy.js"
+import { NanoId } from "@/database/database.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator } from "@/lib/ui/ui-components/extended-components.js"
@@ -9,20 +14,19 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { MessageUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { stringifyObj } from "@/utils/objects.js"
-import { bold, ButtonInteraction, ButtonStyle, GuildMember, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
-import { Product } from "../database/products-types.js"
-import { Shop } from "../database/shops-types.js"
-import { processPurchase } from "../services/buy.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { Product } from "../database/products.types.js"
+import { Shop } from "../database/shops.types.js"
+import { applyQuantityHydrated, formatPrice } from "../services/price.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
     public override id = "buy-product-ui"
     protected override components = new Map()
 
-    private selectedShop: DeepReadonly<Shop>
-    private selectedProduct: Product | null = null
+    private selectedShop: Shop & Identifiable<NanoId>
+    private selectedProduct: Product & Identifiable<NanoId> & Labelled | null = null
 
     private quantity: number = 1
 
@@ -31,13 +35,13 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     private locale = "userInterfaces.buy" as const
 
-    constructor (selectedShop: DeepReadonly<Shop>) {
+    constructor (selectedShop: Shop & Identifiable<NanoId>) {
         super()
         this.selectedShop = selectedShop
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        if (!this.selectedShop.products.size) {
+        if (Object.keys(this.selectedShop.products).length === 0) {
             await replyErrorMessage(interaction, t("errorMessages.noProducts"))
             return false
         }
@@ -46,6 +50,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
     protected override getMessage(): string {
         const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ""
+
         const priceString = this.priceString() != "" ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ""
 
         const message = t(`${this.locale}.messages.default`, {
@@ -57,16 +62,19 @@ export class BuyProductUserInterface extends MessageUserInterface {
         return `${message} ${priceString}.${discountCodeString}`
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
+        const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
+        if (error) throw error
+
         const selectProductMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
                 placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000,
             },
-            this.selectedShop.products,
+            shop.products,
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Product): void => {
+            (interaction, selected) => {
                 this.selectedProduct = selected
                 this.updateInteraction(interaction)
             }
@@ -156,7 +164,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.components.set(discountCodeButton.customId, discountCodeButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const isProductSelected = this.selectedProduct != null 
         
         const buyButton = this.components.get(`${this.id}+buy`)
@@ -211,10 +219,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
         
         if (!(interaction.member instanceof GuildMember)) return updateAsErrorMessage(interaction, "Unexpected error: member is not a guild member")
 
-        const [error, message] = await processPurchase(interaction.member, this.selectedShop, this.selectedProduct, this.quantity, this.discount)
+        const [error, buyResult] = await processPurchase(interaction.member, this.selectedShop, this.selectedProduct, this.quantity, this.discount)
 
         if (error === null) {
-            return this.printAndLogPurchase(interaction, this.selectedProduct, message)
+            return this.printAndLogPurchase(interaction, this.selectedProduct, buyResult.quantity, buyResult.message)
         }
 
         const errorName = error.name
@@ -226,8 +234,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
             case "NotAllowedToBuy":
                 return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
             
-            case "NotEnoughMoney":
-                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(this.selectedShop.currency.name) }))
+            case "NotEnoughMoney": {
+                const currenciesName = error.currencies.map(c => formattedEmojiableName((HYDRATOR.hydrateCurrency(c))[1])).join(", ")
+                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(currenciesName) }))
+            }
             
             case "ProductNoLongerAvailable":
                 return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
@@ -237,23 +247,22 @@ export class BuyProductUserInterface extends MessageUserInterface {
         }
     }
 
+
     private priceString(): string {
-        if (!this.selectedProduct) return ""
+        if (!this.selectedProduct) return "No product selected"
 
-        const priceAsString = this.getPrice().toFixed(2)
+        const [error, price] = HYDRATOR.getHydratedProductPrice(this.selectedProduct)
+        if (error) {
+            PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
+            return "❌ error displaying price"
+        }    
 
-        const originalPriceAsString = this.selectedProduct.price.toFixed(2)
-        if (this.discount != 0) return `~~${originalPriceAsString}~~ **${priceAsString} ${this.selectedShop.currency.name}**`
-
-        return `**${priceAsString} ${this.selectedShop.currency.name}**`
+        return formatPrice(applyQuantityHydrated(price, this.quantity), this.discount)
     }
 
-    private getPrice() {
-        if (!this.selectedProduct) return 0
-        return this.quantity * this.selectedProduct.price * (1 - this.discount / 100)
-    }
 
-    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product, appendix?: string) {
+    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product & Labelled, quantity: number, appendix?: string) {
+
         const productName = formattedEmojiableName(product)
         const shopName = this.selectedShop.name
         const priceString = this.priceString()
@@ -262,7 +271,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const message = t(`${this.locale}.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
-            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
+            quantity: quantity > 1 ? `**${quantity}x** ` : "",
             price: priceString
         })
 
@@ -272,7 +281,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (interaction.guild) {
             logToDiscord(interaction.guild, 
-                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${stringifyObj(product.action.options)})` : "none"}`
+                `${interaction.member} purchased ${quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${stringifyObj(product.action.options)})` : "none"}`
             )
         }
     }

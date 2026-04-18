@@ -1,14 +1,18 @@
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
-import { Product } from "@/features/shops/database/products-types.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { NanoId } from "@/database/database.types.js"
+import { Item } from "@/features/items/database/items.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js"
-import { emptyAccount, setAccountItemAmount } from "../services/accounts-services.js"
-import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { emptyAccount, setAccountItemAmount } from "../services/accounts.services.js"
 
 
 // TODO: implement inventory take / bulk take
@@ -19,7 +23,7 @@ export class InventoryTakeFlow extends UserFlow {
     public id = "account-take"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedItem: Product | null = null
+    private selectedItem: Item & Identifiable<NanoId> | null = null
     
     private target: User | null = null
     private amount: number | null = null
@@ -56,22 +60,25 @@ export class InventoryTakeFlow extends UserFlow {
 
     protected override async initComponents() {
         if (!this.target) throw new Error("Unexpected error: target is null")
-        const [error, account] = await getOrCreateAccount(this.target.id)
 
+        const targetId = SnowflakeSchema.parse(this.target.id)
+
+        const [error, account] = await getOrCreateAccount(targetId)
         if (error) throw error
 
-        const inventory = account.inventory
+        const [error2, inventory] = HYDRATOR.getHydratedAccountInventory(account)
+        if (error2) throw error2
 
-        const inventoryMap = new Map<string, Product & { amount: number }>()
+        const inventoryMap = new Map<NanoId, Item>()
         for (const [itemId, itemBalance] of inventory) {
-            inventoryMap.set(itemId, { ...itemBalance.item, amount: itemBalance.amount }  )
+            inventoryMap.set(itemId, itemBalance.resource)
         }
 
         const itemSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-item`, placeholder: t("defaultComponents.selectItem"), time: 120_000 },
             inventoryMap,
             (interaction) => this.updateInteraction(interaction),
-            (interaction, selectedItem): void => {
+            (interaction, selectedItem) => {
                 this.selectedItem = selectedItem
                 this.updateInteraction(interaction)
             }
@@ -101,10 +108,10 @@ export class InventoryTakeFlow extends UserFlow {
             async (interaction: ButtonInteraction) => {
                 if (!this.selectedItem || !this.target) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                const [error, account] = await getOrCreateAccount(this.target.id)
+                const [error, account] = await getOrCreateAccount(targetId)
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
-                this.amount = account.currencies.get(this.selectedItem.id)?.amount || 0
+                this.amount = account.inventory[this.selectedItem.id] || 0
                 this.success(interaction)
             }
         )
@@ -124,7 +131,7 @@ export class InventoryTakeFlow extends UserFlow {
 
                 if (!this.target) return updateAsErrorMessage(modalSubmitInteraction, t("errorMessages.insufficientParameters"))
 
-                const [error] = await emptyAccount(this.target.id, "currencies")
+                const [error] = await emptyAccount(targetId, "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
                 await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target!.id) }))
@@ -137,7 +144,7 @@ export class InventoryTakeFlow extends UserFlow {
         this.components.set(emptyInventoryButton.customId, emptyInventoryButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (submitButton instanceof ExtendedButtonComponent) {
             submitButton.toggle(this.selectedItem != null)
@@ -154,13 +161,15 @@ export class InventoryTakeFlow extends UserFlow {
 
         if (!this.selectedItem || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(this.target.id)
+        const targetId = SnowflakeSchema.parse(this.target.id)
+
+        const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currentBalance = account.currencies.get(this.selectedItem.id)?.amount || 0
+        const currentBalance = account.inventory[this.selectedItem.id] || 0
         const newBalance = Math.max(currentBalance - this.amount, 0)
         
-        const [error2] = await setAccountItemAmount(this.target.id, this.selectedItem, newBalance)
+        const [error2] = await setAccountItemAmount(targetId, this.selectedItem.id, newBalance)
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         const successMessage = t(
@@ -168,12 +177,12 @@ export class InventoryTakeFlow extends UserFlow {
             { 
                 amount: bold(`${this.amount}`), 
                 item: this.selectedItem.name, 
-                user: userMention(this.target.id) 
+                user: userMention(targetId) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} took **${this.amount} ${this.selectedItem.name}** from ${userMention(this.target.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} took **${this.amount} ${this.selectedItem.name}** from ${userMention(targetId)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)

@@ -1,21 +1,25 @@
 import { t } from "@/core/i18n/i18n.js"
-import { Currency } from "@/features/currencies/database/currencies-types.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database.types.js"
+import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { APIRole, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, StringSelectMenuInteraction, User, bold, roleMention, userMention } from "discord.js"
-import { setAccountCurrencyAmount } from "../services/accounts-services.js"
-import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { validate } from "@/lib/validation.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
+import { APIRole, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, Role, User, bold, roleMention, userMention } from "discord.js"
+import { setAccountCurrencyAmount } from "../services/accounts.services.js"
 
 
 export class AccountGiveFlow extends UserFlow {
     public id = "account-give"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    protected selectedCurrency: Currency | null = null
+    protected selectedCurrency: Currency & Identifiable<NanoId> | null = null 
     
     private target: User | null = null
     protected amount: number | null = null
@@ -53,12 +57,12 @@ export class AccountGiveFlow extends UserFlow {
         )
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
             getCurrencies(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
+            (interaction, selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             }
@@ -80,7 +84,7 @@ export class AccountGiveFlow extends UserFlow {
         this.components.set(submitButton.customId, submitButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
@@ -92,11 +96,13 @@ export class AccountGiveFlow extends UserFlow {
         
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const [error, account] = await getOrCreateAccount(this.target.id)
+        const targetId = SnowflakeSchema.parse(this.target.id)
+
+        const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
-        const [error2, _] = await setAccountCurrencyAmount(this.target.id, this.selectedCurrency.id, currentBalance + this.amount)
+        const currentBalance = account.currencies[this.selectedCurrency.id] || 0
+        const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, currentBalance + this.amount)
 
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
@@ -163,11 +169,14 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         const targetUsersIds = (await interaction.guild?.roles.fetch(this.targetRole.id))?.members.map(m => m.user.id) || []
 
         for (const userId of targetUsersIds) {
-            const [error, account] = await getOrCreateAccount(userId)
+            const [error, targetId] = validate(SnowflakeSchema, userId)
             if (error) return updateAsErrorMessage(interaction, error.message)
+
+            const [error1, account] = await getOrCreateAccount(targetId)
+            if (error1) return updateAsErrorMessage(interaction, error1.message)
             
-            const currentBalance = account.currencies.get(this.selectedCurrency.id)?.amount || 0
-            const [error2, _] = await setAccountCurrencyAmount(userId, this.selectedCurrency.id, currentBalance + this.amount)
+            const currentBalance = account.currencies[this.selectedCurrency.id] || 0
+            const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, currentBalance + this.amount)
 
             if (error2) return updateAsErrorMessage(interaction, error2.message)
         }

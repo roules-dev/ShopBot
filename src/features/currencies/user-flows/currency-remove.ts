@@ -1,16 +1,13 @@
 import { t } from "@/core/i18n/i18n.js"
-import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts-services.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { replyErrorMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, italic, MessageFlags, ModalSubmitInteraction, StringSelectMenuInteraction } from "discord.js"
-import { Currency } from "../database/currencies-types.js"
-import { getCurrencies, removeCurrency } from "@/core/services/currencies/currencies.services.js"
-import { getShopsWithCurrency } from "@/core/services/shops/shops.services.js"
-
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, ModalSubmitInteraction } from "discord.js"
+import { Currency } from "../database/currencies.types.js"
 
 export class CurrencyRemoveFlow extends UserFlow {
     id = "currency-remove"
@@ -33,14 +30,16 @@ export class CurrencyRemoveFlow extends UserFlow {
         return 
     }
 
-    initComponents(): void {
-        const currencySelect = new ExtendedStringSelectMenuComponent<Currency>({
-            customId: `${this.id}+select-currency`,
-            placeholder: t("defaultComponents.selectCurrency"),
-            time: 120_000
-        }, getCurrencies(),
-        (interaction) => this.updateInteraction(interaction),
-        (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
+    initComponents() {
+        const currencySelect = new ExtendedStringSelectMenuComponent(
+            {
+                customId: `${this.id}+select-currency`,
+                placeholder: t("defaultComponents.selectCurrency"),
+                time: 120_000
+            }, 
+            getCurrencies(), 
+            (interaction) => this.updateInteraction(interaction),
+            (interaction, selectedCurrency) => {
             this.selectedCurrency = selectedCurrency
             this.updateInteraction(interaction)
         })
@@ -67,19 +66,21 @@ export class CurrencyRemoveFlow extends UserFlow {
     
     getMessage(): string {  
         if (this.selectedCurrency) {
-            const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency.id)
+            // const itemsWithCurrency = 
+           
+            // if (shopsWithCurrency.size > 0) {
+            //     const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
 
-            if (shopsWithCurrency.size > 0) {
-                const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
+            //     const errorMessage = t(`${this.locale}.errorMessages.cantRemoveCurrency`, {
+            //         currency: bold(this.selectedCurrency.name || ""),
+            //         shops: shopsWithCurrencyNames
+            //     })
+            //     const tipMessage = t(`${this.locale}.errorMessages.changeShopsCurrencies`)
 
-                const errorMessage = t(`${this.locale}.errorMessages.cantRemoveCurrency`, {
-                    currency: bold(this.selectedCurrency.name || ""),
-                    shops: shopsWithCurrencyNames
-                })
-                const tipMessage = t(`${this.locale}.errorMessages.changeShopsCurrencies`)
-
-                return `${errorMessage}\n${tipMessage}`
-            }
+            //     return `${errorMessage}\n${tipMessage}`
+            // }
+            // TODO: check if items have this currency in their price and display them in the message as well
+            
         }
 
         const message = t(`${this.locale}.messages.default`, {
@@ -89,28 +90,29 @@ export class CurrencyRemoveFlow extends UserFlow {
         return message
     }
 
-    protected updateComponents(): void {
+    protected updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 
-        const shopsWithCurrency = getShopsWithCurrency(this.selectedCurrency?.id || "")
+        const shopsWithCurrency = new Map([["TODO: do real check here", true]])
 
         submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
     }
 
-    protected async success(interaction: ButtonInteraction | ModalSubmitInteraction): Promise<unknown> {
-        this.disableComponents()
+    protected async success(_interaction: ButtonInteraction | ModalSubmitInteraction): Promise<unknown> {
+        throw new Error("Method not implemented.")
+        // this.disableComponents()
 
-        if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        // if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await takeCurrencyFromAccounts(this.selectedCurrency.id)
-        if (error) return updateAsErrorMessage(interaction, error.message)
+        // const [error] = await takeCurrencyFromAccounts(this.selectedCurrency.id)
+        // if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currencyName = this.selectedCurrency.name || ""
+        // const currencyName = this.selectedCurrency.name || ""
 
-        const [error2] = await removeCurrency(this.selectedCurrency.id)
-        if (error2) return updateAsErrorMessage(interaction, error2.message)
+        // const [error2] = await removeCurrency(this.selectedCurrency.id)
+        // if (error2) return updateAsErrorMessage(interaction, error2.message)
 
-        return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))
+        // return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))
     }
 }

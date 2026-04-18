@@ -1,15 +1,17 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { DeepReadonly } from "@/lib/types/readonly.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { SnowflakeSchema } from "@/schemas/utils.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
-import { Account } from "../database/accounts-type.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
-import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { Account } from "../database/accounts.type.js"
+import { HYDRATOR } from "@/core/database/init-databases.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"
@@ -40,7 +42,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        const [error, account] = await getOrCreateAccount(this.user.id)
+        const [error, account] = await getOrCreateAccount(SnowflakeSchema.parse(this.user.id))
         if (error) {
             await replyErrorMessage(interaction, error.message)
             return false
@@ -54,7 +56,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         return ""
     }
 
-    protected override initEmbeds(interaction: UserInterfaceInteraction): void {
+    protected override initEmbeds(interaction: UserInterfaceInteraction) {
         this.mode = this.modes.CURRENCIES
         const currenciesEmbed = new EmbedBuilder()
             .setTitle(t(`${this.locale}.embeds.account.title`, { user: this.user.displayName }))
@@ -78,7 +80,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.mode = this.modes.CURRENCIES
     }
 
-    protected override updateEmbeds(): void {
+    protected override updateEmbeds() {
         const currentModeEmbed = this.embedByMode.get(this.mode)
         if (!currentModeEmbed) return
 
@@ -86,7 +88,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.embed = currentModeEmbed
     }
 
-    protected override initComponents(): void {
+    protected override initComponents() {
         const showAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-account`,
@@ -115,7 +117,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         this.components.set(showInventoryButton.customId, showInventoryButton)
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const showAccountButton = this.components.get(`${this.id}+show-account`)
         if (showAccountButton instanceof ExtendedButtonComponent) {
             showAccountButton.toggle(this.mode != this.modes.CURRENCIES)
@@ -130,33 +132,41 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     protected override getInputSize(): number {
         switch (this.mode) {
             case this.modes.CURRENCIES:
-                return getCurrencies().size
+                return Object.keys(this.account?.currencies ?? {}).length
             case this.modes.INVENTORY:
-                return this.account?.inventory.size ?? 0
+                return Object.keys(this.account?.inventory ?? {}).length
         }
     }
 
     private getAccountFields(): APIEmbedField[] {
-        if (!this.account || !this.account.currencies.size) return [{ name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }]
+        const emptyAccountField = { name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }
+        if (!this.account) return [emptyAccountField]
+
+        const [error, currencies] = HYDRATOR.getHydratedAccountCurrencies(this.account)
+        if (error) return [emptyAccountField]
+
+        if (currencies.size === 0) return [emptyAccountField]
         const fields: APIEmbedField[] = []
 
-        this.account.currencies.forEach(currencyBalance => {
-            const emojiString = currencyBalance.item.emoji != null ? `${currencyBalance.item.emoji} ` : ""
-
-            fields.push({ name: `${emojiString}${currencyBalance.item.name}`, value: `${currencyBalance.amount}`, inline: true })
+        currencies.forEach(currencyBalance => {
+            fields.push({ name: formattedEmojiableName(currencyBalance.resource), value: `${currencyBalance.amount}`, inline: true })
         })
 
         return fields
     }
 
     private getInventoryFields(): APIEmbedField[] { 
-        if (!this.account || !this.account.inventory.size) return [{ name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }]
+        const emptyInventoryField = { name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }
+        if (!this.account) return [emptyInventoryField]
+
+        const [error, inventory] = HYDRATOR.getHydratedAccountInventory(this.account)
+        if (error) return [emptyInventoryField]
+
+        if (inventory.size === 0) return [emptyInventoryField]
         const fields: APIEmbedField[] = []
 
-        this.account.inventory.forEach(productBalance => {
-            const emojiString = productBalance.item.emoji != null ? `${productBalance.item.emoji} ` : ""
-
-            fields.push({ name: `${emojiString}${productBalance.item.name}`, value: `${productBalance.amount}`, inline: true })
+        inventory.forEach(itemBalance => {
+            fields.push({ name: formattedEmojiableName(itemBalance.resource), value: `${itemBalance.amount}`, inline: true })
         })
 
         return fields

@@ -1,6 +1,9 @@
 import { t } from "@/core/i18n/i18n.js"
+import { getCurrencies, updateCurrency } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -8,10 +11,14 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { is, validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags } from "discord.js"
 import z from "zod"
-import { Currency } from "../database/currencies-types.js"
-import { getCurrencies, updateCurrency } from "@/core/services/currencies/currencies.services.js"
+import { Currency } from "../database/currencies.types.js"
+
+//! -----------------------
+//     TODO : refactor
+//! -----------------------
+
 
 export const EDIT_CURRENCY_OPTION = {
     NAME: "name",
@@ -24,7 +31,7 @@ export class EditCurrencyFlow extends UserFlow {
     id = "currency-edit"
     protected components: Map<string, ExtendedComponent> = new Map()
 
-    private selectedCurrency: Currency | null = null
+    private selectedCurrency: Currency  & Identifiable<NanoId> | null = null
     private updateOption: EditCurrencyOption | null = null
     private updateOptionValue: string | null = null
 
@@ -58,12 +65,12 @@ export class EditCurrencyFlow extends UserFlow {
         return message
     }
 
-    protected override initComponents(): void {
-        const currencySelectMenu = new ExtendedStringSelectMenuComponent<Currency>(
+    protected override initComponents() {
+        const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(),
+            getCurrencies(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selectedCurrency: Currency): void => {
+            (interaction , selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
                 this.updateInteraction(interaction)
             }
@@ -86,7 +93,7 @@ export class EditCurrencyFlow extends UserFlow {
         
     }
 
-    protected override updateComponents(): void {
+    protected override updateComponents() {
         const submitButton = this.components.get(`${this.id}+submit`)
         if (!(submitButton instanceof ExtendedButtonComponent)) return
 

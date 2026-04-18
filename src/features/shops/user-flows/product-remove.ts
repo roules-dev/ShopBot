@@ -6,14 +6,16 @@ import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 
-import { Shop } from "../database/shops-types.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
 import { removeProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
-import { Product } from "../database/products-types.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
+import { Product } from "../database/products.types.js"
+import { Shop } from "../database/shops.types.js"
+import { NanoId } from "@/database/database.types.js"
+import { Identifiable, Labelled } from "@/lib/types/core.js"
+import { HYDRATOR } from "@/core/database/init-databases.js"
 
 export const REMOVE_PRODUCT_FLOW_STAGE = {
     SELECT_SHOP: "SELECT_SHOP",
@@ -29,8 +31,8 @@ export class RemoveProductFlow extends UserFlow {
     private stage: RemoveProductFlowStage = REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP
     private componentsByStage: Map<RemoveProductFlowStage, Map<string, ExtendedComponent>> = new Map()
 
-    private selectedShop: DeepReadonly<Shop> | null = null
-    private selectedProduct: Product | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
+    private selectedProduct: Product & Identifiable<NanoId> & Labelled | null = null
 
     private response: InteractionCallbackResponse | null = null
 
@@ -68,8 +70,8 @@ export class RemoveProductFlow extends UserFlow {
         }
     }
 
-    protected initComponents(): void {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent<DeepReadonly<Shop>>(
+    protected initComponents() {
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -77,7 +79,7 @@ export class RemoveProductFlow extends UserFlow {
             },
             getShops(),
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: DeepReadonly<Shop>): void => {
+            (interaction, selected) => {
                 this.selectedShop = selected
                 this.updateInteraction(interaction)
             }
@@ -94,7 +96,7 @@ export class RemoveProductFlow extends UserFlow {
             },
             (interaction: ButtonInteraction) => {
                 if (this.selectedShop == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-                if (this.selectedShop.products.size == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
+                if (Object.keys(this.selectedShop.products).length == 0) return updateAsErrorMessage(interaction, t("errorMessages.noProducts"))
 
                 this.changeStage(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)
                 return this.updateInteraction(interaction)
@@ -108,7 +110,7 @@ export class RemoveProductFlow extends UserFlow {
         this.components.set(shopSelectMenu.customId, shopSelectMenu)
         this.components.set(submitShopButton.customId, submitShopButton)
 
-        const productSelectMenu = new ExtendedStringSelectMenuComponent<Product>(
+        const productSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
                 placeholder: t("defaultComponents.selectProduct"),
@@ -116,7 +118,7 @@ export class RemoveProductFlow extends UserFlow {
             }, 
             new Map(), 
             (interaction) => this.updateInteraction(interaction),
-            (interaction: StringSelectMenuInteraction, selected: Product): void => {
+            (interaction, selected) => {
                 this.selectedProduct = selected
                 this.updateInteraction(interaction)
             }
@@ -157,7 +159,7 @@ export class RemoveProductFlow extends UserFlow {
         this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
     }
 
-    protected updateComponents(): void {
+    protected updateComponents() {
         if (this.stage == REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
             const submitShopButton = this.components.get(`${this.id}+submit-shop`)
             if (!(submitShopButton instanceof ExtendedButtonComponent)) return
@@ -172,13 +174,15 @@ export class RemoveProductFlow extends UserFlow {
             }
 
             const selectProductMenu = this.components.get(`${this.id}+select-product`)
-            if (selectProductMenu instanceof ExtendedStringSelectMenuComponent) {
-                selectProductMenu.updateMap(this.selectedShop?.products || new Map())
+            if (selectProductMenu instanceof ExtendedStringSelectMenuComponent && this.selectedShop) {
+                const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
+                if (error) throw error
+                selectProductMenu.updateMap(shop.products)
             }
         }
     }
 
-    private changeStage(newStage: RemoveProductFlowStage): void {
+    private changeStage(newStage: RemoveProductFlowStage) {
         this.stage = newStage
 
         this.destroyComponentsCollectors()

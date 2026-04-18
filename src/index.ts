@@ -1,3 +1,4 @@
+import "./global-settings.js"
 import "@/utils/strings.js"
 import "@/core/i18n/i18n.js"
 import "@/core/database/init-databases.js"

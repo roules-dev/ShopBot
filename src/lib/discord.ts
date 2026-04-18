@@ -1,4 +1,4 @@
-import { getSettings } from "@/features/settings/database/settings-handler.js"
+import { getSettings } from "@/features/settings/database/settings.database.js"
 import { t } from "@/core/i18n/i18n.js"
 import { Guild, MessageFlags, TextChannel } from "discord.js"
 import { PrettyLog } from "./pretty-log.js"

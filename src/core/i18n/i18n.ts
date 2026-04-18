@@ -3,7 +3,7 @@ import { _AddUndefinedToPossiblyUndefinedPropertiesOfInterface, APIApplicationCo
 import { getTranslationByKey, initI18n } from "../../lib/i18n/init.js"
 import { PrettyLog } from "../../lib/pretty-log.js"
 
-import { getSetting } from "@/features/settings/database/settings-handler.js"
+import { getSetting } from "@/features/settings/database/settings.database.js"
 import en_US_locale from "@/generated/locales/en-US.js"
 import es_ES_locale from "@/generated/locales/es-ES.js"
 import fr_locale from "@/generated/locales/fr.js"

@@ -2,6 +2,10 @@ import fs from "node:fs/promises"
 import { zip } from 'zip-a-folder'
 import { replaceTscAliasPaths } from 'tsc-alias';
 
+const config = {
+    token: "",
+    clientId: ""
+}
 
 const scriptsToKeep = [
     "setup",
@@ -34,10 +38,17 @@ async function main() {
     }
 
     try {
+        console.log("Copying package.json...")
         await fs.writeFile("./build/package.json", JSON.stringify(packageJson, null, 4))
 
         await fs.copyFile("./LICENSE", "./build/LICENSE")
 
+        console.log("Creating config.json...")
+        await fs.mkdir("./build/config", { recursive: true })
+        await fs.writeFile("./build/config/config.json", JSON.stringify(config, null, 4))
+
+        console.log("Copying data...")
+        await fs.mkdir("./build/data", { recursive: true })
         for (const file of await fs.readdir("./build/data")) {
             await fs.rm(`./build/data/${file}`)
         }
@@ -50,11 +61,15 @@ async function main() {
         console.log(error)
     }
 
+    console.log("Replacing path aliases...")
     await replaceTscAliasPaths({
-        configFile: "./tsconfig.build.json"
+        configFile: "./tsconfig.build.json",
     })
 
+    console.log("Zipping build...")
     await zip("./build", `./Shopbot-v${packageJson.version}-release.zip`)
+
+    console.log("\nBuild completed")
 }
 
 main()
