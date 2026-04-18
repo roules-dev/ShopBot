@@ -71,7 +71,7 @@ function itemStockAfterBuy(product: Product, quantity: number) {
         return null
     }
 
-    return Math.min(product.stock - quantity, 0)
+    return Math.max(product.stock - quantity, 0)
 }
 
 
