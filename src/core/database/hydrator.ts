@@ -1,14 +1,15 @@
 
-import { NanoId, ApiError, Balance } from "@/database/database.types.js"
+import { ApiError, Balance, NanoId } from "@/database/database.types.js"
 import { Account } from "@/features/accounts/database/accounts.type.js"
 import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { Item } from "@/features/items/database/items.types.js"
 import { Product } from "@/features/shops/database/products.types.js"
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
-import { Labelled, Identifiable, Emojiable } from "@/lib/types/core.js"
+import { Emojiable, Identifiable, Labelled } from "@/lib/types/core.js"
 import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
-import { NanoIdSchema, BrandedSnowflake } from "@/schemas/utils.js"
-import { CurrenciesDatabase, ItemsDatabase, ShopsDatabase, AccountsDatabase } from "./database.types.js"
+import { BrandedSnowflake } from "@/schemas/utils.js"
+import { objectEntries } from "@/utils/objects.js"
+import { AccountsDatabase, CurrenciesDatabase, ItemsDatabase, ShopsDatabase } from "./database.types.js"
 
 export type HydratedPrice = Map<NanoId, Balance<Currency>>
 
@@ -28,6 +29,13 @@ export class Hydrator {
         this.itemsDb = itemsDb
         this.shopsDb = shopsDb
         this.accountsDb = accountsDb
+    }
+
+    public hydrateCurrency(currencyId: NanoId) {
+        const currencyRaw = this.currenciesDb.get(currencyId)
+        if (!currencyRaw) return err(new ApiError("CurrencyDoesNotExist"))
+        
+        return ok({...currencyRaw, id: currencyId})
     }
 
     public hydrateItem(itemId: NanoId) {
@@ -69,9 +77,7 @@ export class Hydrator {
 
     public getHydratedProductPrice(product: Product) {
         let hydratedPrice: HydratedPrice = new Map()
-        for (const [_currencyId, amount] of Object.entries(product.price)) {
-            const currencyId = NanoIdSchema.parse(_currencyId)
-
+        for (const [currencyId, amount] of objectEntries(product.price)) {
             const currency = this.currenciesDb.get(currencyId)
             if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
@@ -118,9 +124,8 @@ export class Hydrator {
         if (!shopRaw) return err(new ApiError("ShopDoesNotExist"))
 
         const products: Map<NanoId, Product> = new Map()
-        for (const [productId, product] of Object.entries(shopRaw.products)) {
-            const productIdParsed = NanoIdSchema.parse(productId)
-            products.set(productIdParsed, product)
+        for (const [productId, product] of objectEntries(shopRaw.products)) {
+            products.set(productId, product)
         }
 
         return ok({
@@ -151,9 +156,7 @@ export class Hydrator {
     // if required: maybe inject id inside items and currencies ?
     public getHydratedAccountCurrencies(account: Pick<Account, "currencies">) {
         const currencies: Map<NanoId, Balance<Currency>> = new Map()
-        for (const [_currencyId, amount] of Object.entries(account.currencies)) {
-            const currencyId = NanoIdSchema.parse(_currencyId)
-
+        for (const [currencyId, amount] of objectEntries(account.currencies)) {
             const currency = this.currenciesDb.get(currencyId)
             if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
             
@@ -164,8 +167,7 @@ export class Hydrator {
 
     public getHydratedAccountInventory(account: Pick<Account, "inventory">) {
         const inventory: Map<NanoId, Balance<Item>> = new Map()
-        for (const [_itemId, amount] of Object.entries(account.inventory)) {
-            const itemId = NanoIdSchema.parse(_itemId)
+        for (const [itemId, amount] of objectEntries(account.inventory)) {
 
             const item = this.itemsDb.get(itemId)
             if (!item) return err(new ApiError("ItemDoesNotExist"))

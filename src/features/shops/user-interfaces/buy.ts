@@ -18,7 +18,7 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
 import { Product } from "../database/products.types.js"
 import { Shop } from "../database/shops.types.js"
-import { applyQuantity, formatPrice } from "../services/price.js"
+import { applyQuantityHydrated, formatPrice } from "../services/price.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -219,10 +219,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
         
         if (!(interaction.member instanceof GuildMember)) return updateAsErrorMessage(interaction, "Unexpected error: member is not a guild member")
 
-        const [error, message] = await processPurchase(interaction.member, this.selectedShop, this.selectedProduct, this.quantity, this.discount)
+        const [error, buyResult] = await processPurchase(interaction.member, this.selectedShop, this.selectedProduct, this.quantity, this.discount)
 
         if (error === null) {
-            return this.printAndLogPurchase(interaction, this.selectedProduct, message)
+            return this.printAndLogPurchase(interaction, this.selectedProduct, buyResult.quantity, buyResult.message)
         }
 
         const errorName = error.name
@@ -234,8 +234,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
             case "NotAllowedToBuy":
                 return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
             
-            case "NotEnoughMoney":
-                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(error.currencyName) }))
+            case "NotEnoughMoney": {
+                const currenciesName = error.currencies.map(c => formattedEmojiableName((HYDRATOR.hydrateCurrency(c))[1])).join(", ")
+                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(currenciesName) }))
+            }
             
             case "ProductNoLongerAvailable":
                 return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
@@ -255,11 +257,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
             return "❌ error displaying price"
         }    
 
-        return formatPrice(applyQuantity(price, this.quantity), this.discount)
+        return formatPrice(applyQuantityHydrated(price, this.quantity), this.discount)
     }
 
 
-    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product & Labelled, appendix?: string) {
+    private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product & Labelled, quantity: number, appendix?: string) {
 
         const productName = formattedEmojiableName(product)
         const shopName = this.selectedShop.name
@@ -269,7 +271,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const message = t(`${this.locale}.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
-            quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
+            quantity: quantity > 1 ? `**${quantity}x** ` : "",
             price: priceString
         })
 
@@ -279,7 +281,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (interaction.guild) {
             logToDiscord(interaction.guild, 
-                `${interaction.member} purchased ${this.quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${stringifyObj(product.action.options)})` : "none"}`
+                `${interaction.member} purchased ${quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.type} (${stringifyObj(product.action.options)})` : "none"}`
             )
         }
     }

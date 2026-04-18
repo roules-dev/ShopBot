@@ -1,43 +1,54 @@
+import { addCurrenciesAmounts, missingCurrenciesFor, setAccountItemAmount } from "@/features/accounts/services/accounts.services.js"
 import { Product } from "@/features/shops/database/products.types.js"
 import { Shop } from "@/features/shops/database/shops.types.js"
-import { ErrorLike, Result } from "@/lib/error-handling.js"
-import { DeepReadonly } from "@/lib/types/readonly.js"
+import { err, ok } from "@/lib/error-handling.js"
+import { BrandedSnowflake } from "@/schemas/utils.js"
 import { GuildMember } from "discord.js"
+import { getOrCreateAccount } from "../accounts/accounts.services.js"
+import { updateProduct } from "./products.services.js"
+import { applyQuantityAndDiscount } from "@/features/shops/services/price.js"
+import { Identifiable } from "@/lib/types/core.js"
+import { NanoId } from "@/database/database.types.js"
 
 // TODO : once implemented remove return type
 export async function processPurchase(
-    _member: GuildMember, 
-    _shop: DeepReadonly<Shop>, 
-    _product: DeepReadonly<Product>, 
-    _quantity: number, 
-    _discount: number
-): Promise<Result<string, ErrorLike<"ProductNoLongerAvailable"> | ErrorLike<"NotAllowedToBuy"> | { name: "NotEnoughMoney", message: string, currencyName: string } | ErrorLike<"ApiError"> | ErrorLike<"DatabaseError">>> {
+    member: GuildMember, 
+    shop: Shop & Identifiable<NanoId>, 
+    product: Product & Identifiable<NanoId>, 
+    quantity: number, 
+    discount: number
+)//: Promise<Result<string, ErrorLike<"ProductNoLongerAvailable"> | ErrorLike<"NotAllowedToBuy"> | { name: "NotEnoughMoney", message: string, currencyName: string } | ErrorLike<"ApiError"> | ErrorLike<"DatabaseError">>> {
+{
+    if (!isMemberAllowedToBuy(member, shop)) {
+        return err({ name: "NotAllowedToBuy" })
+    }
+
+    const accountId = member.id as BrandedSnowflake
+
+    const [error, account] = await getOrCreateAccount(accountId)
+    if (error) return err(error)
+
+    const price = applyQuantityAndDiscount(product.price, quantity, discount)
     
-    throw new Error("Not implemented yet")
+    const [error1, missingCurrencies] = await missingCurrenciesFor(accountId, price)
+    if (error1) return err(error1)
+    if (missingCurrencies.length > 0) return err({ name: "NotEnoughMoney", currencies: missingCurrencies })
 
-    // if (!isMemberAllowedToBuy(member, shop)) {
-    //     return err({ name: "NotAllowedToBuy" })
-    // }
+    if (product.stock == 0) return err({ name: "ProductNoLongerAvailable" })
+    const updatedStock = itemStockAfterBuy(product, quantity)
 
-    // const accountId = SnowflakeSchema.parse(member.id)
+    let actualQuantity = quantity
+    if (product.stock !== null && product.stock !== undefined) {
+        actualQuantity = Math.min(quantity, product.stock)
+    }
 
-    // const [error, account] = await getOrCreateAccount(accountId)
-    // if (error) return err(error)
+    if (updatedStock != null) {
+        const [error2] = await updateProduct(shop.id, product.id, { stock: updatedStock })
+        if (error2) return err(error2)
+    }
 
-    // const price = applyDiscount(product.price, quantity, discount)
-    
-    // const balanceAfterBuy = userBalanceAfterBuy(account, shop.currency, price)
-    // if (balanceAfterBuy < 0) return err({ name: "NotEnoughMoney" })
-
-    // const updatedStock = itemStockAfterBuy(product, quantity)
-    // if (updatedStock != undefined && updatedStock < 0) return err({ name: "ProductNoLongerAvailable" })
-
-
-    // const [error2] = await updateProduct(shop.id, product.id, { stock: updatedStock })
-    // if (error2) return err(error2)
-
-    // const [error3] = await setAccountCurrencyAmount(accountId, shop.currencyId, balanceAfterBuy)
-    // if (error3) return err(error3)
+    const [error3] = await addCurrenciesAmounts(accountId, price, -1)
+    if (error3) return err(error3)
     
     // if (product.action != undefined) {
     //     const [error4, actionMessage] = await executeActionProduct(product.action, member)
@@ -46,43 +57,30 @@ export async function processPurchase(
     //     return ok(actionMessage)
     // }
 
-    // const userProductAmount = account.inventory.get(product.id)?.amount || 0
-    // const [error5] = await setAccountItemAmount(accountId, product, userProductAmount + quantity)
+    const userProductAmount = account.inventory[product.itemId] || 0
+    const [error5] = await setAccountItemAmount(accountId, product.itemId, userProductAmount + actualQuantity)
 
-    // if (error5) return err(error5)
+    if (error5) return err(error5)
 
-    // return ok("")
+    return ok({ quantity: actualQuantity, message: "" })
 }
 
-// function userBalanceAfterBuy(account: DeepReadonly<Account>, currency: Currency, price: number) {
-//     const userCurrencyAmount = account.currencies.get(currency.id)?.amount || 0
 
-//     return userCurrencyAmount - price
-// }
+function itemStockAfterBuy(product: Product, quantity: number) {
+    if (product.stock == undefined || product.stock == null) {
+        return null
+    }
 
-// function itemStockAfterBuy(product: Product, quantity: number) {
-//     if (product.stock == undefined || product.stock == null) {
-//         return null
-//     }
+    return Math.min(product.stock - quantity, 0)
+}
 
-//     return product.stock - quantity
-// }
 
-// export function applyDiscount(price: Price, quantity: number, discount: number) {
-//     const discountedPrice: Price = {}
 
-//     for (const [currencyId, amount] of Object.entries(price)) {
-//         discountedPrice[currencyId] = +((amount * (1 - discount)).toFixed(2))
-//     }
+function isMemberAllowedToBuy(member: GuildMember, shop: Shop) {
+    if (shop.reservedTo == undefined) return true
 
-//     return discountedPrice
-// }
-
-// function isMemberAllowedToBuy(member: GuildMember, shop: DeepReadonly<Shop>) {
-//     if (shop.reservedTo == undefined) return true
-
-//     return (member.roles.cache.has(shop.reservedTo) || member.permissions.has("Administrator"))
-// }
+    return (member.roles.cache.has(shop.reservedTo) || member.permissions.has("Administrator"))
+}
 
 
 // async function executeActionProduct(action: ProductAction, member: GuildMember) {

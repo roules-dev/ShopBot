@@ -12,8 +12,13 @@ export function ok<S>(value: S): Result<S, never> {
 export function err(message: string): Result<never, ErrorLike<"Error">>
 export function err<const N extends string, E extends ErrorLike<N>>(error: E): Result<never, E>
 export function err<const N extends string>(partialError: { name: N }): Result<never, ErrorLike<N>>
-export function err<const N extends string, E extends ErrorLike<N>>(
-    errorOrMessage: E | { name: N } | string
+export function err<
+    const N extends string, 
+    T extends Record<string, unknown>
+>(partialError: { name: N } & T): Result<never, ErrorLike<N> & Omit<T, 'name'>>
+
+export function err<const N extends string, E extends ErrorLike<N>, T extends Record<string, unknown>>(
+    errorOrMessage: E | { name: N } | { name: N } & T | string
 ) {
 
     if (typeof errorOrMessage === "string") {

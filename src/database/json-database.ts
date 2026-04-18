@@ -82,10 +82,10 @@ export class JsonDatabase<
 
         } catch (e) {
             // TODO : rollback
-            if (e instanceof Error) {
-                return err(e)
-            }
-            return err(new DatabaseError("UnexpectedError", this.path, `Unknown error during update function execution: ${JSON.stringify(e)}`))
+            
+            let message = `Unknown error during update function execution: ${JSON.stringify(e)}`
+            if (e instanceof Error) message = e.message
+            return err(new DatabaseError("UnexpectedError", this.path, message))
         }
 
         const [error, updated] = await this.set(id, item)
@@ -200,9 +200,9 @@ export class JsonDatabase<
                 await fs.rename(tempPath, this.path)
 
             } catch (e) {
-                throw e instanceof Error
-                    ? e
-                    : new Error(`Unknown error while saving database ${this.path}`)
+                let message = `Unknown error while saving database ${this.path}`
+                if (e instanceof Error) message = e.message
+                throw new DatabaseError("SaveError", this.path, message)
             }
         })
 
@@ -210,8 +210,9 @@ export class JsonDatabase<
             await this.writeLock
             return ok(true)
         } catch (e) {
-            if (e instanceof Error) return err(e)
-            return err(new Error(`Unknown error while saving database ${this.path}`))
+            let message = `Unknown error while saving database ${this.path}`
+            if (e instanceof Error) message = e.message
+            return err(new DatabaseError("SaveError", this.path, message))
         }
     }
 }
