@@ -1,3 +1,4 @@
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { replyErrorMessage } from "@/lib/discord.js"
@@ -8,10 +9,9 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { Account } from "../database/accounts.type.js"
-import { HYDRATOR } from "@/core/database/init-databases.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
     public override id: string = "account-ui"
@@ -52,7 +52,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         return true
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return ""
     }
 
@@ -129,7 +129,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         }
     }
 
-    protected override getInputSize(): number {
+    protected override getInputSize() {
         switch (this.mode) {
             case this.modes.CURRENCIES:
                 return Object.keys(this.account?.currencies ?? {}).length
@@ -138,7 +138,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         }
     }
 
-    private getAccountFields(): APIEmbedField[] {
+    private getAccountFields() {
         const emptyAccountField = { name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }
         if (!this.account) return [emptyAccountField]
 
@@ -155,7 +155,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         return fields
     }
 
-    private getInventoryFields(): APIEmbedField[] { 
+    private getInventoryFields() { 
         const emptyInventoryField = { name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }
         if (!this.account) return [emptyInventoryField]
 
@@ -172,7 +172,7 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
         return fields
     }
 
-    protected override getEmbedFields(): APIEmbedField[] {
+    protected override getEmbedFields() {
         switch (this.mode) {
             case this.modes.CURRENCIES:
                 return this.getAccountFields()

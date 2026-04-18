@@ -16,7 +16,7 @@ export class CurrencyRemoveFlow extends UserFlow {
 
     private locale = "userFlows.currencyRemove" as const
 
-    async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))
 
@@ -64,7 +64,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         this.components.set(submitButton.customId, submitButton)
     }
     
-    getMessage(): string {  
+    getMessage() {  
         if (this.selectedCurrency) {
             // const itemsWithCurrency = 
            
@@ -99,7 +99,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
     }
 
-    protected async success(_interaction: ButtonInteraction | ModalSubmitInteraction): Promise<unknown> {
+    protected async success(_interaction: ButtonInteraction | ModalSubmitInteraction) {
         throw new Error("Method not implemented.")
         // this.disableComponents()
 

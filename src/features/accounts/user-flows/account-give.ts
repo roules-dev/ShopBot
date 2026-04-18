@@ -26,7 +26,7 @@ export class AccountGiveFlow extends UserFlow {
 
     protected locale = "userFlows.accountGive" as const
 
-    public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
     
@@ -46,7 +46,7 @@ export class AccountGiveFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return t(
             `${this.locale}.messages.default`, 
             { 
@@ -91,7 +91,7 @@ export class AccountGiveFlow extends UserFlow {
         submitButton.toggle(this.selectedCurrency != null)
     }
 
-    protected async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
         
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -129,7 +129,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
 
     public override id = "bulk-account-give"
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
 
         const currencies = getCurrencies()
         if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
@@ -150,7 +150,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return t(
             `${this.locale}.messages.bulkGive`, 
             { 
@@ -161,7 +161,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         )
     }
 
-    protected override async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
         
         if (!this.selectedCurrency || !this.targetRole || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

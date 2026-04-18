@@ -43,7 +43,7 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
 
     }
 
-    onCollect(interaction: SelectMenuInteractions<T>): void {
+    onCollect(interaction: SelectMenuInteractions<T>) {
         const selected = interaction.values[0]
         if (selected == undefined) return
 
@@ -53,7 +53,7 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
         this.callback(interaction, selectedId)    
     }
 
-    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>) {}
 
 }
 

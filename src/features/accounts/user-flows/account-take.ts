@@ -26,7 +26,7 @@ export class AccountTakeFlow extends UserFlow {
 
     protected locale = "userFlows.accountTake" as const
 
-    public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public async start(interaction: ChatInputCommandInteraction) {
 
         const currencies = getCurrencies()
         if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)
@@ -47,7 +47,7 @@ export class AccountTakeFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return t(
             `${this.locale}.messages.default`, 
             { 
@@ -143,7 +143,7 @@ export class AccountTakeFlow extends UserFlow {
         }
     }
 
-    protected async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedCurrency || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

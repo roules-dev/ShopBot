@@ -74,7 +74,7 @@ function log(fn: () => unknown) {
 }
 
 
-const save = async (path: string, content: object): Promise<boolean> => {
+const save = async (path: string, content: object) => {
     try {
         await fs.writeFile(path, JSON.stringify(content, null, 4))
         return true

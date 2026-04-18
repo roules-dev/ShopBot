@@ -37,7 +37,7 @@ export class EditCurrencyFlow extends UserFlow {
 
     protected locale = "userFlows.currencyEdit" as const
 
-    async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))    
 
@@ -55,7 +55,7 @@ export class EditCurrencyFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         const message = t(`${this.locale}.messages.default`, {
             currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
@@ -100,7 +100,7 @@ export class EditCurrencyFlow extends UserFlow {
         submitButton.toggle(this.selectedCurrency != null)
     }
 
-    protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
+    protected override async success(interaction: UserInterfaceInteraction) {
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         if (!this.updateOption || this.updateOptionValue == undefined) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
@@ -119,11 +119,11 @@ export class EditCurrencyFlow extends UserFlow {
         return await updateAsSuccessMessage(interaction, message)
     }
 
-    private getUpdateOptionName(option: EditCurrencyOption): string {
+    private getUpdateOptionName(option: EditCurrencyOption) {
         return t(`${this.locale}.editOptions.${option}`)
     }
 
-    private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption): string {
+    private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption) {
         switch (option) {
             case EDIT_CURRENCY_OPTION.NAME:
                 return interaction.options.getString(`new-${option}`)?.replaceSpaces() || ""

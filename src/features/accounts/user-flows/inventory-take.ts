@@ -30,7 +30,7 @@ export class InventoryTakeFlow extends UserFlow {
 
     protected locale = "userFlows.inventoryTake" as const
 
-    public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public async start(interaction: ChatInputCommandInteraction) {
         const target = interaction.options.getUser("target")
         const amount = interaction.options.getNumber("amount")
     
@@ -47,7 +47,7 @@ export class InventoryTakeFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return t(
             `${this.locale}.messages.default`, 
             { 
@@ -156,7 +156,7 @@ export class InventoryTakeFlow extends UserFlow {
         }
     }
 
-    protected async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedItem || !this.target || !this.amount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

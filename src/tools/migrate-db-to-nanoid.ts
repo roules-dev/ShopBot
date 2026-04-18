@@ -9,7 +9,7 @@ import { fileURLToPath } from "url"
 
 const UUID_REGEXP = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/g
 
-const save = async (path: string, content: object): Promise<boolean> => {
+const save = async (path: string, content: object) => {
     try {
         await fs.writeFile(path, JSON.stringify(content, null, 4))
         return true

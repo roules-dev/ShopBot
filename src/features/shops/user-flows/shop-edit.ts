@@ -29,7 +29,7 @@ type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 
 function isShopOption(subcommand: string): subcommand is EditShopOption { return Object.values(EDIT_SHOP_OPTIONS).includes(subcommand as EditShopOption) }
 
-function getShopOptionName(option: EditShopOption): string { 
+function getShopOptionName(option: EditShopOption) { 
     switch (option) {
         case EDIT_SHOP_OPTIONS.Name:
         case EDIT_SHOP_OPTIONS.Description:
@@ -54,7 +54,7 @@ export class EditShopFlow extends UserFlow {
 
     protected locale = "userFlows.shopEdit" as const
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
@@ -77,7 +77,7 @@ export class EditShopFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         const message = t(`${this.locale}.messages.default`, { 
             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
@@ -124,7 +124,7 @@ export class EditShopFlow extends UserFlow {
         submitButton.toggle(this.selectedShop != null)
     }
 
-    protected override async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -175,11 +175,11 @@ export class EditShopFlow extends UserFlow {
         return ok(updateValue)
     }
 
-    private getUpdateOptionName(option: EditShopOption): string { 
+    private getUpdateOptionName(option: EditShopOption) { 
         return t(`${this.locale}.editOptions.${option}`)
     }
 
-    private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption): string | null {
+    private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption) {
         switch (subcommand) {
             case EDIT_SHOP_OPTIONS.ReservedTo: {
                 const role = interaction.options.getRole("new-role")
@@ -202,7 +202,7 @@ export class ShopReorderFlow extends UserFlow {
 
     protected locale = "userFlows.shopReorder" as const
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
         if (!firstShopEntry) return replyErrorMessage(interaction, t("errorMessages.noShops"))
@@ -219,7 +219,7 @@ export class ShopReorderFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         const message = t(`${this.locale}.messages.default`, { 
             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             position: bold(`${this.selectedPosition}` || t(`${this.locale}.components.selectPosition`))

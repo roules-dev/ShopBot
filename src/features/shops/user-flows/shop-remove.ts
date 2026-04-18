@@ -19,7 +19,7 @@ export class ShopRemoveFlow extends UserFlow {
 
     protected locale = "userFlows.shopRemove" as const
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
@@ -31,7 +31,7 @@ export class ShopRemoveFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return t(`${this.locale}.messages.default`, { shop: this.selectedShop?.name || t("defaultComponents.selectShop")})
     }
 
@@ -71,7 +71,7 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
 
-    protected override async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

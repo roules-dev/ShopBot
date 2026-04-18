@@ -8,14 +8,14 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { removeProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
+import { NanoId } from "@/database/database.types.js"
+import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { Product } from "../database/products.types.js"
 import { Shop } from "../database/shops.types.js"
-import { NanoId } from "@/database/database.types.js"
-import { Identifiable, Labelled } from "@/lib/types/core.js"
-import { HYDRATOR } from "@/core/database/init-databases.js"
 
 export const REMOVE_PRODUCT_FLOW_STAGE = {
     SELECT_SHOP: "SELECT_SHOP",
@@ -38,7 +38,7 @@ export class RemoveProductFlow extends UserFlow {
 
     protected locale = "userFlows.productRemove" as const
 
-    public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
@@ -51,7 +51,7 @@ export class RemoveProductFlow extends UserFlow {
         return
     }
 
-    protected getMessage(): string {
+    protected getMessage() {
         switch (this.stage) {
             case REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {
@@ -194,7 +194,7 @@ export class RemoveProductFlow extends UserFlow {
         this.createComponentsCollectors(this.response)
     }
 
-    protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
+    protected async success(interaction: UserInterfaceInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

@@ -31,15 +31,15 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
 
     protected locale = "userInterfaces.settings" as const
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         return ""
     }
 
-    protected override getInputSize(): number {
+    protected override getInputSize() {
         return getSettings().size
     }
 
-    protected override initComponents(): unknown {
+    protected override initComponents() {
         const settingSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: "settings-select-menu", placeholder: t(`${this.locale}.components.selectSetting`), time: 120_000 }, 
             getSettings(), 
@@ -54,7 +54,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return
     }
 
-    protected override updateComponents(): unknown {
+    protected override updateComponents() {
         this.destroyComponentsCollectors()
         this.clearEditComponents()
 
@@ -92,7 +92,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         this.embed.setFields(this.getPageEmbedFields())
     }
 
-    protected getEmbedFields(): APIEmbedField[] {
+    protected getEmbedFields() {
         const settings = getSettings()
 
         const fields: APIEmbedField[] = []
@@ -127,7 +127,7 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
         return displayValue ?? setting.value ?? t(`${this.locale}.embeds.settings.unsetSetting`)
     }
 
-    private getSettingEditorComponents(setting: Setting): ExtendedComponent[] {
+    private getSettingEditorComponents(setting: Setting) {
         const components: ExtendedComponent[] = []
 
         switch (setting.type) {

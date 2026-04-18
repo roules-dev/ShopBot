@@ -36,7 +36,7 @@ export class AddProductFlow extends UserFlow {
 
     protected locale = "userFlows.productAdd" as const
 
-    public async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
@@ -72,7 +72,7 @@ export class AddProductFlow extends UserFlow {
         return
     }
     
-    protected getMessage(): string {
+    protected getMessage() {
         const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
         const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji}))
 
@@ -125,7 +125,7 @@ export class AddProductFlow extends UserFlow {
         submitShopButton.toggle(this.selectedShop != null)
     }
 
-    protected async success(interaction: UserInterfaceInteraction): Promise<unknown> {
+    protected async success(interaction: UserInterfaceInteraction) {
         if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const optionals = {
@@ -166,7 +166,7 @@ export class AddProductFlow extends UserFlow {
 
 //     private actionSetupCompleted: boolean = false
 
-//     public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+//     public override async start(interaction: ChatInputCommandInteraction) {
 //         const productActionType = interaction.options.getString("action")
 
 //         if (productActionType != null && !isProductActionType(productActionType)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -176,7 +176,7 @@ export class AddProductFlow extends UserFlow {
 //         return await super.start(interaction)
 //     }
 
-//     protected override getMessage(): string {
+//     protected override getMessage() {
 //         switch (this.stage) {
 //             case ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP:
 //                 return super.getMessage()
@@ -367,7 +367,7 @@ export class AddProductFlow extends UserFlow {
 //         this.createComponentsCollectors(this.response)
 //     }
 
-//     protected override async success(interaction: UserInterfaceInteraction): Promise<unknown> {
+//     protected override async success(interaction: UserInterfaceInteraction) {
 //         if (this.stage == ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
 //             this.changeStage(ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION)
 //             return this.updateInteraction(interaction)

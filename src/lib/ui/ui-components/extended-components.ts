@@ -34,7 +34,7 @@ export abstract class ExtendedComponent {
         this.collector = null
     }
 
-    getComponent(): UserInterfaceComponentBuilder {
+    getComponent() {
         return this.component
     }
 

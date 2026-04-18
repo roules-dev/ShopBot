@@ -51,7 +51,7 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
         this.component = this.createSelectMenu(placeholder, map)
     }
 
-    onCollect(interaction: StringSelectMenuInteraction): void {
+    onCollect(interaction: StringSelectMenuInteraction) {
         if (!interaction.isStringSelectMenu()) return this.update(interaction)
 
         const selectedValue = interaction.values[0] as Id
@@ -79,9 +79,9 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
 
     }
 
-    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>) {}
 
-    private createSelectMenu(placeholder: string, map: MutableOrReadonlyMap<string, T>): StringSelectMenuBuilder {
+    private createSelectMenu(placeholder: string, map: MutableOrReadonlyMap<string, T>) {
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId(this.customId)
             .setPlaceholder(placeholder)
@@ -90,7 +90,7 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
         return selectMenu
     }
 
-    private getStringSelectOptions(map: MutableOrReadonlyMap<string, T>): StringSelectMenuOptionBuilder[] { 
+    private getStringSelectOptions(map: MutableOrReadonlyMap<string, T>) { 
         
         const pageSwitchOptions = []
 

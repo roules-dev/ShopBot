@@ -22,7 +22,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
 
     protected locale = "userFlows.discountCodeCreate" as const
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
@@ -42,7 +42,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         const message = t(`${this.locale}.messages.default`, {
             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             code: bold(this.discountCode!),
@@ -91,7 +91,7 @@ export class DiscountCodeCreateFlow extends UserFlow {
 
     }
 
-    protected override async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -133,7 +133,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 
     protected locale = "userFlows.discountCodeRemove" as const
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
@@ -146,7 +146,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         return
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         switch (this.stage) {
             case DISCOUNT_CODE_REMOVE_STAGE.SELECT_SHOP:
                 return t(`${this.locale}.messages.shopSelectStage`, {

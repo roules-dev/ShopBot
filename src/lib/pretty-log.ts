@@ -59,17 +59,17 @@ export class PrettyLog {
         return `${INVERT} ✓ ${GREEN_FG} Step ${this.loadStepCount - 1} ${RESET}`
     }
 
-    static bold(message: string): string {
+    static bold(message: string) {
         const BOLD = "\x1b[1m"
         return `${BOLD}${message}${RESET}`
     }
 
-    static underline(message: string): string {
+    static underline(message: string) {
         const UNDERLINE = "\x1b[4m"
         return `${UNDERLINE}${message}${RESET}`
     }
 
-    static italic(message: string): string {
+    static italic(message: string) {
         const ITALIC = "\x1b[3m"
         return `${ITALIC}${message}${RESET}`
     }

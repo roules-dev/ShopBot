@@ -3,11 +3,11 @@ import { _AddUndefinedToPossiblyUndefinedPropertiesOfInterface, APIApplicationCo
 import { getTranslationByKey, initI18n } from "../../lib/i18n/init.js"
 import { PrettyLog } from "../../lib/pretty-log.js"
 
+import { EVENTS } from "@/core/events/event-bus.js"
 import { getSetting } from "@/features/settings/database/settings.database.js"
 import en_US_locale from "@/generated/locales/en-US.js"
 import es_ES_locale from "@/generated/locales/es-ES.js"
 import fr_locale from "@/generated/locales/fr.js"
-import { EVENTS } from "@/core/events/event-bus.js"
 
 
 declare module "@/lib/i18n/translations.js" {
@@ -56,7 +56,7 @@ async function addLocalisationToOptions(
 }
 
 
-async function getLocaleStrings(path: string, maxLength?: number): Promise<{ [key: string]: string | undefined }> {
+async function getLocaleStrings(path: string, maxLength?: number) {
     const result: { [key: string]: string | undefined } = {}
 
     for (const locale in LOCALES) {

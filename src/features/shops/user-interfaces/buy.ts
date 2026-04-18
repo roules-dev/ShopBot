@@ -48,7 +48,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         return true
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ""
 
         const priceString = this.priceString() != "" ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ""
@@ -248,7 +248,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
 
-    private priceString(): string {
+    private priceString() {
         if (!this.selectedProduct) return "No product selected"
 
         const [error, price] = HYDRATOR.getHydratedProductPrice(this.selectedProduct)

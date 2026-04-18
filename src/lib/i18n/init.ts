@@ -72,7 +72,7 @@ export function initI18n({
     function translate<S extends PathsWithNoParams>(key: S): string
     function translate<S extends PathsWithParams, A extends Params<S>>(key: S, args: A): string
 
-    function translate<S extends DotPathsFor, A extends Params<S>>(key: S, args?: A): string {
+    function translate<S extends DotPathsFor, A extends Params<S>>(key: S, args?: A) {
         for (const locale of orderedLocales()) {
             const translationFile = translations[locale]
             if (translationFile == null) continue
@@ -132,7 +132,7 @@ export function getTranslationByKey(obj: LanguageMessages, key: string) {
 }
 
 
-function replaceTemplates(str: string, templates: { [key: string]: string | number }): string {
+function replaceTemplates(str: string, templates: { [key: string]: string | number }) {
     let result = str
     for (const key in templates) {
         const value = templates[key]

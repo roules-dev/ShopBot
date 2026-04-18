@@ -1,4 +1,4 @@
-import { ButtonStyle, ComponentEmojiResolvable, ComponentType, ButtonBuilder, ButtonInteraction, ReadonlyCollection, MessageComponentInteraction } from "discord.js"
+import { ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentEmojiResolvable, ComponentType, MessageComponentInteraction, ReadonlyCollection } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
 
 
@@ -39,9 +39,9 @@ export class ExtendedButtonComponent extends ExtendedComponent {
         this.time = time
     }   
 
-    onCollect(interaction: ButtonInteraction): void {
+    onCollect(interaction: ButtonInteraction) {
         this.callback(interaction)
     }
 
-    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>): void {}
+    onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>) {}
 }

@@ -28,7 +28,7 @@ export class ShopCreateFlow extends UserFlow {
 
     protected locale = "userFlows.shopCreate" as const
 
-    public override async start(interaction: ChatInputCommandInteraction): Promise<unknown> {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (!currencies.size) return await replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantCreateShop`)} ${t("errorMessages.noCurrencies")}`)
 
@@ -56,7 +56,7 @@ export class ShopCreateFlow extends UserFlow {
         return 
     }
 
-    protected override getMessage(): string {
+    protected override getMessage() {
         const shopNameString = formattedEmojiableName({ name: this.shopName!, emoji: this.shopEmoji })
 
         const message = t(`${this.locale}.messages.default`, {
@@ -141,7 +141,7 @@ export class ShopCreateFlow extends UserFlow {
         submitButton.toggle(this.selectedCurrency != null)
     }
 
-    protected override async success(interaction: ButtonInteraction): Promise<unknown> {
+    protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.shopName) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

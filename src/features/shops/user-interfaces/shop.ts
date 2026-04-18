@@ -14,8 +14,8 @@ import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-inter
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention } from "discord.js"
 import { Shop } from "../database/shops.types.js"
-import { BuyProductUserInterface } from "./buy.js"
 import { formatPrice } from "../services/price.js"
+import { BuyProductUserInterface } from "./buy.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
@@ -48,7 +48,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         return true
     }
 
-    protected override getMessage(): string { return "" }
+    protected override getMessage() { return "" }
 
     protected override initComponents() {
         const selectShopMenu = new ExtendedStringSelectMenuComponent(
@@ -178,7 +178,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         return fields
     }
 
-    protected override getInputSize(): number {
+    protected override getInputSize() {
         return this.selectedShop ? Object.keys(this.selectedShop.products).length : 0
     }
 

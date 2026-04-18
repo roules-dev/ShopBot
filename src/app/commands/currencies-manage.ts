@@ -1,13 +1,13 @@
+import { t } from "@/core/i18n/i18n.js"
+import { createCurrency } from "@/core/services/currencies/currencies.services.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies.schemas.js"
 import { EDIT_CURRENCY_OPTION, EditCurrencyFlow } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord.js"
-import { t } from "@/core/i18n/i18n.js"
 import { validate } from "@/lib/validation.js"
 import { EmojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
-import { createCurrency } from "@/core/services/currencies/currencies.services.js"
 
 
 export const data = new SlashCommandBuilder()
@@ -82,7 +82,7 @@ export async function execute(client: Client, interaction: ChatInputCommandInter
     }
 }
 
-export async function createCurrencyCommand(_client: Client, interaction: ChatInputCommandInteraction): Promise<unknown> {
+export async function createCurrencyCommand(_client: Client, interaction: ChatInputCommandInteraction) {
     const currencyName = interaction.options.getString("name")?.replaceSpaces()
     if (!currencyName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 

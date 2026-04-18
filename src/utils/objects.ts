@@ -1,4 +1,4 @@
-export function stringifyObj(obj: object): string {
+export function stringifyObj(obj: object) {
     return (Object.keys(obj) as (keyof typeof obj)[]).map(key => `${key}: ${typeof obj[key] === "object" ? JSON.stringify(obj[key]) : obj[key]}`).join(", ")
 }
 
