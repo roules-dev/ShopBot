@@ -4,7 +4,8 @@
         "emoji": "📖",
         "description": "The small bookshop in the downtown. Here you can buy and read books of all types.",
         "discountCodes": {
-            "FUZE50": 50
+            "FUZE50": 50,
+            "GREAT99": 99
         },
         "reservedTo": "1358489735542341683",
         "products": {

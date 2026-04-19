@@ -1,6 +1,8 @@
+import { replyErrorMessage } from "@/lib/discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
 import { UserInterface } from "../user-interfaces/user-interfaces.js"
-import { ChatInputCommandInteraction } from "discord.js"
+import { ChatInputCommandInteraction, MessageFlags } from "discord.js"
+import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
 
 
 export abstract class UserFlow extends UserInterface {
@@ -19,6 +21,25 @@ export abstract class UserFlow2<T extends Record<string, unknown>> extends UserI
         super()
         this.parameters = parameters
     }
-    public abstract start(interaction: ChatInputCommandInteraction): Promise<unknown> 
+    protected async prestart(_interaction: ChatInputCommandInteraction): Promise<Result<boolean, ErrorLike<"Error">>> {
+        return ok(true)
+    }
+
+    protected setup(_interaction: UserInterfaceInteraction) {
+        this.updateComponents()
+    }
+
+    public async start(interaction: ChatInputCommandInteraction) {
+        const [error] = await this.prestart(interaction)
+        if (error) return await replyErrorMessage(interaction, error.message)
+
+        this.setup(interaction)
+
+        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
+        this.createComponentsCollectors(response)
+
+        return response
+    }
+    
     protected abstract success(interaction: UserInterfaceInteraction): Promise<unknown>
 }

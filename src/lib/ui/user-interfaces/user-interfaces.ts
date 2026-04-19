@@ -132,7 +132,6 @@ export abstract class MessageUserInterface extends UserInterface {
     }
 
     protected setup(_interaction: UserInterfaceInteraction): void {
-        this.initComponents()
         this.updateComponents()
     }
 
@@ -149,11 +148,11 @@ export abstract class MessageUserInterface extends UserInterface {
     }
 }
 
+// TODO : same thing as for components but for embeds where they get intialized in the constructor
 export abstract class EmbedUserInterface extends MessageUserInterface {
     protected abstract embed: EmbedBuilder | null
 
     protected override setup(interaction: UserInterfaceInteraction): void {
-        this.initComponents()
         this.initEmbeds(interaction)
 
         this.updateComponents()
