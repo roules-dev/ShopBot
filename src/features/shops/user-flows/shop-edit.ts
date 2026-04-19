@@ -5,7 +5,7 @@ import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from 
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
@@ -43,8 +43,9 @@ function getShopOptionName(option: EditShopOption) {
 }
 
 export class EditShopFlow extends UserFlow {
-    public override id: string = "edit-shop"
-    protected override components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "edit-shop" 
+    }
 
     private selectedShop: Shop & Identifiable<NanoId> | null = null
 
@@ -52,7 +53,7 @@ export class EditShopFlow extends UserFlow {
     private updateOptionValue: string | null = null
     private updateOptionValueDisplay: string | null = null
 
-    protected locale = "userFlows.shopEdit" as const
+    
 
     public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
@@ -69,7 +70,7 @@ export class EditShopFlow extends UserFlow {
 
         this.updateOptionValueDisplay = this.getUpdateValueDisplay(interaction, subcommand) || this.updateOptionValue
 
-        this.initComponents()
+        
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -78,7 +79,7 @@ export class EditShopFlow extends UserFlow {
     }
 
     protected override getMessage() {
-        const message = t(`${this.locale}.messages.default`, { 
+        const message = t(`userFlows.shopEdit.messages.default`, { 
             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
             value: bold(`${this.updateOptionValueDisplay}`)
@@ -105,7 +106,7 @@ export class EditShopFlow extends UserFlow {
             {
                 customId: `${this.id}+submit`,
                 time: 120_000,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.shopEdit.components.submitButton`),
                 emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -113,16 +114,12 @@ export class EditShopFlow extends UserFlow {
             (interaction: ButtonInteraction) => this.success(interaction),
         )
 
-        this.components.set(shopSelectMenu.customId, shopSelectMenu)
-        this.components.set(submitButton.customId, submitButton)
+        return [
+            createComponent(shopSelectMenu),
+            createComponent(submitButton, () => submitButton.toggle(this.selectedShop != null)),
+        ]
     }
 
-    protected override updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (!(submitButton instanceof ExtendedButtonComponent)) return
-
-        submitButton.toggle(this.selectedShop != null)
-    }
 
     protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
@@ -137,7 +134,7 @@ export class EditShopFlow extends UserFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
+        const message = t(`userFlows.shopEdit.messages.success`, {
             shop: bold(oldName),
             option: bold(this.getUpdateOptionName(this.updateOption)),
             value: bold(`${this.updateOptionValueDisplay}`)
@@ -176,7 +173,7 @@ export class EditShopFlow extends UserFlow {
     }
 
     private getUpdateOptionName(option: EditShopOption) { 
-        return t(`${this.locale}.editOptions.${option}`)
+        return t(`userFlows.shopEdit.editOptions.${option}`)
     }
 
     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption) {
@@ -194,20 +191,21 @@ export class EditShopFlow extends UserFlow {
 
 
 export class ShopReorderFlow extends UserFlow {
-    public id = "shop-reorder"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "shop-reorder" 
+    }
 
     private selectedShop: Shop & Identifiable<NanoId> | null = null
     private selectedPosition: number | null = null
 
-    protected locale = "userFlows.shopReorder" as const
+    
 
     public override async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
         if (!firstShopEntry) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
-        this.initComponents()
+        
 
         this.selectedShop = { ...firstShopEntry[1], id: firstShopEntry[0] }
         this.selectedPosition = 0 + 1
@@ -220,9 +218,9 @@ export class ShopReorderFlow extends UserFlow {
     }
 
     protected override getMessage() {
-        const message = t(`${this.locale}.messages.default`, { 
+        const message = t(`userFlows.shopReorder.messages.default`, { 
             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
-            position: bold(`${this.selectedPosition}` || t(`${this.locale}.components.selectPosition`))
+            position: bold(`${this.selectedPosition}` || t(`userFlows.shopReorder.components.selectPosition`))
         })
 
         return message
@@ -284,7 +282,7 @@ export class ShopReorderFlow extends UserFlow {
             {
                 customId: `${this.id}+submit-new-position`,
                 time: 120_000,
-                label: t(`${this.locale}.components.submitNewPositionButton`),
+                label: t(`userFlows.shopReorder.components.submitNewPositionButton`),
                 emoji: {name: ""},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -292,28 +290,17 @@ export class ShopReorderFlow extends UserFlow {
             (interaction: ButtonInteraction) => this.success(interaction)
         )
 
-        this.components.set(shopSelectMenu.customId, shopSelectMenu)
-        this.components.set(upButton.customId, upButton)
-        this.components.set(downButton.customId, downButton)
-        this.components.set(submitNewPositionButton.customId, submitNewPositionButton)
+        return [
+            createComponent(shopSelectMenu),
+
+            createComponent(upButton, () => upButton.toggle(this.selectedPosition != null && this.selectedPosition > 1)),
+
+            createComponent(downButton, () => downButton.toggle(this.selectedPosition != null && this.selectedPosition < getShops().size)),
+
+            createComponent(submitNewPositionButton, () => submitNewPositionButton.toggle(this.selectedShop != null && this.selectedPosition != null)),
+        ]
     }
 
-    protected override updateComponents() {
-        const submitNewPositionButton = this.components.get(`${this.id}+submit-new-position`)
-        if (submitNewPositionButton instanceof ExtendedButtonComponent) {
-            submitNewPositionButton.toggle(this.selectedShop != null && this.selectedPosition != null)
-        }
-
-        const upButton = this.components.get(`${this.id}+up`)
-        if (upButton instanceof ExtendedButtonComponent) {
-            upButton.toggle(this.selectedPosition != null && this.selectedPosition > 1)
-        }
-
-        const downButton = this.components.get(`${this.id}+down`)
-        if (downButton instanceof ExtendedButtonComponent) {
-            downButton.toggle(this.selectedPosition != null && this.selectedPosition < getShops().size)
-        }
-    }
 
     protected override async success(interaction: ButtonInteraction) {
         if (!this.selectedShop || !this.selectedPosition) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -321,7 +308,7 @@ export class ShopReorderFlow extends UserFlow {
         const [error] = await updateShopPosition(this.selectedShop.id, this.selectedPosition - 1)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
+        const message = t(`userFlows.shopReorder.messages.success`, {
             shop: bold(this.selectedShop.name),
             position: bold(`${this.selectedPosition}`)
         })

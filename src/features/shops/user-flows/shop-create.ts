@@ -4,7 +4,7 @@ import { createShop } from "@/core/services/shops/shops.services.js"
 import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
@@ -17,8 +17,9 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Mess
 
 
 export class ShopCreateFlow extends UserFlow {
-    public id = "shop-create"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "shop-create" 
+    }
 
     private selectedCurrency: Currency | null = null
     private shopName: string | null = null
@@ -26,11 +27,11 @@ export class ShopCreateFlow extends UserFlow {
     private shopDescription: string | null = null
     private shopReservedTo: Snowflake | undefined = undefined
 
-    protected locale = "userFlows.shopCreate" as const
+    
 
     public override async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
-        if (!currencies.size) return await replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantCreateShop`)} ${t("errorMessages.noCurrencies")}`)
+        if (!currencies.size) return await replyErrorMessage(interaction, `${t(`userFlows.shopCreate.errorMessages.cantCreateShop`)} ${t("errorMessages.noCurrencies")}`)
 
         const shopName = interaction.options.getString("name")?.replaceSpaces()
         const shopDescription = interaction.options.getString("description")?.replaceSpaces()  || ""
@@ -48,7 +49,7 @@ export class ShopCreateFlow extends UserFlow {
         this.shopDescription = shopDescription
         this.shopReservedTo = shopReservedTo
 
-        this.initComponents()
+        
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -59,7 +60,7 @@ export class ShopCreateFlow extends UserFlow {
     protected override getMessage() {
         const shopNameString = formattedEmojiableName({ name: this.shopName!, emoji: this.shopEmoji })
 
-        const message = t(`${this.locale}.messages.default`, {
+        const message = t(`userFlows.shopCreate.messages.default`, {
             shop: bold(shopNameString),
             currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
         })
@@ -80,7 +81,7 @@ export class ShopCreateFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.shopCreate.components.submitButton`),
                 emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -92,13 +93,13 @@ export class ShopCreateFlow extends UserFlow {
         const changeShopNameButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+change-shop-name`,
-                label: t(`${this.locale}.components.changeShopNameButton`),
+                label: t(`userFlows.shopCreate.components.changeShopNameButton`),
                 emoji: "📝",
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmit, [error, newShopName]] = await showEditModal(interaction, { edit: t(`${this.locale}.components.editNameModalTitle`), previousValue: this.shopName || undefined })
+                const [modalSubmit, [error, newShopName]] = await showEditModal(interaction, { edit: t(`userFlows.shopCreate.components.editNameModalTitle`), previousValue: this.shopName || undefined })
                 
                 if (error) return updateAsErrorMessage(modalSubmit, error.message)
 
@@ -110,14 +111,14 @@ export class ShopCreateFlow extends UserFlow {
         const changeShopEmojiButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+change-shop-emoji`,
-                label: t(`${this.locale}.components.changeShopEmojiButton`),
+                label: t(`userFlows.shopCreate.components.changeShopEmojiButton`),
                 emoji: "✏️",
                 style: ButtonStyle.Secondary,
                 time: 120_000
             },
             async (interaction: ButtonInteraction) => {
                 const [modalSubmit, [error, emoji]] = await showValidatedEditModal(
-                    interaction, { edit: t(`${this.locale}.components.editEmojiModalTitle`), previousValue: this.shopEmoji || undefined },
+                    interaction, { edit: t(`userFlows.shopCreate.components.editEmojiModalTitle`), previousValue: this.shopEmoji || undefined },
                     EmojiSchema
                 )
 
@@ -128,18 +129,14 @@ export class ShopCreateFlow extends UserFlow {
             }
         )
 
-        this.components.set(selectCurrencyMenu.customId, selectCurrencyMenu)
-        this.components.set(submitButton.customId, submitButton)
-        this.components.set(changeShopNameButton.customId, changeShopNameButton)
-        this.components.set(changeShopEmojiButton.customId, changeShopEmojiButton)
+        return [
+            createComponent(selectCurrencyMenu), 
+            createComponent(submitButton, () => submitButton.toggle(this.selectedCurrency != null)),
+            createComponent(changeShopNameButton),
+            createComponent(changeShopEmojiButton),
+        ]
     }
 
-    protected override updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (!(submitButton instanceof ExtendedButtonComponent)) return
-
-        submitButton.toggle(this.selectedCurrency != null)
-    }
 
     protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
@@ -160,7 +157,7 @@ export class ShopCreateFlow extends UserFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
+        const message = t(`userFlows.shopCreate.messages.success`, {
             shop: bold(newShop.name),
             currency: bold(this.selectedCurrency.name)
         })

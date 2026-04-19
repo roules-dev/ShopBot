@@ -44,4 +44,24 @@ export abstract class ExtendedComponent {
     }
 } 
 
-export class ComponentSeparator {}
+export class ComponentSeparator {
+    customId: string
+    public readonly __isSeparator: true = true;
+
+    constructor(customId: string) {
+        this.customId = customId
+    }
+}
+
+export type UpdateableComponent = {
+    comp: ExtendedComponent, 
+    update?: (() => void) | undefined
+}
+
+
+export function createComponent(
+    comp: ExtendedComponent, 
+    update?: () => void
+): UpdateableComponent {
+    return { comp, update }
+}

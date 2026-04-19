@@ -7,7 +7,7 @@ import { Identifiable } from "@/lib/types/core.js"
 import { TODO } from "@/lib/types/index.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
@@ -21,8 +21,9 @@ import { Shop } from "../database/shops.types.js"
 
 
 export class AddProductFlow extends UserFlow {
-    public id = "add-product"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "add-product" 
+    }
 
     protected productName: string | null = null
     protected productPrice: number | null = null
@@ -34,7 +35,7 @@ export class AddProductFlow extends UserFlow {
 
     protected response: InteractionCallbackResponse | null = null
 
-    protected locale = "userFlows.productAdd" as const
+    
 
     public async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
@@ -62,7 +63,7 @@ export class AddProductFlow extends UserFlow {
 
         this.productStock = productStock
 
-        this.initComponents()
+        
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -73,10 +74,10 @@ export class AddProductFlow extends UserFlow {
     }
     
     protected getMessage() {
-        const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
+        const descString = (this.productDescription) ? `. ${t(`userFlows.productAdd.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
         const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji}))
 
-        const message = t(`${this.locale}.messages.default`, {
+        const message = t(`userFlows.productAdd.messages.default`, {
             product: nameString,
             price: `${this.productPrice!}`,
             currency: "[ ]", 
@@ -105,7 +106,7 @@ export class AddProductFlow extends UserFlow {
         const submitShopButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit-shop`,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.productAdd.components.submitButton`),
                 emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -114,16 +115,12 @@ export class AddProductFlow extends UserFlow {
             (interaction: ButtonInteraction) => this.success(interaction)
         )
 
-        this.components.set(shopSelectMenu.customId, shopSelectMenu)
-        this.components.set(submitShopButton.customId, submitShopButton)
+        return [
+            createComponent(shopSelectMenu),
+            createComponent(submitShopButton, () => submitShopButton.toggle(this.selectedShop != null)),
+        ]
     }
 
-    protected updateComponents() {
-        const submitShopButton = this.components.get(`${this.id}+submit-shop`)
-        if (!(submitShopButton instanceof ExtendedButtonComponent)) return
-
-        submitShopButton.toggle(this.selectedShop != null)
-    }
 
     protected async success(interaction: UserInterfaceInteraction) {
         if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -139,7 +136,7 @@ export class AddProductFlow extends UserFlow {
         })
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
+        const message = t(`userFlows.productAdd.messages.success`, {
             product: "TODO: Item Name",
             shop: bold(this.selectedShop.name)
         })
@@ -156,7 +153,9 @@ export class AddProductFlow extends UserFlow {
 // type AddActionProductFlowStage = keyof typeof ADD_ACTION_PRODUCT_FLOW_STAGE
 
 // export class AddActionProductFlow extends AddProductFlow {
-//     public override id = "add-action-product"
+//     public override get id(): string { 
+//         return "add-action-product" 
+//     }
 
 //     private stage: AddActionProductFlowStage = ADD_ACTION_PRODUCT_FLOW_STAGE.SELECT_SHOP
 //     private componentsByStage: Map<AddActionProductFlowStage, Map<string, ExtendedComponent>> = new Map()
@@ -182,10 +181,10 @@ export class AddProductFlow extends UserFlow {
 //                 return super.getMessage()
 
 //             case ADD_ACTION_PRODUCT_FLOW_STAGE.SETUP_ACTION: {
-//                 const descString = (this.productDescription) ? `. ${t(`${this.locale}.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
+//                 const descString = (this.productDescription) ? `. ${t(`userFlows.productAdd.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
 //                 const productNameString = bold(`${this.productEmoji ? `${this.productEmoji} ` : ""}${this.productName}`)
 
-//                 const productString = t(`${this.locale}.messages.default`, {
+//                 const productString = t(`userFlows.productAdd.messages.default`, {
 //                     product: productNameString,
 //                     price: `${this.productPrice!}`,
 //                     currency: this.selectedShop?.currency.name || "[ ]",
@@ -203,7 +202,7 @@ export class AddProductFlow extends UserFlow {
 //                             roleMention((this.productAction?.options as ProductActionOptions<typeof PRODUCT_ACTION_TYPE.GiveRole>).roleId) : 
 //                             t("defaultComponents.unset")
 
-//                         actionString = t(`${this.locale}.messages.actions.giveRole`, { role: roleMentionString })
+//                         actionString = t(`userFlows.productAdd.messages.actions.giveRole`, { role: roleMentionString })
 //                         break
 //                     }
 
@@ -219,14 +218,14 @@ export class AddProductFlow extends UserFlow {
 //                         const currency = (isProductActionGiveCurrency && productActionAsGiveCurrency.currencyId) ? getCurrencies().get(productActionAsGiveCurrency.currencyId as NanoId) : undefined
 //                         const currencyString = currency?.name || "[ ]"
 
-//                         actionString = t(`${this.locale}.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
+//                         actionString = t(`userFlows.productAdd.messages.actions.giveCurrency`, { amount: `${amountString}`, currency: currencyString })
 //                         break
 //                     }
 //                     default:
 //                         break
 //                 }
 
-//                 return `${productString}\n${t(`${this.locale}.messages.action`)} ${actionString}`
+//                 return `${productString}\n${t(`userFlows.productAdd.messages.action`)} ${actionString}`
 //             }
 //         }
 //     }
@@ -273,7 +272,7 @@ export class AddProductFlow extends UserFlow {
 //                 const setAmountButton = new ExtendedButtonComponent(
 //                     {
 //                         customId: `${this.id}+set-amount`,
-//                         label: t(`${this.locale}.components.setAmountButton`),
+//                         label: t(`userFlows.productAdd.components.setAmountButton`),
 //                         emoji: { name: "🪙" },
 //                         style: ButtonStyle.Secondary,
 //                         time: 120_000
@@ -281,7 +280,7 @@ export class AddProductFlow extends UserFlow {
 //                     async (interaction: ButtonInteraction) => {
 //                         const [modalSubmit, [error, amount]] = await showValidatedEditModal(
 //                             interaction, 
-//                             { edit: t(`${this.locale}.components.editAmountModalTitle`), previousValue: "0" },
+//                             { edit: t(`userFlows.productAdd.components.editAmountModalTitle`), previousValue: "0" },
 //                             z.coerce.number().int().min(0).transform(n => Math.floor(n))
 //                         )
 
@@ -308,7 +307,7 @@ export class AddProductFlow extends UserFlow {
 //         const submitButton = new ExtendedButtonComponent(
 //             {
 //                 customId: `${this.id}+submit`,
-//                 label: t(`${this.locale}.components.submitButton`),
+//                 label: t(`userFlows.productAdd.components.submitButton`),
 //                 emoji: "✅",
 //                 style: ButtonStyle.Success,
 //                 disabled: true,
@@ -385,12 +384,12 @@ export class AddProductFlow extends UserFlow {
 
 //         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-//         const message = t(`${this.locale}.messages.success`, {
+//         const message = t(`userFlows.productAdd.messages.success`, {
 //             product: product.name,
 //             shop: bold(this.selectedShop.name)
 //         })
 
-//         const withActionMessage = t(`${this.locale}.messages.withAction`, { action: bold(`${this.productActionType}`) })
+//         const withActionMessage = t(`userFlows.productAdd.messages.withAction`, { action: bold(`${this.productActionType}`) })
 
 //         return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}`)
 

@@ -2,7 +2,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { replyErrorMessage } from "@/lib/discord.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
@@ -10,19 +10,18 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Mess
 import { Currency } from "../database/currencies.types.js"
 
 export class CurrencyRemoveFlow extends UserFlow {
-    id = "currency-remove"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    override id = "currency-remove"
     private selectedCurrency: Currency | null = null
 
     private locale = "userFlows.currencyRemove" as const
 
-    async start(interaction: ChatInputCommandInteraction) {
+    public override async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))
 
         this.selectedCurrency = null
 
-        this.initComponents()
+        
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -30,7 +29,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         return 
     }
 
-    initComponents() {
+    protected override initComponents() {
         const currencySelect = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-currency`,
@@ -60,8 +59,14 @@ export class CurrencyRemoveFlow extends UserFlow {
             return this.updateInteraction(modalSubmitInteraction)
         })
 
-        this.components.set(currencySelect.customId, currencySelect)
-        this.components.set(submitButton.customId, submitButton)
+        return [
+            createComponent(currencySelect),
+            createComponent(submitButton, () => {
+                const shopsWithCurrency = new Map([["TODO: do real check here", true]])
+
+                submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
+            })
+        ]
     }
     
     getMessage() {  
@@ -88,15 +93,6 @@ export class CurrencyRemoveFlow extends UserFlow {
         })
 
         return message
-    }
-
-    protected updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (!(submitButton instanceof ExtendedButtonComponent)) return
-
-        const shopsWithCurrency = new Map([["TODO: do real check here", true]])
-
-        submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
     }
 
     protected async success(_interaction: ButtonInteraction | ModalSubmitInteraction) {

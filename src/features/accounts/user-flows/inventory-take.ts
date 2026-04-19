@@ -6,7 +6,7 @@ import { Item } from "@/features/items/database/items.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
@@ -20,15 +20,16 @@ import { emptyAccount, setAccountItemAmount } from "../services/accounts.service
 
 
 export class InventoryTakeFlow extends UserFlow {
-    public id = "account-take"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "account-take" 
+    }
 
     private selectedItem: Item & Identifiable<NanoId> | null = null
     
     private target: User | null = null
     private amount: number | null = null
 
-    protected locale = "userFlows.inventoryTake" as const
+    
 
     public async start(interaction: ChatInputCommandInteraction) {
         const target = interaction.options.getUser("target")
@@ -39,7 +40,7 @@ export class InventoryTakeFlow extends UserFlow {
         this.target = target
         this.amount = amount
 
-        this.initComponents()
+        await this.populateItemSelectMenu()
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -49,7 +50,7 @@ export class InventoryTakeFlow extends UserFlow {
 
     protected override getMessage() {
         return t(
-            `${this.locale}.messages.default`, 
+            `userFlows.inventoryTake.messages.default`, 
             { 
                 amount: bold(`${this.amount}`), 
                 item: bold(`[${this.selectedItem?.name || t("defaultComponents.selectItem")}]`), 
@@ -58,25 +59,12 @@ export class InventoryTakeFlow extends UserFlow {
         )
     }
 
-    protected override async initComponents() {
-        if (!this.target) throw new Error("Unexpected error: target is null")
-
-        const targetId = SnowflakeSchema.parse(this.target.id)
-
-        const [error, account] = await getOrCreateAccount(targetId)
-        if (error) throw error
-
-        const [error2, inventory] = HYDRATOR.getHydratedAccountInventory(account)
-        if (error2) throw error2
-
-        const inventoryMap = new Map<NanoId, Item>()
-        for (const [itemId, itemBalance] of inventory) {
-            inventoryMap.set(itemId, itemBalance.resource)
-        }
+    protected override initComponents() {
+        const targetId = SnowflakeSchema.parse(this.target?.id)
 
         const itemSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-item`, placeholder: t("defaultComponents.selectItem"), time: 120_000 },
-            inventoryMap,
+            new Map<NanoId, Item>(),
             (interaction) => this.updateInteraction(interaction),
             (interaction, selectedItem) => {
                 this.selectedItem = selectedItem
@@ -87,7 +75,7 @@ export class InventoryTakeFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.inventoryTake.components.submitButton`),
                 emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -99,7 +87,7 @@ export class InventoryTakeFlow extends UserFlow {
         const takeAllButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+take-all`,
-                label: t(`${this.locale}.components.takeAllButton`),
+                label: t(`userFlows.inventoryTake.components.takeAllButton`),
                 emoji: "🔥",
                 style: ButtonStyle.Danger,
                 disabled: true,
@@ -119,7 +107,7 @@ export class InventoryTakeFlow extends UserFlow {
         const emptyInventoryButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+empty-inventory`,
-                label: t(`${this.locale}.components.emptyInventoryButton`),
+                label: t(`userFlows.inventoryTake.components.emptyInventoryButton`),
                 emoji: "🗑️",
                 style: ButtonStyle.Danger,
                 time: 120_000,
@@ -134,26 +122,40 @@ export class InventoryTakeFlow extends UserFlow {
                 const [error] = await emptyAccount(targetId, "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
-                await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target!.id) }))
+                await updateAsSuccessMessage(modalSubmitInteraction, t(`userFlows.inventoryTake.messages.successfullyEmptied`, { user: userMention(this.target!.id) }))
             }
         )
 
-        this.components.set(itemSelectMenu.customId, itemSelectMenu)
-        this.components.set(submitButton.customId, submitButton)
-        this.components.set(takeAllButton.customId, takeAllButton)
-        this.components.set(emptyInventoryButton.customId, emptyInventoryButton)
+        return [
+            createComponent(itemSelectMenu),
+            createComponent(submitButton, () => submitButton.toggle(this.selectedItem != null)),
+            createComponent(takeAllButton, () => takeAllButton.toggle(this.selectedItem != null && this.target != null)),
+            createComponent(emptyInventoryButton),
+        ]
     }
 
-    protected override updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (submitButton instanceof ExtendedButtonComponent) {
-            submitButton.toggle(this.selectedItem != null)
+    private async populateItemSelectMenu() {
+        if (!this.target) throw new Error("Unexpected error: target is null") // TODO once userflows are refactored this will no longer be needed
+
+        const targetId = SnowflakeSchema.parse(this.target.id)
+
+        const [error, account] = await getOrCreateAccount(targetId)
+        if (error) throw error
+
+        const [error2, inventory] = HYDRATOR.getHydratedAccountInventory(account)
+        if (error2) throw error2
+
+        const inventoryMap = new Map<NanoId, Item>()
+        for (const [itemId, itemBalance] of inventory) {
+            inventoryMap.set(itemId, itemBalance.resource)
         }
 
-        const takeAllButton = this.components.get(`${this.id}+take-all`)
-        if (takeAllButton instanceof ExtendedButtonComponent) {
-            takeAllButton.toggle(this.selectedItem != null && this.target != null)
-        }
+        const itemSelectMenu = this.components.get(`${this.id}+select-item`)
+        if (!itemSelectMenu) throw new Error("Unexpected error: itemSelectMenu is null")
+        if (itemSelectMenu instanceof ComponentSeparator || !(itemSelectMenu.comp instanceof ExtendedStringSelectMenuComponent)) throw new Error("Unexpected error: itemSelectMenu is not ExtendedStringSelectMenuComponent")
+        
+        itemSelectMenu.comp.updateMap(inventoryMap)
+
     }
 
     protected async success(interaction: ButtonInteraction) {
@@ -173,7 +175,7 @@ export class InventoryTakeFlow extends UserFlow {
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         const successMessage = t(
-            `${this.locale}.messages.success`, 
+            `userFlows.inventoryTake.messages.success`, 
             { 
                 amount: bold(`${this.amount}`), 
                 item: this.selectedItem.name, 

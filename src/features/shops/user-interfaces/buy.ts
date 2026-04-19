@@ -8,7 +8,7 @@ import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ComponentSeparator } from "@/lib/ui/ui-components/extended-components.js"
+import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showSingleInputModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { MessageUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
@@ -22,8 +22,9 @@ import { applyQuantityHydrated, formatPrice } from "../services/price.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
-    public override id = "buy-product-ui"
-    protected override components = new Map()
+    public override get id(): string { 
+        return "buy-product-ui" 
+    }
 
     private selectedShop: Shop & Identifiable<NanoId>
     private selectedProduct: Product & Identifiable<NanoId> & Labelled | null = null
@@ -155,39 +156,18 @@ export class BuyProductUserInterface extends MessageUserInterface {
             (interaction: ButtonInteraction) => this.handleSetDiscountCodeInteraction(interaction)
         )
 
-        this.components.set(selectProductMenu.customId, selectProductMenu)
-        this.components.set(plusButton.customId, plusButton)
-        this.components.set(setQuantityButton.customId, setQuantityButton)
-        this.components.set(minusButton.customId, minusButton)
-        this.components.set("separator", new ComponentSeparator())
-        this.components.set(buyButton.customId, buyButton)
-        this.components.set(discountCodeButton.customId, discountCodeButton)
-    }
+        return [
+            createComponent(selectProductMenu),
 
-    protected override updateComponents() {
-        const isProductSelected = this.selectedProduct != null 
-        
-        const buyButton = this.components.get(`${this.id}+buy`)
-        if (buyButton instanceof ExtendedButtonComponent) {
-            buyButton.toggle(isProductSelected)
-        }
+            createComponent(plusButton, () => plusButton.toggle(this.selectedProduct != null && !this.selectedProduct.action)),
+            createComponent(setQuantityButton, () => setQuantityButton.toggle(this.selectedProduct != null && !this.selectedProduct.action)),
+            createComponent(minusButton, () => minusButton.toggle(this.quantity > 1 && this.selectedProduct != null && !this.selectedProduct.action)),
 
-        const isActionProduct = this.selectedProduct != null && this.selectedProduct.action != undefined
+            new ComponentSeparator("separator1"),
 
-        const minusButton = this.components.get(`${this.id}+minus`)
-        if (minusButton instanceof ExtendedButtonComponent) {
-            minusButton.toggle(isProductSelected && this.quantity > 1 && !isActionProduct)
-        }
-
-        const setQuantityButton = this.components.get(`${this.id}+set-quantity`)
-        if (setQuantityButton instanceof ExtendedButtonComponent) {
-            setQuantityButton.toggle(isProductSelected && !isActionProduct)
-        }
-
-        const plusButton = this.components.get(`${this.id}+plus`)
-        if (plusButton instanceof ExtendedButtonComponent) {
-            plusButton.toggle(isProductSelected && !isActionProduct)
-        }
+            createComponent(buyButton, () => buyButton.toggle(this.selectedProduct != null)),
+            createComponent(discountCodeButton),
+        ]
     }
 
     private async handleSetDiscountCodeInteraction(interaction: ButtonInteraction) {

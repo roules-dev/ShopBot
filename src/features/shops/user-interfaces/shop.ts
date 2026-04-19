@@ -8,7 +8,7 @@ import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
@@ -19,8 +19,9 @@ import { BuyProductUserInterface } from "./buy.js"
 
 
 export class ShopUserInterface extends PaginatedEmbedUserInterface {
-    public override id = "shop-ui"
-    protected override components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "shop-ui" 
+    }
     protected override embed: EmbedBuilder | null = null
 
     private selectedShop: Shop & Identifiable<NanoId> | null = null
@@ -30,7 +31,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     private member: GuildMember | null = null
 
-    protected locale = "userInterfaces.shop" as const
+    
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
         const shops = getShops()
@@ -69,11 +70,11 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
-                label: t(`${this.locale}.components.buyButton`),
+                label: t(`userInterfaces.shop.components.buyButton`),
                 emoji: {name: "🪙"},
                 style: ButtonStyle.Primary,
                 time: 120_000,
-                disabled: this.isBuyButtonDisabled()
+                disabled: this.isBuyingAllowed()
             },
             (interaction: ButtonInteraction) => {
                 if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -86,7 +87,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const showAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-account`,
-                label: t(`${this.locale}.components.showAccountButton`),
+                label: t(`userInterfaces.shop.components.showAccountButton`),
                 emoji: {name: "💰"},
                 style: ButtonStyle.Secondary,
                 time: 120_000,
@@ -99,22 +100,26 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         )
 
         
-        buyButton.toggle(this.selectedShop != null && Object.keys(this.selectedShop.products).length > 0 && !this.isBuyButtonDisabled())
-
-        this.components.set(selectShopMenu.customId, selectShopMenu)
-        this.components.set(buyButton.customId, buyButton)
-        this.components.set(showAccountButton.customId, showAccountButton)
+        
+        const buyButtonEnabled = () => this.selectedShop != null && Object.keys(this.selectedShop.products).length > 0 && !this.isBuyingAllowed()
+        buyButton.toggle(buyButtonEnabled())
+ 
+        return [
+            createComponent(selectShopMenu),
+            createComponent(buyButton, () => buyButtonEnabled()),
+            createComponent(showAccountButton)
+        ]
     }
 
     protected override initEmbeds(_interaction: UserInterfaceInteraction) {
         if (!this.selectedShop) return
 
         const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
-            ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
+            ` (${t(`userInterfaces.shop.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         const shopEmbed = new EmbedBuilder()
             .setTitle(`${this.selectedShop.name}`)
-            .setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`${this.locale}.embeds.shop.products`)} `)
+            .setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
             .setColor(Colors.Gold)
 
 
@@ -123,23 +128,16 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         this.embed = shopEmbed
     }
 
-    protected override updateComponents() {
-        const buyButton = this.components.get(`${this.id}+buy`)
-        if (buyButton instanceof ExtendedButtonComponent && this.selectedShop != null) {
-            buyButton.toggle(Object.keys(this.selectedShop.products).length > 0 && !this.isBuyButtonDisabled())
-        }
-    }
-
     protected override updateEmbeds() {
         const shopEmbed = this.embed
 
         if (!shopEmbed || !this.selectedShop) return
 
         const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
-            ` (${t(`${this.locale}.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
+            ` (${t(`userInterfaces.shop.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         shopEmbed.setTitle(`${this.selectedShop.name}`)
-        shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`${this.locale}.embeds.shop.products`)} `)
+        shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
 
         shopEmbed.setFields(this.getPageEmbedFields())
 
@@ -149,7 +147,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     protected override getEmbedFields() {
         if (this.selectedShop == null) return []
-        if (Object.keys(this.selectedShop.products).length == 0) return [{ name: "\u200b", value: `🛒 ${italic(t(`${this.locale}.embeds.shop.noProduct`))}` }]
+        if (Object.keys(this.selectedShop.products).length == 0) return [{ name: "\u200b", value: `🛒 ${italic(t(`userInterfaces.shop.embeds.shop.noProduct`))}` }]
 
         const fields: APIEmbedField[] = []
 
@@ -159,8 +157,8 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         hydratedShop.products.forEach(product => {
             const descString = product.item.description ? product.item.description : "\u200b"
             const amountString = product.stock == undefined ?  "" : 
-                product.stock == 0 ? ` (${t(`${this.locale}.embeds.shop.outOfStock`)})` : 
-                ` (${t(`${this.locale}.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
+                product.stock == 0 ? ` (${t(`userInterfaces.shop.embeds.shop.outOfStock`)})` : 
+                ` (${t(`userInterfaces.shop.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 
             const [error, price] = HYDRATOR.getHydratedProductPrice(product)
             if (error) {
@@ -170,7 +168,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
             fields.push({ 
                 name: formattedEmojiableName(product.item),
-                value: `${t(`${this.locale}.embeds.shop.price`)} **${formatPrice(price)}**${amountString}\n${descString}`, 
+                value: `${t(`userInterfaces.shop.embeds.shop.price`)} **${formatPrice(price)}**${amountString}\n${descString}`, 
                 inline: true 
             })
         })
@@ -182,12 +180,12 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         return this.selectedShop ? Object.keys(this.selectedShop.products).length : 0
     }
 
-
-    private isBuyButtonDisabled() {
+    
+    private isBuyingAllowed() {
         if (!this.selectedShop) return false
 
-        const isReserved = this.selectedShop.reservedTo
-        if (!isReserved) return false
+        const isReserved = this.selectedShop.reservedTo ?? null
+        if (isReserved === null) return true
         
         if (!this.member) return false
 

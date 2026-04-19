@@ -6,7 +6,7 @@ import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation.js"
@@ -16,19 +16,18 @@ import { setAccountCurrencyAmount } from "../services/accounts.services.js"
 
 
 export class AccountGiveFlow extends UserFlow {
-    public id = "account-give"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public get id() { return "account-give" }
 
     protected selectedCurrency: Currency & Identifiable<NanoId> | null = null 
     
     private target: User | null = null
     protected amount: number | null = null
 
-    protected locale = "userFlows.accountGive" as const
+
 
     public async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${t(`userFlows.accountGive.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
     
         const target = interaction.options.getUser("target")
         const amount = interaction.options.getNumber("amount")
@@ -38,7 +37,6 @@ export class AccountGiveFlow extends UserFlow {
         this.target = target
         this.amount = amount
 
-        this.initComponents()
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -48,7 +46,7 @@ export class AccountGiveFlow extends UserFlow {
 
     protected override getMessage() {
         return t(
-            `${this.locale}.messages.default`, 
+            `userFlows.accountGive.messages.default`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
@@ -71,7 +69,7 @@ export class AccountGiveFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             { 
                 customId: `${this.id}+submit`, 
-                label: t(`${this.locale}.components.submitButton`), 
+                label: t(`userFlows.accountGive.components.submitButton`), 
                 emoji: "✅", 
                 style: ButtonStyle.Success, 
                 disabled: true,
@@ -80,15 +78,10 @@ export class AccountGiveFlow extends UserFlow {
             (interaction: ButtonInteraction) => this.success(interaction)
         )
     
-        this.components.set(currencySelectMenu.customId, currencySelectMenu)
-        this.components.set(submitButton.customId, submitButton)
-    }
-
-    protected override updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (!(submitButton instanceof ExtendedButtonComponent)) return
-
-        submitButton.toggle(this.selectedCurrency != null)
+        return [
+            createComponent(currencySelectMenu),
+            createComponent(submitButton, () => submitButton.toggle(this.selectedCurrency != null)),
+        ]
     }
 
     protected async success(interaction: ButtonInteraction) {
@@ -108,7 +101,7 @@ export class AccountGiveFlow extends UserFlow {
 
         
         const successMessage = t(
-            `${this.locale}.messages.success`, 
+            `userFlows.accountGive.messages.success`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: this.selectedCurrency.name, 
@@ -127,12 +120,14 @@ export class AccountGiveFlow extends UserFlow {
 export class BulkAccountGiveFlow extends AccountGiveFlow {
     private targetRole: Role | APIRole | null = null
 
-    public override id = "bulk-account-give"
+    public override get id(): string { 
+        return "bulk-account-give" 
+    }
 
     public override async start(interaction: ChatInputCommandInteraction) {
 
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${t(`userFlows.accountGive.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`)
     
         const targetRole = interaction.options.getRole("role")
         const amount = interaction.options.getNumber("amount")
@@ -142,7 +137,6 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         this.targetRole = targetRole
         this.amount = amount
 
-        this.initComponents()
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -152,7 +146,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
 
     protected override getMessage() {
         return t(
-            `${this.locale}.messages.bulkGive`, 
+            `userFlows.accountGive.messages.bulkGive`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
@@ -182,7 +176,7 @@ export class BulkAccountGiveFlow extends AccountGiveFlow {
         }
 
         const message = t(
-            `${this.locale}.messages.bulkGiveSuccess`, 
+            `userFlows.accountGive.messages.bulkGiveSuccess`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: this.selectedCurrency.name, 

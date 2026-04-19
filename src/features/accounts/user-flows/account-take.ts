@@ -6,7 +6,7 @@ import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
@@ -16,20 +16,21 @@ import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts.ser
 
 
 export class AccountTakeFlow extends UserFlow {
-    public id = "account-take"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "account-take" 
+    }
 
     private selectedCurrency: Currency & Identifiable<NanoId> | null = null
     
     private target: User | null = null
     private amount: number | null = null
 
-    protected locale = "userFlows.accountTake" as const
+    
 
     public async start(interaction: ChatInputCommandInteraction) {
 
         const currencies = getCurrencies()
-        if (!currencies.size) return replyErrorMessage(interaction, `${t(`${this.locale}.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)
+        if (!currencies.size) return replyErrorMessage(interaction, `${t(`userFlows.accountTake.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)
     
         const target = interaction.options.getUser("target")
         const amount = interaction.options.getNumber("amount")
@@ -39,7 +40,6 @@ export class AccountTakeFlow extends UserFlow {
         this.target = target
         this.amount = amount
 
-        this.initComponents()
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -49,7 +49,7 @@ export class AccountTakeFlow extends UserFlow {
 
     protected override getMessage() {
         return t(
-            `${this.locale}.messages.default`, 
+            `userFlows.accountTake.messages.default`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
@@ -72,7 +72,7 @@ export class AccountTakeFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.accountTake.components.submitButton`),
                 emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -84,7 +84,7 @@ export class AccountTakeFlow extends UserFlow {
         const takeAllButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+take-all`,
-                label: t(`${this.locale}.components.takeAllButton`),
+                label: t(`userFlows.accountTake.components.takeAllButton`),
                 emoji: "🔥",
                 style: ButtonStyle.Danger,
                 disabled: true,
@@ -106,7 +106,7 @@ export class AccountTakeFlow extends UserFlow {
         const emptyAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+empty-account`,
-                label: t(`${this.locale}.components.emptyAccountButton`),
+                label: t(`userFlows.accountTake.components.emptyAccountButton`),
                 emoji: "🗑️",
                 style: ButtonStyle.Danger,
                 time: 120_000,
@@ -121,27 +121,19 @@ export class AccountTakeFlow extends UserFlow {
                 const [error] = await emptyAccount(SnowflakeSchema.parse(this.target.id), "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
-                await updateAsSuccessMessage(modalSubmitInteraction, t(`${this.locale}.messages.successfullyEmptied`, { user: userMention(this.target.id) }))
+                await updateAsSuccessMessage(modalSubmitInteraction, t(`userFlows.accountTake.messages.successfullyEmptied`, { user: userMention(this.target.id) }))
             }
         )
 
-        this.components.set(currencySelectMenu.customId, currencySelectMenu)
-        this.components.set(submitButton.customId, submitButton)
-        this.components.set(takeAllButton.customId, takeAllButton)
-        this.components.set(emptyAccountButton.customId, emptyAccountButton)
+
+        return [
+            createComponent(currencySelectMenu),
+            createComponent(submitButton, () => submitButton.toggle(this.selectedCurrency != null)),
+            createComponent(takeAllButton, () => takeAllButton.toggle(this.selectedCurrency != null && this.target != null)),
+            createComponent(emptyAccountButton),
+        ]
     }
 
-    protected override updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (submitButton instanceof ExtendedButtonComponent) {
-            submitButton.toggle(this.selectedCurrency != null)
-        }
-
-        const takeAllButton = this.components.get(`${this.id}+take-all`)
-        if (takeAllButton instanceof ExtendedButtonComponent) {
-            takeAllButton.toggle(this.selectedCurrency != null && this.target != null)
-        }
-    }
 
     protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
@@ -160,7 +152,7 @@ export class AccountTakeFlow extends UserFlow {
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
         const successMessage = t(
-            `${this.locale}.messages.success`, 
+            `userFlows.accountTake.messages.success`, 
             { 
                 amount: bold(`${this.amount}`), 
                 currency: this.selectedCurrency.name, 

@@ -6,7 +6,7 @@ import { assertNeverReached } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { is, validate } from "@/lib/validation.js"
@@ -28,14 +28,15 @@ export const EDIT_CURRENCY_OPTION = {
 type EditCurrencyOption = typeof EDIT_CURRENCY_OPTION[keyof typeof EDIT_CURRENCY_OPTION]
 
 export class EditCurrencyFlow extends UserFlow {
-    id = "currency-edit"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "currency-edit" 
+    }
 
     private selectedCurrency: Currency  & Identifiable<NanoId> | null = null
     private updateOption: EditCurrencyOption | null = null
     private updateOptionValue: string | null = null
 
-    protected locale = "userFlows.currencyEdit" as const
+    
 
     async start(interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
@@ -47,7 +48,7 @@ export class EditCurrencyFlow extends UserFlow {
 
         this.updateOptionValue = this.getUpdateValue(interaction, this.updateOption)
 
-        this.initComponents()
+        
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -56,7 +57,7 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     protected override getMessage() {
-        const message = t(`${this.locale}.messages.default`, {
+        const message = t(`userFlows.currencyEdit.messages.default`, {
             currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency")),
             option: bold(this.getUpdateOptionName(this.updateOption!)),
             value: bold(this.updateOptionValue!)
@@ -79,7 +80,7 @@ export class EditCurrencyFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit`,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.currencyEdit.components.submitButton`),
                 emoji: {name: "✅"},
                 style: ButtonStyle.Success,
                 disabled: this.selectedCurrency == null,
@@ -88,17 +89,12 @@ export class EditCurrencyFlow extends UserFlow {
             (interaction: ButtonInteraction) => this.success(interaction),
         )
 
-        this.components.set(currencySelectMenu.customId, currencySelectMenu)
-        this.components.set(submitButton.customId, submitButton)
-        
+        return [
+            createComponent(currencySelectMenu),
+            createComponent(submitButton, () => submitButton.toggle(this.selectedCurrency != null)),
+        ]
     }
 
-    protected override updateComponents() {
-        const submitButton = this.components.get(`${this.id}+submit`)
-        if (!(submitButton instanceof ExtendedButtonComponent)) return
-
-        submitButton.toggle(this.selectedCurrency != null)
-    }
 
     protected override async success(interaction: UserInterfaceInteraction) {
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -110,7 +106,7 @@ export class EditCurrencyFlow extends UserFlow {
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
+        const message = t(`userFlows.currencyEdit.messages.success`, {
             currency: bold(oldName),
             option: bold(this.getUpdateOptionName(this.updateOption)),
             value: bold(this.updateOptionValue)
@@ -120,7 +116,7 @@ export class EditCurrencyFlow extends UserFlow {
     }
 
     private getUpdateOptionName(option: EditCurrencyOption) {
-        return t(`${this.locale}.editOptions.${option}`)
+        return t(`userFlows.currencyEdit.editOptions.${option}`)
     }
 
     private getUpdateValue(interaction: ChatInputCommandInteraction, option: EditCurrencyOption) {

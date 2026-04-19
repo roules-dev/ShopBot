@@ -6,7 +6,7 @@ import { assertNeverReached } from "@/lib/error-handling.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
@@ -14,8 +14,9 @@ import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, In
 import { Account } from "../database/accounts.type.js"
 
 export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
-    public override id: string = "account-ui"
-    protected override components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "account-ui" 
+    }
     
     protected override readonly modes = {
         CURRENCIES:"currencies",
@@ -113,20 +114,10 @@ export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
             (interaction: ButtonInteraction) => this.changeDisplayMode(interaction, this.modes.INVENTORY)
         )
 
-        this.components.set(showAccountButton.customId, showAccountButton)
-        this.components.set(showInventoryButton.customId, showInventoryButton)
-    }
-
-    protected override updateComponents() {
-        const showAccountButton = this.components.get(`${this.id}+show-account`)
-        if (showAccountButton instanceof ExtendedButtonComponent) {
-            showAccountButton.toggle(this.mode != this.modes.CURRENCIES)
-        }
-
-        const showInventoryButton = this.components.get(`${this.id}+show-inventory`)
-        if (showInventoryButton instanceof ExtendedButtonComponent) {
-            showInventoryButton.toggle(this.mode != this.modes.INVENTORY)
-        }
+        return [
+            createComponent(showAccountButton, () => showAccountButton.toggle(this.mode != this.modes.CURRENCIES)),
+            createComponent(showInventoryButton, () => showInventoryButton.toggle(this.mode != this.modes.INVENTORY))
+        ]
     }
 
     protected override getInputSize() {

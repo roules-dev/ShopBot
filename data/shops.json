@@ -34,7 +34,9 @@
         "name": "Grocery",
         "emoji": "🛒",
         "description": "Buy anything you need here",
-        "discountCodes": {},
+        "discountCodes": {
+            "COOL10": 10
+        },
         "products": {}
     },
     "-hw7m2WLOmaNKPSbFdajZ": {

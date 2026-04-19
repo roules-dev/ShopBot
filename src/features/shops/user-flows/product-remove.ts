@@ -2,7 +2,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { ComponentSeparator, createComponent, ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
@@ -25,8 +25,9 @@ export const REMOVE_PRODUCT_FLOW_STAGE = {
 export type RemoveProductFlowStage = keyof typeof REMOVE_PRODUCT_FLOW_STAGE
 
 export class RemoveProductFlow extends UserFlow {
-    public id = "remove-product"
-    protected components: Map<string, ExtendedComponent> = new Map()
+    public override get id(): string { 
+        return "remove-product" 
+    }
 
     private stage: RemoveProductFlowStage = REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP
     private componentsByStage: Map<RemoveProductFlowStage, Map<string, ExtendedComponent>> = new Map()
@@ -36,13 +37,13 @@ export class RemoveProductFlow extends UserFlow {
 
     private response: InteractionCallbackResponse | null = null
 
-    protected locale = "userFlows.productRemove" as const
+    
 
     public async start(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
-        this.initComponents()
+        
         this.updateComponents()
 
         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
@@ -54,13 +55,13 @@ export class RemoveProductFlow extends UserFlow {
     protected getMessage() {
         switch (this.stage) {
             case REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP:
-                return t(`${this.locale}.messages.shopSelectStage`, {
+                return t(`userFlows.productRemove.messages.shopSelectStage`, {
                     shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop"))
                 })
             case REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT:
                 if (this.selectedShop == null) throw new Error("Unexpected null selectedShop in REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT stage")
 
-                return t(`${this.locale}.messages.productSelectStage`, {
+                return t(`userFlows.productRemove.messages.productSelectStage`, {
                     product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
                     shop: bold(this.selectedShop.name)
                 })
@@ -107,8 +108,6 @@ export class RemoveProductFlow extends UserFlow {
         this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP)?.set(shopSelectMenu.customId, shopSelectMenu)
         this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP)?.set(submitShopButton.customId, submitShopButton)
 
-        this.components.set(shopSelectMenu.customId, shopSelectMenu)
-        this.components.set(submitShopButton.customId, submitShopButton)
 
         const productSelectMenu = new ExtendedStringSelectMenuComponent(
             {
@@ -127,7 +126,7 @@ export class RemoveProductFlow extends UserFlow {
         const submitRemoveButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+remove-product`,
-                label: t(`${this.locale}.components.submitButton`),
+                label: t(`userFlows.productRemove.components.submitButton`),
                 emoji: {name: "⛔"},
                 style: ButtonStyle.Danger,
                 disabled: true,
@@ -157,27 +156,41 @@ export class RemoveProductFlow extends UserFlow {
         this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(productSelectMenu.customId, productSelectMenu)
         this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(submitRemoveButton.customId, submitRemoveButton)
         this.componentsByStage.get(REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT)?.set(changeShopButton.customId, changeShopButton)
+
+        return [
+            createComponent(shopSelectMenu),
+            createComponent(submitShopButton, () => submitShopButton.toggle(this.selectedShop != null)),
+        ]
     }
 
-    protected updateComponents() {
-        if (this.stage == REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
-            const submitShopButton = this.components.get(`${this.id}+submit-shop`)
-            if (!(submitShopButton instanceof ExtendedButtonComponent)) return
+    protected override onUpdateComponents() {
+        // if (this.stage == REMOVE_PRODUCT_FLOW_STAGE.SELECT_SHOP) {
+        //     const submitShopButton = this.components.get(`${this.id}+submit-shop`)
+        //     if (!(submitShopButton instanceof ExtendedButtonComponent)) return
 
-            submitShopButton.toggle(this.selectedShop != null)
-        }
+        //     submitShopButton.toggle(this.selectedShop != null)
+        // }
 
         if (this.stage == REMOVE_PRODUCT_FLOW_STAGE.SELECT_PRODUCT) {
             const submitRemoveButton = this.components.get(`${this.id}+remove-product`)
-            if (submitRemoveButton instanceof ExtendedButtonComponent) {
-                submitRemoveButton.toggle(this.selectedProduct != null)
+            if (
+                submitRemoveButton && 
+                !(submitRemoveButton instanceof ComponentSeparator) && 
+                submitRemoveButton.comp instanceof ExtendedButtonComponent
+            ) {
+                submitRemoveButton.comp.toggle(this.selectedProduct != null)
             }
 
             const selectProductMenu = this.components.get(`${this.id}+select-product`)
-            if (selectProductMenu instanceof ExtendedStringSelectMenuComponent && this.selectedShop) {
+            if (
+                selectProductMenu && 
+                !(selectProductMenu instanceof ComponentSeparator) &&
+                selectProductMenu.comp instanceof ExtendedStringSelectMenuComponent && 
+                this.selectedShop
+            ) {
                 const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
                 if (error) throw error
-                selectProductMenu.updateMap(shop.products)
+                selectProductMenu.comp.updateMap(shop.products)
             }
         }
     }
@@ -206,7 +219,7 @@ export class RemoveProductFlow extends UserFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`${this.locale}.messages.success`, {
+        const message = t(`userFlows.productRemove.messages.success`, {
             product: bold(oldProductName),
             shop: bold(this.selectedShop.name)
         })

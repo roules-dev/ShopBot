@@ -3,16 +3,36 @@ import { PrettyLog } from "@/lib/pretty-log.js"
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, ButtonStyle, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
 import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
 import { ExtendedButtonComponent } from "../ui-components/button.js"
-import { ComponentSeparator, ExtendedComponent } from "../ui-components/extended-components.js"
+import { ComponentSeparator, UpdateableComponent } from "../ui-components/extended-components.js"
+
+export type UIComponent = UpdateableComponent | ComponentSeparator
 
 export abstract class UserInterface {
     public abstract id: string
-    protected abstract components: Map<string, ExtendedComponent | ComponentSeparator>
+    protected components: Map<string, UIComponent>
+
+    constructor() {
+        const componentsEntries: [string, UIComponent][] = this.initComponents().map((component) => {
+            if (component instanceof ComponentSeparator) return [component.customId, component];
+            return [component.comp.customId, component]
+        })
+        
+        this.components = new Map(componentsEntries)
+    }
 
     protected abstract getMessage(): string 
-    protected abstract updateComponents(): unknown
+    protected abstract initComponents(): UIComponent[]
+    
+    protected updateComponents(): void {
+        this.components.forEach((component) => {
+            if (component instanceof ComponentSeparator) return
+            component.update?.()
+        })
 
-    protected abstract initComponents(): unknown
+        this.onUpdateComponents()
+    }
+
+    protected onUpdateComponents(): void {}
 
     protected getComponentRows(): ActionRowBuilder<UserInterfaceComponentBuilder>[] {
         const rows: ActionRowBuilder<UserInterfaceComponentBuilder>[] = []
@@ -24,12 +44,12 @@ export abstract class UserInterface {
                 return
             }
 
-            if (component.customId.endsWith("page")) {
-                paginationRow.addComponents(component.getComponent())
+            if (component.comp.customId.endsWith("page")) {
+                paginationRow.addComponents(component.comp.getComponent())
             }
-            else if (component.componentType == ComponentType.Button) {
+            else if (component.comp.componentType == ComponentType.Button) {
                 if (rows.length == 0) {
-                    rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.getComponent()))
+                    rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.comp.getComponent()))
                 }
                 else {
                     const lastRow = rows[rows.length - 1]
@@ -37,14 +57,14 @@ export abstract class UserInterface {
                     const lastRowFirstComponentType = lastRow.components[0]?.data.type
         
                     if (lastRowFirstComponentType && selectMenuComponents.includes(lastRowFirstComponentType)) {
-                        rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.getComponent()))
+                        rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.comp.getComponent()))
                     } else {
-                        lastRow.addComponents(component.getComponent())
+                        lastRow.addComponents(component.comp.getComponent())
                     }
                 }
             }
-            else if (selectMenuComponents.includes(component.componentType)) {
-                rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.getComponent()))
+            else if (selectMenuComponents.includes(component.comp.componentType)) {
+                rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.comp.getComponent()))
             }
         })
 
@@ -61,6 +81,7 @@ export abstract class UserInterface {
 
     protected async updateInteraction(interaction: UserInterfaceInteraction) {
         this.updateComponents()
+
         if (interaction.deferred) {
             await interaction.editReply(this.getInteractionUpdateOptions())
             return
@@ -86,21 +107,21 @@ export abstract class UserInterface {
     protected createComponentsCollectors(response: InteractionCallbackResponse): void {
         this.components.forEach((component) => {
             if (component instanceof ComponentSeparator) return
-            component.createCollector(response)
+            component.comp.createCollector(response)
         })
     }
 
     protected destroyComponentsCollectors(): void {
         this.components.forEach((component) => {
             if (component instanceof ComponentSeparator) return
-            component.destroyCollector()
+            component.comp.destroyCollector()
         })
     }
 
     protected disableComponents(): void {
         this.components.forEach((component) => {
             if (component instanceof ComponentSeparator) return
-            component.toggle(false)
+            component.comp.toggle(false)
         })
     }
 }
@@ -195,14 +216,8 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
         }
 
         public override async display(interaction: UserInterfaceInteraction) {
-            await this.predisplay(interaction)
-            this.setup(interaction)
-
-            const response = await interaction.reply({ embeds: this.getEmbeds(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-            this.createComponentsCollectors(response)
-
+            const response = await super.display(interaction)
             this.response = response
-
             return response
         }
 
@@ -257,8 +272,8 @@ function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: 
                 paginationButtons.prev.toggle(this.page > 0)
                 paginationButtons.next.toggle(this.page < pageCount - 1)
 
-                this.components.set(paginationButtons.prev.customId, paginationButtons.prev)
-                this.components.set(paginationButtons.next.customId, paginationButtons.next)
+                this.components.set(paginationButtons.prev.customId, { comp: paginationButtons.prev })
+                this.components.set(paginationButtons.next.customId, { comp: paginationButtons.next })
 
                 if (this.response) {
                     this.createComponentsCollectors(this.response)
