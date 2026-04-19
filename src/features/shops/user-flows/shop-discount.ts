@@ -10,6 +10,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow, UserFlow2 } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags, StringSelectMenuInteraction } from "discord.js"
 import { Shop } from "../database/shops.types.js"
+import z from "zod"
 
 
 export class DiscountCodeCreateFlow extends UserFlow {
@@ -316,11 +317,12 @@ export class DiscountCodeRemoveFlow extends UserFlow {
 ////                                             
 
 
-type AddProductFlowParams = {
-    discountCode: string,
-    discountAmount: number
-}
-export class DiscountCodeCreateFlow2 extends UserFlow2<AddProductFlowParams> {
+export const DiscountCodeCreateParamsSchema = z.object({
+    code: z.string().overwrite((code) => code.replaceSpaces("").toUpperCase()),
+    amount: z.number()
+})
+
+export class DiscountCodeCreateFlow2 extends UserFlow2<z.infer<typeof DiscountCodeCreateParamsSchema>> {
     public override get id(): string { 
         return "discount-code-create" 
     }
@@ -337,8 +339,8 @@ export class DiscountCodeCreateFlow2 extends UserFlow2<AddProductFlowParams> {
     protected override getMessage() {
         const message = t(`userFlows.discountCodeCreate.messages.default`, {
             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
-            code: bold(this.parameters.discountCode),
-            amount: bold(`${this.parameters.discountAmount}`)
+            code: bold(this.parameters.code),
+            amount: bold(`${this.parameters.amount}`)
         })
 
         return message
@@ -383,14 +385,14 @@ export class DiscountCodeCreateFlow2 extends UserFlow2<AddProductFlowParams> {
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await createDiscountCode(this.selectedShop.id, this.parameters.discountCode, this.parameters.discountAmount)
+        const [error] = await createDiscountCode(this.selectedShop.id, this.parameters.code, this.parameters.amount)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`userFlows.discountCodeCreate.messages.success`, { 
             shop: bold(this.selectedShop.name), 
-            code: bold(this.parameters.discountCode), 
-            amount: bold(`${this.parameters.discountAmount}`)
+            code: bold(this.parameters.code), 
+            amount: bold(`${this.parameters.amount}`)
         })
 
         return await updateAsSuccessMessage(interaction, message)

@@ -1,10 +1,11 @@
 import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { ShopCreateFlow } from "@/features/shops/user-flows/shop-create.js"
-import { DiscountCodeCreateFlow2, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
+import { DiscountCodeCreateFlow2, DiscountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
 import { EDIT_SHOP_OPTIONS, EditShopFlow, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
@@ -145,15 +146,8 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
 
 
 function createDiscountCode(interaction: ChatInputCommandInteraction) {
-    const discountCode = interaction.options.getString("code")?.replaceSpaces("").toUpperCase()
-    const discountAmount = interaction.options.getInteger("amount")
+    const [error, options] = validateCommandOptions(interaction.options, DiscountCodeCreateParamsSchema)
+    if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-    if (!discountCode || !discountAmount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-    const discountCodeCreateFlow = new DiscountCodeCreateFlow2({
-        discountCode,
-        discountAmount
-    })
-
-    discountCodeCreateFlow.start(interaction)
+    new DiscountCodeCreateFlow2(options).start(interaction)
 }
