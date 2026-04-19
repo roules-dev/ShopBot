@@ -19,7 +19,7 @@
         "start": "npm run build && npm run serve",
         "serve": "node --env-file-if-exists=.env --enable-source-maps dist/index.js",
         "deploy": "node ./dist/app/deploy-commands.js",
-        "scratch": "npm run build && node ./dist/scratch.js",
+        "scratch": "npx tsx src/scratch.ts",
 
         "test": "vitest",
         "test:watch": "vitest --watch",

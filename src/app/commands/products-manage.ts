@@ -1,5 +1,4 @@
 import { t } from "@/core/i18n/i18n.js"
-import { AddProductFlow } from "@/features/shops/user-flows/product-add.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
@@ -80,9 +79,10 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 await replyErrorMessage(interaction, "Not implemented yet")
                 break
             }
-
-            new AddProductFlow().start(interaction)
-            break
+            throw new Error("Not implemented yet")
+            // TODO
+            // new AddProductFlow().start(interaction)
+            // break
 
         case "remove":
             new RemoveProductFlow().start(interaction)

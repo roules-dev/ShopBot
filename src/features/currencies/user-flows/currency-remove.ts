@@ -1,32 +1,26 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, ModalSubmitInteraction } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ModalSubmitInteraction } from "discord.js"
 import { Currency } from "../database/currencies.types.js"
 
+
 export class CurrencyRemoveFlow extends UserFlow {
-    override id = "currency-remove"
+    public override get id(): string {
+        return "currency-remove"
+    }
     private selectedCurrency: Currency | null = null
 
-    private locale = "userFlows.currencyRemove" as const
-
-    public override async start(interaction: ChatInputCommandInteraction) {
+    public override async prestart(_interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
-        if (currencies.size == 0) return replyErrorMessage(interaction, t("errorMessages.noCurrencies"))
+        if (currencies.size == 0) return err(t("errorMessages.noCurrencies"))
 
-        this.selectedCurrency = null
-
-        
-        this.updateComponents()
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
-        return 
+        return ok(true)
     }
 
     protected override initComponents() {
@@ -44,20 +38,21 @@ export class CurrencyRemoveFlow extends UserFlow {
         })
 
         const submitButton = new ExtendedButtonComponent({
-            customId: `${this.id}+submit`,
-            label: t(`${this.locale}.components.submitButton`),
-            emoji: {name: "⛔"},
-            style: ButtonStyle.Danger,
-            disabled: this.selectedCurrency == null,
-            time: 120_000,
-        },
-        async (interaction: ButtonInteraction) => {
-            const [modalSubmitInteraction, confirmed] = await showConfirmationModal(interaction)
-            
-            if (confirmed) return this.success(modalSubmitInteraction)
-            
-            return this.updateInteraction(modalSubmitInteraction)
-        })
+                customId: `${this.id}+submit`,
+                label: t(`userFlows.currencyRemove.components.submitButton`),
+                emoji: {name: "⛔"},
+                style: ButtonStyle.Danger,
+                disabled: this.selectedCurrency == null,
+                time: 120_000,
+            },
+            async (interaction: ButtonInteraction) => {
+                const [modalSubmitInteraction, confirmed] = await showConfirmationModal(interaction)
+                
+                if (confirmed) return this.success(modalSubmitInteraction)
+                
+                return this.updateInteraction(modalSubmitInteraction)
+            }
+        )
 
         return [
             createComponent(currencySelect),
@@ -76,11 +71,11 @@ export class CurrencyRemoveFlow extends UserFlow {
             // if (shopsWithCurrency.size > 0) {
             //     const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
 
-            //     const errorMessage = t(`${this.locale}.errorMessages.cantRemoveCurrency`, {
+            //     const errorMessage = t(`userFlows.currencyRemove.errorMessages.cantRemoveCurrency`, {
             //         currency: bold(this.selectedCurrency.name || ""),
             //         shops: shopsWithCurrencyNames
             //     })
-            //     const tipMessage = t(`${this.locale}.errorMessages.changeShopsCurrencies`)
+            //     const tipMessage = t(`userFlows.currencyRemove.errorMessages.changeShopsCurrencies`)
 
             //     return `${errorMessage}\n${tipMessage}`
             // }
@@ -88,7 +83,7 @@ export class CurrencyRemoveFlow extends UserFlow {
             
         }
 
-        const message = t(`${this.locale}.messages.default`, {
+        const message = t(`userFlows.currencyRemove.messages.default`, {
             currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
         })
 
@@ -109,6 +104,6 @@ export class CurrencyRemoveFlow extends UserFlow {
         // const [error2] = await removeCurrency(this.selectedCurrency.id)
         // if (error2) return updateAsErrorMessage(interaction, error2.message)
 
-        // return await updateAsSuccessMessage(interaction, t(`${this.locale}.messages.success`, {currency: bold(currencyName)}))
+        // return await updateAsSuccessMessage(interaction, t(`userFlows.currencyRemove.messages.success`, {currency: bold(currencyName)}))
     }
 }

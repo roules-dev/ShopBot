@@ -1,13 +1,10 @@
 import { t } from "@/core/i18n/i18n.js"
-import { createCurrency } from "@/core/services/currencies/currencies.services.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies.schemas.js"
-import { EDIT_CURRENCY_OPTION, EditCurrencyFlow } from "@/features/currencies/user-flows/currency-edit.js"
+import { createCurrencyFlow } from "@/features/currencies/user-flows/currency-create.js"
+import { EDIT_CURRENCY_OPTION } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
-import { replyErrorMessage, replySuccessMessage } from "@/lib/discord/answer-interactions.js"
-import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/utils.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
-import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder, bold } from "discord.js"
+import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 
 export const data = new SlashCommandBuilder()
@@ -60,45 +57,27 @@ export const data = new SlashCommandBuilder()
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     
 
-export async function execute(client: Client, interaction: ChatInputCommandInteraction) {
+export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
     const subCommandGroup = interaction.options.getSubcommandGroup()
 
     switch (subCommand) {
         case "create":
-            await createCurrencyCommand(client, interaction)
+            await createCurrencyFlow(interaction)
             break
-        case "remove":
+        case "remove": {
             new CurrencyRemoveFlow().start(interaction)
             break 
+        }
         default:
             if (subCommandGroup == "edit") {
-                const editCurrencyFlow = new EditCurrencyFlow()
-                editCurrencyFlow.start(interaction)
-                break
+                throw new Error("Not implemented yet")
+                // TODO
+                // const editCurrencyFlow = new EditCurrencyFlow()
+                // editCurrencyFlow.start(interaction)
+                // break
             }
 
             await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
     }
 }
-
-export async function createCurrencyCommand(_client: Client, interaction: ChatInputCommandInteraction) {
-    const currencyName = interaction.options.getString("name")?.replaceSpaces()
-    if (!currencyName) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-    const emojiOption = interaction.options.getString("emoji")
-    const [_, emoji] = validate(EmojiSchema, emojiOption)
-    // TODO : for now inputing a wrong emoji fails silently, should give a warning instead
-
-    if (currencyName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
-    
-    const [error2, currency] = await createCurrency({ name: currencyName, emoji })
-    if (error2) {
-        return await replyErrorMessage(interaction, error2.message)
-    }
-
-    const currencyNameString = bold(formattedEmojiableName(currency))
-    await replySuccessMessage(interaction, t("userFlows.currencyCreate.messages.success", { currency: currencyNameString }))
-
-}
-

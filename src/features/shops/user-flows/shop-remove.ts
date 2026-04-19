@@ -1,13 +1,14 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, bold } from "discord.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold } from "discord.js"
 import { Shop } from "../database/shops.types.js"
 
 
@@ -18,18 +19,11 @@ export class ShopRemoveFlow extends UserFlow {
 
     private selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    
-
-    public override async start(interaction: ChatInputCommandInteraction) {
+    public override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+        if (!shops.size) return err( t("errorMessages.noShops"))
 
-        
-        this.updateComponents()
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
-        return
+        return ok(true)
     }
 
     protected override getMessage() {

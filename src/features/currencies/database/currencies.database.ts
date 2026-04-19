@@ -15,16 +15,15 @@ export function dbHasCurrencyWithName(db: CurrenciesDatabase, currencyName: stri
     return false
 }
 
-export async function dbCreateCurrency<T extends Currency>(db: CurrenciesDatabase, options: Exact<T, Currency>) {
-    if (dbHasCurrencyWithName(db, options.name)) return err(new ApiError("CurrencyAlreadyExists"))
+export async function dbCreateCurrency<T extends Currency>(db: CurrenciesDatabase, currency: Exact<T, Currency>) {
+    if (dbHasCurrencyWithName(db, currency.name)) return err(new ApiError("CurrencyAlreadyExists"))
     
     const newCurrencyId = nanoid<NanoId>()
-    const newCurrency = { id: newCurrencyId, ...options }
 
-    const [error] = await db.set(newCurrencyId, newCurrency)
+    const [error, createdCurrency] = await db.set(newCurrencyId, currency)
     if (error) return err(error)
 
-    return ok(newCurrency)
+    return ok(createdCurrency)
 }
 
 export async function dbDeleteCurrency(db: CurrenciesDatabase, currencyId: NanoId) {

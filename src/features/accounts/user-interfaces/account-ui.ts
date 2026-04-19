@@ -36,8 +36,6 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     private user: User
     private account: DeepReadonly<Account> | null = null
 
-    private locale = "userInterfaces.account" as const
-
     constructor(user: User) {
         super()
         this.user = user
@@ -61,7 +59,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     protected override initEmbeds(interaction: UserInterfaceInteraction) {
         this.mode = this.modes.CURRENCIES
         const currenciesEmbed = new EmbedBuilder()
-            .setTitle(t(`${this.locale}.embeds.account.title`, { user: this.user.displayName }))
+            .setTitle(t(`userInterfaces.account.embeds.account.title`, { user: this.user.displayName }))
             .setColor(Colors.Gold)
             .setFooter({ text: "ShopBot", iconURL: interaction.client.user.displayAvatarURL()})
             .setFields(this.getPageEmbedFields())
@@ -69,7 +67,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
 
         this.mode = this.modes.INVENTORY
         const inventoryEmbed = new EmbedBuilder()
-            .setTitle(t(`${this.locale}.embeds.inventory.title`, { user: this.user.displayName }))
+            .setTitle(t(`userInterfaces.account.embeds.inventory.title`, { user: this.user.displayName }))
             .setColor(Colors.DarkRed)
             .setFooter({ text: "ShopBot", iconURL: interaction.client.user.displayAvatarURL()})
             .setFields(this.getPageEmbedFields())
@@ -94,7 +92,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
         const showAccountButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-account`,
-                label: t(`${this.locale}.components.showAccountButton`),
+                label: t(`userInterfaces.account.components.showAccountButton`),
                 emoji: {name: "💰"},
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.CURRENCIES,
@@ -106,7 +104,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
         const showInventoryButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+show-inventory`,
-                label: t(`${this.locale}.components.showInventoryButton`),
+                label: t(`userInterfaces.account.components.showInventoryButton`),
                 emoji: {name: "💼"},
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.INVENTORY,
@@ -131,7 +129,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     }
 
     private getAccountFields() {
-        const emptyAccountField = { name: t(`${this.locale}.errors.accountEmpty`), value: "\u200b" }
+        const emptyAccountField = { name: t(`userInterfaces.account.errors.accountEmpty`), value: "\u200b" }
         if (!this.account) return [emptyAccountField]
 
         const [error, currencies] = HYDRATOR.getHydratedAccountCurrencies(this.account)
@@ -148,7 +146,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     }
 
     private getInventoryFields() { 
-        const emptyInventoryField = { name: t(`${this.locale}.errors.inventoryEmpty`), value: "\u200b" }
+        const emptyInventoryField = { name: t(`userInterfaces.account.errors.inventoryEmpty`), value: "\u200b" }
         if (!this.account) return [emptyInventoryField]
 
         const [error, inventory] = HYDRATOR.getHydratedAccountInventory(this.account)

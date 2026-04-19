@@ -1,149 +1,132 @@
-import { t } from "@/core/i18n/i18n.js"
-import { addProduct } from "@/core/services/shops/products.services.js"
-import { getShops } from "@/core/services/shops/shops.services.js"
-import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
-import { Identifiable } from "@/lib/types/core.js"
-import { TODO } from "@/lib/types/index.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/utils.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
-import { Shop } from "../database/shops.types.js"
 
 // TODO: must be updated for the new system (products only hold an itemId and some metadata)
 // TODO: must be updated to support multi-currency products
 
 
-export class AddProductFlow extends UserFlow {
-    public override get id(): string { 
-        return "add-product" 
-    }
+// export class AddProductFlow extends UserFlow {
+//     public override get id(): string { 
+//         return "add-product" 
+//     }
 
-    protected productName: string | null = null
-    protected productPrice: number | null = null
-    protected productEmoji: string | null = null
-    protected productDescription: string | null = null
-    protected productStock: number | null = null
+//     protected productName: string | null = null
+//     protected productPrice: number | null = null
+//     protected productEmoji: string | null = null
+//     protected productDescription: string | null = null
+//     protected productStock: number | null = null
 
-    protected selectedShop: Shop & Identifiable<NanoId> | null = null
+//     protected selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    protected response: InteractionCallbackResponse | null = null
+//     protected response: InteractionCallbackResponse | null = null
 
     
 
-    public async start(interaction: ChatInputCommandInteraction) {
-        const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+//     public async start(interaction: ChatInputCommandInteraction) {
+//         const shops = getShops()
+//         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
-        const productName = interaction.options.getString("name")?.replaceSpaces()
-        const productDescription = interaction.options.getString("description")?.replaceSpaces() || ""
-        const productPrice = interaction.options.getNumber("price")
+//         const productName = interaction.options.getString("name")?.replaceSpaces()
+//         const productDescription = interaction.options.getString("description")?.replaceSpaces() || ""
+//         const productPrice = interaction.options.getNumber("price")
 
-        const productEmojiOption = interaction.options.getString("emoji")
-        const [error, _productEmoji] = validate(EmojiSchema, productEmojiOption)
+//         const productEmojiOption = interaction.options.getString("emoji")
+//         const [error, _productEmoji] = validate(EmojiSchema, productEmojiOption)
         
-        const productEmoji = error ? null : this.productEmoji
+//         const productEmoji = error ? null : this.productEmoji
 
-        const productStock = interaction.options.getInteger("stock")
+//         const productStock = interaction.options.getInteger("stock")
 
-        if (!productName || productPrice == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+//         if (!productName || productPrice == null) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     
-        if (productName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
+//         if (productName.removeCustomEmojis().length == 0) return replyErrorMessage(interaction, t("errorMessages.notOnlyEmojisInName"))
         
-        this.productName = productName
-        this.productPrice = +productPrice.toFixed(2)
-        this.productEmoji = productEmoji
-        this.productDescription = productDescription
+//         this.productName = productName
+//         this.productPrice = +productPrice.toFixed(2)
+//         this.productEmoji = productEmoji
+//         this.productDescription = productDescription
 
-        this.productStock = productStock
+//         this.productStock = productStock
 
         
-        this.updateComponents()
+//         this.updateComponents()
 
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
+//         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
+//         this.createComponentsCollectors(response)
 
-        this.response = response
-        return
-    }
+//         this.response = response
+//         return
+//     }
     
-    protected getMessage() {
-        const descString = (this.productDescription) ? `. ${t(`userFlows.productAdd.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
-        const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji}))
+//     protected getMessage() {
+//         const descString = (this.productDescription) ? `. ${t(`userFlows.productAdd.messages.description`)} ${bold(this.productDescription.replaceSpaces())}` : ""
+//         const nameString = bold(formattedEmojiableName({ name: this.productName!, emoji: this.productEmoji}))
 
-        const message = t(`userFlows.productAdd.messages.default`, {
-            product: nameString,
-            price: `${this.productPrice!}`,
-            currency: "[ ]", 
-            shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
-            description: descString
-        })
+//         const message = t(`userFlows.productAdd.messages.default`, {
+//             product: nameString,
+//             price: `${this.productPrice!}`,
+//             currency: "[ ]", 
+//             shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
+//             description: descString
+//         })
 
-        return message
-    }
+//         return message
+//     }
 
-    protected initComponents() {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
-            {
-                customId: `${this.id}+select-shop`,
-                placeholder: t("defaultComponents.selectShop"),
-                time: 120_000
-            },
-            getShops(),
-            (interaction) => this.updateInteraction(interaction),
-            (interaction, selected) => {
-                this.selectedShop = selected
-                this.updateInteraction(interaction)
-            }
-        )
+//     protected initComponents() {
+//         const shopSelectMenu = new ExtendedStringSelectMenuComponent(
+//             {
+//                 customId: `${this.id}+select-shop`,
+//                 placeholder: t("defaultComponents.selectShop"),
+//                 time: 120_000
+//             },
+//             getShops(),
+//             (interaction) => this.updateInteraction(interaction),
+//             (interaction, selected) => {
+//                 this.selectedShop = selected
+//                 this.updateInteraction(interaction)
+//             }
+//         )
 
-        const submitShopButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+submit-shop`,
-                label: t(`userFlows.productAdd.components.submitButton`),
-                emoji: {name: "✅"},
-                style: ButtonStyle.Success,
-                disabled: true,
-                time: 120_000
-            },
-            (interaction: ButtonInteraction) => this.success(interaction)
-        )
+//         const submitShopButton = new ExtendedButtonComponent(
+//             {
+//                 customId: `${this.id}+submit-shop`,
+//                 label: t(`userFlows.productAdd.components.submitButton`),
+//                 emoji: {name: "✅"},
+//                 style: ButtonStyle.Success,
+//                 disabled: true,
+//                 time: 120_000
+//             },
+//             (interaction: ButtonInteraction) => this.success(interaction)
+//         )
 
-        return [
-            createComponent(shopSelectMenu),
-            createComponent(submitShopButton, () => submitShopButton.toggle(this.selectedShop != null)),
-        ]
-    }
+//         return [
+//             createComponent(shopSelectMenu),
+//             createComponent(submitShopButton, () => submitShopButton.toggle(this.selectedShop != null)),
+//         ]
+//     }
 
 
-    protected async success(interaction: UserInterfaceInteraction) {
-        if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+//     protected async success(interaction: UserInterfaceInteraction) {
+//         if (!(this.selectedShop && this.productName && this.productPrice)) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const optionals = {
-            ...(this.productStock ? {stock: this.productStock} : {}),
-        }
+//         const optionals = {
+//             ...(this.productStock ? {stock: this.productStock} : {}),
+//         }
         
-        const [error, _] = await addProduct(this.selectedShop.id, {
-            itemId: "" as TODO,
-            price: {},
-            ...optionals
-        })
-        if (error) return await updateAsErrorMessage(interaction, error.message)
+//         const [error, _] = await addProduct(this.selectedShop.id, {
+//             itemId: "" as TODO,
+//             price: {},
+//             ...optionals
+//         })
+//         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`userFlows.productAdd.messages.success`, {
-            product: "TODO: Item Name",
-            shop: bold(this.selectedShop.name)
-        })
+//         const message = t(`userFlows.productAdd.messages.success`, {
+//             product: "TODO: Item Name",
+//             shop: bold(this.selectedShop.name)
+//         })
 
-        return await updateAsSuccessMessage(interaction, message)
-    }
-}
+//         return await updateAsSuccessMessage(interaction, message)
+//     }
+// }
 
 // const ADD_ACTION_PRODUCT_FLOW_STAGE = {
 //     SELECT_SHOP: "SELECT_SHOP",

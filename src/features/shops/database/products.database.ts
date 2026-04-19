@@ -11,14 +11,14 @@ export function dbGetProducts(db: ShopsDatabase, shopId: NanoId){
     return ok(shop.products)
 }
 
-export async function dbAddProduct(db: ShopsDatabase, shopId: NanoId, options: Product) {
+export async function dbAddProduct(db: ShopsDatabase, shopId: NanoId, product: Product) {
     const shop = db.get(shopId)
     if (!shop) return err(new ApiError("ShopDoesNotExist"))
 
     const id = nanoid<NanoId>()
 
     const [error1, updatedShop] = await db.update(shopId, draft => {
-        draft.products[id] = options
+        draft.products[id] = product
     })
     if (error1) return err(error1)
     

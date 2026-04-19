@@ -1,54 +1,43 @@
 import { t } from "@/core/i18n/i18n.js"
 import { createDiscountCode, getShops, removeDiscountCode } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { UserFlow, UserFlow2 } from "@/lib/ui/user-flows/user-flow.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags } from "discord.js"
+import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
 import { Shop } from "../database/shops.types.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
-export class DiscountCodeCreateFlow extends UserFlow {
+export const DiscountCodeCreateParamsSchema = z.object({
+    code: z.string().overwrite((code) => code.replaceSpaces("").toUpperCase()),
+    amount: z.number()
+})
+
+export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof DiscountCodeCreateParamsSchema>> {
     public override get id(): string { 
         return "discount-code-create" 
     }
     
     private selectedShop: Shop & Identifiable<NanoId> | null = null
-    private discountCode: string | null = null
-    private discountAmount: number | null = null
 
-
-    public override async start(interaction: ChatInputCommandInteraction) {
+    protected override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
-
-        const discountCode = interaction.options.getString("code")?.replaceSpaces("").toUpperCase()
-        const discountAmount = interaction.options.getInteger("amount")
-
-        if (!discountCode || !discountAmount) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-        this.discountCode = discountCode
-        this.discountAmount = discountAmount
-
+        if (!shops.size) return err(t("errorMessages.noShops"))
         
-        this.updateComponents()
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
-        return
+        return ok(true)
     }
 
     protected override getMessage() {
         const message = t(`userFlows.discountCodeCreate.messages.default`, {
-            shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
-            code: bold(this.discountCode!),
-            amount: bold(`${this.discountAmount}`)
+            shop: bold(formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop")),
+            code: bold(this.params.code),
+            amount: bold(`${this.params.amount}`)
         })
 
         return message
@@ -83,30 +72,31 @@ export class DiscountCodeCreateFlow extends UserFlow {
 
         return [
             createComponent(shopSelectMenu),
-            createComponent(submitButton, () => submitButton.toggle(this.selectedShop != null))
+            createComponent(submitButton, () => submitButton.toggle(this.selectedShop != null)),
         ]
     }
+
 
     protected override async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-        if (!this.discountCode || !this.discountAmount) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-        const [error] = await createDiscountCode(this.selectedShop.id, this.discountCode, this.discountAmount)
+        const [error] = await createDiscountCode(this.selectedShop.id, this.params.code, this.params.amount)
 
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`userFlows.discountCodeCreate.messages.success`, { 
-            shop: bold(formattedEmojiableName(this.selectedShop)), 
-            code: bold(this.discountCode), 
-            amount: bold(`${this.discountAmount}`)
+            shop: bold(this.selectedShop.name), 
+            code: bold(this.params.code), 
+            amount: bold(`${this.params.amount}`)
         })
 
         return await updateAsSuccessMessage(interaction, message)
 
     }
 }
+
 
 export class DiscountCodeRemoveFlow extends UserFlow {
     public override get id(): string { 
@@ -118,17 +108,11 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     private selectedDiscountCode: string | null = null
 
 
-    public override async start(interaction: ChatInputCommandInteraction) {
+    public override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+        if (!shops.size) return err(t("errorMessages.noShops"))
 
-        
-        this.updateComponents()
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-
-        this.createComponentsCollectors(response)
-        return
+        return ok(true)
     }
 
     protected override getMessage() { // TODO: handle the case of a shop with no discount codes
@@ -222,90 +206,3 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     }
 }
 
-
-
-////                                             
-
-
-export const DiscountCodeCreateParamsSchema = z.object({
-    code: z.string().overwrite((code) => code.replaceSpaces("").toUpperCase()),
-    amount: z.number()
-})
-
-export class DiscountCodeCreateFlow2 extends UserFlow2<z.infer<typeof DiscountCodeCreateParamsSchema>> {
-    public override get id(): string { 
-        return "discount-code-create" 
-    }
-    
-    private selectedShop: Shop & Identifiable<NanoId> | null = null
-
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
-        const shops = getShops()
-        if (!shops.size) return err(t("errorMessages.noShops"))
-        
-        return ok(true)
-    }
-
-    protected override getMessage() {
-        const message = t(`userFlows.discountCodeCreate.messages.default`, {
-            shop: bold(formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop")),
-            code: bold(this.parameters.code),
-            amount: bold(`${this.parameters.amount}`)
-        })
-
-        return message
-    }
-
-    protected override initComponents() {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
-            {
-                customId: `${this.id}+select-shop`,
-                placeholder: t("defaultComponents.selectShop"),
-                time: 120_000,
-            },
-            getShops(),
-            (interaction) => this.updateInteraction(interaction),
-            (interaction, selected) => {
-                this.selectedShop = selected
-                this.updateInteraction(interaction)
-            }
-        )
-
-        const submitButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+submit`,
-                label: t(`userFlows.discountCodeCreate.components.submitButton`),
-                emoji: {name: "✅"},
-                style: ButtonStyle.Success,
-                disabled: true,
-                time: 120_000
-            },
-            (interaction: ButtonInteraction) => this.success(interaction)
-        )
-
-        return [
-            createComponent(shopSelectMenu),
-            createComponent(submitButton, () => submitButton.toggle(this.selectedShop != null)),
-        ]
-    }
-
-
-    protected override async success(interaction: ButtonInteraction) {
-        this.disableComponents()
-
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-        const [error] = await createDiscountCode(this.selectedShop.id, this.parameters.code, this.parameters.amount)
-
-        if (error) return updateAsErrorMessage(interaction, error.message)
-
-        const message = t(`userFlows.discountCodeCreate.messages.success`, { 
-            shop: bold(this.selectedShop.name), 
-            code: bold(this.parameters.code), 
-            amount: bold(`${this.parameters.amount}`)
-        })
-
-        return await updateAsSuccessMessage(interaction, message)
-
-    }
-}

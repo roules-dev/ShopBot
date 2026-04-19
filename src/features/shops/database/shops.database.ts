@@ -15,20 +15,20 @@ export function dbHasShopWithName(db: ShopsDatabase, shopName: string) {
 }
 
 export async function dbCreateShop<T extends ShopOptions> (
-    shopsDb: ShopsDatabase,
-    options: Exact<T, ShopOptions>
+    db: ShopsDatabase,
+    shopOptions: Exact<T, ShopOptions>
 ) {
-    if (dbHasShopWithName(shopsDb, options.name)) return err(new ApiError("ShopAlreadyExists"))
+    if (dbHasShopWithName(db, shopOptions.name)) return err(new ApiError("ShopAlreadyExists"))
 
     const newShopId = nanoid<NanoId>()    
 
     const newShop = {
-        ...options,
+        ...shopOptions,
         discountCodes: {},
         products: {}
     }
     
-    const [error] = await shopsDb.set(newShopId, newShop)
+    const [error] = await db.set(newShopId, newShop)
     if (error) return err(error)
     
 

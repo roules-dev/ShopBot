@@ -1,16 +1,17 @@
 import { t } from "@/core/i18n/i18n.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { removeProduct } from "@/core/services/shops/products.services.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database.types.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { Product } from "../database/products.types.js"
@@ -26,16 +27,11 @@ export class RemoveProductFlow extends UserFlow {
     private selectedShop: Shop & Identifiable<NanoId> | null = null
     private selectedProduct: Product & Identifiable<NanoId> & Labelled | null = null
 
-    public async start(interaction: ChatInputCommandInteraction) {
+    public override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
-        
-        this.updateComponents()
+        if (!shops.size) return err(t("errorMessages.noShops"))
 
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-
-        this.createComponentsCollectors(response)
-        return
+        return ok(true)
     }
 
     protected getMessage() { // TODO : handle the case of a shop with no products

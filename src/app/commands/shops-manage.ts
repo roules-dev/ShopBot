@@ -1,8 +1,8 @@
 import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
-import { ShopCreateFlow } from "@/features/shops/user-flows/shop-create.js"
-import { DiscountCodeCreateFlow2, DiscountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
-import { EDIT_SHOP_OPTIONS, EditShopFlow, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
+import { createShopFlow } from "@/features/shops/user-flows/shop-create.js"
+import { DiscountCodeRemoveFlow, DiscountCodeCreateParamsSchema, DiscountCodeCreateFlow } from "@/features/shops/user-flows/shop-discount.js"
+import { EDIT_SHOP_OPTIONS, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -118,7 +118,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
 
     switch (subCommand) {
         case "create":
-            new ShopCreateFlow().start(interaction)
+            createShopFlow(interaction)
             break
         case "remove":
             new ShopRemoveFlow().start(interaction)
@@ -126,28 +126,26 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         case "reorder":
             new ShopReorderFlow().start(interaction)
             break
-        case "create-discount-code":
-            createDiscountCode(interaction)
+        case "create-discount-code": {
+            const [error, options] = validateCommandOptions(interaction.options, DiscountCodeCreateParamsSchema)
+            if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+            new DiscountCodeCreateFlow(options).start(interaction)
             break
+        }
         case "remove-discount-code":
             new DiscountCodeRemoveFlow().start(interaction)
             break
         default:
             if (subCommandGroup == "edit") {
-                const editShopFlow = new EditShopFlow()
-                editShopFlow.start(interaction)
-                break
+                // const editShopFlow = new EditShopFlow()
+                // editShopFlow.start(interaction)
+                // break
+                await replyErrorMessage(interaction, "Not implemented yet")
+                // TODO
             }
 
             await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
     }
 
-}
-
-
-function createDiscountCode(interaction: ChatInputCommandInteraction) {
-    const [error, options] = validateCommandOptions(interaction.options, DiscountCodeCreateParamsSchema)
-    if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-    new DiscountCodeCreateFlow2(options).start(interaction)
 }

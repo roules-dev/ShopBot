@@ -35,8 +35,6 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private discountCode?: string = undefined
     private discount: number = 0
 
-    private locale = "userInterfaces.buy" as const
-
     constructor (selectedShop: Shop & Identifiable<NanoId>) {
         super()
         this.selectedShop = selectedShop
@@ -51,11 +49,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
     }
 
     protected override getMessage() {
-        const discountCodeString = this.discountCode ? `\n${t(`${this.locale}.messages.discountCode`)} ${bold(this.discountCode)}` : ""
+        const discountCodeString = this.discountCode ? `\n${t(`userInterfaces.buy.messages.discountCode`)} ${bold(this.discountCode)}` : ""
 
-        const priceString = this.priceString() != "" ? t(`${this.locale}.messages.price`, { price: this.priceString() }) : ""
+        const priceString = this.priceString() != "" ? t(`userInterfaces.buy.messages.price`, { price: this.priceString() }) : ""
 
-        const message = t(`${this.locale}.messages.default`, {
+        const message = t(`userInterfaces.buy.messages.default`, {
             product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
             quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
             shop: bold(this.selectedShop.name),
@@ -98,7 +96,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const setQuantityButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+set-quantity`,
-                label: t(`${this.locale}.components.setQuantityButton`),
+                label: t(`userInterfaces.buy.components.setQuantityButton`),
                 emoji: "🔢",
                 style: ButtonStyle.Secondary,
                 time: 120_000,
@@ -107,7 +105,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 const [modalSubmit, [error, quantity]] = await showValidatedEditModal(
                     interaction,
                     {
-                        edit: t(`${this.locale}.components.editQuantityModalTitle`),
+                        edit: t(`userInterfaces.buy.components.editQuantityModalTitle`),
                         previousValue: this.quantity.toString(),
                         required: true
                     },
@@ -138,7 +136,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const buyButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+buy`,
-                label: t(`${this.locale}.components.buyButton`),
+                label: t(`userInterfaces.buy.components.buyButton`),
                 emoji: "✅",
                 style: ButtonStyle.Success,
                 time: 120_000,
@@ -149,7 +147,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const discountCodeButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+discount-code`,
-                label: t(`${this.locale}.components.discountCodeButton`),
+                label: t(`userInterfaces.buy.components.discountCodeButton`),
                 emoji: "🎁",
                 style: ButtonStyle.Secondary,
                 time: 120_000,
@@ -176,8 +174,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const [modalSubmit, [error, input]] = await showSingleInputModal(interaction, {
             id: modalId,
-            title: t(`${this.locale}.components.setDiscountCodeModal.title`),
-            inputLabel: t(`${this.locale}.components.setDiscountCodeModal.input`),
+            title: t(`userInterfaces.buy.components.setDiscountCodeModal.title`),
+            inputLabel: t(`userInterfaces.buy.components.setDiscountCodeModal.input`),
             placeholder: "XXXXXXX",
             required: true,
             minLength: 6,
@@ -213,15 +211,15 @@ export class BuyProductUserInterface extends MessageUserInterface {
                 return updateAsErrorMessage(interaction, error.message)
 
             case "NotAllowedToBuy":
-                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.cantBuyHere`))
+                return updateAsErrorMessage(interaction, t(`userInterfaces.buy.errorMessages.cantBuyHere`))
             
             case "NotEnoughMoney": {
                 const currenciesName = error.currencies.map(c => formattedEmojiableName((HYDRATOR.hydrateCurrency(c))[1])).join(", ")
-                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.notEnoughMoney`, { currency: bold(currenciesName) }))
+                return updateAsErrorMessage(interaction, t(`userInterfaces.buy.errorMessages.notEnoughMoney`, { currency: bold(currenciesName) }))
             }
             
             case "ProductNoLongerAvailable":
-                return updateAsErrorMessage(interaction, t(`${this.locale}.errorMessages.productNoLongerAvailable`))
+                return updateAsErrorMessage(interaction, t(`userInterfaces.buy.errorMessages.productNoLongerAvailable`))
 
             default:
                 assertNeverReached(errorName)
@@ -249,7 +247,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const priceString = this.priceString()
         const discountCodeString = this.discountCode ? this.discountCode : "none"
 
-        const message = t(`${this.locale}.messages.success`, { 
+        const message = t(`userInterfaces.buy.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
             quantity: quantity > 1 ? `**${quantity}x** ` : "",

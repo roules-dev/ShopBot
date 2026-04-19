@@ -15,16 +15,15 @@ export function dbHasItemWithName(db: ItemsDatabase, itemName: string) {
     return false
 }
 
-export async function dbCreateItem<T extends Item>(db: ItemsDatabase, options: Exact<T, Item>) {
-    if (dbHasItemWithName(db, options.name)) return err(new ApiError("ItemAlreadyExists"))
+export async function dbCreateItem<T extends Item>(db: ItemsDatabase, item: Exact<T, Item>) {
+    if (dbHasItemWithName(db, item.name)) return err(new ApiError("ItemAlreadyExists"))
     
     const newItemId = nanoid<NanoId>()
-    const newItem = { id: newItemId, ...options }
 
-    const [error] = await db.set(newItemId, newItem)
+    const [error, createdItem] = await db.set(newItemId, item)
     if (error) return err(error)
 
-    return ok(newItem)
+    return ok(createdItem)
 }
 
 export async function dbDeleteItem(db: ItemsDatabase, itemId: NanoId) {

@@ -1,16 +1,14 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getShops, updateShop, updateShopPosition } from "@/core/services/shops/shops.services.js"
+import { getShops, updateShopPosition } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
-import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { validate } from "@/lib/validation.js"
-import { EmojiSchema } from "@/schemas/utils.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, roleMention } from "discord.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { Shop } from "../database/shops.types.js"
 
 //! --------------------------------
@@ -25,169 +23,169 @@ export const EDIT_SHOP_OPTIONS = {
     ReservedTo: "reserved-to-role"
 } as const
 
-type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
+// type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 
-function isShopOption(subcommand: string): subcommand is EditShopOption { return Object.values(EDIT_SHOP_OPTIONS).includes(subcommand as EditShopOption) }
+// function isShopOption(subcommand: string): subcommand is EditShopOption { return Object.values(EDIT_SHOP_OPTIONS).includes(subcommand as EditShopOption) }
 
-function getShopOptionName(option: EditShopOption) { 
-    switch (option) {
-        case EDIT_SHOP_OPTIONS.Name:
-        case EDIT_SHOP_OPTIONS.Description:
-        case EDIT_SHOP_OPTIONS.Emoji:
-            return option
-        case EDIT_SHOP_OPTIONS.ReservedTo:
-            return "reservedTo"
-        default:
-            assertNeverReached(option)
-    }
-}
+// function getShopOptionName(option: EditShopOption) { 
+//     switch (option) {
+//         case EDIT_SHOP_OPTIONS.Name:
+//         case EDIT_SHOP_OPTIONS.Description:
+//         case EDIT_SHOP_OPTIONS.Emoji:
+//             return option
+//         case EDIT_SHOP_OPTIONS.ReservedTo:
+//             return "reservedTo"
+//         default:
+//             assertNeverReached(option)
+//     }
+// }
 
-export class EditShopFlow extends UserFlow {
-    public override get id(): string { 
-        return "edit-shop" 
-    }
+// export class EditShopFlow extends UserFlow {
+//     public override get id(): string { 
+//         return "edit-shop" 
+//     }
 
-    private selectedShop: Shop & Identifiable<NanoId> | null = null
+//     private selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    private updateOption: EditShopOption | null = null
-    private updateOptionValue: string | null = null
-    private updateOptionValueDisplay: string | null = null
+//     private updateOption: EditShopOption | null = null
+//     private updateOptionValue: string | null = null
+//     private updateOptionValueDisplay: string | null = null
 
     
 
-    public override async start(interaction: ChatInputCommandInteraction) {
-        const shops = getShops()
-        if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+//     public override async start(interaction: ChatInputCommandInteraction) {
+//         const shops = getShops()
+//         if (!shops.size) return replyErrorMessage(interaction, t("errorMessages.noShops"))
 
-        const subcommand = interaction.options.getSubcommand()
-        if (!subcommand || !isShopOption(subcommand)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
-        this.updateOption = subcommand as EditShopOption
+//         const subcommand = interaction.options.getSubcommand()
+//         if (!subcommand || !isShopOption(subcommand)) return replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
+//         this.updateOption = subcommand as EditShopOption
         
-        const [error, updateValue] = this.getUpdateValue(interaction, subcommand)
+//         const [error, updateValue] = this.getUpdateValue(interaction, subcommand)
 
-        if (error) return replyErrorMessage(interaction, error.message)
-        this.updateOptionValue = updateValue
+//         if (error) return replyErrorMessage(interaction, error.message)
+//         this.updateOptionValue = updateValue
 
-        this.updateOptionValueDisplay = this.getUpdateValueDisplay(interaction, subcommand) || this.updateOptionValue
+//         this.updateOptionValueDisplay = this.getUpdateValueDisplay(interaction, subcommand) || this.updateOptionValue
 
         
-        this.updateComponents()
+//         this.updateComponents()
 
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
-        return
-    }
+//         const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
+//         this.createComponentsCollectors(response)
+//         return
+//     }
 
-    protected override getMessage() {
-        const message = t(`userFlows.shopEdit.messages.default`, { 
-            shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
-            option: bold(this.getUpdateOptionName(this.updateOption!)),
-            value: bold(`${this.updateOptionValueDisplay}`)
-        })
+//     protected override getMessage() {
+//         const message = t(`userFlows.shopEdit.messages.default`, { 
+//             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
+//             option: bold(this.getUpdateOptionName(this.updateOption!)),
+//             value: bold(`${this.updateOptionValueDisplay}`)
+//         })
 
-        return message
-    }
+//         return message
+//     }
 
-    protected override initComponents() {
-        const shopSelectMenu = new ExtendedStringSelectMenuComponent({
-                customId: `${this.id}+select-shop`,
-                placeholder: t("defaultComponents.selectShop"),
-                time: 120_000,
-            },
-            getShops(),
-            (interaction) => this.updateInteraction(interaction),
-            (interaction, selected) => {
-                this.selectedShop = selected
-                this.updateInteraction(interaction)
-            },
-        )
+//     protected override initComponents() {
+//         const shopSelectMenu = new ExtendedStringSelectMenuComponent({
+//                 customId: `${this.id}+select-shop`,
+//                 placeholder: t("defaultComponents.selectShop"),
+//                 time: 120_000,
+//             },
+//             getShops(),
+//             (interaction) => this.updateInteraction(interaction),
+//             (interaction, selected) => {
+//                 this.selectedShop = selected
+//                 this.updateInteraction(interaction)
+//             },
+//         )
 
-        const submitButton = new ExtendedButtonComponent(
-            {
-                customId: `${this.id}+submit`,
-                time: 120_000,
-                label: t(`userFlows.shopEdit.components.submitButton`),
-                emoji: {name: "✅"},
-                style: ButtonStyle.Success,
-                disabled: true,
-            },
-            (interaction: ButtonInteraction) => this.success(interaction),
-        )
+//         const submitButton = new ExtendedButtonComponent(
+//             {
+//                 customId: `${this.id}+submit`,
+//                 time: 120_000,
+//                 label: t(`userFlows.shopEdit.components.submitButton`),
+//                 emoji: {name: "✅"},
+//                 style: ButtonStyle.Success,
+//                 disabled: true,
+//             },
+//             (interaction: ButtonInteraction) => this.success(interaction),
+//         )
 
-        return [
-            createComponent(shopSelectMenu),
-            createComponent(submitButton, () => submitButton.toggle(this.selectedShop != null)),
-        ]
-    }
+//         return [
+//             createComponent(shopSelectMenu),
+//             createComponent(submitButton, () => submitButton.toggle(this.selectedShop != null)),
+//         ]
+//     }
 
 
-    protected override async success(interaction: ButtonInteraction) {
-        this.disableComponents()
+//     protected override async success(interaction: ButtonInteraction) {
+//         this.disableComponents()
 
-        if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-        if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+//         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+//         if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const oldName = this.selectedShop?.name || ""
+//         const oldName = this.selectedShop?.name || ""
 
-        // TODO needs refactoring
-        const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
+//         // TODO needs refactoring
+//         const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
 
-        if (error) return await updateAsErrorMessage(interaction, error.message)
+//         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        const message = t(`userFlows.shopEdit.messages.success`, {
-            shop: bold(oldName),
-            option: bold(this.getUpdateOptionName(this.updateOption)),
-            value: bold(`${this.updateOptionValueDisplay}`)
-        })
+//         const message = t(`userFlows.shopEdit.messages.success`, {
+//             shop: bold(oldName),
+//             option: bold(this.getUpdateOptionName(this.updateOption)),
+//             value: bold(`${this.updateOptionValueDisplay}`)
+//         })
 
-        return await updateAsSuccessMessage(interaction, message)
-    }
+//         return await updateAsSuccessMessage(interaction, message)
+//     }
 
 
-    private getUpdateValue(interaction: ChatInputCommandInteraction, subcommand: EditShopOption){
-        let updateValue: string | undefined
+//     private getUpdateValue(interaction: ChatInputCommandInteraction, subcommand: EditShopOption){
+//         let updateValue: string | undefined
 
-        switch (subcommand) {
-            case EDIT_SHOP_OPTIONS.Name:
-                updateValue = interaction.options.getString("new-name")?.replaceSpaces() ?? t("defaultComponents.unset")
-                break
-            case EDIT_SHOP_OPTIONS.Description:
-                updateValue = interaction.options.getString("new-description")?.replaceSpaces() ?? t("defaultComponents.unset")
-                break
-            case EDIT_SHOP_OPTIONS.Emoji: {
-                const emojiOption = interaction.options.getString("new-emoji")
-                const [error, emoji] = validate(EmojiSchema, emojiOption)
-                updateValue = error ? t("defaultComponents.unset") : emoji
-                break
-            }
-            case EDIT_SHOP_OPTIONS.ReservedTo:
-                updateValue = interaction.options.getRole("new-role")?.id ?? t("defaultComponents.unset")
-                break
-            default:
-                assertNeverReached(subcommand)
-        }
+//         switch (subcommand) {
+//             case EDIT_SHOP_OPTIONS.Name:
+//                 updateValue = interaction.options.getString("new-name")?.replaceSpaces() ?? t("defaultComponents.unset")
+//                 break
+//             case EDIT_SHOP_OPTIONS.Description:
+//                 updateValue = interaction.options.getString("new-description")?.replaceSpaces() ?? t("defaultComponents.unset")
+//                 break
+//             case EDIT_SHOP_OPTIONS.Emoji: {
+//                 const emojiOption = interaction.options.getString("new-emoji")
+//                 const [error, emoji] = validate(EmojiSchema, emojiOption)
+//                 updateValue = error ? t("defaultComponents.unset") : emoji
+//                 break
+//             }
+//             case EDIT_SHOP_OPTIONS.ReservedTo:
+//                 updateValue = interaction.options.getRole("new-role")?.id ?? t("defaultComponents.unset")
+//                 break
+//             default:
+//                 assertNeverReached(subcommand)
+//         }
 
-        if (!updateValue) return err(t("errorMessages.insufficientParameters"))
+//         if (!updateValue) return err(t("errorMessages.insufficientParameters"))
 
-        return ok(updateValue)
-    }
+//         return ok(updateValue)
+//     }
 
-    private getUpdateOptionName(option: EditShopOption) { 
-        return t(`userFlows.shopEdit.editOptions.${option}`)
-    }
+//     private getUpdateOptionName(option: EditShopOption) { 
+//         return t(`userFlows.shopEdit.editOptions.${option}`)
+//     }
 
-    private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption) {
-        switch (subcommand) {
-            case EDIT_SHOP_OPTIONS.ReservedTo: {
-                const role = interaction.options.getRole("new-role")
-                if (!role) return t("defaultComponents.unset")
-                return roleMention(role.id)
-            }
-            default:
-                return null
-        }
-    }
-}
+//     private getUpdateValueDisplay(interaction: ChatInputCommandInteraction, subcommand: EditShopOption) {
+//         switch (subcommand) {
+//             case EDIT_SHOP_OPTIONS.ReservedTo: {
+//                 const role = interaction.options.getRole("new-role")
+//                 if (!role) return t("defaultComponents.unset")
+//                 return roleMention(role.id)
+//             }
+//             default:
+//                 return null
+//         }
+//     }
+// }
 
 
 export class ShopReorderFlow extends UserFlow {
@@ -200,21 +198,16 @@ export class ShopReorderFlow extends UserFlow {
 
     
 
-    public override async start(interaction: ChatInputCommandInteraction) {
+    public override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
-        if (!firstShopEntry) return replyErrorMessage(interaction, t("errorMessages.noShops"))
+        if (!firstShopEntry) return err(t("errorMessages.noShops"))
 
-        
 
         this.selectedShop = { ...firstShopEntry[1], id: firstShopEntry[0] }
         this.selectedPosition = 0 + 1
 
-        this.updateComponents()
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
-        return
+        return ok(true)
     }
 
     protected override getMessage() {
