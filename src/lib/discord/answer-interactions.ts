@@ -1,8 +1,6 @@
-import { getSettings } from "@/features/settings/database/settings.database.js"
 import { t } from "@/core/i18n/i18n.js"
-import { Guild, MessageFlags, TextChannel } from "discord.js"
-import { PrettyLog } from "./pretty-log.js"
-import { UserInterfaceInteraction } from "./ui/types/ui.js"
+import { MessageFlags } from "discord.js"
+import { UserInterfaceInteraction } from "../ui/types/ui.js"
 
 
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
@@ -37,21 +35,3 @@ function getSuccessMessage(successMessage: string) {
     return `✅ ${successMessage}`
 }
 
-export async function logToDiscord(guild: Guild, message: string) {
-
-    try {
-        const logChannelSetting = getSettings().get("logChannelId")
-        if (!logChannelSetting?.value || logChannelSetting.type !== "channelId") return
-        const logChannel = await guild.channels.fetch(logChannelSetting.value)
-        if (!(logChannel instanceof TextChannel)) return
-
-        await logChannel.send(message)
-
-        const simplifiedMessage = message.replaceAll("**", "\"")
-
-        PrettyLog.info(`Logged to Discord: ${simplifiedMessage}`)
-
-    } catch (error) {
-        PrettyLog.error(`Failed to log to Discord: ${error}`)
-    }
-}

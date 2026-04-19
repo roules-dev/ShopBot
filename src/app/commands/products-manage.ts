@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { AddProductFlow } from "@/features/shops/user-flows/product-add.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
-import { replyErrorMessage } from "@/lib/discord.js"
+import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 // TODO : product commands probably belongs to shops-manage command as a subcommand group instead of being a separate command

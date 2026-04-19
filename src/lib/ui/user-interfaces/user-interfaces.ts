@@ -1,4 +1,4 @@
-import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ActionRowBuilder, APIEmbedField, ButtonInteraction, ButtonStyle, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
 import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"

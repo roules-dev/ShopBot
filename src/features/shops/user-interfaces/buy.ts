@@ -2,7 +2,7 @@ import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { processPurchase } from "@/core/services/shops/buy.js"
 import { NanoId } from "@/database/database.types.js"
-import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
@@ -19,6 +19,7 @@ import z from "zod"
 import { Product } from "../database/products.types.js"
 import { Shop } from "../database/shops.types.js"
 import { applyQuantityHydrated, formatPrice } from "../services/price.js"
+import { logToDiscord } from "@/app/services/logging.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {

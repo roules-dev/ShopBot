@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies, updateCurrency } from "@/core/services/currencies/currencies.services.js"
 import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"

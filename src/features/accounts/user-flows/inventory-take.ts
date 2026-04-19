@@ -3,7 +3,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { NanoId } from "@/database/database.types.js"
 import { Item } from "@/features/items/database/items.types.js"
-import { logToDiscord, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -13,6 +13,7 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, MessageFlags, User, bold, userMention } from "discord.js"
 import { emptyAccount, setAccountItemAmount } from "../services/accounts.services.js"
+import { logToDiscord } from "@/app/services/logging.js"
 
 
 // TODO: implement inventory take / bulk take

@@ -1,5 +1,5 @@
 import { t } from "@/core/i18n/i18n.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator, createComponent, ExtendedComponent } from "@/lib/ui/ui-components/extended-components.js"

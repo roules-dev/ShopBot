@@ -1,7 +1,7 @@
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { replyErrorMessage } from "@/lib/discord.js"
+import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"

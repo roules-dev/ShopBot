@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getShops, removeShop } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord.js"
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"

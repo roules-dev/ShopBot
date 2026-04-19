@@ -1,8 +1,8 @@
-import { replyErrorMessage } from "@/lib/discord.js"
+import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
+import { ChatInputCommandInteraction, MessageFlags } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
 import { UserInterface } from "../user-interfaces/user-interfaces.js"
-import { ChatInputCommandInteraction, MessageFlags } from "discord.js"
-import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
 
 
 export abstract class UserFlow extends UserInterface {

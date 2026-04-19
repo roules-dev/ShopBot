@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { replyErrorMessage } from "@/lib/discord.js"
+import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"

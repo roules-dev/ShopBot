@@ -1,9 +1,9 @@
 import fs from "fs/promises"
-import { err, ok } from "@/lib/error-handling.js"
+import { err, ok, Result } from "@/lib/error-handling.js"
 import { EVENTS } from "@/core/events/event-bus.js"
 import { SettingSchema } from "../schemas/settings.schemas.js"
 import z from "zod"
-import { SettingIdBrands, SettingValueByIdBrand } from "./settings.types.js"
+import { SettingIdBrands, SettingType, SettingValueByIdBrand, SettingValueType } from "./settings.types.js"
 import { JsonDatabase } from "@/database/json-database.js"
 
 const settingsDatabasePath = "./data/settings.json"
@@ -17,6 +17,20 @@ export function getSettings() {
 
 export function getSetting(id: string) {
     return settingsDatabase.get(id)
+}
+
+export function getTypedSettingValue<
+    T extends SettingType
+>(
+    id: string, 
+    type: T
+): Result<SettingValueType<T>, Error> {
+
+    const setting = settingsDatabase.get(id)
+    if (!setting) return err("Setting does not exist")
+    if (setting.type !== type) return err("Setting type does not match")
+
+    return ok(setting.value as SettingValueType<T>)
 }
 
 export async function setSetting<
