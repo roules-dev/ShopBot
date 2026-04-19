@@ -7,7 +7,7 @@ import { createComponent, ExtendedComponent } from "@/lib/ui/ui-components/exten
 import { showEditModal, showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedChannelSelectMenuComponent, ExtendedRoleSelectMenuComponent, ExtendedUserSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/special-embed-ui.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
 import { toStringOrUndefined } from "@/utils/strings.js"
 import { APIEmbedField, ButtonStyle, channelMention, ChannelSelectMenuInteraction, ChannelType, Colors, EmbedBuilder, InteractionCallbackResponse, MessageComponentInteraction, roleMention, RoleSelectMenuInteraction, StringSelectMenuInteraction, userMention, UserSelectMenuInteraction } from "discord.js"

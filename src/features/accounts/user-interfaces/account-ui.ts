@@ -3,17 +3,18 @@ import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
+import { ObjectValues } from "@/lib/types/collections.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { ObjectValues, PaginatedMultipleEmbedUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { MultiplePaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/special-embed-ui.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { Account } from "../database/accounts.type.js"
 
-export class AccountUserInterface extends PaginatedMultipleEmbedUserInterface {
+export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     public override get id(): string { 
         return "account-ui" 
     }

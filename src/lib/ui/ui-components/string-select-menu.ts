@@ -48,7 +48,7 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
             this.pageCount = Math.ceil(map.size / (MAX_OPTIONS_PER_PAGE - 2))
         }
 
-        this.component = this.createSelectMenu(placeholder, map)
+        this.component = this.createSelectMenu()
     }
 
     onCollect(interaction: StringSelectMenuInteraction) {
@@ -67,7 +67,7 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
                     break
             }
 
-            this.component = this.createSelectMenu(this.placeholder, this.map)
+            this.component = this.createSelectMenu()
             return this.update(interaction)
         }
 
@@ -81,23 +81,32 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
 
     onEnd(_collected: ReadonlyCollection<string, MessageComponentInteraction>) {}
 
-    private createSelectMenu(placeholder: string, map: MutableOrReadonlyMap<string, T>) {
+    private getPlaceholder() {
+        return this.map.size === 0 ? "🚫 No options available" : this.placeholder
+    }
+
+    private createSelectMenu() {
         const selectMenu = new StringSelectMenuBuilder()
             .setCustomId(this.customId)
-            .setPlaceholder(placeholder)
-            .addOptions(this.getStringSelectOptions(map))
+            .setPlaceholder(this.getPlaceholder())
+            .addOptions(this.getStringSelectOptions())
+            .setDisabled(this.map.size === 0)
     
         return selectMenu
     }
 
-    private getStringSelectOptions(map: MutableOrReadonlyMap<string, T>) { 
+    private getStringSelectOptions() { 
+        if (this.map.size === 0) {
+            return [new StringSelectMenuOptionBuilder().setLabel("No options available").setValue("no-options").setEmoji("🚫")]
+        }
+
         
         const pageSwitchOptions = []
 
         if (this.pageCount > 1) {
             
             const start = this.selectPage * MAX_OPTIONS_PER_PAGE
-            map = subMap(map, start, MAX_OPTIONS_PER_PAGE)
+            this.map = subMap(this.map, start, MAX_OPTIONS_PER_PAGE)
 
             if (this.selectPage > 0) {
                 pageSwitchOptions.push(
@@ -118,7 +127,7 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
         }
 
         const options: StringSelectMenuOptionBuilder[] = []
-        map.forEach((value, key) => {
+        this.map.forEach((value, key) => {
             const label = value.name.removeCustomEmojis().ellipsis(100)
 
             const option = new StringSelectMenuOptionBuilder()
@@ -139,6 +148,9 @@ export class ExtendedStringSelectMenuComponent<Id extends string, T extends Labe
 
     public updateMap(map: MutableOrReadonlyMap<Id, T>) {
         this.map = map
-        this.component.setOptions(this.getStringSelectOptions(map))
+        this.component
+            .setOptions(this.getStringSelectOptions())
+            .setPlaceholder(this.getPlaceholder())
+            .setDisabled(map.size === 0)
     }
 }
