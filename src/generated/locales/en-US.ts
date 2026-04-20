@@ -123,7 +123,7 @@ export const locale = {
                             "options": {
                                 "emoji": {
                                     "name": "new-emoji",
-                                    "description": "The new emoji of the currency (if you just want to remove it write anything)"
+                                    "description": "The new emoji of the currency (leave empty to remove)"
                                 }
                             }
                         }
@@ -139,21 +139,9 @@ export const locale = {
                     "name": "add",
                     "description": "Add a new product",
                     "options": {
-                        "name": {
-                            "name": "name",
-                            "description": "The name of the product"
-                        },
                         "price": {
                             "name": "price",
                             "description": "The price of the product"
-                        },
-                        "description": {
-                            "name": "description",
-                            "description": "The description of the product (optional)"
-                        },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "The emoji of the product (optional)"
                         },
                         "stock": {
                             "name": "stock",
@@ -173,26 +161,6 @@ export const locale = {
                     "name": "edit",
                     "description": "Edit a product",
                     "options": {
-                        "name": {
-                            "name": "name",
-                            "description": "Change name. You will select the product later",
-                            "options": {
-                                "name": {
-                                    "name": "new-name",
-                                    "description": "The new name of the product"
-                                }
-                            }
-                        },
-                        "description": {
-                            "name": "description",
-                            "description": "Change description. You will select the product later",
-                            "options": {
-                                "description": {
-                                    "name": "new-description",
-                                    "description": "The new description of the product"
-                                }
-                            }
-                        },
                         "price": {
                             "name": "price",
                             "description": "Change price. You will select the product later",
@@ -203,23 +171,13 @@ export const locale = {
                                 }
                             }
                         },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "Change emoji. You will select the product later",
-                            "options": {
-                                "emoji": {
-                                    "name": "new-emoji",
-                                    "description": "The new emoji of the product (if you just want to remove it write anything)"
-                                }
-                            }
-                        },
                         "stock": {
                             "name": "stock",
                             "description": "Change stock. You will select the product later",
                             "options": {
                                 "stock": {
                                     "name": "new-stock",
-                                    "description": "The new stock of the product (-1 for unlimited)"
+                                    "description": "The new stock of the product (leave empty for unlimited)"
                                 }
                             }
                         }
@@ -307,7 +265,7 @@ export const locale = {
                             "options": {
                                 "description": {
                                     "name": "new-description",
-                                    "description": "The new description of the shop"
+                                    "description": "The new description of the shop (leave empty to remove)"
                                 }
                             }
                         },
@@ -317,7 +275,7 @@ export const locale = {
                             "options": {
                                 "emoji": {
                                     "name": "new-emoji",
-                                    "description": "The new emoji of the shop"
+                                    "description": "The new emoji of the shop (leave empty to remove)"
                                 }
                             }
                         },
@@ -327,13 +285,9 @@ export const locale = {
                             "options": {
                                 "role": {
                                     "name": "new-role",
-                                    "description": "The new role the shop will be reserved to. Leave empty to delete"
+                                    "description": "The new role the shop will be reserved to (leave empty to remove)"
                                 }
                             }
-                        },
-                        "currency": {
-                            "name": "currency",
-                            "description": "Change currency. You will select the shop later"
                         }
                     }
                 }

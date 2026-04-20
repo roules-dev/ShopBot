@@ -123,7 +123,7 @@ export const locale = {
                             "options": {
                                 "emoji": {
                                     "name": "nouvel-emoji",
-                                    "description": "Le nouvel emoji de la devise (si vous voulez juste le supprimer, écrivez n'importe quoi)"
+                                    "description": "Le nouvel emoji de la devise (laissez vide pour supprimer)"
                                 }
                             }
                         }
@@ -139,21 +139,9 @@ export const locale = {
                     "name": "ajouter",
                     "description": "Ajouter un nouveau produit",
                     "options": {
-                        "name": {
-                            "name": "nom",
-                            "description": "Le nom du produit"
-                        },
                         "price": {
                             "name": "prix",
                             "description": "Le prix du produit"
-                        },
-                        "description": {
-                            "name": "description",
-                            "description": "La description du produit (optionnel)"
-                        },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "L'emoji du produit (optionnel)"
                         },
                         "stock": {
                             "name": "stock",
@@ -173,26 +161,6 @@ export const locale = {
                     "name": "modifier",
                     "description": "Modifier un produit",
                     "options": {
-                        "name": {
-                            "name": "nom",
-                            "description": "Changer le nom. Vous sélectionnerez le produit plus tard",
-                            "options": {
-                                "name": {
-                                    "name": "nouveau-nom",
-                                    "description": "Le nouveau nom du produit"
-                                }
-                            }
-                        },
-                        "description": {
-                            "name": "description",
-                            "description": "Changer la description. Vous sélectionnerez le produit plus tard",
-                            "options": {
-                                "description": {
-                                    "name": "nouvelle-description",
-                                    "description": "La nouvelle description du produit"
-                                }
-                            }
-                        },
                         "price": {
                             "name": "prix",
                             "description": "Changer le prix. Vous sélectionnerez le produit plus tard",
@@ -203,23 +171,13 @@ export const locale = {
                                 }
                             }
                         },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "Changer l'emoji. Vous sélectionnerez le produit plus tard",
-                            "options": {
-                                "emoji": {
-                                    "name": "nouvel-emoji",
-                                    "description": "Le nouvel emoji du produit (si vous voulez juste le supprimer, écrivez n'importe quoi)"
-                                }
-                            }
-                        },
                         "stock": {
                             "name": "stock",
                             "description": "Changer le stock. Vous sélectionnerez le produit plus tard",
                             "options": {
                                 "stock": {
                                     "name": "nouveau-stock",
-                                    "description": "Le nouveau stock du produit (-1 pour illimité)"
+                                    "description": "Le nouveau stock du produit (laissez vide pour illimité)"
                                 }
                             }
                         }
@@ -307,7 +265,7 @@ export const locale = {
                             "options": {
                                 "description": {
                                     "name": "nouvelle-description",
-                                    "description": "La nouvelle description de la boutique"
+                                    "description": "La nouvelle description de la boutique (laissez vide pour supprimer)"
                                 }
                             }
                         },
@@ -317,7 +275,7 @@ export const locale = {
                             "options": {
                                 "emoji": {
                                     "name": "nouvel-emoji",
-                                    "description": "Le nouvel emoji de la boutique"
+                                    "description": "Le nouvel emoji de la boutique (laissez vide pour supprimer)"
                                 }
                             }
                         },
@@ -327,13 +285,9 @@ export const locale = {
                             "options": {
                                 "role": {
                                     "name": "nouveau-role",
-                                    "description": "Le nouveau rôle auquel la boutique sera réservée. Laissez vide pour supprimer"
+                                    "description": "Le nouveau rôle auquel la boutique sera réservée (laissez vide pour supprimer)"
                                 }
                             }
-                        },
-                        "currency": {
-                            "name": "devise",
-                            "description": "Changer la devise. Vous sélectionnerez la boutique plus tard"
                         }
                     }
                 }

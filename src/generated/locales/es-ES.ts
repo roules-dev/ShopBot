@@ -123,7 +123,7 @@ export const locale = {
                             "options": {
                                 "emoji": {
                                     "name": "nuevo-emoji",
-                                    "description": "El nuevo emoji de la moneda (si solo quieres eliminarlo, escribe cualquier cosa)"
+                                    "description": "El nuevo emoji de la moneda (déjalo vacío para eliminarlo)"
                                 }
                             }
                         }
@@ -139,21 +139,9 @@ export const locale = {
                     "name": "agregar",
                     "description": "Agregar un nuevo producto",
                     "options": {
-                        "name": {
-                            "name": "nombre",
-                            "description": "El nombre del producto"
-                        },
                         "price": {
                             "name": "precio",
                             "description": "El precio del producto"
-                        },
-                        "description": {
-                            "name": "descripcion",
-                            "description": "La descripción del producto (opcional)"
-                        },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "El emoji del producto (opcional)"
                         },
                         "stock": {
                             "name": "cantidad",
@@ -173,26 +161,6 @@ export const locale = {
                     "name": "modificar",
                     "description": "Modificar un producto",
                     "options": {
-                        "name": {
-                            "name": "nombre",
-                            "description": "Cambiar el nombre. Seleccionarás el producto más tarde",
-                            "options": {
-                                "name": {
-                                    "name": "nuevo-nombre",
-                                    "description": "El nuevo nombre del producto"
-                                }
-                            }
-                        },
-                        "description": {
-                            "name": "descripcion",
-                            "description": "Cambiar la descripción. Seleccionarás el producto más tarde",
-                            "options": {
-                                "description": {
-                                    "name": "nueva-descripcion",
-                                    "description": "La nueva descripción del producto"
-                                }
-                            }
-                        },
                         "price": {
                             "name": "precio",
                             "description": "Cambiar el precio. Seleccionarás el producto más tarde",
@@ -203,23 +171,13 @@ export const locale = {
                                 }
                             }
                         },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "Cambiar el emoji. Seleccionarás el producto más tarde",
-                            "options": {
-                                "emoji": {
-                                    "name": "nuevo-emoji",
-                                    "description": "El nuevo emoji del producto (si solo quieres eliminarlo, escribe cualquier cosa)"
-                                }
-                            }
-                        },
                         "stock": {
                             "name": "cantidad",
                             "description": "Cambiar la cantidad. Seleccionarás el producto más tarde",
                             "options": {
                                 "stock": {
                                     "name": "nueva-cantidad",
-                                    "description": "La nueva cantidad del producto (-1 para ilimitado)"
+                                    "description": "La nueva cantidad del producto (déjalo vacío para eliminarlo)"
                                 }
                             }
                         }
@@ -307,7 +265,7 @@ export const locale = {
                             "options": {
                                 "description": {
                                     "name": "nueva-descripcion",
-                                    "description": "La nueva descripción de la tienda"
+                                    "description": "La nueva descripción de la tienda (déjalo vacío para eliminarlo)"
                                 }
                             }
                         },
@@ -317,7 +275,7 @@ export const locale = {
                             "options": {
                                 "emoji": {
                                     "name": "nuevo-emoji",
-                                    "description": "El nuevo emoji de la tienda"
+                                    "description": "El nuevo emoji de la tienda (déjalo vacío para eliminarlo)"
                                 }
                             }
                         },
@@ -327,13 +285,9 @@ export const locale = {
                             "options": {
                                 "role": {
                                     "name": "nuevo-rol",
-                                    "description": "El nuevo rol al que estará reservada la tienda. Déjalo vacío para eliminarlo"
+                                    "description": "El nuevo rol al que estará reservada la tienda (déjalo vacío para eliminarlo)"
                                 }
                             }
-                        },
-                        "currency": {
-                            "name": "moneda",
-                            "description": "Cambiar la moneda. Seleccionarás la tienda más tarde"
                         }
                     }
                 }
