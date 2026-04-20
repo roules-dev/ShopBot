@@ -236,7 +236,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             return "❌ error displaying price"
         }    
 
-        return formatPrice(applyQuantityHydrated(price, this.quantity), this.discount)
+        return price.size > 0 ? formatPrice(applyQuantityHydrated(price, this.quantity), this.discount) : t("userInterfaces.buy.messages.free")
     }
 
 

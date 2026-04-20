@@ -374,7 +374,8 @@ export const locale = {
                     "noProduct": "There is no product available here",
                     "xProductsLeft": "{x} left",
                     "outOfStock": "Out of stock",
-                    "price": "Price:"
+                    "price": "Price:",
+                    "free": "Free"
                 }
             },
             "components": {
@@ -387,6 +388,7 @@ export const locale = {
                 "default": "Buy {quantity}{product} from {shop}",
                 "discountCode": "Discount code:",
                 "price": "for {price}",
+                "free": "Free",
                 "success": "You successfully bought {quantity}{product} in {shop} for {price}"
             },
             "errorMessages": {

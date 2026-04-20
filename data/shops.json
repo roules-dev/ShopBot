@@ -142,9 +142,7 @@
             },
             "PsxJxrXb0MK6pCRDSoR_y": {
                 "itemId": "m3AmJIuCmlpXYh89Kf-HZ",
-                "price": {
-                    "0f2SNbp60vAwWjhKjRR0u": 0
-                },
+                "price": {},
                 "action": {
                     "type": "give-currency",
                     "options": {
