@@ -388,7 +388,7 @@ export const locale = {
                 "default": "Buy {quantity}{product} from {shop}",
                 "discountCode": "Discount code:",
                 "price": "for {price}",
-                "free": "Free",
+                "free": "free",
                 "success": "You successfully bought {quantity}{product} in {shop} for {price}"
             },
             "errorMessages": {

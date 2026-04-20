@@ -31,8 +31,6 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     private member: GuildMember | null = null
 
-    
-
     protected override async predisplay(interaction: UserInterfaceInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
@@ -44,7 +42,10 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         this.selectedShop = { ...firstShopEntry[1], id: firstShopEntry[0] }
 
-        this.member = interaction.member as GuildMember ?? null
+        const member = interaction.member
+        if (!(member instanceof GuildMember)) return false
+
+        this.member = member
 
         return true
     }
@@ -79,8 +80,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             (interaction: ButtonInteraction) => {
                 if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                const buyProductUI = new BuyProductUserInterface(this.selectedShop)
-                return buyProductUI.display(interaction)
+                new BuyProductUserInterface(this.selectedShop).display(interaction)
             }
         )
 
@@ -101,12 +101,12 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         
         
-        const buyButtonEnabled = () => this.selectedShop != null && Object.keys(this.selectedShop.products).length > 0 && !this.isBuyingAllowed()
+        const buyButtonEnabled = () => this.selectedShop != null && Object.keys(this.selectedShop.products).length > 0 && this.isBuyingAllowed()
         buyButton.toggle(buyButtonEnabled())
  
         return [
             createComponent(selectShopMenu),
-            createComponent(buyButton, () => buyButtonEnabled()),
+            createComponent(buyButton, () => buyButton.toggle(buyButtonEnabled())),
             createComponent(showAccountButton)
         ]
     }
@@ -194,7 +194,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const isUserAuthorized = this.member.roles.cache.has(isReserved)
         const isUserAdmin = this.member.permissions.has("Administrator")
 
-        return !isUserAuthorized && !isUserAdmin 
+        return isUserAuthorized || isUserAdmin 
     }
 
 }

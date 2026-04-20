@@ -38,6 +38,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     constructor (selectedShop: Shop & Identifiable<NanoId>) {
         super()
         this.selectedShop = selectedShop
+        this.populateProductSelectMenu()
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
@@ -51,7 +52,8 @@ export class BuyProductUserInterface extends MessageUserInterface {
     protected override getMessage() {
         const discountCodeString = this.discountCode ? `\n${t(`userInterfaces.buy.messages.discountCode`)} ${bold(this.discountCode)}` : ""
 
-        const priceString = this.priceString() != "" ? t(`userInterfaces.buy.messages.price`, { price: this.priceString() }) : ""
+        const priceString = this.priceString()
+        const displayPrice = priceString !== null ? t(`userInterfaces.buy.messages.price`, { price: bold(priceString) }) : ""
 
         const message = t(`userInterfaces.buy.messages.default`, {
             product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
@@ -59,20 +61,17 @@ export class BuyProductUserInterface extends MessageUserInterface {
             shop: bold(formattedEmojiableName(this.selectedShop)),
         })
 
-        return `${message} ${priceString}.${discountCodeString}`
+        return `${message} ${displayPrice}.${discountCodeString}`
     }
 
     protected override initComponents() {
-        const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
-        if (error) throw error
-
         const selectProductMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-product`,
                 placeholder: t("defaultComponents.selectProduct"),
                 time: 120_000,
             },
-            shop.products,
+            new Map<NanoId, Product & Identifiable<NanoId> & Labelled>(),
             (interaction) => this.updateInteraction(interaction),
             (interaction, selected) => {
                 this.selectedProduct = selected
@@ -169,6 +168,22 @@ export class BuyProductUserInterface extends MessageUserInterface {
         ]
     }
 
+    private populateProductSelectMenu() {
+        const [error, shop] = HYDRATOR.fullyHydrateShop(this.selectedShop.id)
+        if (error) throw error
+
+        const productSelectMenu = this.components.get(`${this.id}+select-product`)
+
+        if (!productSelectMenu || 
+            productSelectMenu instanceof ComponentSeparator || 
+            !(productSelectMenu.comp instanceof ExtendedStringSelectMenuComponent)
+            ) {
+                throw new Error("Unexpected Error: Product select menu not found")
+            }
+
+        productSelectMenu.comp.updateMap(shop.products)
+    }
+
     private async handleSetDiscountCodeInteraction(interaction: ButtonInteraction) {
         const modalId = `${this.id}+set-discount-code-modal`
 
@@ -228,7 +243,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
 
     private priceString() {
-        if (!this.selectedProduct) return "No product selected"
+        if (!this.selectedProduct) return null
 
         const [error, price] = HYDRATOR.getHydratedProductPrice(this.selectedProduct)
         if (error) {
@@ -244,14 +259,14 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const productName = formattedEmojiableName(product)
         const shopName = formattedEmojiableName(this.selectedShop)
-        const priceString = this.priceString()
+        const priceString = this.priceString() ?? "❌ error displaying price"
         const discountCodeString = this.discountCode ? this.discountCode : "none"
 
         const message = t(`userInterfaces.buy.messages.success`, { 
             product: bold(productName),
             shop: bold(shopName),
             quantity: quantity > 1 ? `**${quantity}x** ` : "",
-            price: priceString
+            price: bold(priceString)
         })
 
         const appendixString = appendix ? `\n${appendix}` : ""
