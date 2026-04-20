@@ -118,7 +118,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             ` (${t(`userInterfaces.shop.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         const shopEmbed = new EmbedBuilder()
-            .setTitle(`${this.selectedShop.name}`)
+            .setTitle(`${formattedEmojiableName(this.selectedShop)}`)
             .setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
             .setColor(Colors.Gold)
 
@@ -136,7 +136,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
         const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
             ` (${t(`userInterfaces.shop.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
-        shopEmbed.setTitle(`${this.selectedShop.name}`)
+        shopEmbed.setTitle(`${formattedEmojiableName(this.selectedShop)}`)
         shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
 
         shopEmbed.setFields(this.getPageEmbedFields())

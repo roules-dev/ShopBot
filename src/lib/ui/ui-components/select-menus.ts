@@ -1,4 +1,4 @@
-import { validate } from "@/lib/validation.js"
+import { validate } from "@/lib/validation/validation.js"
 import { BrandedSnowflake, SnowflakeSchema } from "@/schemas/utils.js"
 import { ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ComponentType, MessageComponentInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"

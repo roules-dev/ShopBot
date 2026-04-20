@@ -1,3 +1,4 @@
+import { logToDiscord } from "@/app/services/logging.js"
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { processPurchase } from "@/core/services/shops/buy.js"
@@ -19,7 +20,6 @@ import z from "zod"
 import { Product } from "../database/products.types.js"
 import { Shop } from "../database/shops.types.js"
 import { applyQuantityHydrated, formatPrice } from "../services/price.js"
-import { logToDiscord } from "@/app/services/logging.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -56,7 +56,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const message = t(`userInterfaces.buy.messages.default`, {
             product: bold(formattedEmojiableName(this.selectedProduct) || t("defaultComponents.selectProduct")),
             quantity: this.quantity > 1 ? `**${this.quantity}x** ` : "",
-            shop: bold(this.selectedShop.name),
+            shop: bold(formattedEmojiableName(this.selectedShop)),
         })
 
         return `${message} ${priceString}.${discountCodeString}`
@@ -243,7 +243,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private async printAndLogPurchase(interaction: UserInterfaceInteraction, product: Product & Labelled, quantity: number, appendix?: string) {
 
         const productName = formattedEmojiableName(product)
-        const shopName = this.selectedShop.name
+        const shopName = formattedEmojiableName(this.selectedShop)
         const priceString = this.priceString()
         const discountCodeString = this.discountCode ? this.discountCode : "none"
 

@@ -64,7 +64,7 @@
 //             product: nameString,
 //             price: `${this.productPrice!}`,
 //             currency: "[ ]", 
-//             shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
+//             shop: formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop"),
 //             description: descString
 //         })
 
@@ -121,7 +121,7 @@
 
 //         const message = t(`userFlows.productAdd.messages.success`, {
 //             product: "TODO: Item Name",
-//             shop: bold(this.selectedShop.name)
+//             shop: bold(formattedEmojiableName(this.selectedShop))
 //         })
 
 //         return await updateAsSuccessMessage(interaction, message)
@@ -171,7 +171,7 @@
 //                     product: productNameString,
 //                     price: `${this.productPrice!}`,
 //                     currency: this.selectedShop?.currency.name || "[ ]",
-//                     shop: this.selectedShop?.name || t("defaultComponents.selectShop"),
+//                     shop: formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop"),
 //                     description: descString
 //                 })
 
@@ -369,7 +369,7 @@
 
 //         const message = t(`userFlows.productAdd.messages.success`, {
 //             product: product.name,
-//             shop: bold(this.selectedShop.name)
+//             shop: bold(formattedEmojiableName(this.selectedShop))
 //         })
 
 //         const withActionMessage = t(`userFlows.productAdd.messages.withAction`, { action: bold(`${this.productActionType}`) })

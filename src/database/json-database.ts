@@ -1,14 +1,16 @@
-import fs from "fs/promises"
 import { Database } from "@/core/interfaces/database.js"
 import { err, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { MapKey, MapValue } from "@/lib/types/collections.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { AnyStringSchema, RecordSchema } from "@/lib/types/zod.js"
-import { validate } from "@/lib/validation.js"
+import { validate } from "@/lib/validation/validation.js"
 import { PathLike } from "fs"
+import fs from "fs/promises"
 import z from "zod"
-import { DatabaseJsonBody, DatabaseError, ApiError } from "./database.types.js"
+import { ApiError, DatabaseError } from "./database.types.js"
+
+type DatabaseJsonBody = Record<string, unknown>
 
 export class JsonDatabase<
     IdSchema extends AnyStringSchema, 

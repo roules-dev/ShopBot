@@ -11,8 +11,9 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { validate } from "@/lib/validation.js"
+import { validate } from "@/lib/validation/validation.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, roleMention, userMention } from "discord.js"
 import z from "zod"
 import { setAccountCurrencyAmount } from "../services/accounts.services.js"
@@ -71,7 +72,7 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof Account
             `userFlows.accountGive.messages.default`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
+                currency: bold(`[${formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency")}]`), 
                 user: userMention(this.params.target.id) 
             }
         )
@@ -96,7 +97,7 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof Account
             `userFlows.accountGive.messages.success`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                currency: this.selectedCurrency.name, 
+                currency: formattedEmojiableName(this.selectedCurrency), 
                 user: userMention(this.params.target.id) 
             }
         )
@@ -125,7 +126,7 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof Bul
             `userFlows.accountGive.messages.bulkGive`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
+                currency: bold(`[${formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency")}]`), 
                 role: roleMention(this.params.targetRole.id) 
             }
         )
@@ -155,7 +156,7 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof Bul
             `userFlows.accountGive.messages.bulkGiveSuccess`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                currency: this.selectedCurrency.name, 
+                currency: formattedEmojiableName(this.selectedCurrency), 
                 role: roleMention(this.params.targetRole.id) 
             }
         )

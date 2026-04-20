@@ -108,10 +108,6 @@ export class DatabaseError extends Error {
     }
 }
 
-
-export type DatabaseJsonBody = Record<string, unknown>
-
-
 export interface Balance<T> {
     resource: T 
     amount: number

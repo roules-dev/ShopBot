@@ -87,7 +87,7 @@ export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof DiscountCode
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`userFlows.discountCodeCreate.messages.success`, { 
-            shop: bold(this.selectedShop.name), 
+            shop: bold(formattedEmojiableName(this.selectedShop)), 
             code: bold(this.params.code), 
             amount: bold(`${this.params.amount}`)
         })
@@ -197,7 +197,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`userFlows.discountCodeRemove.messages.success`, { 
-            shop: bold(this.selectedShop.name), 
+            shop: bold(formattedEmojiableName(this.selectedShop)), 
             code: bold(this.selectedDiscountCode) 
         })
 

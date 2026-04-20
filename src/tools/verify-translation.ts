@@ -1,6 +1,6 @@
 import { DEFAULT_LOCALE_CODE } from "@/core/i18n/i18n.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { is } from "@/lib/validation.js"
+import { is } from "@/lib/validation/validation.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import z from "zod"
 
@@ -16,7 +16,6 @@ function sameStructure(a: Record<string, unknown>, b: Record<string, unknown>): 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function sameStructureRec(ref: unknown, tested: unknown, path: string[] = []): [boolean, string[]] {
         const pathString = path.join(".")
-
 
         if (typeof ref === "string" && typeof tested === "string") {
 
@@ -38,7 +37,6 @@ function sameStructure(a: Record<string, unknown>, b: Record<string, unknown>): 
         const errors: string[] = []
 
         for (const key in ref) {
-
             if (!Object.prototype.hasOwnProperty.call(tested, key)) {
                 errors.push(`Missing key: ${pathString}.${key}`)
                 continue
@@ -48,6 +46,12 @@ function sameStructure(a: Record<string, unknown>, b: Record<string, unknown>): 
 
             if (!same) {
                 errors.push(...subErrors)
+            }
+        }
+
+        for (const key in tested) {
+            if (!Object.prototype.hasOwnProperty.call(ref, key)) {
+                errors.push(`Extra key: ${pathString}.${key}`)
             }
         }
 

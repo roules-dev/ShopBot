@@ -123,7 +123,7 @@ export class RemoveProductFlow extends UserFlow {
 
         const message = t(`userFlows.productRemove.messages.success`, {
             product: bold(oldProductName),
-            shop: bold(this.selectedShop.name)
+            shop: bold(formattedEmojiableName(this.selectedShop))
         })
 
         return await updateAsSuccessMessage(interaction, message)

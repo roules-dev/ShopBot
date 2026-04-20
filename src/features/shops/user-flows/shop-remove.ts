@@ -8,6 +8,7 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold } from "discord.js"
 import { Shop } from "../database/shops.types.js"
 
@@ -27,7 +28,7 @@ export class ShopRemoveFlow extends UserFlow {
     }
 
     protected override getMessage() {
-        return t(`userFlows.shopRemove.messages.default`, { shop: this.selectedShop?.name || t("defaultComponents.selectShop")})
+        return t(`userFlows.shopRemove.messages.default`, { shop: formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop")})
     }
 
     protected override initComponents() {
@@ -72,7 +73,7 @@ export class ShopRemoveFlow extends UserFlow {
 
         if (error) return await updateAsErrorMessage(interaction, error.message)
 
-        return await updateAsSuccessMessage(interaction, t(`userFlows.shopRemove.messages.success`, { shop: bold(this.selectedShop.name) }))
+        return await updateAsSuccessMessage(interaction, t(`userFlows.shopRemove.messages.success`, { shop: bold(formattedEmojiableName(this.selectedShop)) }))
 
     }
 }

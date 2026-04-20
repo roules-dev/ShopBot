@@ -8,6 +8,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ModalSubmitInteraction } from "discord.js"
 import { Currency } from "../database/currencies.types.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -84,7 +85,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         }
 
         const message = t(`userFlows.currencyRemove.messages.default`, {
-            currency: bold(this.selectedCurrency?.name || t("defaultComponents.selectCurrency"))
+            currency: bold(formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency"))
         })
 
         return message

@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { err, ErrorLike, ok, Result } from "@/lib/error-handling.js"
-import { validate } from "@/lib/validation.js"
+import { validate } from "@/lib/validation/validation.js"
 import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 import z from "zod"
 

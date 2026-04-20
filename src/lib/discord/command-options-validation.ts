@@ -1,6 +1,6 @@
 import { CommandInteractionOptionResolver } from "discord.js"
 import z from "zod"
-import { validate } from "../validation.js"
+import { validate } from "../validation/validation.js"
 
 type InteractionOptions = Omit<CommandInteractionOptionResolver, "getMessage" | "getFocused">
 
@@ -42,7 +42,7 @@ function buildOptionsObject(interactionOptions: InteractionOptions) {
 }
 
 export function validateCommandOptions<
-    T extends z.ZodObject
+    T extends z.ZodType
 >(
     interactionOptions: InteractionOptions, 
     optionsSchema: T

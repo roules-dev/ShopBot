@@ -19,11 +19,12 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
         return "account-ui" 
     }
     
-    protected override readonly modes = {
-        CURRENCIES:"currencies",
-        INVENTORY: "inventory"
-    } as const
-    
+    protected override get modes() {
+        return {
+            CURRENCIES:"currencies",
+            INVENTORY: "inventory"
+        } as const
+    }
     protected override mode: ObjectValues<typeof this.modes> = this.modes.CURRENCIES
     
     protected override embed: EmbedBuilder | null = null

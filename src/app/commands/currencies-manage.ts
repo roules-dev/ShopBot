@@ -1,9 +1,10 @@
 import { t } from "@/core/i18n/i18n.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies.schemas.js"
 import { createCurrencyFlow } from "@/features/currencies/user-flows/currency-create.js"
-import { EDIT_CURRENCY_OPTION } from "@/features/currencies/user-flows/currency-edit.js"
+import { EditCurrencyFlow, EditCurrencyParamsSchema } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 
@@ -34,7 +35,7 @@ export const data = new SlashCommandBuilder()
         .setName("edit")
         .setDescription("Edit a currency")
         .addSubcommand(subcommand => subcommand
-            .setName(EDIT_CURRENCY_OPTION.NAME)
+            .setName("name")
             .setDescription("Change Name. You will select the currency later")        
             .addStringOption(option => option
                 .setName("name")
@@ -45,7 +46,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EDIT_CURRENCY_OPTION.EMOJI)
+            .setName("emoji")
             .setDescription("Change Emoji. You will select the currency later")
             .addStringOption(option => option
                 .setName("emoji")
@@ -71,11 +72,11 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         }
         default:
             if (subCommandGroup == "edit") {
-                throw new Error("Not implemented yet")
-                // TODO: Currency Edit
-                // const editCurrencyFlow = new EditCurrencyFlow()
-                // editCurrencyFlow.start(interaction)
-                // break
+                const [error, options] = validateCommandOptions(interaction.options, EditCurrencyParamsSchema)
+                if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+                new EditCurrencyFlow(options).start(interaction)
+                return
             }
 
             await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))

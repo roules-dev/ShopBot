@@ -5,6 +5,7 @@ import { getCurrencies } from "@/core/services/currencies/currencies.services.js
 import { NanoId } from "@/database/database.types.js"
 import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
@@ -15,7 +16,7 @@ import { SnowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts.services.js"
-import { err, ok } from "@/lib/error-handling.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export const AccountTakeParamsSchema = z.object({
@@ -42,7 +43,7 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof AccountTakeParamsSc
             `userFlows.accountTake.messages.default`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                currency: bold(`[${this.selectedCurrency?.name || t("defaultComponents.selectCurrency")}]`), 
+                currency: bold(`[${formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency")}]`), 
                 user: userMention(this.params.target.id) 
             }
         )
@@ -141,7 +142,7 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof AccountTakeParamsSc
             `userFlows.accountTake.messages.success`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                currency: this.selectedCurrency.name, 
+                currency: formattedEmojiableName(this.selectedCurrency), 
                 user: userMention(this.params.target.id) 
             }
         )

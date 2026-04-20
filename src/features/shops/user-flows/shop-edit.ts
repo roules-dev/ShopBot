@@ -8,6 +8,7 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { Shop } from "../database/shops.types.js"
 
@@ -78,7 +79,7 @@ export const EDIT_SHOP_OPTIONS = {
 
 //     protected override getMessage() {
 //         const message = t(`userFlows.shopEdit.messages.default`, { 
-//             shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
+//             shop: bold(formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop")),
 //             option: bold(this.getUpdateOptionName(this.updateOption!)),
 //             value: bold(`${this.updateOptionValueDisplay}`)
 //         })
@@ -125,7 +126,7 @@ export const EDIT_SHOP_OPTIONS = {
 //         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 //         if (!this.updateOption || !this.updateOptionValue || !this.updateOptionValueDisplay) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-//         const oldName = this.selectedShop?.name || ""
+//         const oldName = formattedEmojiableName(this.selectedShop) || ""
 
 //         // TODO needs refactoring
 //         const [error] = await updateShop(this.selectedShop.id, { [getShopOptionName(this.updateOption)]: this.updateOptionValue })
@@ -210,7 +211,7 @@ export class ShopReorderFlow extends UserFlow {
 
     protected override getMessage() {
         const message = t(`userFlows.shopReorder.messages.default`, { 
-            shop: bold(this.selectedShop?.name || t("defaultComponents.selectShop")),
+            shop: bold(formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop")),
             position: bold(`${this.selectedPosition}` || t(`userFlows.shopReorder.components.selectPosition`))
         })
 
@@ -300,7 +301,7 @@ export class ShopReorderFlow extends UserFlow {
         if (error) return updateAsErrorMessage(interaction, error.message)
 
         const message = t(`userFlows.shopReorder.messages.success`, {
-            shop: bold(this.selectedShop.name),
+            shop: bold(formattedEmojiableName(this.selectedShop)),
             position: bold(`${this.selectedPosition}`)
         })
 

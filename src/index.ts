@@ -12,7 +12,7 @@ function isTsx() {
 
 if (process.env["NODE_ENV"] === "development") {
 	PrettyLog.warn("Development mode enabled")
-	PrettyLog.warn("Errors won't be caught by the error handler")
+	PrettyLog.warn("Unhandled errors won't be caught by the error handler")
 }
 else {
 	process.on("unhandledRejection", (reason: unknown) => PrettyLog.error(`${reason}`))
