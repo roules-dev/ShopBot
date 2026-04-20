@@ -2,7 +2,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { createShopFlow } from "@/features/shops/user-flows/shop-create.js"
 import { DiscountCodeCreateFlow, DiscountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
-import { EDIT_SHOP_OPTIONS, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
+import { ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -49,7 +49,7 @@ export const data = new SlashCommandBuilder()
         .setName("edit")
         .setDescription("Edit a shop")
         .addSubcommand(subcommand => subcommand
-            .setName(EDIT_SHOP_OPTIONS.Name)
+            .setName("name")
             .setDescription("Change Name. You will select the shop later")
             .addStringOption(option => option
                 .setName("name")
@@ -60,7 +60,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EDIT_SHOP_OPTIONS.Description)
+            .setName("description")
             .setDescription("Change Description. You will select the shop later")
             .addStringOption(option => option
                 .setName("description")
@@ -70,7 +70,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EDIT_SHOP_OPTIONS.Emoji)
+            .setName("emoji")
             .setDescription("Change Emoji. You will select the shop later")
             .addStringOption(option => option
                 .setName("emoji")
@@ -78,7 +78,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName(EDIT_SHOP_OPTIONS.ReservedTo)
+            .setName("reserved-to-role")
             .setDescription("Change the role the shop is reserved to. You will select the shop later")
             .addRoleOption(option => option
                 .setName("role")

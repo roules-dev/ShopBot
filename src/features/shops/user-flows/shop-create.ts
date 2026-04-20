@@ -34,7 +34,5 @@ export async function createShopFlow(interaction: ChatInputCommandInteraction) {
     }
 
     const shopName = bold(formattedEmojiableName(shop))
-    await replySuccessMessage(interaction, t("userFlows.shopCreate.messages.success", { shop: shopName, currency: "TODO; no more currency for shops" }))
-    // TODO : update translations
-
+    await replySuccessMessage(interaction, t("userFlows.shopCreate.messages.success", { shop: shopName }))
 }

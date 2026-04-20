@@ -72,6 +72,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             if (interaction.options.getString("action") != null) {
                 // const addActionProductFlow = new AddActionProductFlow()
                 // addActionProductFlow.start(interaction)
+                // TODO add action product
                 await replyErrorMessage(interaction, "Not implemented yet")
                 break
             }

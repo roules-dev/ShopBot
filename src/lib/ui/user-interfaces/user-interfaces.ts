@@ -147,7 +147,7 @@ export abstract class MessageUserInterface extends UserInterface {
     }
 }
 
-// TODO : same thing as for components but for embeds where they get intialized in the constructor
+//* do the same thing as for components but for embeds where they get intialized in the constructor ?
 export abstract class EmbedUserInterface extends MessageUserInterface {
     protected abstract embed: EmbedBuilder | null
 

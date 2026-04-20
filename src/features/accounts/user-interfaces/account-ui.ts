@@ -58,7 +58,6 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     }
 
     protected override initEmbeds(interaction: UserInterfaceInteraction) {
-        this.mode = this.modes.CURRENCIES
         const currenciesEmbed = new EmbedBuilder()
             .setTitle(t(`userInterfaces.account.embeds.account.title`, { user: this.user.displayName }))
             .setColor(Colors.Gold)
@@ -66,7 +65,6 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
             .setFields(this.getPageEmbedFields())
 
 
-        this.mode = this.modes.INVENTORY
         const inventoryEmbed = new EmbedBuilder()
             .setTitle(t(`userInterfaces.account.embeds.inventory.title`, { user: this.user.displayName }))
             .setColor(Colors.DarkRed)

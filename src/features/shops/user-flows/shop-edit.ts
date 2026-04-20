@@ -17,12 +17,6 @@ import { Shop } from "../database/shops.types.js"
 //! --------------------------------
 
 
-export const EDIT_SHOP_OPTIONS = {
-    Name: "name",
-    Description: "description",
-    Emoji: "emoji",
-    ReservedTo: "reserved-to-role"
-} as const
 
 // type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 

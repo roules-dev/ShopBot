@@ -68,5 +68,6 @@ export const data = new SlashCommandBuilder()
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
 export async function execute(_client: Client, interaction: ChatInputCommandInteraction){
+    // TODO : Item Create, Remove and Edit Flows
     await replyErrorMessage(interaction, "Not implemented yet")
 }

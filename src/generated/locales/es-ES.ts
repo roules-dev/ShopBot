@@ -522,19 +522,8 @@ export const locale = {
             }
         },
         "shopCreate": {
-            "errorMessages": {
-                "cantCreateShop": "No se puede crear una nueva tienda"
-            },
             "messages": {
-                "default": "Crear la tienda {shop} con la moneda {currency}",
-                "success": "Has creado con éxito la tienda {shop} con la moneda {currency}.\n-# Usa `/shops-manage remove` para eliminarla"
-            },
-            "components": {
-                "submitButton": "Crear la tienda",
-                "changeShopNameButton": "Cambiar el nombre",
-                "changeShopEmojiButton": "Cambiar el emoji",
-                "editNameModalTitle": "Nombre de la tienda",
-                "editEmojiModalTitle": "Emoji de la tienda"
+                "success": "Has creado con éxito la tienda {shop}.\n-# Usa `/shops-manage remove` para eliminarla"
             }
         },
         "shopRemove": {

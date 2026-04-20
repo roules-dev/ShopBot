@@ -550,19 +550,8 @@ export const locale = {
             }
         },
         "shopCreate": {
-            "errorMessages": {
-                "cantCreateShop": "Can't create a new shop."
-            },
             "messages": {
-                "default": "Create the shop {shop} with currency {currency}",
-                "success": "You successfully created the shop {shop} with currency {currency}. \n-# Use `/shops-manage remove` to remove it"
-            },
-            "components": {
-                "submitButton": "Create shop",
-                "changeShopNameButton": "Change shop name",
-                "changeShopEmojiButton": "Change shop emoji",
-                "editNameModalTitle": "Shop name",
-                "editEmojiModalTitle": "Shop emoji"
+                "success": "You successfully created the shop {shop}. \n-# Use `/shops-manage remove` to remove it"
             }
         },
         "shopRemove": {
