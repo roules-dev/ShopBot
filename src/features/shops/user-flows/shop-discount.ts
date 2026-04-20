@@ -115,7 +115,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         return ok(true)
     }
 
-    protected override getMessage() { // TODO: handle the case of a shop with no discount codes
+    protected override getMessage() {
         if (this.selectedShop == null) {
             return t(`userFlows.discountCodeRemove.messages.shopSelectStage`, {
                 shop: bold(t("defaultComponents.selectShop"))

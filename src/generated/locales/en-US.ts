@@ -111,7 +111,7 @@ export const locale = {
                             "name": "name",
                             "description": "Change name. You will select the currency later",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "new-name",
                                     "description": "The new name of the currency"
                                 }
@@ -121,7 +121,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "Change Emoji. You will select the currency later",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "new-emoji",
                                     "description": "The new emoji of the currency (if you just want to remove it write anything)"
                                 }
@@ -177,7 +177,7 @@ export const locale = {
                             "name": "name",
                             "description": "Change name. You will select the product later",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "new-name",
                                     "description": "The new name of the product"
                                 }
@@ -187,7 +187,7 @@ export const locale = {
                             "name": "description",
                             "description": "Change description. You will select the product later",
                             "options": {
-                                "new-description": {
+                                "description": {
                                     "name": "new-description",
                                     "description": "The new description of the product"
                                 }
@@ -197,7 +197,7 @@ export const locale = {
                             "name": "price",
                             "description": "Change price. You will select the product later",
                             "options": {
-                                "new-price": {
+                                "price": {
                                     "name": "new-price",
                                     "description": "The new price of the product"
                                 }
@@ -207,7 +207,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "Change emoji. You will select the product later",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "new-emoji",
                                     "description": "The new emoji of the product (if you just want to remove it write anything)"
                                 }
@@ -217,7 +217,7 @@ export const locale = {
                             "name": "stock",
                             "description": "Change stock. You will select the product later",
                             "options": {
-                                "new-stock": {
+                                "stock": {
                                     "name": "new-stock",
                                     "description": "The new stock of the product (-1 for unlimited)"
                                 }
@@ -295,7 +295,7 @@ export const locale = {
                             "name": "name",
                             "description": "Change name. You will select the shop later",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "new-name",
                                     "description": "The new name of the shop"
                                 }
@@ -305,7 +305,7 @@ export const locale = {
                             "name": "description",
                             "description": "Change description. You will select the shop later",
                             "options": {
-                                "new-description": {
+                                "description": {
                                     "name": "new-description",
                                     "description": "The new description of the shop"
                                 }
@@ -315,7 +315,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "Change emoji. You will select the shop later",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "new-emoji",
                                     "description": "The new emoji of the shop"
                                 }
@@ -325,7 +325,7 @@ export const locale = {
                             "name": "reserved-to-role",
                             "description": "Change the role the shop is reserved to. You will select the shop later",
                             "options": {
-                                "new-role": {
+                                "role": {
                                     "name": "new-role",
                                     "description": "The new role the shop will be reserved to. Leave empty to delete"
                                 }

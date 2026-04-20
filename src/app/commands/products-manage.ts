@@ -15,14 +15,12 @@ export const data = new SlashCommandBuilder()
             .setName("price")
             .setDescription("The price of the product")
             .setRequired(true)
-            .setMaxValue(99999999)
             .setMinValue(0)
         )
         .addIntegerOption(option => option
             .setName("stock")
             .setDescription("The available stock for the product")
             .setRequired(false)
-            .setMaxValue(99999999)
             .setMinValue(1)
         )
         .addStringOption(option => option
@@ -46,10 +44,9 @@ export const data = new SlashCommandBuilder()
             .setName("price")
             .setDescription("Change Price. You will select the product later")
             .addNumberOption(option => option
-                .setName("new-price")
+                .setName("price")
                 .setDescription("The new price of the product")
                 .setRequired(true)
-                .setMaxValue(99999999)
                 .setMinValue(0)
             )
         )
@@ -57,11 +54,10 @@ export const data = new SlashCommandBuilder()
             .setName("stock")
             .setDescription("Change Stock. You will select the product later")
             .addIntegerOption(option => option
-                .setName("new-stock")
-                .setDescription("The new stock of the product (-1 for unlimited)")
-                .setRequired(true)
-                .setMaxValue(99999999)
-                .setMinValue(-1)
+                .setName("stock")
+                .setDescription("The new stock of the product (leave empty for unlimited)")
+                .setRequired(false)
+                .setMinValue(0)
             )
         )
     )
@@ -80,7 +76,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 break
             }
             throw new Error("Not implemented yet")
-            // TODO
+            // TODO : Product Add
             // new AddProductFlow().start(interaction)
             // break
 
@@ -94,6 +90,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 // const editProductFlow = new EditProductFlow()
                 // editProductFlow.start(interaction)
                 await replyErrorMessage(interaction, "Not implemented yet")
+                // TODO : Product Edit
                 
                 break
             }

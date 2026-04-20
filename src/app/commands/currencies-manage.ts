@@ -37,7 +37,7 @@ export const data = new SlashCommandBuilder()
             .setName(EDIT_CURRENCY_OPTION.NAME)
             .setDescription("Change Name. You will select the currency later")        
             .addStringOption(option => option
-                .setName("new-name")
+                .setName("name")
                 .setDescription("The new name of the currency")
                 .setRequired(true)
                 .setMaxLength(CURRENCY_NAME_MAX_LENGTH)
@@ -48,9 +48,9 @@ export const data = new SlashCommandBuilder()
             .setName(EDIT_CURRENCY_OPTION.EMOJI)
             .setDescription("Change Emoji. You will select the currency later")
             .addStringOption(option => option
-                .setName("new-emoji")
-                .setDescription("The new emoji of the currency (if you just want to remove it write anything)")
-                .setRequired(true)
+                .setName("emoji")
+                .setDescription("The new emoji of the currency (leave empty to remove)")
+                .setRequired(false)
             )
         )
     )
@@ -72,7 +72,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         default:
             if (subCommandGroup == "edit") {
                 throw new Error("Not implemented yet")
-                // TODO
+                // TODO: Currency Edit
                 // const editCurrencyFlow = new EditCurrencyFlow()
                 // editCurrencyFlow.start(interaction)
                 // break

@@ -10,15 +10,13 @@ import { applyQuantityAndDiscount } from "@/features/shops/services/price.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { NanoId } from "@/database/database.types.js"
 
-// TODO : once implemented remove return type
 export async function processPurchase(
     member: GuildMember, 
     shop: Shop & Identifiable<NanoId>, 
     product: Product & Identifiable<NanoId>, 
     quantity: number, 
     discount: number
-)//: Promise<Result<string, ErrorLike<"ProductNoLongerAvailable"> | ErrorLike<"NotAllowedToBuy"> | { name: "NotEnoughMoney", message: string, currencyName: string } | ErrorLike<"ApiError"> | ErrorLike<"DatabaseError">>> {
-{
+) {
     if (!isMemberAllowedToBuy(member, shop)) {
         return err({ name: "NotAllowedToBuy" })
     }
@@ -50,6 +48,7 @@ export async function processPurchase(
     const [error3] = await addCurrenciesAmounts(accountId, price, -1)
     if (error3) return err(error3)
     
+    // TODO: execute product action on purchase
     // if (product.action != undefined) {
     //     const [error4, actionMessage] = await executeActionProduct(product.action, member)
     //     if (error4) return err(error4)

@@ -111,7 +111,7 @@ export const locale = {
                             "name": "nom",
                             "description": "Changer le nom. Vous sélectionnerez la devise plus tard",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "nouveau-nom",
                                     "description": "Le nouveau nom de la devise"
                                 }
@@ -121,7 +121,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "Changer l'emoji. Vous sélectionnerez la devise plus tard",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "nouvel-emoji",
                                     "description": "Le nouvel emoji de la devise (si vous voulez juste le supprimer, écrivez n'importe quoi)"
                                 }
@@ -177,7 +177,7 @@ export const locale = {
                             "name": "nom",
                             "description": "Changer le nom. Vous sélectionnerez le produit plus tard",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "nouveau-nom",
                                     "description": "Le nouveau nom du produit"
                                 }
@@ -187,7 +187,7 @@ export const locale = {
                             "name": "description",
                             "description": "Changer la description. Vous sélectionnerez le produit plus tard",
                             "options": {
-                                "new-description": {
+                                "description": {
                                     "name": "nouvelle-description",
                                     "description": "La nouvelle description du produit"
                                 }
@@ -197,7 +197,7 @@ export const locale = {
                             "name": "prix",
                             "description": "Changer le prix. Vous sélectionnerez le produit plus tard",
                             "options": {
-                                "new-price": {
+                                "price": {
                                     "name": "nouveau-prix",
                                     "description": "Le nouveau prix du produit"
                                 }
@@ -207,7 +207,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "Changer l'emoji. Vous sélectionnerez le produit plus tard",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "nouvel-emoji",
                                     "description": "Le nouvel emoji du produit (si vous voulez juste le supprimer, écrivez n'importe quoi)"
                                 }
@@ -217,7 +217,7 @@ export const locale = {
                             "name": "stock",
                             "description": "Changer le stock. Vous sélectionnerez le produit plus tard",
                             "options": {
-                                "new-stock": {
+                                "stock": {
                                     "name": "nouveau-stock",
                                     "description": "Le nouveau stock du produit (-1 pour illimité)"
                                 }
@@ -295,7 +295,7 @@ export const locale = {
                             "name": "nom",
                             "description": "Changer le nom. Vous sélectionnerez la boutique plus tard",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "nouveau-nom",
                                     "description": "Le nouveau nom de la boutique"
                                 }
@@ -305,7 +305,7 @@ export const locale = {
                             "name": "description",
                             "description": "Changer la description. Vous sélectionnerez la boutique plus tard",
                             "options": {
-                                "new-description": {
+                                "description": {
                                     "name": "nouvelle-description",
                                     "description": "La nouvelle description de la boutique"
                                 }
@@ -315,7 +315,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "Changer l'emoji. Vous sélectionnerez la boutique plus tard",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "nouvel-emoji",
                                     "description": "Le nouvel emoji de la boutique"
                                 }
@@ -325,7 +325,7 @@ export const locale = {
                             "name": "reservee-au-role",
                             "description": "Changer le rôle auquel la boutique est réservée. Vous sélectionnerez la boutique plus tard",
                             "options": {
-                                "new-role": {
+                                "role": {
                                     "name": "nouveau-role",
                                     "description": "Le nouveau rôle auquel la boutique sera réservée. Laissez vide pour supprimer"
                                 }

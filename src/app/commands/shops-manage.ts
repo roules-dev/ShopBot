@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { createShopFlow } from "@/features/shops/user-flows/shop-create.js"
-import { DiscountCodeRemoveFlow, DiscountCodeCreateParamsSchema, DiscountCodeCreateFlow } from "@/features/shops/user-flows/shop-discount.js"
+import { DiscountCodeCreateFlow, DiscountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
 import { EDIT_SHOP_OPTIONS, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
@@ -52,7 +52,7 @@ export const data = new SlashCommandBuilder()
             .setName(EDIT_SHOP_OPTIONS.Name)
             .setDescription("Change Name. You will select the shop later")
             .addStringOption(option => option
-                .setName("new-name")
+                .setName("name")
                 .setDescription("The new name of the shop")
                 .setRequired(true)
                 .setMaxLength(SHOP_NAME_MAX_LENGTH)
@@ -63,9 +63,8 @@ export const data = new SlashCommandBuilder()
             .setName(EDIT_SHOP_OPTIONS.Description)
             .setDescription("Change Description. You will select the shop later")
             .addStringOption(option => option
-                .setName("new-description")
-                .setRequired(true)
-                .setDescription("The new description of the shop")
+                .setName("description")
+                .setDescription("The new description of the shop (leave empty to remove)")
                 .setMaxLength(SHOP_DESCRIPTION_MAX_LENGTH)
                 .setMinLength(1)
             )
@@ -74,17 +73,16 @@ export const data = new SlashCommandBuilder()
             .setName(EDIT_SHOP_OPTIONS.Emoji)
             .setDescription("Change Emoji. You will select the shop later")
             .addStringOption(option => option
-                .setName("new-emoji")
-                .setDescription("The new emoji of the shop")
-                .setRequired(true)
+                .setName("emoji")
+                .setDescription("The new emoji of the shop (leave empty to remove)")
             )
         )
         .addSubcommand(subcommand => subcommand
             .setName(EDIT_SHOP_OPTIONS.ReservedTo)
             .setDescription("Change the role the shop is reserved to. You will select the shop later")
             .addRoleOption(option => option
-                .setName("new-role")
-                .setDescription("The new tole the shop will be reserved to. Leave empty to delete")
+                .setName("role")
+                .setDescription("The new tole the shop will be reserved to (leave empty to remove)")
             )
         )
     )
@@ -142,7 +140,8 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 // editShopFlow.start(interaction)
                 // break
                 await replyErrorMessage(interaction, "Not implemented yet")
-                // TODO
+                // TODO : Shop Edit
+                return
             }
 
             await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))

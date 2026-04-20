@@ -34,7 +34,7 @@ export class RemoveProductFlow extends UserFlow {
         return ok(true)
     }
 
-    protected getMessage() { // TODO : handle the case of a shop with no products
+    protected getMessage() {
         if (this.selectedShop == null) {
             return t(`userFlows.productRemove.messages.shopSelectStage`, {shop: bold(t("defaultComponents.selectShop"))})
         }

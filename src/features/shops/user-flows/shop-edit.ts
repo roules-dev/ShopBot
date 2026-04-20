@@ -196,8 +196,6 @@ export class ShopReorderFlow extends UserFlow {
     private selectedShop: Shop & Identifiable<NanoId> | null = null
     private selectedPosition: number | null = null
 
-    
-
     public override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
