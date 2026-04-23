@@ -2,7 +2,7 @@ import { NanoId } from "@/database/database.types.js"
 import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
 import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
 import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js"
-import { ProductActionSchema, ProductRawSchema } from "@/features/shops/schemas/products.schemas.js"
+import { productActionSchema, ProductRawSchema } from "@/features/shops/schemas/products.schemas.js"
 import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { validate } from "@/lib/validation/validation.js"
@@ -115,11 +115,11 @@ async function migrateShops() {
                 item = newProductWithoutPriceWithoutIdWithoutStock
             }
 
-            let action: z.infer<typeof ProductActionSchema> | undefined | null = undefined
+            let action: z.infer<typeof productActionSchema> | undefined | null = undefined
             if ("action" in newProductWithoutPriceWithoutId) {
                 const { action: productAction, ...newProductWithoutPriceWithoutIdWithoutAction } = newProductWithoutPriceWithoutId
                 const { type, options } = productAction
-                const [error, actionParsed] = validate(ProductActionSchema, { kind: type, options })
+                const [error, actionParsed] = validate(productActionSchema, { kind: type, options })
                 if (error) {
                     log(() => PrettyLog.warn(`Error parsing action of product ${productId} in shop ${shopId}\n${z.prettifyError(error)}`))
                 } else {

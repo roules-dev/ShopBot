@@ -1,14 +1,15 @@
+import { NanoId } from "@/database/database.types.js"
 import { addCurrenciesAmounts, missingCurrenciesFor, setAccountItemAmount } from "@/features/accounts/services/accounts.services.js"
+import { productActions } from "@/features/shops/data/product-actions/index.js"
 import { Product } from "@/features/shops/database/products.types.js"
 import { Shop } from "@/features/shops/database/shops.types.js"
+import { applyQuantityAndDiscount } from "@/features/shops/services/price.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
 import { GuildMember } from "discord.js"
 import { getOrCreateAccount } from "../accounts/accounts.services.js"
 import { updateProduct } from "./products.services.js"
-import { applyQuantityAndDiscount } from "@/features/shops/services/price.js"
-import { Identifiable } from "@/lib/types/core.js"
-import { NanoId } from "@/database/database.types.js"
 
 export async function processPurchase(
     member: GuildMember, 
@@ -49,12 +50,12 @@ export async function processPurchase(
     if (error3) return err(error3)
     
     // TODO: execute product action on purchase
-    // if (product.action != undefined) {
-    //     const [error4, actionMessage] = await executeActionProduct(product.action, member)
-    //     if (error4) return err(error4)
+    if (product.action != undefined) {
+        const [error4, actionMessage] = await productActions[product.action.kind].execute(member, product.action.options)
+        if (error4) return err(error4)
 
-    //     return ok(actionMessage)
-    // }
+        return ok({ quantity: actualQuantity, message: actionMessage })
+    }
 
     const userProductAmount = account.inventory[product.itemId] || 0
     const [error5] = await setAccountItemAmount(accountId, product.itemId, userProductAmount + actualQuantity)
@@ -80,46 +81,3 @@ function isMemberAllowedToBuy(member: GuildMember, shop: Shop) {
 
     return (member.roles.cache.has(shop.reservedTo) || member.permissions.has("Administrator"))
 }
-
-
-// async function executeActionProduct(action: ProductAction, member: GuildMember) {
-//     let actionMessage = ""
-
-//     const actionType = action.type
-
-//     switch (actionType) {
-//         case "give-role": {
-//             const roleId = action.options.roleId
-
-//             member.roles.add(roleId)
-
-//             actionMessage = t(
-//                 `userInterfaces.buy.actionProducts.giveRole.message`, 
-//                 { role: bold(roleMention(roleId)) }
-//             )
-//             break
-//         }
-//         case "give-currency": {
-//             const { currencyId, amount } = action.options
-
-//             const [error, account] = await getOrCreateAccount(member.id)
-//             if (error) return err(error)
-
-//             const userCurrencyAmount = account.currencies.get(currencyId)?.amount || 0
-
-//             const [error2, res] = await setAccountCurrencyAmount(member.id, currencyId as BrandedNanoId, userCurrencyAmount + amount)
-//             if (error2) return err(error2)
-
-//             actionMessage = t(
-//                 `userInterfaces.buy.actionProducts.giveCurrency.message`, 
-//                 { currency: bold(res.currency.name), amount: bold(`${amount}`) }
-//             )
-
-//             break
-//         }
-//         default:
-//             assertNeverReached(actionType)
-//     }
-
-//     return ok(actionMessage)
-// }
