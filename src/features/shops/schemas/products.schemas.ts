@@ -1,15 +1,15 @@
 import { SnowflakeSchema, NanoIdSchema } from "@/schemas/utils.js"
 import z from "zod"
 
-export const ProductActionSchema = z.discriminatedUnion("type", [
+export const ProductActionSchema = z.discriminatedUnion("kind", [
     z.object({ 
-        type: z.literal("give-role"),
+        kind: z.literal("give-role"),
         options: z.object({
             roleId: SnowflakeSchema
         })
     }),
     z.object({
-        type: z.literal("give-currency"),
+        kind: z.literal("give-currency"),
         options: z.object({
             currencyId: NanoIdSchema,
             amount: z.number().min(0)

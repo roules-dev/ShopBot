@@ -336,8 +336,8 @@ export const locale = {
                     "toggleOff": "Disable"
                 },
                 "selector": {
-                    "title": "Select {type} for {name}",
-                    "types": {
+                    "title": "Select {kind} for {name}",
+                    "kinds": {
                         "role": "a role",
                         "user": "a user",
                         "channel": "a channel",

@@ -335,8 +335,8 @@ export const locale = {
                     "toggleOff": "Desactivar"
                 },
                 "selector": {
-                    "title": "Seleccionar {type} para {name}",
-                    "types": {
+                    "title": "Seleccionar {kind} para {name}",
+                    "kinds": {
                         "role": "un rol",
                         "user": "un usuario",
                         "channel": "un canal",

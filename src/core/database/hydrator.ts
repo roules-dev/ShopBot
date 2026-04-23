@@ -51,16 +51,16 @@ export class Hydrator {
     public getHydratedProductAction(product: Product) {
         if (!product.action) return err("NoActionToHydrate")
         
-        const actionType = product.action.type
+        const actionKind = product.action.kind
         
-        switch (actionType) {
+        switch (actionKind) {
             case "give-currency": {
                 const currencyId = product.action.options.currencyId
                 const currency = this.currenciesDb.get(currencyId)
                 if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
                 return ok({
-                    type: actionType,
+                    kind: actionKind,
                     options: {
                         ...product.action.options,
                         currency
@@ -71,7 +71,7 @@ export class Hydrator {
                 return ok(product.action)
 
             default:
-                assertNeverReached(actionType)
+                assertNeverReached(actionKind)
         }
     }
 

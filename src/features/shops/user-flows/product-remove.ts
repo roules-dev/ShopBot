@@ -71,7 +71,6 @@ export class RemoveProductFlow extends UserFlow {
             new Map<NanoId, Product & Identifiable<NanoId> & Labelled>(), 
             (interaction) => this.updateInteraction(interaction),
             (interaction, selected) => {
-                console.log(selected)
                 this.selectedProduct = selected
 
                 this.updateInteraction(interaction)

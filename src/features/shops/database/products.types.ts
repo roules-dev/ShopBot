@@ -4,4 +4,4 @@ import { ProductRawSchema, ProductActionSchema } from "../schemas/products.schem
 export type Product = z.infer<typeof ProductRawSchema>
 
 export type ProductAction = z.infer<typeof ProductActionSchema>
-export type ProductActionType = ProductAction["type"]
+export type ProductActionType = ProductAction["kind"]
