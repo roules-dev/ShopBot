@@ -336,7 +336,7 @@ export const locale = {
                 },
                 "selector": {
                     "title": "Sélectionner {type} pour {name}",
-                    "types": {
+                    "kinds": {
                         "role": "un rôle",
                         "user": "un utilisateur",
                         "channel": "un salon",

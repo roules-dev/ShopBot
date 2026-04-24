@@ -2,19 +2,19 @@
     "logChannelId": {
         "name": "Log Channel",
         "id": "logChannelId",
-        "type": "channelId",
+        "kind": "channelId",
         "value": "1332836427238739988"
     },
     "activityMessage": {
         "name": "Activity Message",
         "id": "activityMessage",
-        "type": "string",
+        "kind": "string",
         "value": "Lushe"
     },
     "activityType": {
         "name": "Activity Type",
         "id": "activityType",
-        "type": "enum",
+        "kind": "enum",
         "value": "Listening",
         "options": [
             {
@@ -42,7 +42,7 @@
     "language": {
         "name": "Language",
         "id": "language",
-        "type": "enum",
+        "kind": "enum",
         "value": "en-US",
         "options": [
             {

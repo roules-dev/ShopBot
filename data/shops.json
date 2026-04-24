@@ -2,7 +2,7 @@
     "h3G8N_1F2LzI1T29bjdxJ": {
         "name": "Bookshop",
         "emoji": "📖",
-        "description": "The small bookshop in the downtown. Here you can buy and read books of all types.",
+        "description": "The small bookshop in the downtown. Here you can buy and read books of all kinds.",
         "discountCodes": {
             "FUZE50": 50,
             "GREAT99": 99
@@ -121,7 +121,7 @@
                     "0f2SNbp60vAwWjhKjRR0u": 5400
                 },
                 "action": {
-                    "type": "give-role",
+                    "kind": "give-role",
                     "options": {
                         "roleId": "1197195793191420035"
                     }
@@ -133,7 +133,7 @@
                     "0f2SNbp60vAwWjhKjRR0u": 51
                 },
                 "action": {
-                    "type": "give-currency",
+                    "kind": "give-currency",
                     "options": {
                         "currencyId": "0f2SNbp60vAwWjhKjRR0u",
                         "amount": 50
@@ -144,7 +144,7 @@
                 "itemId": "m3AmJIuCmlpXYh89Kf-HZ",
                 "price": {},
                 "action": {
-                    "type": "give-currency",
+                    "kind": "give-currency",
                     "options": {
                         "currencyId": "0f2SNbp60vAwWjhKjRR0u",
                         "amount": 10000
@@ -157,7 +157,7 @@
                     "0f2SNbp60vAwWjhKjRR0u": 500
                 },
                 "action": {
-                    "type": "give-role",
+                    "kind": "give-role",
                     "options": {
                         "roleId": "1358489735542341683"
                     }
@@ -169,7 +169,7 @@
                     "0f2SNbp60vAwWjhKjRR0u": 1000000
                 },
                 "action": {
-                    "type": "give-currency",
+                    "kind": "give-currency",
                     "options": {
                         "currencyId": "0f2SNbp60vAwWjhKjRR0u",
                         "amount": 1000001

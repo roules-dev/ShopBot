@@ -1,20 +1,11 @@
-import { SnowflakeSchema, NanoIdSchema } from "@/schemas/utils.js"
+import { NanoIdSchema } from "@/schemas/utils.js"
 import z from "zod"
+import { giveCurrencyActionSchema } from "../data/product-actions/give-currency.js"
+import { giveRoleActionSchema } from "../data/product-actions/give-role.js"
 
-export const ProductActionSchema = z.discriminatedUnion("type", [
-    z.object({ 
-        type: z.literal("give-role"),
-        options: z.object({
-            roleId: SnowflakeSchema
-        })
-    }),
-    z.object({
-        type: z.literal("give-currency"),
-        options: z.object({
-            currencyId: NanoIdSchema,
-            amount: z.number().min(0)
-        })
-    })
+export const productActionSchema = z.discriminatedUnion("kind", [
+    giveCurrencyActionSchema,
+    giveRoleActionSchema,
 ])
 
 
@@ -26,5 +17,5 @@ export const ProductRawSchema = z.object({
     ),
     stock: z.exactOptional(z.nullable(z.number().min(0))),
     
-    action: z.exactOptional(z.nullable(ProductActionSchema))
+    action: z.exactOptional(z.nullable(productActionSchema))
 })

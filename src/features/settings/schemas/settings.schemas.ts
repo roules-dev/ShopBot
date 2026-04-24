@@ -13,22 +13,22 @@ function withBase<T extends z.ZodRawShape>(shape: T) {
     })
 }
 
-export const SettingVariantSchema = z.discriminatedUnion("type", [
+export const SettingVariantSchema = z.discriminatedUnion("kind", [
     withBase({
         id: z.string().brand("setting-string"),
-        type: z.literal("string"),
+        kind: z.literal("string"),
         value: z.nullable(z.string()),
     }),
 
     withBase({
         id: z.string().brand("setting-bool"),
-        type: z.literal("bool"),
+        kind: z.literal("bool"),
         value: z.nullable(z.boolean()),
     }),
 
     withBase({
         id: z.string().brand("setting-number"),
-        type: z.literal("number"),
+        kind: z.literal("number"),
         value: z.nullable(z.number()),
         min: z.exactOptional(z.nullable(z.number())),
         max: z.exactOptional(z.nullable(z.number())),
@@ -36,25 +36,25 @@ export const SettingVariantSchema = z.discriminatedUnion("type", [
 
     withBase({
         id: z.string().brand("setting-channelId"),
-        type: z.literal("channelId"),
+        kind: z.literal("channelId"),
         value: z.nullable(SnowflakeSchema),
     }),
 
     withBase({
         id: z.string().brand("setting-roleId"),
-        type: z.literal("roleId"),
+        kind: z.literal("roleId"),
         value: z.nullable(SnowflakeSchema),
     }),
 
     withBase({
         id: z.string().brand("setting-userId"),
-        type: z.literal("userId"),
+        kind: z.literal("userId"),
         value: z.nullable(SnowflakeSchema),
     }),
 
     withBase({
         id: z.string().brand("setting-enum"),
-        type: z.literal("enum"),
+        kind: z.literal("enum"),
         value: z.nullable(z.string()),
         options: z.array(
             z.object({ 
@@ -66,7 +66,7 @@ export const SettingVariantSchema = z.discriminatedUnion("type", [
 ])
 
 export const SettingSchema = SettingVariantSchema.superRefine((data, ctx) => {
-    switch (data.type) {
+    switch (data.kind) {
         case "number": 
             validateMinMax(data, ctx)
             break

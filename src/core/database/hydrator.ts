@@ -3,8 +3,9 @@ import { ApiError, Balance, NanoId } from "@/database/database.types.js"
 import { Account } from "@/features/accounts/database/accounts.type.js"
 import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { Item } from "@/features/items/database/items.types.js"
+import { productActions } from "@/features/shops/data/product-actions/index.js"
 import { Product } from "@/features/shops/database/products.types.js"
-import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { Emojiable, Identifiable, Labelled } from "@/lib/types/core.js"
 import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
@@ -51,29 +52,9 @@ export class Hydrator {
     public getHydratedProductAction(product: Product) {
         if (!product.action) return err("NoActionToHydrate")
         
-        const actionType = product.action.type
-        
-        switch (actionType) {
-            case "give-currency": {
-                const currencyId = product.action.options.currencyId
-                const currency = this.currenciesDb.get(currencyId)
-                if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
-
-                return ok({
-                    type: actionType,
-                    options: {
-                        ...product.action.options,
-                        currency
-                    }
-                })
-            }
-            case "give-role":
-                return ok(product.action)
-
-            default:
-                assertNeverReached(actionType)
-        }
+        return productActions[product.action.kind].hydrate(product.action.options, this)
     }
+
 
     public getHydratedProductPrice(product: Product) {
         let hydratedPrice: HydratedPrice = new Map()

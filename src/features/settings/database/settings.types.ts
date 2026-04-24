@@ -7,8 +7,8 @@ export type Setting =  DeepReadonly<z.infer<typeof SettingVariantSchema>>
 
 type SettingVariants = z.infer<typeof SettingVariantSchema>
 
-export type SettingType = SettingVariants["type"]
-export type SettingValueType<T extends SettingType> = Extract<SettingVariants, { type: T }>["value"]
+export type SettingType = SettingVariants["kind"]
+export type SettingValueType<T extends SettingType> = Extract<SettingVariants, { kind: T }>["value"]
 
 export type SettingIdBrands = {
     [K in SettingType]: string & z.BRAND<`setting-${K}`>

@@ -23,12 +23,12 @@ export function getTypedSettingValue<
     T extends SettingType
 >(
     id: string, 
-    type: T
+    kind: T
 ): Result<SettingValueType<T>, Error> {
 
     const setting = settingsDatabase.get(id)
     if (!setting) return err("Setting does not exist")
-    if (setting.type !== type) return err("Setting type does not match")
+    if (setting.kind !== kind) return err("Setting type does not match")
 
     return ok(setting.value as SettingValueType<T>)
 }

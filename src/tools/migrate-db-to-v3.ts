@@ -2,7 +2,7 @@ import { NanoId } from "@/database/database.types.js"
 import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
 import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
 import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js"
-import { ProductActionSchema, ProductRawSchema } from "@/features/shops/schemas/products.schemas.js"
+import { productActionSchema, ProductRawSchema } from "@/features/shops/schemas/products.schemas.js"
 import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { validate } from "@/lib/validation/validation.js"
@@ -14,7 +14,7 @@ import z from "zod"
 import { migrateDBtoNanoid } from "./migrate-db-to-nanoid.js"
 
 // Legacy types
-export interface Product {
+export interface OldProduct {
     id: string
     shopId: string
     name: string
@@ -46,7 +46,7 @@ type OldShop = {
     currencyId: string
     discountCodes: {[code: string]: number}
     reservedTo?: string
-    products: Map<string, Product>
+    products: Record<string, OldProduct>
 }
 
 type OldAccount =  {
@@ -109,16 +109,17 @@ async function migrateShops() {
             let item = newProductWithoutPriceWithoutId
 
             let stock: number | null | undefined 
-            if ("stock" in newProductWithoutPriceWithoutId) {
+            if ("stock" in newProductWithoutPriceWithoutId && (typeof newProductWithoutPriceWithoutId.stock === "number" || newProductWithoutPriceWithoutId.stock === null)) {
                 const { stock: productStock, ...newProductWithoutPriceWithoutIdWithoutStock } = newProductWithoutPriceWithoutId
                 stock = productStock
                 item = newProductWithoutPriceWithoutIdWithoutStock
             }
 
-            let action: z.infer<typeof ProductActionSchema> | undefined | null = undefined
+            let action: z.infer<typeof productActionSchema> | undefined | null = undefined
             if ("action" in newProductWithoutPriceWithoutId) {
                 const { action: productAction, ...newProductWithoutPriceWithoutIdWithoutAction } = newProductWithoutPriceWithoutId
-                const [error, actionParsed] = validate(ProductActionSchema, productAction)
+                const { type, options } = productAction
+                const [error, actionParsed] = validate(productActionSchema, { kind: type, options })
                 if (error) {
                     log(() => PrettyLog.warn(`Error parsing action of product ${productId} in shop ${shopId}\n${z.prettifyError(error)}`))
                 } else {

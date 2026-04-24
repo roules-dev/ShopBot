@@ -1,9 +1,14 @@
 import { t } from "@/core/i18n/i18n.js"
+import { productActions } from "@/features/shops/data/product-actions/index.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 // TODO : product commands probably belongs to shops-manage command as a subcommand group instead of being a separate command
+
+const productActionsChoices = Object.entries(productActions).map(([key, value]) => {
+    return { name: value.name, value: key}
+})
 
 export const data = new SlashCommandBuilder()
     .setName("products-manage") 
@@ -27,10 +32,7 @@ export const data = new SlashCommandBuilder()
             .setName("action")
             .setDescription("The action of the product")
             .setRequired(false)
-            .addChoices(
-                { name: "Give Role", value: "give-role" },
-                { name: "Give Currency", value: "give-currency" }
-            )
+            .addChoices(productActionsChoices)
         )
     )
     .addSubcommand(subcommand => subcommand
