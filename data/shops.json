@@ -38,7 +38,14 @@
         "discountCodes": {
             "COOL10": 10
         },
-        "products": {}
+        "products": {
+            "iYU6aasArk4RnHY7Z7kHc": {
+                "itemId": "nxtWWm9IEe3qSLh4fj5qn",
+                "price": {
+                    "7kiuf_CPO2ocrr75mTXuV": 1223
+                }
+            }
+        }
     },
     "-hw7m2WLOmaNKPSbFdajZ": {
         "name": "Bakery",

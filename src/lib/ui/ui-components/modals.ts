@@ -96,7 +96,7 @@ export async function showSingleInputModal(
         await interaction.showModal(modal)
 
         const filter = (interaction: ModalSubmitInteraction) => interaction.customId === datedId
-        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 30_000 }) // TODO change back to 120_000
+        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
 
         await modalSubmit.deferUpdate()
         if (!modalSubmit.isFromMessage()) return [modalSubmit, err("Modal is not from message")] 

@@ -1,7 +1,9 @@
 import { t } from "@/core/i18n/i18n.js"
 import { productActions } from "@/features/shops/data/product-actions/index.js"
+import { AddProductFlow, addProductParamsSchema } from "@/features/shops/user-flows/product-add.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 // TODO : product commands probably belongs to shops-manage command as a subcommand group instead of being a separate command
@@ -16,12 +18,6 @@ export const data = new SlashCommandBuilder()
     .addSubcommand(subcommand => subcommand
         .setName("add")
         .setDescription("Add a new product")
-        .addNumberOption(option => option
-            .setName("price")
-            .setDescription("The price of the product")
-            .setRequired(true)
-            .setMinValue(0)
-        )
         .addIntegerOption(option => option
             .setName("stock")
             .setDescription("The available stock for the product")
@@ -42,16 +38,6 @@ export const data = new SlashCommandBuilder()
     .addSubcommandGroup(subcommandgroup => subcommandgroup
         .setName("edit")
         .setDescription("Edit a product")
-        .addSubcommand(subcommand => subcommand
-            .setName("price")
-            .setDescription("Change Price. You will select the product later")
-            .addNumberOption(option => option
-                .setName("price")
-                .setDescription("The new price of the product")
-                .setRequired(true)
-                .setMinValue(0)
-            )
-        )
         .addSubcommand(subcommand => subcommand 
             .setName("stock")
             .setDescription("Change Stock. You will select the product later")
@@ -62,6 +48,7 @@ export const data = new SlashCommandBuilder()
                 .setMinValue(0)
             )
         )
+        // TODO : Action edit
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
@@ -78,10 +65,11 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 await replyErrorMessage(interaction, "Not implemented yet")
                 break
             }
-            throw new Error("Not implemented yet")
-            // TODO : Product Add
-            // new AddProductFlow().start(interaction)
-            // break
+            const [error, options] = validateCommandOptions(interaction.options, addProductParamsSchema)
+            if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+            new AddProductFlow(options).start(interaction)
+            break
 
         case "remove":
             new RemoveProductFlow().start(interaction)

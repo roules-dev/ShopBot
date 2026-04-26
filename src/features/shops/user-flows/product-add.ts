@@ -1,6 +1,318 @@
+import { HydratedPrice } from "@/core/database/hydrator.js";
+import { HYDRATOR } from "@/core/database/init-databases.js";
+import { t } from "@/core/i18n/i18n.js";
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js";
+import { getItems } from "@/core/services/items/items.services.js";
+import { addProduct } from "@/core/services/shops/products.services.js";
+import { getShops } from "@/core/services/shops/shops.services.js";
+import { NanoId } from "@/database/database.types.js";
+import { Item } from "@/features/items/database/items.types.js";
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
+import { err, ErrorLike, ok, Result } from "@/lib/error-handling.js";
+import { Identifiable } from "@/lib/types/core.js";
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
+import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js";
+import { showValidatedSingleInputModal } from "@/lib/ui/ui-components/modals.js";
+import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js";
+import { StagedUserFlow } from "@/lib/ui/user-flows/user-flow.js";
+import { optionalOrNull } from "@/schemas/optional-to-null.js";
+import { formattedEmojiableName } from "@/utils/formatting.js";
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, DiscordjsError, DiscordjsErrorCodes, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
+import z from "zod";
+import { Shop } from "../database/shops.types.js";
+import { formatPrice } from "../services/price.js";
+import { MapKey } from "@/lib/types/collections.js";
 
 // TODO: must be updated for the new system (products only hold an itemId and some metadata)
 // TODO: must be updated to support multi-currency products
+
+// TODO update translation
+
+const MAX_PRICE_LENGTH = 20
+
+export const addProductParamsSchema = z.object({
+    stock: optionalOrNull(z.number().min(0)),
+})
+
+export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductParamsSchema>> {
+    protected override stage: number = 0
+    public override get id(): string { 
+        return "add-product" 
+    }
+
+    private selectedItem: Item & Identifiable<NanoId> | null = null
+    private price: Record<NanoId, number> | null = null
+    private selectedShop: Shop & Identifiable<NanoId> | null = null
+
+    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+        const items = getItems()
+        if (!items.size) return err("No items") // err(t("errorMessages.noItems")) TODO : translation 
+
+        const shops = getShops()
+        if (!shops.size) return err(t("errorMessages.noShops"))
+
+        return ok(true)
+    }
+
+    protected override getMessage() {
+        const nameString = bold(formattedEmojiableName(this.selectedItem) || t("defaultComponents.selectItem"))
+
+        let priceString = "Add price"
+        if (this.price !== null) {
+            const [error, price] = HYDRATOR.getHydratedPrice(this.price)
+            if (!error) {
+                priceString = price.size > 0 ? formatPrice(price) : "Free"
+            }
+            else {
+                priceString = "❌ error displaying price"
+            } 
+        }
+        
+
+        const message = t(`userFlows.productAdd.messages.default`, {
+            product: nameString,
+            price: bold(priceString),
+            shop: bold(formattedEmojiableName(this.selectedShop) || t("defaultComponents.selectShop"))
+        })
+
+        return message
+    }
+
+    protected override initStageComponents() {
+        const itemSelectMenu = new ExtendedStringSelectMenuComponent(
+            {
+                customId: `${this.id}+select-item`,
+                placeholder: t("defaultComponents.selectItem"),
+                time: 120_000
+            },
+            getItems(),
+            (interaction) => this.updateInteraction(interaction),
+            (interaction, selectedItem) => {
+                this.selectedItem = selectedItem
+                this.updateInteraction(interaction)
+            }
+        )
+        const submitItem = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+submit-item`,
+                label: "Submit Item",
+                emoji: "✅",
+                style: ButtonStyle.Success,
+                disabled: true,
+                time: 120_000
+            },
+            (interaction: ButtonInteraction) => {
+                this.changeStage(1)
+                this.price = {}
+                this.updateInteraction(interaction)
+            }
+        )
+
+        const addPriceWithCurrencySelect = new ExtendedStringSelectMenuComponent(
+            {
+                customId: `${this.id}+select-currency`,
+                placeholder: "➕ Add to price (or update)",
+                time: 120_000
+            },
+            getCurrencies(),
+            (interaction) => this.updateInteraction(interaction),
+            async (interaction, selectedCurrency) => {
+                this.price = this.price ?? {}
+                
+                const previousAmount = this.price[selectedCurrency.id]
+                
+                const [modalSubmit, [error, amount]] = await showValidatedSingleInputModal(interaction, {
+                    id: `${this.id}+amount`,
+                    title: "Amount",
+                    inputLabel: "Amount",
+                    placeholder: previousAmount?.toString() ?? "Amount",
+                    required: true
+                }, z.coerce.number().positive())
+
+                if (error) {
+                    if (error.name === "ModalTimeout") return
+                    return this.updateInteraction(modalSubmit) // TODO it should not fail silently
+                }
+
+                this.price[selectedCurrency.id] = amount
+                this.updateInteraction(modalSubmit)
+            }
+        )
+        const removePricePieceButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+remove-price-piece`,
+                emoji: "➖",
+                style: ButtonStyle.Primary,
+                time: 120_000
+            },
+            async (interaction) => {
+                const [error1, price] = HYDRATOR.getHydratedPrice(this.price ?? {})
+                if (error1) {
+                    this.updateInteraction(interaction)
+                    return // TODO it should not fail silently
+                }
+                const [modalSubmit, [error2, pricePieceCurrencyId]] = await showPricePieceSelectModal(interaction, {id: this.id, title: "Remove price piece" }, price)
+
+                if (error2) {
+                    if (error2.name === "ModalTimeout") return
+
+                    return this.updateInteraction(modalSubmit) // TODO it should not fail silently
+                }
+
+                this.price = this.price ?? {}
+                delete this.price[pricePieceCurrencyId]
+
+                this.updateInteraction(modalSubmit)
+            }
+        )
+
+        const submitPriceButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+submit-price`,
+                label: "Submit Price",
+                emoji: "✅",
+                style: ButtonStyle.Success,
+                disabled: true,
+                time: 120_000
+            },
+            (interaction) => {
+                this.changeStage(2)
+                this.updateInteraction(interaction)
+            }
+        )
+
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
+            {
+                customId: `${this.id}+select-shop`,
+                placeholder: t("defaultComponents.selectShop"),
+                time: 120_000
+            },
+            getShops(),
+            (interaction) => this.updateInteraction(interaction),
+            (interaction, selected) => {
+                this.selectedShop = selected
+                this.updateInteraction(interaction)
+            }
+        )
+
+        const submitShopButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+submit-shop`,
+                label: t(`userFlows.productAdd.components.submitButton`),
+                emoji: "✅",
+                style: ButtonStyle.Success,
+                disabled: true,
+                time: 120_000
+            },
+            (interaction: ButtonInteraction) => this.success(interaction)
+        )
+
+        return [
+            [
+                createComponent(itemSelectMenu),
+                createComponent(submitItem, () => submitItem.toggle(this.selectedItem != null)),
+            ],
+            [
+                createComponent(addPriceWithCurrencySelect, () => addPriceWithCurrencySelect.toggle(this.price == null || Object.keys(this.price).length < MAX_PRICE_LENGTH)),
+                createComponent(removePricePieceButton, () => removePricePieceButton.toggle(this.price != null && Object.values(this.price).length > 0)),
+                createComponent(submitPriceButton, () => submitPriceButton.toggle(this.price != null)),
+            ],
+            [
+                createComponent(shopSelectMenu, () => shopSelectMenu.toggle(this.selectedItem != null && this.price != null)), 
+                createComponent(submitShopButton, () => submitShopButton.toggle(this.selectedShop != null && this.selectedItem != null && this.price != null)),
+            ]
+        ]
+    }
+
+
+    protected override async success(interaction: UserInterfaceInteraction) {
+        if (!(this.selectedShop && this.selectedItem && (this.price !== null))) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+        const optionals = {
+            ...(this.params.stock ? {stock: this.params.stock} : {}),
+        }
+        
+        const [error, _] = await addProduct(this.selectedShop.id, {
+            itemId: this.selectedItem.id,
+            price: this.price,
+            ...optionals
+        })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
+
+        const message = t(`userFlows.productAdd.messages.success`, {
+            product: bold(formattedEmojiableName(this.selectedItem)),
+            shop: bold(formattedEmojiableName(this.selectedShop))
+        })
+
+        return await updateAsSuccessMessage(interaction, message)
+    }
+}
+
+// TODO : eventually abstract the modal logic
+async function showPricePieceSelectModal( 
+    interaction: MessageComponentInteraction | ChatInputCommandInteraction,
+    { id, title }: { 
+        id: string, 
+        title: string 
+    }, 
+    hydratedPrice: HydratedPrice
+): Promise<[
+    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
+    Result<MapKey<HydratedPrice>, ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>]
+> {
+    const modal = new ModalBuilder()
+        .setCustomId(id)
+        .setTitle(title)
+
+    const SELECT_ID = `${id}+price-piece-select`
+    const pricePieceSelect = new StringSelectMenuBuilder()
+        .setCustomId(`${id}+price-piece-select`)
+        .setPlaceholder("Select price piece")
+
+    const options: StringSelectMenuOptionBuilder[] = []
+    hydratedPrice.forEach((value, key) => {
+        const option = new StringSelectMenuOptionBuilder()
+            .setLabel(`${value.amount} ${value.resource.name}`)
+            .setValue(key)
+
+        if (value.resource.emoji != undefined && value.resource.emoji.length > 0) {
+            option.setEmoji(value.resource.emoji)
+        }
+
+        options.push(option)
+    })
+    
+    pricePieceSelect.setOptions(options)
+
+    const pricePieceLabel = new LabelBuilder()
+        .setLabel("Price piece")
+        .setStringSelectMenuComponent(pricePieceSelect)
+
+    modal.addLabelComponents(pricePieceLabel)
+
+    try {
+        await interaction.showModal(modal)
+
+        const filter = (interaction: ModalSubmitInteraction) => interaction.customId === id
+        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
+
+        await modalSubmit.deferUpdate()
+        if (!modalSubmit.isFromMessage()) return [modalSubmit, err("Modal is not from message")] 
+
+        const inputValue = modalSubmit.fields.getStringSelectValues(SELECT_ID)[0]
+        
+        if (!inputValue) return [modalSubmit, err("No price piece selected")]
+
+        return [modalSubmit, ok(inputValue as MapKey<HydratedPrice>)]
+    }
+    catch (e) {
+        if (e instanceof DiscordjsError && e.code === DiscordjsErrorCodes.InteractionCollectorError) {
+            return [interaction, err({ name: "ModalTimeout", message: "Modal timed out" })]
+        }
+        return [interaction, err("Unknown error while showing modal")]
+    }
+}
 
 
 // export class AddProductFlow extends UserFlow {
@@ -90,7 +402,7 @@
 //             {
 //                 customId: `${this.id}+submit-shop`,
 //                 label: t(`userFlows.productAdd.components.submitButton`),
-//                 emoji: {name: "✅"},
+//                 emoji: "✅",
 //                 style: ButtonStyle.Success,
 //                 disabled: true,
 //                 time: 120_000
@@ -256,12 +568,12 @@
 //                     {
 //                         customId: `${this.id}+set-amount`,
 //                         label: t(`userFlows.productAdd.components.setAmountButton`),
-//                         emoji: { name: "🪙" },
+//                         emoji: "🪙",
 //                         style: ButtonStyle.Secondary,
 //                         time: 120_000
 //                     },
 //                     async (interaction: ButtonInteraction) => {
-//                         const [modalSubmit, [error, amount]] = await showValidatedEditModal(
+//                         const [ , [error, amount]] = await showValidatedEditModal(
 //                             interaction, 
 //                             { edit: t(`userFlows.productAdd.components.editAmountModalTitle`), previousValue: "0" },
 //                             z.coerce.number().int().min(0).transform(n => Math.floor(n))
@@ -303,7 +615,7 @@
 //             {
 //                 customId: `${this.id}+change-shop`,
 //                 label: t("defaultComponents.changeShopButton"),
-//                 emoji: {name: "📝"},
+//                 emoji: "📝",
 //                 style: ButtonStyle.Secondary,
 //                 time: 120_000
 //             },
