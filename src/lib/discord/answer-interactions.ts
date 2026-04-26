@@ -3,8 +3,9 @@ import { MessageFlags } from "discord.js"
 import { UserInterfaceInteraction } from "../ui/types/ui.js"
 
 
+
 export async function replyErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
-    return await interaction.reply({ content: getErrorMessage(errorMessage), flags: MessageFlags.Ephemeral })
+    return await replyWithMessage(interaction, getErrorMessage(errorMessage))
 }
 
 export async function updateAsErrorMessage(interaction: UserInterfaceInteraction, errorMessage?: string) {
@@ -13,12 +14,17 @@ export async function updateAsErrorMessage(interaction: UserInterfaceInteraction
 }
 
 export async function replySuccessMessage(interaction: UserInterfaceInteraction, successMessage: string) {
-    return await interaction.reply({ content: getSuccessMessage(successMessage), flags: MessageFlags.Ephemeral })
+    return await replyWithMessage(interaction, getSuccessMessage(successMessage))
 }
 
 export async function updateAsSuccessMessage(interaction: UserInterfaceInteraction, successMessage: string) {
     const message = getSuccessMessage(successMessage)
     await updateWithMessage(interaction, message)
+}
+
+export async function replyWithMessage(interaction: UserInterfaceInteraction, message: string) {
+    if (interaction.replied) return await interaction.followUp({ content: message, flags: MessageFlags.Ephemeral })
+    return await interaction.reply({ content: message, flags: MessageFlags.Ephemeral })
 }
 
 async function updateWithMessage(interaction: UserInterfaceInteraction, message: string) {

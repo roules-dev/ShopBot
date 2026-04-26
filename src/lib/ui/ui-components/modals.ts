@@ -1,12 +1,13 @@
 import { t } from "@/core/i18n/i18n.js"
 import { err, ErrorLike, ok, Result } from "@/lib/error-handling.js"
 import { validate } from "@/lib/validation/validation.js"
-import { ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
+import { ChatInputCommandInteraction, DiscordjsError, DiscordjsErrorCodes, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
 import z from "zod"
 
 const YES = "yes"
 const NO = "no"
 
+//TODO  No error handling here ?
 export async function showConfirmationModal(
     interaction: MessageComponentInteraction | ChatInputCommandInteraction
 ): Promise<[ModalSubmitInteraction, boolean]> {
@@ -66,10 +67,11 @@ export async function showSingleInputModal(
     { id, title, inputLabel, placeholder, required, minLength, maxLength }: ModalOptions
 ): Promise<[
     ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<string, ErrorLike<"Error">>
+    Result<string, ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
 ]> {
+    const datedId = `id.${Date.now().toString()}`
     const modal = new ModalBuilder()
-        .setCustomId(id)
+        .setCustomId(datedId)
         .setTitle(title)
 
     const INPUT_ID = `${id}-input`
@@ -93,8 +95,8 @@ export async function showSingleInputModal(
     try {
         await interaction.showModal(modal)
 
-        const filter = (interaction: ModalSubmitInteraction) => interaction.customId === id
-        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
+        const filter = (interaction: ModalSubmitInteraction) => interaction.customId === datedId
+        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 30_000 }) // TODO change back to 120_000
 
         await modalSubmit.deferUpdate()
         if (!modalSubmit.isFromMessage()) return [modalSubmit, err("Modal is not from message")] 
@@ -104,7 +106,10 @@ export async function showSingleInputModal(
         return [modalSubmit, ok(inputValue)]
     }
     catch (e) {
-        return [interaction, err("Unknown error while showing modal")]
+        if (e instanceof DiscordjsError && e.code === DiscordjsErrorCodes.InteractionCollectorError) {
+            return [interaction, err({ name: "ModalTimeout", message: "Modal timed out" })]
+        }
+        return [interaction, err(`Unknown error while showing modal ${datedId}: ${e}`)]
     }
 }
 
@@ -114,7 +119,7 @@ export async function showValidatedSingleInputModal<T>(
     schema: z.ZodType<T>
 ): Promise<[
     ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<T, z.ZodError | ErrorLike<"Error">>
+    Result<T, z.ZodError | ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
 ]> {
     const [modalSubmit, [error, inputValue]] = await showSingleInputModal(interaction, options)
     if (error) return [modalSubmit, err(error)]
@@ -135,7 +140,7 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
     { edit, previousValue, required, minLength, maxLength }: EditModalOptions
 ): Promise<[
     ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<string, ErrorLike<"Error">>
+    Result<string, ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
 ]> {
     const modalLocale = "extendedComponents.editModal"
 
@@ -159,7 +164,7 @@ export async function showValidatedEditModal<T extends z.ZodType>(
     schema: T
 ): Promise<[
     ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<z.output<T>, z.ZodError | ErrorLike<"Error">>
+    Result<z.output<T>, z.ZodError | ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
 ]>  {
     const [modalSubmit, [error, inputValue]] = await showEditModal(interaction, options)
     if (error) return [modalSubmit, err(error)]

@@ -1,4 +1,4 @@
-import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ActionRowBuilder, APIEmbedField, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
 import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
@@ -77,25 +77,21 @@ export abstract class UserInterface {
         this.updateComponents()
 
         const updateOptions = this.getInteractionUpdateOptions()
-
-        if (interaction.deferred) {
-            await interaction.editReply(updateOptions)
-            return
-        }
-
         try {
-            if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) {
-                interaction.update(updateOptions)
+            if (interaction.deferred) {
+                await interaction.editReply(updateOptions)
                 return
             }
-            interaction.editReply(updateOptions)
+
+            if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) {
+                await interaction.update(updateOptions)
+                return
+            }
+
+            await replyErrorMessage(interaction)
+
         } catch (error) {
-            if (interaction.replied) {
-                updateAsErrorMessage(interaction)
-            }
-            else {
-                replyErrorMessage(interaction)
-            }
+            replyErrorMessage(interaction)
             PrettyLog.error(`${error}`)
         }
     }

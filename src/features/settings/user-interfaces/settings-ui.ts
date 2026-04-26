@@ -215,7 +215,10 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
             },
             async (interaction: MessageComponentInteraction) => {
                 const [modalSubmit, [error1, newValue]] = await showEditModal(interaction, { edit: setting.name, previousValue: setting.value })
-                if (error1) return replyErrorMessage(modalSubmit, error1.message)
+                if (error1) {
+                    if (error1.name === "ModalTimeout") return
+                    return replyErrorMessage(modalSubmit, error1.message)
+                }
 
                 const [error2, updatedSetting] = await setSetting(setting.id, newValue)
                 if (error2) return replyErrorMessage(modalSubmit, error2.message)
@@ -262,7 +265,10 @@ export class SettingsInterface extends PaginatedEmbedUserInterface {
                     z.coerce.number()
                 )
                 
-                if (error1) return replyErrorMessage(modalSubmit, error1.message)
+                if (error1) {
+                    if (error1.name === "ModalTimeout") return
+                    return replyErrorMessage(modalSubmit, error1.message)
+                }
                 
                 const [error2, updatedSetting] = await setSetting(setting.id, newValue)
                 if (error2) return replyErrorMessage(modalSubmit, error2.message)

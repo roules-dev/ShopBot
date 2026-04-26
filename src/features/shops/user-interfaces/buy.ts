@@ -111,7 +111,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
                     z.coerce.number().int().min(1).transform(n => Math.floor(n))
                 )
                 
-                if (error) return replyErrorMessage(modalSubmit, error.message)
+                if (error) {
+                    if (error.name === "ModalTimeout") return
+                    return replyErrorMessage(modalSubmit, error.message)
+                }
 
                 this.quantity = quantity
                 this.updateInteraction(modalSubmit)
@@ -197,7 +200,10 @@ export class BuyProductUserInterface extends MessageUserInterface {
             maxLength: 8
         })
 
-        if (error) return replyErrorMessage(modalSubmit, error.message)
+        if (error) {
+            if (error.name === "ModalTimeout") return
+            return replyErrorMessage(modalSubmit, error.message)
+        }
 
         const shopDiscountCodes = this.selectedShop.discountCodes
         if (!shopDiscountCodes[input]) return this.updateInteraction(modalSubmit)
