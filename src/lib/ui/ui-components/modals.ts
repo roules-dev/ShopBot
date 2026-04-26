@@ -1,53 +1,75 @@
 import { t } from "@/core/i18n/i18n.js"
 import { err, ErrorLike, ok, Result } from "@/lib/error-handling.js"
 import { validate } from "@/lib/validation/validation.js"
-import { ChatInputCommandInteraction, DiscordjsError, DiscordjsErrorCodes, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, TextInputBuilder, TextInputStyle } from "discord.js"
+import { ChatInputCommandInteraction, CheckboxGroupBuilder, CheckboxGroupOptionBuilder, DiscordjsError, DiscordjsErrorCodes, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitFields, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
 import z from "zod"
 
-const YES = "yes"
-const NO = "no"
+type ModalResponse<T, E extends Error = never> = Promise<[
+    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
+    Result<T, ErrorLike<"Error"> | ErrorLike<"ModalTimeout"> | E>
+]>
 
-//TODO  No error handling here ?
+export async function showModal(
+    interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
+    modal: ModalBuilder
+): ModalResponse<ModalSubmitFields> {
+    const modalId = modal.toJSON().custom_id
+    try {
+        await interaction.showModal(modal)
+
+        const filter = (interaction: ModalSubmitInteraction) => interaction.customId === modalId
+        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
+
+        await modalSubmit.deferUpdate()
+
+        return [modalSubmit, ok(modalSubmit.fields)]
+    }
+    catch (e) {
+        if (e instanceof DiscordjsError && e.code === DiscordjsErrorCodes.InteractionCollectorError) {
+            return [interaction, err({ name: "ModalTimeout", message: "Modal timed out" })]
+        }
+        return [interaction, err(`Unknown error while showing modal ${modalId}: ${e}`)]
+    }
+}
+
+
 export async function showConfirmationModal(
     interaction: MessageComponentInteraction | ChatInputCommandInteraction
-): Promise<[ModalSubmitInteraction, boolean]> {
+): Promise<[ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, boolean]> {
     const modalLocale = "extendedComponents.confirmationModal"
 
     const modalId = "confirmation-modal"
-    const labelId = "confirm-select-menu"
+    const checkboxGrpId = "confirm-checkbox-grp"
+    
+    const CONFIRMED = "_confirmed"
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
         .setTitle(t(`${modalLocale}.title`))
 
-    const label = new LabelBuilder()
+    const checkboxLabel = new LabelBuilder()
         .setLabel(t(`${modalLocale}.cantBeUndone`))
-        .setStringSelectMenuComponent(new StringSelectMenuBuilder()
-            .setCustomId(labelId)
-            .setPlaceholder(t(`${modalLocale}.selectYes`))
-            .addOptions(
-                new StringSelectMenuOptionBuilder()
-                    .setLabel(t(`${modalLocale}.yes`))
-                    .setValue(YES)
-            )
-            .addOptions(
-                new StringSelectMenuOptionBuilder()
-                    .setLabel(t(`${modalLocale}.no`))
-                    .setValue(NO)
-            )
+        .setCheckboxGroupComponent(
+            new CheckboxGroupBuilder()
+                .setCustomId(checkboxGrpId)
+                .addOptions(
+                    new CheckboxGroupOptionBuilder()
+                        .setLabel("I confirm") // TODO : translation
+                        .setValue(CONFIRMED)
+                )
         )
 
-    modal.addLabelComponents(label)
-
-    await interaction.showModal(modal)
-
-    const filter = (interaction: ModalSubmitInteraction) => interaction.customId === modalId
-    const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
     
-    if (!modalSubmit.isFromMessage()) return [modalSubmit, false]
-    await modalSubmit.deferUpdate()
 
-    return [modalSubmit, modalSubmit.fields.getStringSelectValues(labelId)[0] == YES]
+    modal.addLabelComponents(checkboxLabel)
+
+    const [modalSubmit, [error, fields]] = await showModal(interaction, modal)
+    if (error) return [modalSubmit, false]
+    
+    const field = fields.getField(checkboxGrpId)
+    if (!("values" in field)) return [modalSubmit, false]
+
+    return [modalSubmit, field.values[0] === CONFIRMED]
 }
 
 
@@ -65,10 +87,7 @@ type ModalOptions = {
 export async function showSingleInputModal(
     interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     { id, title, inputLabel, placeholder, required, minLength, maxLength }: ModalOptions
-): Promise<[
-    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<string, ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
-]> {
+): ModalResponse<string> {
     const datedId = `id.${Date.now().toString()}`
     const modal = new ModalBuilder()
         .setCustomId(datedId)
@@ -92,35 +111,19 @@ export async function showSingleInputModal(
 
     modal.addLabelComponents(label)
 
-    try {
-        await interaction.showModal(modal)
+    const [modalSubmit, [error, fields]] = await showModal(interaction, modal)
+    if (error) return [modalSubmit, err(error)]
 
-        const filter = (interaction: ModalSubmitInteraction) => interaction.customId === datedId
-        const modalSubmit = await interaction.awaitModalSubmit({ filter, time: 120_000 })
-
-        await modalSubmit.deferUpdate()
-        if (!modalSubmit.isFromMessage()) return [modalSubmit, err("Modal is not from message")] 
-
-        const inputValue = modalSubmit.fields.getTextInputValue(INPUT_ID)
+    const inputValue = fields.getTextInputValue(INPUT_ID)
         
-        return [modalSubmit, ok(inputValue)]
-    }
-    catch (e) {
-        if (e instanceof DiscordjsError && e.code === DiscordjsErrorCodes.InteractionCollectorError) {
-            return [interaction, err({ name: "ModalTimeout", message: "Modal timed out" })]
-        }
-        return [interaction, err(`Unknown error while showing modal ${datedId}: ${e}`)]
-    }
+    return [modalSubmit, ok(inputValue)]
 }
 
 export async function showValidatedSingleInputModal<T>(    
     interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     options: ModalOptions,
     schema: z.ZodType<T>
-): Promise<[
-    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<T, z.ZodError | ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
-]> {
+): ModalResponse<T, z.ZodError> {
     const [modalSubmit, [error, inputValue]] = await showSingleInputModal(interaction, options)
     if (error) return [modalSubmit, err(error)]
 
@@ -138,10 +141,7 @@ type EditModalOptions = {
 
 export async function showEditModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     { edit, previousValue, required, minLength, maxLength }: EditModalOptions
-): Promise<[
-    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<string, ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
-]> {
+): ModalResponse<string> {
     const modalLocale = "extendedComponents.editModal"
 
     const editNormalized = `${edit.toLocaleLowerCase().replaceSpaces("-")}`
@@ -162,10 +162,7 @@ export async function showValidatedEditModal<T extends z.ZodType>(
     interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
     options: EditModalOptions,
     schema: T
-): Promise<[
-    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
-    Result<z.output<T>, z.ZodError | ErrorLike<"Error"> | ErrorLike<"ModalTimeout">>
-]>  {
+): ModalResponse<z.output<T>, z.ZodError> {
     const [modalSubmit, [error, inputValue]] = await showEditModal(interaction, options)
     if (error) return [modalSubmit, err(error)]
 
