@@ -12,10 +12,10 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { withSingleKeyKind } from "@/lib/validation/preprocessors.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
 import { EmojiSchema } from "@/schemas/utils.js"
+import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
 import { Currency } from "../database/currencies.types.js"
-import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 
 
 export const EditCurrencyParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [

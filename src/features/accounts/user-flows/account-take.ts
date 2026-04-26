@@ -13,10 +13,10 @@ import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { SnowflakeSchema } from "@/schemas/utils.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts.services.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export const AccountTakeParamsSchema = z.object({

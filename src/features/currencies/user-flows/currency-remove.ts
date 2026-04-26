@@ -6,9 +6,9 @@ import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ModalSubmitInteraction } from "discord.js"
 import { Currency } from "../database/currencies.types.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {

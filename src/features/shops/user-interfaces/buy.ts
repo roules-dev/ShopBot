@@ -245,7 +245,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
     private priceString() {
         if (!this.selectedProduct) return null
 
-        const [error, price] = HYDRATOR.getHydratedProductPrice(this.selectedProduct)
+        const [error, price] = HYDRATOR.getHydratedPrice(this.selectedProduct.price)
         if (error) {
             PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
             return "❌ error displaying price"

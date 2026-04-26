@@ -56,9 +56,9 @@ export class Hydrator {
     }
 
 
-    public getHydratedProductPrice(product: Product) {
+    public getHydratedPrice(price: Record<NanoId, number>) {
         let hydratedPrice: HydratedPrice = new Map()
-        for (const [currencyId, amount] of objectEntries(product.price)) {
+        for (const [currencyId, amount] of objectEntries(price)) {
             const currency = this.currenciesDb.get(currencyId)
             if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
 
@@ -90,7 +90,7 @@ export class Hydrator {
         const [error2, productAction] = this.getHydratedProductAction(productWithItem)
         if (error2) return err(error2)
 
-        const [error3, hydratedPrice] = this.getHydratedProductPrice(productWithItem)
+        const [error3, hydratedPrice] = this.getHydratedPrice(productWithItem.price)
         if (error3) return err(error3)
 
         return ok({

@@ -160,7 +160,8 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
                 product.stock == 0 ? ` (${t(`userInterfaces.shop.embeds.shop.outOfStock`)})` : 
                 ` (${t(`userInterfaces.shop.embeds.shop.xProductsLeft`, { x: `${product.stock}` })})`
 
-            const [error, price] = HYDRATOR.getHydratedProductPrice(product)
+            const [error, price] = HYDRATOR.getHydratedPrice(product.price)
+
             if (error) {
                 PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
                 return
