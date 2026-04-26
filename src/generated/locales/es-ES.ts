@@ -474,8 +474,7 @@ export const locale = {
         },
         "productAdd": {
             "messages": {
-                "default": "Agregar un producto: {product} por {price} {currency} en {shop}{description}",
-                "description": "Descripción:",
+                "default": "Agregar un producto: {product} por {price} en {shop}",
                 "success": "Has agregado con éxito el producto {product} a la tienda {shop}",
                 "withAction": "con la acción {action}",
                 "action": "Acción:",

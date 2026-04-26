@@ -502,8 +502,7 @@ export const locale = {
         },
         "productAdd": {
             "messages": {
-                "default": "Add Product: {product} for {price} {currency} in {shop}{description}",
-                "description": "Description:",
+                "default": "Add Product: {product} for {price} in {shop}",
                 "success": "You successfully added the product {product} to the shop {shop}",
                 "withAction": "with the action {action}",
                 "action": "Action:",
