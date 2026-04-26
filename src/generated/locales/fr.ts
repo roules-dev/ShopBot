@@ -213,7 +213,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "L'emoji de la boutique (optionnel)"
                         },
-                        "reserved-to-role": {
+                        "reserved_to_role": {
                             "name": "reservee-au-role",
                             "description": "Spécifiez si la boutique doit être réservée à un rôle (optionnel)"
                         }
@@ -279,7 +279,7 @@ export const locale = {
                                 }
                             }
                         },
-                        "reserved-to-role": {
+                        "reserved_to_role": {
                             "name": "reservee-au-role",
                             "description": "Changer le rôle auquel la boutique est réservée. Vous sélectionnerez la boutique plus tard",
                             "options": {
@@ -556,7 +556,7 @@ export const locale = {
                 "name": "nom",
                 "emoji": "emoji",
                 "description": "description",
-                "reserved-to-role": "reservée au role"
+                "reserved_to_role": "reservée au role"
             }
         },
         "shopChangeCurrency": {

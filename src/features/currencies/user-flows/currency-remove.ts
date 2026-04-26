@@ -7,8 +7,9 @@ import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, ModalSubmitInteraction } from "discord.js"
+import { bold, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { Currency } from "../database/currencies.types.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -46,7 +47,7 @@ export class CurrencyRemoveFlow extends UserFlow {
                 disabled: this.selectedCurrency == null,
                 time: 120_000,
             },
-            async (interaction: ButtonInteraction) => {
+            async (interaction) => {
                 const [modalSubmitInteraction, confirmed] = await showConfirmationModal(interaction)
                 
                 if (confirmed) return this.success(modalSubmitInteraction)
@@ -91,7 +92,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         return message
     }
 
-    protected async success(_interaction: ButtonInteraction | ModalSubmitInteraction) {
+    protected async success(_interaction: UserInterfaceInteraction) {
         throw new Error("Method not implemented.")
         // this.disableComponents()
 

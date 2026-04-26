@@ -144,8 +144,8 @@ You can also create discount codes for the shops.
 
 ```
   /shops-manage
-    | create <name> <description> <emoji> <reserved-to-role?>
-    | edit <name/description/emoji/reserved-to-role> <new-value>
+    | create <name> <description> <emoji> <reserved_to_role?>
+    | edit <name/description/emoji/reserved_to_role> <new-value>
     | reorder
     | remove
 

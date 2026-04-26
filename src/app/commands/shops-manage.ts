@@ -33,7 +33,7 @@ export const data = new SlashCommandBuilder()
             .setRequired(false)
         )
         .addRoleOption(option => option
-            .setName("reserved-to-role")
+            .setName("reserved_to_role")
             .setDescription("Specify if should be reserved to a role")
         )
     )
@@ -78,7 +78,7 @@ export const data = new SlashCommandBuilder()
             )
         )
         .addSubcommand(subcommand => subcommand
-            .setName("reserved-to-role")
+            .setName("reserved_to_role")
             .setDescription("Change the role the shop is reserved to. You will select the shop later")
             .addRoleOption(option => option
                 .setName("role")
@@ -127,7 +127,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         case "create-discount-code": {
             const [error, options] = validateCommandOptions(interaction.options, DiscountCodeCreateParamsSchema)
             if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
+            
             new DiscountCodeCreateFlow(options).start(interaction)
             break
         }

@@ -213,7 +213,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "El emoji de la tienda (opcional)"
                         },
-                        "reserved-to-role": {
+                        "reserved_to_role": {
                             "name": "reservada-a-rol",
                             "description": "Especifica si la tienda debe estar reservada a un rol (opcional)"
                         }
@@ -279,7 +279,7 @@ export const locale = {
                                 }
                             }
                         },
-                        "reserved-to-role": {
+                        "reserved_to_role": {
                             "name": "reservada-a-rol",
                             "description": "Cambiar el rol al que está reservada la tienda. Seleccionarás la tienda más tarde",
                             "options": {
@@ -556,7 +556,7 @@ export const locale = {
                 "name": "nombre",
                 "emoji": "emoji",
                 "description": "descripción",
-                "reserved-to-role": "reservada al rol"
+                "reserved_to_role": "reservada al rol"
             }
         },
         "shopChangeCurrency": {

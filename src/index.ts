@@ -1,6 +1,7 @@
 import "./global-settings.js"
 import "@/utils/strings.js"
 import "@/core/i18n/i18n.js"
+import "@/features/settings/database/settings.database.js"
 import "@/core/database/init-databases.js"
 
 import { startClient } from "./app/client/client.js"

@@ -17,10 +17,13 @@ const ShopCreateParamsSchema = z.object({
         z.string().overwrite((desc) => desc.replaceSpaces())
     ),
     
-    reservedTo: optionalOrNull(
-        z.looseObject({ id: SnowflakeSchema }).transform((role) => role.id)
-    ),
+    reserved_to_role: optionalOrNull(SnowflakeSchema),
+}).transform(options => {
+    const { reserved_to_role: reservedTo, ...otherOptions } = options
+    return { ...otherOptions, reservedTo }
 })
+
+
 
 export async function createShopFlow(interaction: ChatInputCommandInteraction) {
     const [error1, params] = validateCommandOptions(interaction.options, ShopCreateParamsSchema)

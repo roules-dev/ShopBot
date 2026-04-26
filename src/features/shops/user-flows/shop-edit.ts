@@ -11,12 +11,35 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { Shop } from "../database/shops.types.js"
+import { withSingleKeyKind } from "@/lib/validation/preprocessors.js"
+import { optionalOrNull } from "@/schemas/optional-to-null.js"
+import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
+import z from "zod"
 
 //! --------------------------------
 // TODO this needs to be refactored
 //! --------------------------------
 
-
+export const EditShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
+    z.object({ 
+        kind: z.literal("name"), 
+        name: z.string() 
+    }),
+    z.object({ 
+        kind: z.literal("emoji"),
+        emoji: optionalOrNull(EmojiSchema).catch(null) 
+    }),
+    z.object({
+        kind: z.literal("description"),
+        description: optionalOrNull(z.string())
+    }),
+    z.object({
+        kind: z.literal("role"),
+        role: SnowflakeSchema
+    }).transform(({role}) => {
+        return { kind: "reservedTo" as const, reservedTo: role }
+    })
+]))
 
 // type EditShopOption = typeof EDIT_SHOP_OPTIONS[keyof typeof EDIT_SHOP_OPTIONS]
 
