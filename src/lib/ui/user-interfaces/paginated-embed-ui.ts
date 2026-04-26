@@ -1,5 +1,5 @@
 import { AbstractConstructor } from "@/lib/types/abstraction.js"
-import { InteractionCallbackResponse, ButtonStyle, ButtonInteraction, APIEmbedField } from "discord.js"
+import { APIEmbedField, ButtonInteraction, ButtonStyle, InteractionCallbackResponse } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
 import { ExtendedButtonComponent } from "../ui-components/button.js"
 import { EmbedUserInterface } from "./user-interfaces.js"

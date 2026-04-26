@@ -11,12 +11,7 @@ export abstract class UserInterface {
     protected components: Map<string, UIComponent>
 
     constructor() {
-        const componentsEntries: [string, UIComponent][] = this.initComponents().map((component) => {
-            if (component instanceof ComponentSeparator) return [component.customId, component];
-            return [component.comp.customId, component]
-        })
-        
-        this.components = new Map(componentsEntries)
+        this.components = this.getComponentsMap(this.initComponents())
     }
 
     protected abstract getMessage(): string 
@@ -81,17 +76,19 @@ export abstract class UserInterface {
     protected async updateInteraction(interaction: UserInterfaceInteraction) {
         this.updateComponents()
 
+        const updateOptions = this.getInteractionUpdateOptions()
+
         if (interaction.deferred) {
-            await interaction.editReply(this.getInteractionUpdateOptions())
+            await interaction.editReply(updateOptions)
             return
         }
 
         try {
             if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) {
-                interaction.update(this.getInteractionUpdateOptions())
+                interaction.update(updateOptions)
                 return
             }
-            interaction.editReply(this.getInteractionUpdateOptions())
+            interaction.editReply(updateOptions)
         } catch (error) {
             if (interaction.replied) {
                 updateAsErrorMessage(interaction)
@@ -101,6 +98,15 @@ export abstract class UserInterface {
             }
             PrettyLog.error(`${error}`)
         }
+    }
+
+    protected getComponentsMap(components: UIComponent[]) {
+        const componentsEntries: [string, UIComponent][] = components.map((component) => {
+            if (component instanceof ComponentSeparator) return [component.customId, component];
+            return [component.comp.customId, component]
+        })
+        
+        return new Map(componentsEntries)
     }
 
     protected createComponentsCollectors(response: InteractionCallbackResponse): void {
@@ -136,7 +142,10 @@ export abstract class MessageUserInterface extends UserInterface {
 
     public async display(interaction: UserInterfaceInteraction) {
         const success = await this.predisplay(interaction)
-        if (!success) return await replyErrorMessage(interaction)
+        if (!success) {
+            await replyErrorMessage(interaction)
+            return null
+        }
 
         this.setup(interaction)
 
