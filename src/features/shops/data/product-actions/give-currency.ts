@@ -12,7 +12,7 @@ export const giveCurrencyActionSchema = z.object({
     kind: z.literal("give-currency"),
     options: z.object({
         currencyId: NanoIdSchema,
-        amount: z.number().min(0)
+        amount: z.number().positive()
     })
 })
 

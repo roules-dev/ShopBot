@@ -24,7 +24,7 @@ export const ShopRawSchema = z.object({
         z.string()
             .min(DISCOUNT_CODE_MIN_LENGTH)
             .max(DISCOUNT_CODE_MAX_LENGTH), 
-        z.number().min(0)
+        z.number().min(0).max(100)
     ),
 
     reservedTo: z.exactOptional(z.nullable(SnowflakeSchema)),

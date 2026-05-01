@@ -247,7 +247,6 @@ export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductPara
     }
 }
 
-// TODO : eventually abstract the modal logic
 async function showPricePieceSelectModal( 
     interaction: MessageComponentInteraction | ChatInputCommandInteraction,
     { id, title }: { 
@@ -350,7 +349,6 @@ async function showPricePieceSelectModal(
 
 //                 let actionString = ""
                 
-//                 // TODO: refactor
 //                 switch (this.productActionType) {
 //                     case PRODUCT_ACTION_TYPE.GiveRole: {
 //                         const roleMentionString = 

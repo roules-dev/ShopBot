@@ -13,7 +13,7 @@ export const ProductRawSchema = z.object({
     itemId: NanoIdSchema,
     price: z.record(
         NanoIdSchema, 
-        z.number().min(0)
+        z.number().positive()
     ),
     stock: z.exactOptional(z.nullable(z.number().min(0))),
     
