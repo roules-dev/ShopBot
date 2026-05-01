@@ -5,7 +5,7 @@
 1. removing items for inventories - and bulk removing of an item. ([#14](https://github.com/roules-dev/ShopBot/issues/14))
 1. ✅ ~~admin actions logging ([#18](https://github.com/roules-dev/ShopBot/issues/18))~~
 1. 🔄️ complete rework of the product system (new ITEMS database independant of shops, items can be used in multiple shops, with shop specific stock, price and action)
-1. 🔄️ multi-currency prices ([#13](https://github.com/roules-dev/ShopBot/issues/13))
+1. ✅ multi-currency prices ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 
 ## Code Refactoring
 <!-- need for Identity Map ?? -->

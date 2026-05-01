@@ -21,8 +21,8 @@
 - [x] multi language support
 - [ ] permanently displayed shops ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] allowing users to display inventory publicly ([#13](https://github.com/roules-dev/ShopBot/issues/13))
-- [ ] log admin actions to the log channel ([#18](https://github.com/roules-dev/ShopBot/issues/18))
-- [ ] multi-currency items (and thus no more shop-wide currency / leave it optional ?) ([#13](https://github.com/roules-dev/ShopBot/issues/13))
+- [x] log admin actions to the log channel ([#18](https://github.com/roules-dev/ShopBot/issues/18))
+- [x] multi-currency products (and thus no more shop-wide currency / leave it optional ?) ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
 - [ ] shop wide discount
 
@@ -33,11 +33,13 @@
 - [ ] docker container
 - [x] improve internationalisation (reimplement in a more modular way,add fallback for missing translations)
 - [x] improve error handling (implement result pattern)
-- [ ] improve data access, add abstraction to avoid errors and repeated code
-- [ ] branded IDs ? -> will be made once Zod validation is implemented
+- [x] improve data access, add abstraction to avoid errors and repeated code
+- [x] branded IDs ? -> will be made once Zod validation is implemented
 - [x] improve folder structure (implement feature base folder structure)
-- [ ] products must become items, independant of shops
-- [ ] write unit tests
+- [x] products must become items, independant of shops
+- [ ] avoid repeating the code for some basic components such as CurrencySelect or ShopSelect by storing them in the relevant feature
+- [ ] improve UI updateInteraction : ability to display a message at the end of the normal message(could be an error or something else)
+- [ ] look into CRLF/LF issue with generated files 
 
 
 <!-- idea : github CI which automates displaying available translations and the % of translation for each language -->

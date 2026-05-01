@@ -24,8 +24,6 @@ import { Shop } from "../database/shops.types.js";
 import { formatPrice } from "../services/price.js";
 import { MapKey } from "@/lib/types/collections.js";
 
-// TODO: must be updated for the new system (products only hold an itemId and some metadata)
-// TODO: must be updated to support multi-currency products
 
 // TODO update translation
 
@@ -302,6 +300,7 @@ async function showPricePieceSelectModal(
 }
 
 
+// TODO: add action product
 // const ADD_ACTION_PRODUCT_FLOW_STAGE = {
 //     SELECT_SHOP: "SELECT_SHOP",
 //     SETUP_ACTION: "SETUP_ACTION"

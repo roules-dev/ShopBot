@@ -1,5 +1,5 @@
 // TODO: Product Edit Flow
-
+//? (edit price : separate Flow (need for specific components))
 
 // export const EDIT_PRODUCT_FLOW_STAGE = {
 //     SELECT_SHOP: "SELECT_SHOP",

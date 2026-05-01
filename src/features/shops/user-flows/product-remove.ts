@@ -18,7 +18,6 @@ import { Product } from "../database/products.types.js"
 import { Shop } from "../database/shops.types.js"
 
 
-
 export class RemoveProductFlow extends UserFlow {
     public override get id(): string { 
         return "remove-product" 

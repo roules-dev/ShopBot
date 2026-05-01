@@ -49,7 +49,6 @@ export async function processPurchase(
     const [error3] = await addCurrenciesAmounts(accountId, price, -1)
     if (error3) return err(error3)
     
-    // TODO: execute product action on purchase
     if (product.action != undefined) {
         const [error4, actionMessage] = await productActions[product.action.kind].execute(member, product.action.options)
         if (error4) return err(error4)

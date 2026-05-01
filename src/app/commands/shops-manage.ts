@@ -2,7 +2,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { createShopFlow } from "@/features/shops/user-flows/shop-create.js"
 import { DiscountCodeCreateFlow, DiscountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
-import { ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
+import { EditShopFlow, EditShopParamsSchema, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -136,11 +136,10 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             break
         default:
             if (subCommandGroup == "edit") {
-                // const editShopFlow = new EditShopFlow()
-                // editShopFlow.start(interaction)
-                // break
-                await replyErrorMessage(interaction, "Not implemented yet")
-                // TODO : Shop Edit
+                const [error, options] = validateCommandOptions(interaction.options, EditShopParamsSchema)
+                if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+                new EditShopFlow(options).start(interaction)
                 return
             }
 

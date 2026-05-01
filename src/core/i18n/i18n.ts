@@ -79,13 +79,13 @@ async function getLocaleStrings(path: string, maxLength?: number) {
     return result
 }
 
-const { t, setLocale } = initI18n({
+const { t, setLocale, getLocale } = initI18n({
 	locale: "en-US",
 	fallbackLocale: DEFAULT_LOCALE_CODE,
 	translations: LOCALES
 })
 
-export { t }
+export { t, getLocale }
 
 EVENTS.on("settingUpdated", async (settingId, setting) => {
 	if (settingId !== "language") return
