@@ -31,6 +31,14 @@ export async function createShopFlow(interaction: ChatInputCommandInteraction) {
         return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     }
 
+    if (!interaction.guild) {
+        return await replyErrorMessage(interaction)
+    }
+    if (params.reservedTo == interaction.guild.id) {
+        // Role ID = Guild ID means the role is @everyone, thus the shop is not reserved
+        params.reservedTo = null
+    }
+
     const [error2, shop] = await createShop(params)
     if (error2) {
         return await replyErrorMessage(interaction, error2.message)

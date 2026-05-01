@@ -114,12 +114,12 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
     protected override initEmbeds(_interaction: UserInterfaceInteraction) {
         if (!this.selectedShop) return
 
-        const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
+        const reservedToString = this.selectedShop.reservedTo != null ? 
             ` (${t(`userInterfaces.shop.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         const shopEmbed = new EmbedBuilder()
             .setTitle(`${formattedEmojiableName(this.selectedShop)}`)
-            .setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
+            .setDescription(`${reservedToString}${this.selectedShop.description ?? ""}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
             .setColor(Colors.Gold)
 
 
@@ -133,11 +133,11 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
         if (!shopEmbed || !this.selectedShop) return
 
-        const reservedToString = this.selectedShop.reservedTo !== undefined && this.selectedShop.reservedTo !== null ? 
+        const reservedToString = this.selectedShop.reservedTo != null ? 
             ` (${t(`userInterfaces.shop.embeds.shop.reservedTo`, { role: roleMention(this.selectedShop.reservedTo) })})\n` : ""
 
         shopEmbed.setTitle(`${formattedEmojiableName(this.selectedShop)}`)
-        shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
+        shopEmbed.setDescription(`${reservedToString}${this.selectedShop.description ?? ""}\n${t(`userInterfaces.shop.embeds.shop.products`)} `)
 
         shopEmbed.setFields(this.getPageEmbedFields())
 
