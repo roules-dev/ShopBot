@@ -92,7 +92,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
             {
                 customId: `${this.id}+show-account`,
                 label: t(`userInterfaces.account.components.showAccountButton`),
-                emoji: {name: "💰"},
+                emoji: "💰",
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.CURRENCIES,
                 time: 120_000
@@ -104,7 +104,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
             {
                 customId: `${this.id}+show-inventory`,
                 label: t(`userInterfaces.account.components.showInventoryButton`),
-                emoji: {name: "💼"},
+                emoji: "💼",
                 style: ButtonStyle.Secondary,
                 disabled: this.mode == this.modes.INVENTORY,
                 time: 120_000

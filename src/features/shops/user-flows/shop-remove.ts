@@ -51,7 +51,7 @@ export class ShopRemoveFlow extends UserFlow {
             customId: `${this.id}+submit`,
             time: 120_000,
             label: t(`userFlows.shopRemove.components.submitButton`),
-            emoji: {name: "⛔"},
+            emoji: "⛔",
             style: ButtonStyle.Danger,
             disabled: true
         }, (interaction: ButtonInteraction) => this.success(interaction))

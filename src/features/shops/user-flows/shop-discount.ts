@@ -62,7 +62,7 @@ export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof DiscountCode
             {
                 customId: `${this.id}+submit`,
                 label: t(`userFlows.discountCodeCreate.components.submitButton`),
-                emoji: {name: "✅"},
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
                 time: 120_000
@@ -164,7 +164,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
                 customId: `${this.id}+remove-discount-code`,
                 time: 120_000,
                 label: t(`userFlows.discountCodeRemove.components.submitButton`),
-                emoji: {name: "⛔"},
+                emoji: "⛔",
                 style: ButtonStyle.Danger,
                 disabled: true
             },

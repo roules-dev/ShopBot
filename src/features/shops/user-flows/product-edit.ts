@@ -98,7 +98,7 @@
 //                 customId: `${this.id}+submit-shop`,
 //                 time: 120_000,
 //                 label: t("defaultComponents.submitShopButton"),
-//                 emoji: {name: "✅"},
+//                 emoji: "✅",
 //                 style: ButtonStyle.Success,
 //                 disabled: true,
 //             },
@@ -136,7 +136,7 @@
 //                 customId: `${this.id}+edit-product`,
 //                 time: 120_000,
 //                 label: t(`${this.locale}.components.submitButton`),
-//                 emoji: {name: "✅"},
+//                 emoji: "✅",
 //                 style: ButtonStyle.Success,
 //                 disabled: true
 //             },
@@ -148,7 +148,7 @@
 //                 customId: `${this.id}+change-shop`,
 //                 time: 120_000,
 //                 label: t("defaultComponents.changeShopButton"),
-//                 emoji: {name: "📝"},
+//                 emoji: "📝",
 //                 style: ButtonStyle.Secondary
 //             },
 //             (interaction: ButtonInteraction) => {

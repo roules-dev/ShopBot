@@ -1,6 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
@@ -9,7 +10,6 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { Currency } from "../database/currencies.types.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
@@ -42,7 +42,7 @@ export class CurrencyRemoveFlow extends UserFlow {
         const submitButton = new ExtendedButtonComponent({
                 customId: `${this.id}+submit`,
                 label: t(`userFlows.currencyRemove.components.submitButton`),
-                emoji: {name: "⛔"},
+                emoji: "⛔",
                 style: ButtonStyle.Danger,
                 disabled: this.selectedCurrency == null,
                 time: 120_000,

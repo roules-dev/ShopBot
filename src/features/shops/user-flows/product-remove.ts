@@ -80,7 +80,7 @@ export class RemoveProductFlow extends UserFlow {
             {
                 customId: `${this.id}+remove-product`,
                 label: t(`userFlows.productRemove.components.submitButton`),
-                emoji: {name: "⛔"},
+                emoji: "⛔",
                 style: ButtonStyle.Danger,
                 disabled: true,
                 time: 120_000

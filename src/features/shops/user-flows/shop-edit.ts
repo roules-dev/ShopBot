@@ -8,13 +8,13 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
-import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
-import { Shop } from "../database/shops.types.js"
 import { withSingleKeyKind } from "@/lib/validation/preprocessors.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
 import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
+import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
+import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
+import { Shop } from "../database/shops.types.js"
 
 export const EditShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
     z.object({ 
@@ -87,7 +87,7 @@ export class EditShopFlow extends UserFlow<z.infer<typeof EditShopParamsSchema>>
                 customId: `${this.id}+submit`,
                 time: 120_000,
                 label: t(`userFlows.shopEdit.components.submitButton`),
-                emoji: {name: "✅"},
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
             },

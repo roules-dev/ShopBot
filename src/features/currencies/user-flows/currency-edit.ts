@@ -69,7 +69,7 @@ export class EditCurrencyFlow extends UserFlow<z.infer<typeof EditCurrencyParams
             {
                 customId: `${this.id}+submit`,
                 label: t(`userFlows.currencyEdit.components.submitButton`),
-                emoji: {name: "✅"},
+                emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: this.selectedCurrency == null,
                 time: 120_000,

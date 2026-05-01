@@ -72,7 +72,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             {
                 customId: `${this.id}+buy`,
                 label: t(`userInterfaces.shop.components.buyButton`),
-                emoji: {name: "🪙"},
+                emoji: "🪙",
                 style: ButtonStyle.Primary,
                 time: 120_000,
                 disabled: this.isBuyingAllowed()
@@ -88,7 +88,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
             {
                 customId: `${this.id}+show-account`,
                 label: t(`userInterfaces.shop.components.showAccountButton`),
-                emoji: {name: "💰"},
+                emoji: "💰",
                 style: ButtonStyle.Secondary,
                 time: 120_000,
             },
