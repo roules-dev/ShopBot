@@ -65,7 +65,7 @@ export const settingVariantSchema = z.discriminatedUnion("kind", [
     })
 ])
 
-export const SettingSchema = settingVariantSchema.superRefine((data, ctx) => {
+export const settingSchema = settingVariantSchema.superRefine((data, ctx) => {
     switch (data.kind) {
         case "number": 
             validateMinMax(data, ctx)

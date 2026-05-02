@@ -2,7 +2,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { createShopFlow } from "@/features/shops/user-flows/shop-create.js"
 import { DiscountCodeCreateFlow, discountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
-import { EditShopFlow, EditShopParamsSchema, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
+import { EditShopFlow, editShopParamsSchema, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -136,7 +136,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             break
         default:
             if (subCommandGroup == "edit") {
-                const [error, options] = validateCommandOptions(interaction.options, EditShopParamsSchema)
+                const [error, options] = validateCommandOptions(interaction.options, editShopParamsSchema)
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
                 new EditShopFlow(options).start(interaction)

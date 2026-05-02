@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies.schemas.js"
 import { createCurrencyFlow } from "@/features/currencies/user-flows/currency-create.js"
-import { EditCurrencyFlow, EditCurrencyParamsSchema } from "@/features/currencies/user-flows/currency-edit.js"
+import { EditCurrencyFlow, editCurrencyParamsSchema } from "@/features/currencies/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/user-flows/currency-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -72,7 +72,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         }
         default:
             if (subCommandGroup == "edit") {
-                const [error, options] = validateCommandOptions(interaction.options, EditCurrencyParamsSchema)
+                const [error, options] = validateCommandOptions(interaction.options, editCurrencyParamsSchema)
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
                 new EditCurrencyFlow(options).start(interaction)

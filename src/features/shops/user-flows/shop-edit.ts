@@ -16,7 +16,7 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } fro
 import z from "zod"
 import { Shop } from "../database/shops.types.js"
 
-export const EditShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
+export const editShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
     z.object({ 
         kind: z.literal("name"), 
         name: z.string() 
@@ -37,7 +37,7 @@ export const EditShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind
     })
 ]))
 
-export class EditShopFlow extends UserFlow<z.infer<typeof EditShopParamsSchema>> {
+export class EditShopFlow extends UserFlow<z.infer<typeof editShopParamsSchema>> {
     public override get id(): string { 
         return "edit-shop" 
     }  

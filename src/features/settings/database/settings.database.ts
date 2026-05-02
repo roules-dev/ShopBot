@@ -1,15 +1,15 @@
-import fs from "fs/promises"
-import { err, ok, Result } from "@/lib/error-handling.js"
 import { EVENTS } from "@/core/events/event-bus.js"
-import { SettingSchema } from "../schemas/settings.schemas.js"
-import z from "zod"
-import { SettingIdBrands, SettingType, SettingValueByIdBrand, SettingValueType } from "./settings.types.js"
 import { JsonDatabase } from "@/database/json-database.js"
+import { err, ok, Result } from "@/lib/error-handling.js"
+import fs from "fs/promises"
+import z from "zod"
+import { settingSchema } from "../schemas/settings.schemas.js"
+import { SettingIdBrands, SettingType, SettingValueByIdBrand, SettingValueType } from "./settings.types.js"
 
 const settingsDatabasePath = "./data/settings.json"
 const settingsDatabaseRaw = JSON.parse(await fs.readFile(settingsDatabasePath, "utf-8"))
 
-const settingsDatabase = new JsonDatabase(settingsDatabaseRaw, settingsDatabasePath, SettingSchema, z.string())
+const settingsDatabase = new JsonDatabase(settingsDatabaseRaw, settingsDatabasePath, settingSchema, z.string())
 
 export function getSettings() {
     return settingsDatabase.list()

@@ -1,16 +1,14 @@
-
-
 import { CurrenciesDatabase } from "@/core/database/database.types";
-import { NanoId } from "@/database/database-types";
+import { NanoId } from "@/database/database.types";
 import { JsonDatabase } from "@/database/json-database";
-import { dbUpdateCurrency } from "@/features/currencies/database/currencies-database";
-import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies-schemas";
-import { BrandedEmoji, nanoIdSchema } from "@/schemas/utils";
-import { describe, expect, it, vi } from "vitest";
+import { dbUpdateCurrency } from "@/features/currencies/database/currencies.database";
+import { currencyRawSchema } from "@/features/currencies/schemas/currencies.schemas";
+import { nanoIdSchema, BrandedEmoji } from "@/schemas/utils";
+import { vi, it, expect, describe } from "vitest"
 
-class MockCurrenciesDatabase extends JsonDatabase<typeof nanoIdSchema, typeof CurrencyRawSchema> implements CurrenciesDatabase {
+class MockCurrenciesDatabase extends JsonDatabase<typeof nanoIdSchema, typeof currencyRawSchema> implements CurrenciesDatabase {
     constructor() {
-        super({}, "", CurrencyRawSchema, nanoIdSchema);
+        super({}, "", currencyRawSchema, nanoIdSchema);
         this.data = new Map();
     }
 
@@ -25,7 +23,7 @@ describe("currencies db operations", () => {
     it("should update the currency (add emoji)", async () => {
         const db = new MockCurrenciesDatabase()
         
-        db.set(currencyId, {name: "Cool Currency", emoji: null})
+        db.set(currencyId, {name: "Cool Currency", emoji: null, refCount: 0})
 
         const [err, updated] = await dbUpdateCurrency(db, currencyId, {emoji: "🪙" as BrandedEmoji})
         
@@ -38,7 +36,7 @@ describe("currencies db operations", () => {
 
     it("should update the currency (change name)", async () => {
         const db = new MockCurrenciesDatabase()
-        db.set(currencyId, { name: "Cool Currency", emoji: "🪙" as BrandedEmoji})
+        db.set(currencyId, { name: "Cool Currency", emoji: "🪙" as BrandedEmoji, refCount: 0})
 
         const [err, updated] = await dbUpdateCurrency(db, currencyId, {name: "Not that cool currency"})
         

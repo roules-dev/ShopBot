@@ -18,7 +18,7 @@ import z from "zod"
 import { Currency } from "../database/currencies.types.js"
 
 
-export const EditCurrencyParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
+export const editCurrencyParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
     z.object({ 
         kind: z.literal("name"), 
         name: z.string() 
@@ -30,7 +30,7 @@ export const EditCurrencyParamsSchema = withSingleKeyKind(z.discriminatedUnion("
 ]))
 
 
-export class EditCurrencyFlow extends UserFlow<z.infer<typeof EditCurrencyParamsSchema>> {
+export class EditCurrencyFlow extends UserFlow<z.infer<typeof editCurrencyParamsSchema>> {
     public override get id(): string { 
         return "currency-edit" 
     }

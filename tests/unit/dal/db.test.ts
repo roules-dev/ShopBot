@@ -1,16 +1,15 @@
 import { AccountsDatabase } from "@/core/database/database.types";
-import { NanoId } from "@/database/database-types";
+import { NanoId } from "@/database/database.types";
 import { JsonDatabase } from "@/database/json-database";
-import { Account } from "@/features/accounts/database/accounts-type";
-import { AccountRawSchema } from "@/features/accounts/schemas/accounts-schemas";
+import { Account } from "@/features/accounts/database/accounts.type";
+import { accountRawSchema } from "@/features/accounts/schemas/accounts.schemas";
 import { BrandedSnowflake, snowflakeSchema } from "@/schemas/utils";
-import { describe, expect, it, vi } from "vitest";
-
+import { expect, it, vi, describe } from "vitest";
     
-class MockAccountsDatabase extends JsonDatabase<typeof snowflakeSchema, typeof AccountRawSchema> implements AccountsDatabase {
+class MockAccountsDatabase extends JsonDatabase<typeof snowflakeSchema, typeof accountRawSchema> implements AccountsDatabase {
 
     constructor() {
-        super({}, "", AccountRawSchema, snowflakeSchema);
+        super({}, "", accountRawSchema, snowflakeSchema);
         this.data = new Map();
     }
 
