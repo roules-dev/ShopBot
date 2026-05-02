@@ -10,7 +10,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { withSingleKeyKind } from "@/lib/validation/preprocessors.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
-import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
+import { emojiSchema, snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
@@ -23,7 +23,7 @@ export const EditShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind
     }),
     z.object({ 
         kind: z.literal("emoji"),
-        emoji: optionalOrNull(EmojiSchema).catch(null) 
+        emoji: optionalOrNull(emojiSchema).catch(null) 
     }),
     z.object({
         kind: z.literal("description"),
@@ -31,7 +31,7 @@ export const EditShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind
     }),
     z.object({
         kind: z.literal("role"),
-        role: optionalOrNull(SnowflakeSchema)
+        role: optionalOrNull(snowflakeSchema)
     }).transform(({role}) => {
         return { kind: "reservedTo" as const, reservedTo: role }
     })

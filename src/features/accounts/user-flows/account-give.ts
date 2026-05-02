@@ -12,7 +12,7 @@ import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation/validation.js"
-import { SnowflakeSchema } from "@/schemas/utils.js"
+import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, roleMention, userMention } from "discord.js"
 import z from "zod"
@@ -59,12 +59,12 @@ abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends U
 }
 
 
-export const AccountGiveParamsSchema = z.object({
+export const accountGiveParamsSchema = z.object({
     amount: z.number(),
-    target: z.looseObject({ id: SnowflakeSchema }),
+    target: z.looseObject({ id: snowflakeSchema }),
 })
 
-export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof AccountGiveParamsSchema>> {
+export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof accountGiveParamsSchema>> {
     public get id() { return "account-give" }
 
     protected override getMessage() {
@@ -110,12 +110,12 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof Account
     }
 }
 
-export const BulkAccountGiveParamsSchema = z.object({
+export const bulkAccountGiveParamsSchema = z.object({
     amount: z.number(),
-    targetRole: z.looseObject({ id: SnowflakeSchema }),
+    targetRole: z.looseObject({ id: snowflakeSchema }),
 })
 
-export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof BulkAccountGiveParamsSchema>> {
+export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof bulkAccountGiveParamsSchema>> {
 
     public override get id(): string { 
         return "bulk-account-give" 
@@ -140,7 +140,7 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof Bul
         const targetUsersIds = (await interaction.guild?.roles.fetch(this.params.targetRole.id))?.members.map(m => m.user.id) || []
 
         for (const userId of targetUsersIds) {
-            const [error, targetId] = validate(SnowflakeSchema, userId)
+            const [error, targetId] = validate(snowflakeSchema, userId)
             if (error) return updateAsErrorMessage(interaction, error.message)
 
             const [error1, account] = await getOrCreateAccount(targetId)

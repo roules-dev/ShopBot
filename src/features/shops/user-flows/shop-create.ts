@@ -3,21 +3,21 @@ import { createShop } from "@/core/services/shops/shops.services.js"
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
-import { EmojiSchema, SnowflakeSchema } from "@/schemas/utils.js"
+import { emojiSchema, snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ChatInputCommandInteraction, bold } from "discord.js"
 import z from "zod"
 
-const ShopCreateParamsSchema = z.object({
+const shopCreateParamsSchema = z.object({
     name: z.string().refine((name) => name.removeCustomEmojis().length > 0).overwrite((name) => name.replaceSpaces()),
 
-    emoji: optionalOrNull(EmojiSchema).catch(null),
+    emoji: optionalOrNull(emojiSchema).catch(null),
 
     description: optionalOrNull(
         z.string().overwrite((desc) => desc.replaceSpaces())
     ),
     
-    reserved_to_role: optionalOrNull(SnowflakeSchema),
+    reserved_to_role: optionalOrNull(snowflakeSchema),
 }).transform(options => {
     const { reserved_to_role: reservedTo, ...otherOptions } = options
     return { ...otherOptions, reservedTo }
@@ -26,7 +26,7 @@ const ShopCreateParamsSchema = z.object({
 
 
 export async function createShopFlow(interaction: ChatInputCommandInteraction) {
-    const [error1, params] = validateCommandOptions(interaction.options, ShopCreateParamsSchema)
+    const [error1, params] = validateCommandOptions(interaction.options, shopCreateParamsSchema)
     if (error1) {
         return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     }

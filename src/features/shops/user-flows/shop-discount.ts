@@ -14,12 +14,12 @@ import z from "zod"
 import { Shop } from "../database/shops.types.js"
 
 
-export const DiscountCodeCreateParamsSchema = z.object({
+export const discountCodeCreateParamsSchema = z.object({
     code: z.string().overwrite((code) => code.replaceSpaces("").toUpperCase()),
     amount: z.number()
 })
 
-export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof DiscountCodeCreateParamsSchema>> {
+export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof discountCodeCreateParamsSchema>> {
     public override get id(): string { 
         return "discount-code-create" 
     }

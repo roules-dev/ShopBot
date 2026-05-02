@@ -1,5 +1,5 @@
-import { validateMinMax, validateEnum } from "@/lib/validation/refinements.js";
-import { SnowflakeSchema } from "@/schemas/utils.js";
+import { validateEnum, validateMinMax } from "@/lib/validation/refinements.js";
+import { snowflakeSchema } from "@/schemas/utils.js";
 import z from "zod";
 
 const BaseSetting = {
@@ -13,7 +13,7 @@ function withBase<T extends z.ZodRawShape>(shape: T) {
     })
 }
 
-export const SettingVariantSchema = z.discriminatedUnion("kind", [
+export const settingVariantSchema = z.discriminatedUnion("kind", [
     withBase({
         id: z.string().brand("setting-string"),
         kind: z.literal("string"),
@@ -37,19 +37,19 @@ export const SettingVariantSchema = z.discriminatedUnion("kind", [
     withBase({
         id: z.string().brand("setting-channelId"),
         kind: z.literal("channelId"),
-        value: z.nullable(SnowflakeSchema),
+        value: z.nullable(snowflakeSchema),
     }),
 
     withBase({
         id: z.string().brand("setting-roleId"),
         kind: z.literal("roleId"),
-        value: z.nullable(SnowflakeSchema),
+        value: z.nullable(snowflakeSchema),
     }),
 
     withBase({
         id: z.string().brand("setting-userId"),
         kind: z.literal("userId"),
-        value: z.nullable(SnowflakeSchema),
+        value: z.nullable(snowflakeSchema),
     }),
 
     withBase({
@@ -65,7 +65,7 @@ export const SettingVariantSchema = z.discriminatedUnion("kind", [
     })
 ])
 
-export const SettingSchema = SettingVariantSchema.superRefine((data, ctx) => {
+export const SettingSchema = settingVariantSchema.superRefine((data, ctx) => {
     switch (data.kind) {
         case "number": 
             validateMinMax(data, ctx)

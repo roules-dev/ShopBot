@@ -1,16 +1,16 @@
-import { EmojiSchema } from "@/schemas/utils.js"
+import { emojiSchema } from "@/schemas/utils.js"
 import z from "zod"
 
 
 export const ITEM_NAME_MAX_LENGTH = 70
 export const ITEM_DESCRIPTION_MAX_LENGTH = 300
 
-export const ItemRawSchema = z.object({
+export const itemRawSchema = z.object({
     name: z.string()
         .min(1)
         .max(ITEM_NAME_MAX_LENGTH), 
 
-    emoji: z.nullable(EmojiSchema),
+    emoji: z.nullable(emojiSchema),
 
     description: z.nullable(z.string()
         .min(1)

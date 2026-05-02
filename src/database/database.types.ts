@@ -1,8 +1,8 @@
-import { NanoIdSchema } from "@/schemas/utils.js"
+import { nanoIdSchema } from "@/schemas/utils.js"
 import { PathLike } from "fs"
 import z from "zod"
 
-export type NanoId = z.infer<typeof NanoIdSchema>
+export type NanoId = z.infer<typeof nanoIdSchema>
 
 const API_ERRORS = { 
     ShopDoesNotExist: {
@@ -56,7 +56,7 @@ const API_ERRORS = {
         message: "Account does not exist",
         status: 404
     },
-    
+
 
     InvalidSettingType: {
         message: "Provided setting type is invalid",
@@ -75,6 +75,11 @@ const API_ERRORS = {
 
 const DATABASE_ERRORS = {
     
+    InvalidData: {
+        message: "Invalid data",
+        status: 400
+    },
+
     InvalidDatabase: {
         message: "Invalid database",
         status: 500

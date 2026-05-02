@@ -1,12 +1,12 @@
 import { NanoId } from "@/database/database.types.js"
-import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
-import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
-import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js"
-import { productActionSchema, ProductRawSchema } from "@/features/shops/schemas/products.schemas.js"
-import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
+import { accountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
+import { currencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
+import { itemRawSchema } from "@/features/items/schemas/items.schemas.js"
+import { productActionSchema, productRawSchema } from "@/features/shops/schemas/products.schemas.js"
+import { shopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { validate } from "@/lib/validation/validation.js"
-import { NanoIdSchema } from "@/schemas/utils.js"
+import { nanoIdSchema } from "@/schemas/utils.js"
 import fs from "fs/promises"
 import { nanoid } from "nanoid"
 import { fileURLToPath } from "url"
@@ -96,13 +96,13 @@ const shops = JSON.parse(await fs.readFile(shopsPath, "utf-8")) as Record<string
 async function migrateShops() {
     let errorCount = 0
 
-    const items: Record<string, z.infer<typeof ItemRawSchema>> = {}
-    const newShops: Record<string, z.infer<typeof ShopRawSchema>> = {}
+    const items: Record<string, z.infer<typeof itemRawSchema>> = {}
+    const newShops: Record<string, z.infer<typeof shopRawSchema>> = {}
 
     for (const [shopId, shop] of Object.entries(shops)) {
         const { products, currencyId, id:_ , ...newShop } = shop
         
-        const newProducts: Record<NanoId, z.infer<typeof ProductRawSchema>> = {}
+        const newProducts: Record<NanoId, z.infer<typeof productRawSchema>> = {}
 
         for (const [productId, product] of Object.entries(products)) {
             const { id, shopId: _, price: priceNum, ...newProductWithoutPriceWithoutId } = product
@@ -130,7 +130,7 @@ async function migrateShops() {
 
             const newPrice = Object.fromEntries([[currencyId, priceNum]])
 
-            let newProduct: z.infer<typeof ProductRawSchema> = { price: newPrice, itemId: NanoIdSchema.parse(id) }
+            let newProduct: z.infer<typeof productRawSchema> = { price: newPrice, itemId: nanoIdSchema.parse(id) }
 
             if (stock != undefined) {
                 newProduct = { ...newProduct, stock }
@@ -139,7 +139,7 @@ async function migrateShops() {
                 newProduct = { ...newProduct, action }
             }
 
-            const [error1, newProductValidated] = validate(ProductRawSchema, newProduct)
+            const [error1, newProductValidated] = validate(productRawSchema, newProduct)
 
             if (error1) {
                 log(() => PrettyLog.error(`Invalid Product: ${productId}\n${z.prettifyError(error1)}`))
@@ -147,7 +147,7 @@ async function migrateShops() {
                 continue
             }
 
-            const [error2, itemValidated] = validate(ItemRawSchema, { ...item, refCount: 1 })
+            const [error2, itemValidated] = validate(itemRawSchema, { ...item, refCount: 1 })
             if (error2) {
                 log(() => PrettyLog.error(`Invalid Item for product ${productId} in shop ${shopId}\n${z.prettifyError(error2)}`))
                 errorCount++
@@ -160,7 +160,7 @@ async function migrateShops() {
             newProducts[newProductId] = newProductValidated
         }
 
-        const [error3, newShopValidated] = validate(ShopRawSchema, { ...newShop, products: newProducts })
+        const [error3, newShopValidated] = validate(shopRawSchema, { ...newShop, products: newProducts })
         if (error3) {
             log(() => PrettyLog.error(`Invalid Shop: ${shopId}\n${error3.message}`))
             errorCount++
@@ -183,7 +183,7 @@ async function migrateShops() {
 
 
 async function migrateAccounts() {
-    const newAccounts: Record<string, z.infer<typeof AccountRawSchema>> = {}
+    const newAccounts: Record<string, z.infer<typeof accountRawSchema>> = {}
 
     for (const [accountId, account] of Object.entries(accounts)) {
         const currencies = Object.fromEntries(Array.from(Object.entries(account.currencies)).map(([id, balance]) => [id, balance.amount]))
@@ -196,12 +196,12 @@ async function migrateAccounts() {
 }
 
 async function migrateCurrencies() {
-    const newCurrencies: Record<string, z.infer<typeof CurrencyRawSchema>> = {}
+    const newCurrencies: Record<string, z.infer<typeof currencyRawSchema>> = {}
 
     try {
         for (const [currencyId, currency] of Object.entries(currencies)) {
             const { id: _, ...newCurrency } = currency
-            newCurrencies[currencyId] = CurrencyRawSchema.parse({ newCurrency, refCount: 0 })
+            newCurrencies[currencyId] = currencyRawSchema.parse({ newCurrency, refCount: 0 })
         }
     } catch (error) {
         log(() => {

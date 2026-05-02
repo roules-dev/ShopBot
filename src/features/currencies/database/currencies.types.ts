@@ -1,4 +1,4 @@
 import z from "zod"
-import { CurrencyRawSchema } from "../schemas/currencies.schemas.js"
+import { currencyRawSchema } from "../schemas/currencies.schemas.js"
 
-export type Currency = z.infer<typeof CurrencyRawSchema>
+export type Currency = z.infer<typeof currencyRawSchema>

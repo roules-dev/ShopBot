@@ -244,7 +244,7 @@
 //             case EDIT_PRODUCT_OPTION.EMOJI: {
 //                 const emojiOption = interaction.options.getString(interactionOption)
 
-//                 const [error, emoji] = validate(EmojiSchema, emojiOption)
+//                 const [error, emoji] = validate(emojiSchema, emojiOption)
 //                 return error ? null : emoji
 //             }
 //             case EDIT_PRODUCT_OPTION.STOCK:

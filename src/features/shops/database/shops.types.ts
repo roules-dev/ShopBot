@@ -1,7 +1,7 @@
 import z from "zod"
-import { ShopRawSchema } from "../schemas/shop.schemas.js"
+import { shopRawSchema } from "../schemas/shop.schemas.js"
 
-export type Shop = z.infer<typeof ShopRawSchema>
+export type Shop = z.infer<typeof shopRawSchema>
 
 export type ShopOptions = Omit<Shop, "products" | "discountCodes">
 

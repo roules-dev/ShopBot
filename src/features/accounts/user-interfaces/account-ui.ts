@@ -9,7 +9,7 @@ import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { MultiplePaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/special-embed-ui.js"
-import { SnowflakeSchema } from "@/schemas/utils.js"
+import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { Account } from "../database/accounts.type.js"
@@ -43,7 +43,7 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     }
 
     protected override async predisplay(interaction: UserInterfaceInteraction) {
-        const [error, account] = await getOrCreateAccount(SnowflakeSchema.parse(this.user.id))
+        const [error, account] = await getOrCreateAccount(snowflakeSchema.parse(this.user.id))
         if (error) {
             await replyErrorMessage(interaction, error.message)
             return false

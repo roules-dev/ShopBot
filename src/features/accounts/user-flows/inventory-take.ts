@@ -12,7 +12,7 @@ import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/exte
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { SnowflakeSchema } from "@/schemas/utils.js"
+import { snowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountItemAmount } from "../services/accounts.services.js"
@@ -20,12 +20,12 @@ import { emptyAccount, setAccountItemAmount } from "../services/accounts.service
 // TODO: implement inventory take / bulk take
 //? user suggestion #14
 
-export const InventoryTakeParamsSchema = z.object({
+export const inventoryTakeParamsSchema = z.object({
     amount: z.number(),
-    target: z.looseObject({ id: SnowflakeSchema }),
+    target: z.looseObject({ id: snowflakeSchema }),
 })
 
-export class InventoryTakeFlow extends UserFlow<z.infer<typeof InventoryTakeParamsSchema>> {
+export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakeParamsSchema>> {
     public override get id(): string { 
         return "account-take" 
     }
@@ -49,7 +49,7 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof InventoryTakePara
     }
 
     protected override initComponents() {
-        const targetId = SnowflakeSchema.parse(this.params.target.id)
+        const targetId = snowflakeSchema.parse(this.params.target.id)
 
         const itemSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-item`, placeholder: t("defaultComponents.selectItem"), time: 120_000 },

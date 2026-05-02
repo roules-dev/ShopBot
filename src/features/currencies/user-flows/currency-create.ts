@@ -3,19 +3,19 @@ import { createCurrency } from "@/core/services/currencies/currencies.services.j
 import { replyErrorMessage, replySuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
-import { EmojiSchema } from "@/schemas/utils.js"
+import { emojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ChatInputCommandInteraction, bold } from "discord.js"
 import z from "zod"
 
-const CreateCurrencyParamsSchema = z.object({
+const createCurrencyParamsSchema = z.object({
     name: z.string().refine((name) => name.removeCustomEmojis().length > 0).overwrite((name) => name.replaceSpaces()),
 
-    emoji: optionalOrNull(EmojiSchema).catch(null)
+    emoji: optionalOrNull(emojiSchema).catch(null)
 })
 
 export async function createCurrencyFlow(interaction: ChatInputCommandInteraction) {
-    const [error1, params] = validateCommandOptions(interaction.options, CreateCurrencyParamsSchema)
+    const [error1, params] = validateCommandOptions(interaction.options, createCurrencyParamsSchema)
     if (error1) {
         return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     }

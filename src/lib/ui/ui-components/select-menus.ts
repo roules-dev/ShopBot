@@ -1,5 +1,5 @@
 import { validate } from "@/lib/validation/validation.js"
-import { BrandedSnowflake, SnowflakeSchema } from "@/schemas/utils.js"
+import { BrandedSnowflake, snowflakeSchema } from "@/schemas/utils.js"
 import { ChannelSelectMenuBuilder, ChannelSelectMenuInteraction, ChannelType, ComponentType, MessageComponentInteraction, ReadonlyCollection, RoleSelectMenuBuilder, RoleSelectMenuInteraction, UserSelectMenuBuilder, UserSelectMenuInteraction } from "discord.js"
 import { ExtendedComponent } from "./extended-components.js"
 import { ExtendedSelectMenuOptions } from "./string-select-menu.js"
@@ -47,7 +47,7 @@ abstract class ExtendedSelectMenuComponent<T extends SelectMenuComponentTypes> e
         const selected = interaction.values[0]
         if (selected == undefined) return
 
-        const [error, selectedId] = validate(SnowflakeSchema, selected)
+        const [error, selectedId] = validate(snowflakeSchema, selected)
         if (error) return
 
         this.callback(interaction, selectedId)    

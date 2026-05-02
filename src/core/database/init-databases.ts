@@ -1,14 +1,14 @@
 import { JsonDatabase } from "@/database/json-database.js"
-import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
-import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
-import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js"
-import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 import { REQUIRED_DB_VERSION } from "@/global-settings.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { NanoIdSchema, SnowflakeSchema } from "@/schemas/utils.js"
 import { getDbVersion } from "@/tools/migrate-db-to-v3.js"
 import fs from "fs/promises"
 import { Hydrator } from "./hydrator.js"
+import { accountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js"
+import { currencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js"
+import { itemRawSchema } from "@/features/items/schemas/items.schemas.js"
+import { shopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
+import { nanoIdSchema, snowflakeSchema } from "@/schemas/utils.js"
 
 checkDbVersion()
 
@@ -22,10 +22,10 @@ const currenciesDatabaseRaw = JSON.parse(await fs.readFile(currenciesDatabasePat
 const shopsDatabaseRaw = JSON.parse(await fs.readFile(shopsDatabasePath, "utf-8"))
 const itemsDatabaseRaw = JSON.parse(await fs.readFile(itemsDatabasePath, "utf-8"))
 
-const accountsDatabase = new JsonDatabase(accountsDatabaseRaw, accountsDatabasePath, AccountRawSchema, SnowflakeSchema)
-const currenciesDatabase = new JsonDatabase(currenciesDatabaseRaw, currenciesDatabasePath, CurrencyRawSchema, NanoIdSchema)
-const shopsDatabase = new JsonDatabase(shopsDatabaseRaw, shopsDatabasePath, ShopRawSchema, NanoIdSchema)
-const itemsDatabase = new JsonDatabase(itemsDatabaseRaw, itemsDatabasePath, ItemRawSchema, NanoIdSchema)
+const accountsDatabase = new JsonDatabase(accountsDatabaseRaw, accountsDatabasePath, accountRawSchema, snowflakeSchema)
+const currenciesDatabase = new JsonDatabase(currenciesDatabaseRaw, currenciesDatabasePath, currencyRawSchema, nanoIdSchema)
+const shopsDatabase = new JsonDatabase(shopsDatabaseRaw, shopsDatabasePath, shopRawSchema, nanoIdSchema)
+const itemsDatabase = new JsonDatabase(itemsDatabaseRaw, itemsDatabasePath, itemRawSchema, nanoIdSchema)
 
 export { accountsDatabase, currenciesDatabase, itemsDatabase, shopsDatabase }
 

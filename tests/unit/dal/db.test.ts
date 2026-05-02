@@ -3,14 +3,14 @@ import { NanoId } from "@/database/database-types";
 import { JsonDatabase } from "@/database/json-database";
 import { Account } from "@/features/accounts/database/accounts-type";
 import { AccountRawSchema } from "@/features/accounts/schemas/accounts-schemas";
-import { BrandedSnowflake, SnowflakeSchema } from "@/schemas/utils";
+import { BrandedSnowflake, snowflakeSchema } from "@/schemas/utils";
 import { describe, expect, it, vi } from "vitest";
 
     
-class MockAccountsDatabase extends JsonDatabase<typeof SnowflakeSchema, typeof AccountRawSchema> implements AccountsDatabase {
+class MockAccountsDatabase extends JsonDatabase<typeof snowflakeSchema, typeof AccountRawSchema> implements AccountsDatabase {
 
     constructor() {
-        super({}, "", AccountRawSchema, SnowflakeSchema);
+        super({}, "", AccountRawSchema, snowflakeSchema);
         this.data = new Map();
     }
 

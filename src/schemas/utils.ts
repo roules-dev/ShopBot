@@ -2,17 +2,17 @@ import z from "zod";
 
 const DISCORD_EMOJI_REGEX = /<a?:.+?:\d{18,}>/gu
 
-export const EmojiSchema = z.emoji().or(z.string().regex(DISCORD_EMOJI_REGEX, "Invalid emoji")).brand("Emoji")
+export const emojiSchema = z.emoji().or(z.string().regex(DISCORD_EMOJI_REGEX, "Invalid emoji")).brand("Emoji")
 
-export type BrandedEmoji = z.infer<typeof EmojiSchema>
+export type BrandedEmoji = z.infer<typeof emojiSchema>
 
 const SNOWFLAKE_REGEX = /^[0-9]{17,20}$/
 
-export const SnowflakeSchema = z
+export const snowflakeSchema = z
     .string()
     .regex(SNOWFLAKE_REGEX, "Invalid snowflake")
     .brand("Snowflake")
 
-export type BrandedSnowflake = z.infer<typeof SnowflakeSchema>
+export type BrandedSnowflake = z.infer<typeof snowflakeSchema>
 
-export const NanoIdSchema = z.nanoid().brand("NanoId")
+export const nanoIdSchema = z.nanoid().brand("NanoId")

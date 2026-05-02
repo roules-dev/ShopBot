@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { DISCOUNT_CODE_MAX_LENGTH, DISCOUNT_CODE_MIN_LENGTH, SHOP_DESCRIPTION_MAX_LENGTH, SHOP_NAME_MAX_LENGTH } from "@/features/shops/schemas/shop.schemas.js"
 import { createShopFlow } from "@/features/shops/user-flows/shop-create.js"
-import { DiscountCodeCreateFlow, DiscountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
+import { DiscountCodeCreateFlow, discountCodeCreateParamsSchema, DiscountCodeRemoveFlow } from "@/features/shops/user-flows/shop-discount.js"
 import { EditShopFlow, EditShopParamsSchema, ShopReorderFlow } from "@/features/shops/user-flows/shop-edit.js"
 import { ShopRemoveFlow } from "@/features/shops/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
@@ -125,7 +125,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             new ShopReorderFlow().start(interaction)
             break
         case "create-discount-code": {
-            const [error, options] = validateCommandOptions(interaction.options, DiscountCodeCreateParamsSchema)
+            const [error, options] = validateCommandOptions(interaction.options, discountCodeCreateParamsSchema)
             if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
             
             new DiscountCodeCreateFlow(options).start(interaction)

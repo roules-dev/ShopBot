@@ -9,6 +9,7 @@ import { NanoId } from "@/database/database.types.js";
 import { Item } from "@/features/items/database/items.types.js";
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { err, ErrorLike, ok, Result } from "@/lib/error-handling.js";
+import { MapKey } from "@/lib/types/collections.js";
 import { Identifiable } from "@/lib/types/core.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
@@ -22,7 +23,6 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, Labe
 import z from "zod";
 import { Shop } from "../database/shops.types.js";
 import { formatPrice } from "../services/price.js";
-import { MapKey } from "@/lib/types/collections.js";
 
 
 // TODO update translation

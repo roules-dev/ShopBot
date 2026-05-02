@@ -1,4 +1,4 @@
 import z from "zod";
-import { ItemRawSchema } from "../schemas/items.schemas.js";
+import { itemRawSchema } from "../schemas/items.schemas.js";
 
-export type Item = z.infer<typeof ItemRawSchema>
+export type Item = z.infer<typeof itemRawSchema>

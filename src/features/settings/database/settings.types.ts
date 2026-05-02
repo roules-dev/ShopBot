@@ -1,11 +1,11 @@
 import z from "zod"
-import { SettingVariantSchema } from "../schemas/settings.schemas.js"
+import { settingVariantSchema } from "../schemas/settings.schemas.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 
 
-export type Setting =  DeepReadonly<z.infer<typeof SettingVariantSchema>>
+export type Setting =  DeepReadonly<z.infer<typeof settingVariantSchema>>
 
-type SettingVariants = z.infer<typeof SettingVariantSchema>
+type SettingVariants = z.infer<typeof settingVariantSchema>
 
 export type SettingType = SettingVariants["kind"]
 export type SettingValueType<T extends SettingType> = Extract<SettingVariants, { kind: T }>["value"]

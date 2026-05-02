@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
-import { AccountGiveFlow, AccountGiveParamsSchema, BulkAccountGiveFlow, BulkAccountGiveParamsSchema } from "@/features/accounts/user-flows/account-give.js"
-import { AccountTakeFlow, AccountTakeParamsSchema } from "@/features/accounts/user-flows/account-take.js"
+import { AccountGiveFlow, accountGiveParamsSchema, BulkAccountGiveFlow, bulkAccountGiveParamsSchema } from "@/features/accounts/user-flows/account-give.js"
+import { AccountTakeFlow, accountTakeParamsSchema } from "@/features/accounts/user-flows/account-take.js"
 import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -83,7 +83,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             break
         }
         case "give": {
-            const [error, options] = validateCommandOptions(interaction.options, AccountGiveParamsSchema)
+            const [error, options] = validateCommandOptions(interaction.options, accountGiveParamsSchema)
             if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
             new AccountGiveFlow(options).start(interaction)    
@@ -91,14 +91,14 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         }
 
         case "bulk-give": {
-            const [error, options] = validateCommandOptions(interaction.options, BulkAccountGiveParamsSchema)
+            const [error, options] = validateCommandOptions(interaction.options, bulkAccountGiveParamsSchema)
             if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
             new BulkAccountGiveFlow(options).start(interaction)
             break
         }
         case "take": {
-            const [error, options] = validateCommandOptions(interaction.options, AccountTakeParamsSchema)
+            const [error, options] = validateCommandOptions(interaction.options, accountTakeParamsSchema)
             if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
             new AccountTakeFlow(options).start(interaction)

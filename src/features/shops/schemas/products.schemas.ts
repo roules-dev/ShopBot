@@ -1,4 +1,4 @@
-import { NanoIdSchema } from "@/schemas/utils.js"
+import { nanoIdSchema } from "@/schemas/utils.js"
 import z from "zod"
 import { giveCurrencyActionSchema } from "../data/product-actions/give-currency.js"
 import { giveRoleActionSchema } from "../data/product-actions/give-role.js"
@@ -9,10 +9,10 @@ export const productActionSchema = z.discriminatedUnion("kind", [
 ])
 
 
-export const ProductRawSchema = z.object({
-    itemId: NanoIdSchema,
+export const productRawSchema = z.object({
+    itemId: nanoIdSchema,
     price: z.record(
-        NanoIdSchema, 
+        nanoIdSchema, 
         z.number().positive()
     ),
     stock: z.exactOptional(z.nullable(z.number().min(0))),

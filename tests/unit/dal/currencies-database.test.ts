@@ -1,17 +1,16 @@
 
 
 import { CurrenciesDatabase } from "@/core/database/database.types";
-import { updateCurrency } from "@/core/services/currencies/currencies.services";
 import { NanoId } from "@/database/database-types";
 import { JsonDatabase } from "@/database/json-database";
 import { dbUpdateCurrency } from "@/features/currencies/database/currencies-database";
 import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies-schemas";
-import { BrandedEmoji, NanoIdSchema } from "@/schemas/utils";
+import { BrandedEmoji, nanoIdSchema } from "@/schemas/utils";
 import { describe, expect, it, vi } from "vitest";
 
-class MockCurrenciesDatabase extends JsonDatabase<typeof NanoIdSchema, typeof CurrencyRawSchema> implements CurrenciesDatabase {
+class MockCurrenciesDatabase extends JsonDatabase<typeof nanoIdSchema, typeof CurrencyRawSchema> implements CurrenciesDatabase {
     constructor() {
-        super({}, "", CurrencyRawSchema, NanoIdSchema);
+        super({}, "", CurrencyRawSchema, nanoIdSchema);
         this.data = new Map();
     }
 

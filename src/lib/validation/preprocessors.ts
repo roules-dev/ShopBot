@@ -1,4 +1,4 @@
-import z from "zod"
+import z from "zod";
 import { is } from "./validation.js";
 
 function isRecord(val: unknown) {

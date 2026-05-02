@@ -54,7 +54,9 @@ export class JsonDatabase<
         dataItem: MapValue<typeof this.data>
     ) {
         const [error1, item] = validate(this.dataItemJsonSchema, dataItem)
-        if (error1) return err(error1)
+        if (error1) {
+            return err(new DatabaseError("InvalidData", this.path, z.prettifyError(error1)))
+        }
 
         this.data.set(id, item)
 

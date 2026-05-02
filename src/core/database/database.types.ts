@@ -1,11 +1,11 @@
 import { JsonDatabase } from "@/database/json-database.js";
-import { AccountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js";
-import { CurrencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js";
-import { ItemRawSchema } from "@/features/items/schemas/items.schemas.js";
-import { ShopRawSchema } from "@/features/shops/schemas/shop.schemas.js";
-import { NanoIdSchema, SnowflakeSchema } from "@/schemas/utils.js";
+import { accountRawSchema } from "@/features/accounts/schemas/accounts.schemas.js";
+import { currencyRawSchema } from "@/features/currencies/schemas/currencies.schemas.js";
+import { itemRawSchema } from "@/features/items/schemas/items.schemas.js";
+import { shopRawSchema } from "@/features/shops/schemas/shop.schemas.js";
+import { nanoIdSchema, snowflakeSchema } from "@/schemas/utils.js";
 
-export type CurrenciesDatabase = JsonDatabase<typeof NanoIdSchema, typeof CurrencyRawSchema>
-export type ItemsDatabase = JsonDatabase<typeof NanoIdSchema, typeof ItemRawSchema>
-export type ShopsDatabase = JsonDatabase<typeof NanoIdSchema, typeof ShopRawSchema>
-export type AccountsDatabase = JsonDatabase<typeof SnowflakeSchema, typeof AccountRawSchema>
+export type CurrenciesDatabase = JsonDatabase<typeof nanoIdSchema, typeof currencyRawSchema>
+export type ItemsDatabase = JsonDatabase<typeof nanoIdSchema, typeof itemRawSchema>
+export type ShopsDatabase = JsonDatabase<typeof nanoIdSchema, typeof shopRawSchema>
+export type AccountsDatabase = JsonDatabase<typeof snowflakeSchema, typeof accountRawSchema>

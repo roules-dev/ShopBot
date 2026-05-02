@@ -2,7 +2,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { setAccountCurrencyAmount } from "@/features/accounts/services/accounts.services.js"
 import { err, ok } from "@/lib/error-handling.js"
-import { BrandedSnowflake, NanoIdSchema } from "@/schemas/utils.js"
+import { BrandedSnowflake, nanoIdSchema } from "@/schemas/utils.js"
 import { bold } from "discord.js"
 import z from "zod"
 import { ProductAction } from "./product-action.js"
@@ -11,7 +11,7 @@ import { ProductAction } from "./product-action.js"
 export const giveCurrencyActionSchema = z.object({
     kind: z.literal("give-currency"),
     options: z.object({
-        currencyId: NanoIdSchema,
+        currencyId: nanoIdSchema,
         amount: z.number().positive()
     })
 })
