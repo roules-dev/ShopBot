@@ -553,7 +553,7 @@ export const locale = {
         },
         "currencyEdit": {
             "messages": {
-                "default": "Edit {currency}.\n**New** {option}: {value}",
+                "default": "Edit {currency}.\nNew {option}: {value}",
                 "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {
@@ -583,7 +583,7 @@ export const locale = {
         },
         "itemEdit": {
             "messages": {
-                "default": "Edit {item}.\n**New** {option}: {value}",
+                "default": "Edit {item}.\nNew {option}: {value}",
                 "success": "You successfully edited the item {item}. \nNew {option}: {value}"
             },
             "components": {
@@ -694,7 +694,7 @@ export const locale = {
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Create a discount code for {shop}.\n**Code**: {code}\nAmount: {amount}% off",
+                "default": "Create a discount code for {shop}.\nCode: {code}\nAmount: {amount}% off",
                 "success": "You successfully created the discount code {code} for {shop} with {amount}% off"
             },
             "components": {

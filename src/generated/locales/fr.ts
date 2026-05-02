@@ -570,7 +570,7 @@ export const locale = {
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Créer un code promo pour la boutique {shop}.\n**Code**: {code}\nMontant: {amount}% de réduction",
+                "default": "Créer un code promo pour la boutique {shop}.\nCode: {code}\nMontant: {amount}% de réduction",
                 "success": "Vous avez crée avec succès le code promo {code} pour {shop} avec {amount}% de réduction"
             },
             "components": {

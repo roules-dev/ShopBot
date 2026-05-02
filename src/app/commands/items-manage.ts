@@ -87,7 +87,6 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         default:
             if (subCommandGroup == "edit") {
                 const [error, options] = validateCommandOptions(interaction.options, editItemParamsSchema, { kind: subCommand })
-                console.log(error)
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                     
 

@@ -567,7 +567,7 @@ export const locale = {
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Crear un código de descuento para la tienda {shop}.\n**Código**: {code}\nCantidad: {amount}% de descuento",
+                "default": "Crear un código de descuento para la tienda {shop}.\nCódigo: {code}\nCantidad: {amount}% de descuento",
                 "success": "Has creado con éxito el código de descuento {code} para {shop} con {amount}% de descuento"
             },
             "components": {
