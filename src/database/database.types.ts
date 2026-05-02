@@ -18,6 +18,7 @@ const API_ERRORS = {
         status: 400
     },
 
+
     CurrencyDoesNotExist: {
         message: "Currency does not exist",
         status: 404
@@ -26,6 +27,11 @@ const API_ERRORS = {
         message: "Currency already exists",
         status: 409
     },
+    CurrencyHasReferences: {
+        message: "Currency has references",
+        status: 409
+    },
+
 
     ItemDoesNotExist: {
         message: "Item does not exist",
@@ -35,6 +41,11 @@ const API_ERRORS = {
         message: "Item already exists",
         status: 409
     },
+    ItemHasReferences: {
+        message: "Item has references",
+        status: 409
+    },
+
 
     ProductDoesNotExist: {
         message: "Product does not exist",
@@ -45,6 +56,7 @@ const API_ERRORS = {
         message: "Account does not exist",
         status: 404
     },
+    
 
     InvalidSettingType: {
         message: "Provided setting type is invalid",

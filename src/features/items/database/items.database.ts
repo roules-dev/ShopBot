@@ -27,7 +27,10 @@ export async function dbCreateItem<T extends Item>(db: ItemsDatabase, item: Exac
 }
 
 export async function dbDeleteItem(db: ItemsDatabase, itemId: NanoId) {
-    if (!db.get(itemId)) return err(new ApiError("ItemDoesNotExist"))
+    const item = db.get(itemId)
+    if (!item) return err(new ApiError("ItemDoesNotExist"))
+
+    if (item.refCount > 0) return err(new ApiError("ItemHasReferences"))
 
     const [error] = await db.delete(itemId)
     if (error) return err(error)

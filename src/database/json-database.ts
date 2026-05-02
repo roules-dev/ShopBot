@@ -53,11 +53,15 @@ export class JsonDatabase<
         id: MapKey<typeof this.data>, 
         dataItem: MapValue<typeof this.data>
     ) {
-        this.data.set(id, dataItem)
-        const [error] = await this.save()
-        if (error) return err(error)
+        const [error1, item] = validate(this.dataItemJsonSchema, dataItem)
+        if (error1) return err(error1)
+
+        this.data.set(id, item)
+
+        const [error2] = await this.save()
+        if (error2) return err(error2)
         
-        return ok(Object.freeze({...dataItem}) as DeepReadonly<MapValue<typeof this.data>>)
+        return ok(Object.freeze({...item}) as DeepReadonly<MapValue<typeof this.data>>)
     }
 
     public async patch(id: MapKey<typeof this.data>, dataItem: Partial<MapValue<typeof this.data>>) {

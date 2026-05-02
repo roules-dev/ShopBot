@@ -27,7 +27,10 @@ export async function dbCreateCurrency<T extends Currency>(db: CurrenciesDatabas
 }
 
 export async function dbDeleteCurrency(db: CurrenciesDatabase, currencyId: NanoId) {
-    if (!db.get(currencyId)) return err(new ApiError("CurrencyDoesNotExist"))
+    const currency = db.get(currencyId)
+    if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
+
+    if (currency.refCount > 0) return err(new ApiError("CurrencyHasReferences"))
 
     const [error] = await db.delete(currencyId)
     if (error) return err(error)
