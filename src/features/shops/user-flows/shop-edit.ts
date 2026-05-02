@@ -8,7 +8,6 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { withSingleKeyKind } from "@/lib/validation/preprocessors.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
 import { emojiSchema, snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
@@ -16,7 +15,7 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } fro
 import z from "zod"
 import { Shop } from "../database/shops.types.js"
 
-export const editShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
+export const editShopParamsSchema = z.discriminatedUnion("kind", [
     z.object({ 
         kind: z.literal("name"), 
         name: z.string() 
@@ -30,12 +29,12 @@ export const editShopParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind
         description: optionalOrNull(z.string())
     }),
     z.object({
-        kind: z.literal("role"),
+        kind: z.literal("reserved_to_role"),
         role: optionalOrNull(snowflakeSchema)
     }).transform(({role}) => {
         return { kind: "reservedTo" as const, reservedTo: role }
     })
-]))
+])
 
 export class EditShopFlow extends UserFlow<z.infer<typeof editShopParamsSchema>> {
     public override get id(): string { 

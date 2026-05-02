@@ -45,8 +45,10 @@ export function validateCommandOptions<
     T extends z.ZodType
 >(
     interactionOptions: InteractionOptions, 
-    optionsSchema: T
+    optionsSchema: T,
+    inject: Record<string, unknown> = {}
 ) {
     const options = buildOptionsObject(interactionOptions)
-    return validate(optionsSchema, options)
+
+    return validate(optionsSchema, {...options, ...inject})
 }

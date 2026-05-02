@@ -72,7 +72,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
         }
         default:
             if (subCommandGroup == "edit") {
-                const [error, options] = validateCommandOptions(interaction.options, editCurrencyParamsSchema)
+                const [error, options] = validateCommandOptions(interaction.options, editCurrencyParamsSchema, { kind: subCommand })
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
                 new EditCurrencyFlow(options).start(interaction)

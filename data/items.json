@@ -106,5 +106,11 @@
         "emoji": "🤑",
         "description": "if u can, do it",
         "refCount": 1
+    },
+    "9x2jf1OhnJxF1uWYXjS2Q": {
+        "name": "Magic Potion",
+        "emoji": null,
+        "description": "You don't know what it does until you try it",
+        "refCount": 1
     }
 }

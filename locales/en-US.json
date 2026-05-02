@@ -4,9 +4,10 @@
         "invalidSubcommand": "Invalid subcommand",
         "insufficientParameters": "Insufficient parameters",
 
-        "noShops": "There isn't any shop.\n-# Use `/shops-manage create` to create a new one",
-        "noCurrencies": "There isn't any currency.\n-# Use `/currencies-manage create` to create a new currency",
+        "noShops": "There aren't any shops.\n-# Use `/shops-manage create` to create a new one",
+        "noCurrencies": "There aren't any currencies.\n-# Use `/currencies-manage create` to create a new currency",
         "noProducts": "The selected shop has no products",
+        "noItems": "There aren't any items",
         
         "notOnlyEmojisInName": "The name can't contain only custom emojis",
 
@@ -130,6 +131,70 @@
                                 "emoji": {
                                     "name": "new-emoji",
                                     "description": "The new emoji of the currency (leave empty to remove)"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "items-manage": {
+            "name": "items-manage",
+            "description": "Manage your available items",
+            "options": {
+                "create": {
+                    "name": "create",
+                    "description": "Create a new item",
+                    "options": {
+                        "name": {
+                            "name": "name",
+                            "description": "The name of the item"
+                        },
+                        "description": {
+                            "name": "description",
+                            "description": "The description of the item"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "The emoji of the item (optional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "remove",
+                    "description": "Remove the selected item"
+                },
+                "edit": {
+                    "name": "edit",
+                    "description": "Edit an item",
+                    "options": {
+                        "name": {
+                            "name": "name",
+                            "description": "Change name. You will select the item later",
+                            "options": {
+                                "name": {
+                                    "name": "new-name",
+                                    "description": "The new name of the item"
+                                }
+                            }
+                        },
+                        "description": {
+                            "name": "description",
+                            "description": "Change description. You will select the item later",
+                            "options": {
+                                "description": {
+                                    "name": "new-description",
+                                    "description": "The new description of the item (leave empty to remove)"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Change emoji. You will select the item later",
+                            "options": {
+                                "emoji": {
+                                    "name": "new-emoji",
+                                    "description": "The new emoji of the item (leave empty to remove)"
                                 }
                             }
                         }
@@ -379,7 +444,7 @@
                 "shop": {
                     "products": "Products:",
                     "reservedTo": "{role} only",
-                    "noProduct": "There is no product available here",
+                    "noProduct": "There are no products available here",
                     "xProductsLeft": "{x} left",
                     "outOfStock": "Out of stock",
                     "price": "Price:",
@@ -487,7 +552,7 @@
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveCurrency": "⚠️ Can't remove {currency}! Some products still have it in their price or action."
+                "cantRemoveCurrency": "⚠️ Can't remove {currency}! Some product(s) still have it in their price or action."
             },
             "messages": {
                 "default": "Remove {currency}, ⚠️ __**it will also take it from user's accounts**__",
@@ -499,7 +564,7 @@
         },
         "currencyEdit": {
             "messages": {
-                "default": "Edit {currency}.\n**New** {option}: {value}",
+                "default": "Edit {currency}.\nNew {option}: {value}",
                 "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {
@@ -510,6 +575,39 @@
                 "emoji": "emoji"
             }
         },
+
+        "itemCreate": {
+            "messages": {
+                "success": "You successfully created the item {item}. \n-# Use `/items-manage remove` to remove it"
+            }
+        },
+        "itemRemove": {
+            "errorMessages": {
+                "cantRemoveItem": "⚠️ Can't remove {item}! Some product(s) still sell it."
+            },
+            "messages": {
+                "default": "Remove {item}, ⚠️ __**it will also take it from user's accounts**__",
+                "success": "You successfully removed the item {item}"
+            },
+            "components": {
+                "submitButton": "Remove item"
+            }
+        },
+        "itemEdit": {
+            "messages": {
+                "default": "Edit {item}.\nNew {option}: {value}",
+                "success": "You successfully edited the item {item}. \nNew {option}: {value}"
+            },
+            "components": {
+                "submitButton": "Edit item"
+            },
+            "editOptions": {
+                "name": "name",
+                "emoji": "emoji",
+                "description": "description"
+            }
+        },
+
         "productAdd": {
             "messages": {
                 "default": "Add Product: {product} for {price} in {shop}",
@@ -539,7 +637,7 @@
         },
         "productEdit": {
             "errorMessages": {
-                "noShopsWithProducts": "There isn't any shop with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
+                "noShopsWithProducts": "There aren't any shops with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
             },
             "messages": {
                 "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
@@ -610,7 +708,7 @@
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Create a discount code for {shop}.\n**Code**: {code}\nAmount: {amount}% off",
+                "default": "Create a discount code for {shop}.\nCode: {code}\nAmount: {amount}% off",
                 "success": "You successfully created the discount code {code} for {shop} with {amount}% off"
             },
             "components": {

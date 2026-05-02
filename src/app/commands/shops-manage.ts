@@ -136,7 +136,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             break
         default:
             if (subCommandGroup == "edit") {
-                const [error, options] = validateCommandOptions(interaction.options, editShopParamsSchema)
+                const [error, options] = validateCommandOptions(interaction.options, editShopParamsSchema, { kind: subCommand })
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
                 new EditShopFlow(options).start(interaction)

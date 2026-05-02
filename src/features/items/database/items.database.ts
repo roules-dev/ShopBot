@@ -1,8 +1,7 @@
 import { ItemsDatabase } from "@/core/database/database.types.js"
 import { ApiError, NanoId } from "@/database/database.types.js"
-import { err } from "@/lib/error-handling.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { Exact } from "@/lib/types/constraints.js"
-import { ok } from "assert"
 import { nanoid } from "nanoid"
 import { Item } from "./items.types.js"
 

@@ -9,7 +9,6 @@ import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
-import { withSingleKeyKind } from "@/lib/validation/preprocessors.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
 import { emojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
@@ -18,7 +17,7 @@ import z from "zod"
 import { Currency } from "../database/currencies.types.js"
 
 
-export const editCurrencyParamsSchema = withSingleKeyKind(z.discriminatedUnion("kind", [
+export const editCurrencyParamsSchema = z.discriminatedUnion("kind", [
     z.object({ 
         kind: z.literal("name"), 
         name: z.string() 
@@ -27,7 +26,7 @@ export const editCurrencyParamsSchema = withSingleKeyKind(z.discriminatedUnion("
         kind: z.literal("emoji"),
         emoji: optionalOrNull(emojiSchema).catch(null) 
     }),
-]))
+])
 
 
 export class EditCurrencyFlow extends UserFlow<z.infer<typeof editCurrencyParamsSchema>> {

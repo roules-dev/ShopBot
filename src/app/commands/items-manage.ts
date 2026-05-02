@@ -1,5 +1,10 @@
+import { t } from "@/core/i18n/i18n.js"
 import { ITEM_DESCRIPTION_MAX_LENGTH, ITEM_NAME_MAX_LENGTH } from "@/features/items/schemas/items.schemas.js"
+import { createItemFlow } from "@/features/items/user-flows/item-create.js"
+import { EditItemFlow, editItemParamsSchema } from "@/features/items/user-flows/item-edit.js"
+import { ItemRemoveFlow } from "@/features/items/user-flows/item-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
 
 export const data = new SlashCommandBuilder()
@@ -68,6 +73,28 @@ export const data = new SlashCommandBuilder()
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
 export async function execute(_client: Client, interaction: ChatInputCommandInteraction){
-    // TODO : Item Create, Remove and Edit Flows
-    await replyErrorMessage(interaction, "Not implemented yet")
+    const subCommand = interaction.options.getSubcommand()
+    const subCommandGroup = interaction.options.getSubcommandGroup()
+
+    switch (subCommand) {
+        case "create":
+            await createItemFlow(interaction)
+            break
+        case "remove": {
+            new ItemRemoveFlow().start(interaction)
+            break 
+        }
+        default:
+            if (subCommandGroup == "edit") {
+                const [error, options] = validateCommandOptions(interaction.options, editItemParamsSchema, { kind: subCommand })
+                console.log(error)
+                if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+                    
+
+                new EditItemFlow(options).start(interaction)
+                return
+            }
+
+            await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
+    }
 }
