@@ -6,6 +6,7 @@ import "@/core/database/init-databases.js"
 
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
+import { reconcileRefCounts } from "./core/jobs/reconcile-refcounts.js"
 
 function isTsx() {
     return process.argv.includes('--use-ts')
@@ -21,6 +22,8 @@ else {
 	process.on("uncaughtExceptionMonitor", (reason: unknown) => PrettyLog.error(`${reason}`))
 }
 
+await reconcileRefCounts()
+
 // Start the bot
-startClient(isTsx())
+await startClient(isTsx())
 

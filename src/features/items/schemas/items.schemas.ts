@@ -15,5 +15,7 @@ export const ItemRawSchema = z.object({
     description: z.nullable(z.string()
         .min(1)
         .max(ITEM_DESCRIPTION_MAX_LENGTH)
-    )
+    ),
+
+    refCount: z.number().min(0)
 })

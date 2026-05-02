@@ -1,18 +1,22 @@
 {
     "0f2SNbp60vAwWjhKjRR0u": {
         "name": "Dollar",
-        "emoji": "💵"
+        "emoji": "💵",
+        "refCount": 20
     },
     "w3OuB15nMZBWTm33SvVfr": {
         "name": "Euro",
-        "emoji": "💶"
+        "emoji": "💶",
+        "refCount": 0
     },
     "7kiuf_CPO2ocrr75mTXuV": {
         "name": "Pound",
-        "emoji": "💷"
+        "emoji": "💷",
+        "refCount": 2
     },
     "M2JfD9vMX2WzslISmBh2U": {
         "name": "Yen",
-        "emoji": "💴"
+        "emoji": "💴",
+        "refCount": 1
     }
 }

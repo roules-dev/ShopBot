@@ -448,11 +448,10 @@ export const locale = {
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveCurrency": "⚠️ Impossible de supprimer {currency} ! Les boutiques suivantes l'utilisent encore : {shops}.",
-                "changeShopsCurrencies": "Veuillez les supprimer (`/shops-manage remove`) ou changez leur devise (`/shops-manage change-currency`) avant de supprimer la devise."
+                "cantRemoveCurrency": "⚠️ Impossible de supprimer {currency} ! Certains produits l'utilisent encore dans leur prix ou leur action."
             },
             "messages": {
-                "default": "Supprimer {currency}, ⚠️ __**cela le retirera également des comptes des utilisateurs**__",
+                "default": "Supprimer {currency}, ⚠️ __**cela le retirera également des comptes des utilisateurices**__",
                 "success": "Vous avez supprimé avec succès la devise {currency}"
             },
             "components": {

@@ -24,7 +24,7 @@
 - [x] log admin actions to the log channel ([#18](https://github.com/roules-dev/ShopBot/issues/18))
 - [x] multi-currency products (and thus no more shop-wide currency / leave it optional ?) ([#13](https://github.com/roules-dev/ShopBot/issues/13))
 - [ ] item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
-- [ ] shop wide discount
+
 
 ### Code refactoring
 

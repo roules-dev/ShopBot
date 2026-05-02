@@ -20,7 +20,7 @@ export async function createCurrencyFlow(interaction: ChatInputCommandInteractio
         return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
     }
 
-    const [error2, currency] = await createCurrency(params)
+    const [error2, currency] = await createCurrency({ ...params, refCount: 0 })
     if (error2) {
         return await replyErrorMessage(interaction, error2.message)
     }

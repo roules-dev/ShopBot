@@ -147,7 +147,7 @@ async function migrateShops() {
                 continue
             }
 
-            const [error2, itemValidated] = validate(ItemRawSchema, item)
+            const [error2, itemValidated] = validate(ItemRawSchema, { ...item, refCount: 1 })
             if (error2) {
                 log(() => PrettyLog.error(`Invalid Item for product ${productId} in shop ${shopId}\n${z.prettifyError(error2)}`))
                 errorCount++
@@ -201,7 +201,7 @@ async function migrateCurrencies() {
     try {
         for (const [currencyId, currency] of Object.entries(currencies)) {
             const { id: _, ...newCurrency } = currency
-            newCurrencies[currencyId] = CurrencyRawSchema.parse(newCurrency)
+            newCurrencies[currencyId] = CurrencyRawSchema.parse({ newCurrency, refCount: 0 })
         }
     } catch (error) {
         log(() => {

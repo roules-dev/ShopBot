@@ -447,10 +447,6 @@ export const locale = {
             }
         },
         "currencyRemove": {
-            "errorMessages": {
-                "cantRemoveCurrency": "⚠️ ¡No se puede eliminar {currency}! Las siguientes tiendas todavía la usan: {shops}.",
-                "changeShopsCurrencies": "Por favor elimínalas (`/shops-manage remove`) o cambia su moneda (`/shops-manage change-currency`) antes de eliminar la moneda."
-            },
             "messages": {
                 "default": "Eliminar {currency}, ⚠️ __**esto también la eliminará de las cuentas de los usuarios**__",
                 "success": "Has eliminado con éxito la moneda {currency}"

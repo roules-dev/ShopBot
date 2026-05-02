@@ -2,91 +2,109 @@
     "nxtWWm9IEe3qSLh4fj5qn": {
         "name": "1984",
         "emoji": "📕",
-        "description": "A splendid novel by George Orwell"
+        "description": "A splendid novel by George Orwell",
+        "refCount": 2
     },
     "9-fiMoU-faP7vOVhO58Su": {
         "name": "Between Past and Future",
         "emoji": "📖",
-        "description": "Hannah Arendt"
+        "description": "Hannah Arendt",
+        "refCount": 1
     },
     "SQWzMyipYZO3fnCmhAttr": {
         "name": "Super Expensive Quantum Physics book",
         "emoji": "📗",
-        "description": null
+        "description": null,
+        "refCount": 1
     },
     "Uasu0unlCLGnsJNQb_3S0": {
         "name": "Baguette",
         "emoji": "🥖",
-        "description": "A real authentic French Baguette"
+        "description": "A real authentic French Baguette",
+        "refCount": 2
     },
     "w9zcCjKIt-yDjhXi2TLMB": {
         "name": "Basic yet very cool bread",
         "emoji": "🍞",
-        "description": "A quite basic piece of bread"
+        "description": "A quite basic piece of bread",
+        "refCount": 1
     },
     "jREXpbU4e0mrY6K3RzWbY": {
         "name": "CROISSANT",
         "emoji": "🥐",
-        "description": "A delicious tasting Croissant"
+        "description": "A delicious tasting Croissant",
+        "refCount": 1
     },
     "FbZgPJ-aJOkvm1QAB3ucE": {
         "name": "Pain au chocolat",
         "emoji": "🍪",
-        "description": "(it's the only correct name)"
+        "description": "(it's the only correct name)",
+        "refCount": 1
     },
     "6lb722Z-cvgTL23LeXnyZ": {
         "name": "Apple Pie",
         "emoji": "🥧",
-        "description": null
+        "description": null,
+        "refCount": 1
     },
     "lfDYxuEIIXzzHQUZfXbPu": {
         "name": "Strawberry Pie",
         "emoji": "🥧",
-        "description": null
+        "description": null,
+        "refCount": 1
     },
     "k1nWe7JbqmwirLQ5XLWXE": {
         "name": "Corn Bread",
         "emoji": "🍞",
-        "description": "This thing is delicious"
+        "description": "This thing is delicious",
+        "refCount": 1
     },
     "Dfs5AihBk8iBX9by0RL9U": {
         "name": "Foccacia",
         "emoji": "🫓",
-        "description": null
+        "description": null,
+        "refCount": 1
     },
     "a8aSYSlPsS9SP5WxNCLq6": {
         "name": "Chouquettes (x12)",
         "emoji": "<:chouquette:1342277376406716476>",
-        "description": null
+        "description": null,
+        "refCount": 1
     },
     "yLs7vNX4Z4j3OFe2VcsmT": {
         "name": "overcooked baguette",
         "emoji": "🔥",
-        "description": "a little bit burnt baguette, that's why its a bit cheaper"
+        "description": "a little bit burnt baguette, that's why its a bit cheaper",
+        "refCount": 1
     },
     "5qpg3DPSth4IG1pAyesc5": {
         "name": "Boss",
         "emoji": "🧑",
-        "description": "Earn the boss role by buying this !"
+        "description": "Earn the boss role by buying this !",
+        "refCount": 1
     },
     "iU_U1_JAKqJ1xXj8ePrRf": {
         "name": "Earn 50 $",
         "emoji": "💵",
-        "description": "totally not a scam"
+        "description": "totally not a scam",
+        "refCount": 1
     },
     "m3AmJIuCmlpXYh89Kf-HZ": {
         "name": "admin give 10000$",
         "emoji": "💵",
-        "description": null
+        "description": null,
+        "refCount": 1
     },
     "l4b1O42OyoCD1coPstpVx": {
         "name": "Earn Cool Guy Role",
         "emoji": "😎",
-        "description": "You will be ultra cool"
+        "description": "You will be ultra cool",
+        "refCount": 1
     },
     "XNOw9i0NJGzCbXqSLAWOo": {
         "name": "earn 1 $ but it's very expensive",
         "emoji": "🤑",
-        "description": "if u can, do it"
+        "description": "if u can, do it",
+        "refCount": 1
     }
 }

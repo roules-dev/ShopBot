@@ -487,8 +487,7 @@
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveCurrency": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
-                "changeShopsCurrencies": "Please consider removing them (`/shops-manage remove`) or changing their currency (`/shops-manage change-currency`) before removing the currency."
+                "cantRemoveCurrency": "⚠️ Can't remove {currency}! Some products still have it in their price or action."
             },
             "messages": {
                 "default": "Remove {currency}, ⚠️ __**it will also take it from user's accounts**__",

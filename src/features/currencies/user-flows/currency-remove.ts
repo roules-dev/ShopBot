@@ -1,5 +1,5 @@
 import { t } from "@/core/i18n/i18n.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { deleteCurrency, getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
@@ -10,13 +10,17 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { Currency } from "../database/currencies.types.js"
+import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts.services.js"
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { NanoId } from "@/database/database.types.js"
+import { Identifiable } from "@/lib/types/core.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {
     public override get id(): string {
         return "currency-remove"
     }
-    private selectedCurrency: Currency | null = null
+    private selectedCurrency: Currency & Identifiable<NanoId> | null = null
 
     public override async prestart(_interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
@@ -59,30 +63,18 @@ export class CurrencyRemoveFlow extends UserFlow {
         return [
             createComponent(currencySelect),
             createComponent(submitButton, () => {
-                const shopsWithCurrency = new Map([["TODO: do real check here", true]])
-
-                submitButton.toggle((this.selectedCurrency != null) && (shopsWithCurrency.size == 0)) 
+                submitButton.toggle((this.selectedCurrency != null) && (this.selectedCurrency.refCount == 0)) 
             })
         ]
     }
     
     getMessage() {  
         if (this.selectedCurrency) {
-            // const itemsWithCurrency = 
-           
-            // if (shopsWithCurrency.size > 0) {
-            //     const shopsWithCurrencyNames = Array.from(shopsWithCurrency.values()).map(shop => bold(italic(shop.name))).join(", ")
-
-            //     const errorMessage = t(`userFlows.currencyRemove.errorMessages.cantRemoveCurrency`, {
-            //         currency: bold(this.selectedCurrency.name || ""),
-            //         shops: shopsWithCurrencyNames
-            //     })
-            //     const tipMessage = t(`userFlows.currencyRemove.errorMessages.changeShopsCurrencies`)
-
-            //     return `${errorMessage}\n${tipMessage}`
-            // }
-            // TODO: check if items have this currency in their price and display them in the message as well
-            
+            if (this.selectedCurrency.refCount > 0) {
+                return t(`userFlows.currencyRemove.errorMessages.cantRemoveCurrency`, {
+                    currency: bold(formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency"))
+                })
+            }
         }
 
         const message = t(`userFlows.currencyRemove.messages.default`, {
@@ -92,20 +84,23 @@ export class CurrencyRemoveFlow extends UserFlow {
         return message
     }
 
-    protected async success(_interaction: UserInterfaceInteraction) {
-        throw new Error("Method not implemented.")
-        // this.disableComponents()
+    protected async success(interaction: UserInterfaceInteraction) {
+        this.disableComponents()
 
-        // if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (this.selectedCurrency == null) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+        if (this.selectedCurrency.refCount > 0) {
+            return updateAsErrorMessage(interaction, t("userFlows.currencyRemove.errorMessages.cantRemoveCurrency", {
+                currency: bold(formattedEmojiableName(this.selectedCurrency))
+            }))
+        }
 
-        // const [error] = await takeCurrencyFromAccounts(this.selectedCurrency.id)
-        // if (error) return updateAsErrorMessage(interaction, error.message)
+        const [error] = await takeCurrencyFromAccounts(this.selectedCurrency.id)
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
-        // const currencyName = this.selectedCurrency.name || ""
 
-        // const [error2] = await removeCurrency(this.selectedCurrency.id)
-        // if (error2) return updateAsErrorMessage(interaction, error2.message)
+        const [error2] = await deleteCurrency(this.selectedCurrency.id)
+        if (error2) return updateAsErrorMessage(interaction, error2.message)
 
-        // return await updateAsSuccessMessage(interaction, t(`userFlows.currencyRemove.messages.success`, {currency: bold(currencyName)}))
+        return await updateAsSuccessMessage(interaction, t(`userFlows.currencyRemove.messages.success`, {currency: bold(formattedEmojiableName(this.selectedCurrency))}))
     }
 }
