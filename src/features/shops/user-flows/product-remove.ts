@@ -54,7 +54,7 @@ export class RemoveProductFlow extends UserFlow {
             getShops(),
             (interaction) => this.updateInteraction(interaction),
             (interaction, selected) => {
-                // check if shop has no products give error message
+                // TODO : check if shop has no products update interaction with error message
                 this.selectedShop = selected
                 this.selectedProduct = null
                 this.updateInteraction(interaction)

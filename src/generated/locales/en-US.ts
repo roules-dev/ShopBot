@@ -629,18 +629,14 @@ export const locale = {
             "messages": {
                 "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
                 "productSelectStage": "Edit product: {product} from {shop}. \nNew {option}: {value}",
-                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}",
-                "unlimited": "unlimited"
+                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}"
             },
             "components": {
                 "submitButton": "Edit product"
             },
             "editOptions": {
-                "name": "name",
-                "emoji": "emoji",
-                "price": "price",
-                "description": "description",
-                "stock": "stock"
+                "stock": "stock",
+                "action": "action"
             }
         },
         "shopCreate": {

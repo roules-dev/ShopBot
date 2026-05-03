@@ -1,6 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { productActions } from "@/features/shops/data/product-actions/index.js"
 import { AddProductFlow, addProductParamsSchema } from "@/features/shops/user-flows/product-add.js"
+import { EditProductFlow, editProductParamsSchema } from "@/features/shops/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -49,6 +50,8 @@ export const data = new SlashCommandBuilder()
             )
         )
         // TODO : Action edit
+        // TODO : Price edit
+        // TODO : Item edit
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
@@ -78,11 +81,10 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             
         default:
             if (subCommandGroup == "edit") {
-                // const editProductFlow = new EditProductFlow()
-                // editProductFlow.start(interaction)
-                await replyErrorMessage(interaction, "Not implemented yet")
-                // TODO : Product Edit
+                const [error, options] = validateCommandOptions(interaction.options, editProductParamsSchema, { kind: subCommand })
+                if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 
+                new EditProductFlow(options).start(interaction)
                 break
             }
 

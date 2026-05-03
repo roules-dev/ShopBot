@@ -11,8 +11,10 @@ import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
 import { objectEntries } from "@/utils/objects.js"
 import { AccountsDatabase, CurrenciesDatabase, ItemsDatabase, ShopsDatabase } from "./database.types.js"
+import { MapValue } from "@/lib/types/collections.js"
 
 export type HydratedPrice = Map<NanoId, Balance<Currency>>
+export type HydratedProduct = MapValue<AwaitedObjectResultReturn<Hydrator, "fullyHydrateShop">["products"]>
 
 export class Hydrator {
     private currenciesDb: CurrenciesDatabase
