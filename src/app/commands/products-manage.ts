@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { productActions } from "@/features/shops/data/product-actions/index.js"
-import { AddProductFlow, addProductParamsSchema } from "@/features/shops/user-flows/product-add.js"
+import { AddActionProductFlow, addActionProductParamsSchema, AddProductFlow, addProductParamsSchema } from "@/features/shops/user-flows/product-add.js"
 import { EditProductFlow, editProductParamsSchema } from "@/features/shops/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
@@ -62,10 +62,10 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
     switch (subCommand) {
         case "add":
             if (interaction.options.getString("action") != null) {
-                // const addActionProductFlow = new AddActionProductFlow()
-                // addActionProductFlow.start(interaction)
-                // TODO add action product
-                await replyErrorMessage(interaction, "Not implemented yet")
+                const [error, options] = validateCommandOptions(interaction.options, addActionProductParamsSchema)
+                if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+                new AddActionProductFlow(options).start(interaction)
                 break
             }
             const [error, options] = validateCommandOptions(interaction.options, addProductParamsSchema)

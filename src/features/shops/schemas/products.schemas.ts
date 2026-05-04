@@ -1,13 +1,17 @@
 import { nanoIdSchema } from "@/schemas/utils.js"
 import z from "zod"
-import { giveCurrencyActionSchema } from "../data/product-actions/give-currency.js"
-import { giveRoleActionSchema } from "../data/product-actions/give-role.js"
+import { productActions } from "../data/product-actions/index.js"
 
 export const productActionSchema = z.discriminatedUnion("kind", [
-    giveCurrencyActionSchema,
-    giveRoleActionSchema,
+    productActions["give-currency"].schema,
+    productActions["give-role"].schema,
 ])
 
+export const productActionSchemaKinds = z.union(
+    productActionSchema.options.map(option => 
+        z.literal((option.shape.kind).value)
+    )
+)
 
 export const productRawSchema = z.object({
     itemId: nanoIdSchema,

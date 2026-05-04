@@ -56,6 +56,29 @@
                 "price": {
                     "w3OuB15nMZBWTm33SvVfr": 12
                 }
+            },
+            "9X6HPBXbBySPBgs8VkKvq": {
+                "itemId": "w9zcCjKIt-yDjhXi2TLMB",
+                "price": {},
+                "action": {
+                    "kind": "give-currency",
+                    "options": {
+                        "currencyId": "7kiuf_CPO2ocrr75mTXuV",
+                        "amount": 34
+                    }
+                }
+            },
+            "OrMVWdCveLKtgA0w3_Z3-": {
+                "itemId": "SQWzMyipYZO3fnCmhAttr",
+                "price": {
+                    "0f2SNbp60vAwWjhKjRR0u": 1
+                },
+                "action": {
+                    "kind": "give-role",
+                    "options": {
+                        "roleId": "1197208767406813306"
+                    }
+                }
             }
         }
     },

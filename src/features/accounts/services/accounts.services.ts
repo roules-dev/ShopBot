@@ -17,6 +17,7 @@ export async function setAccountCurrencyAmount(id: BrandedSnowflake, currencyId:
     return ok({ account, currency })
 }
 
+
 export async function addCurrenciesAmounts(id: BrandedSnowflake, amounts: Record<NanoId, number>, multiplier = 1) {
     const [error1, account] = await getOrCreateAccount(id)
     if (error1) return err(error1)

@@ -1,21 +1,21 @@
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
-import { ActionRowBuilder, APIEmbedField, ComponentType, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
+import { ActionRowBuilder, APIEmbedField, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
 import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
 import { ComponentSeparator, UpdateableComponent } from "../ui-components/extended-components.js"
 
 export type UIComponent = UpdateableComponent | ComponentSeparator
 
-export abstract class UserInterface {
+export abstract class UserInterface<Config = void> {
     public abstract id: string
     protected components: Map<string, UIComponent>
 
-    constructor() {
-        this.components = this.getComponentsMap(this.initComponents())
+    constructor(config: Config) {
+        this.components = this.getComponentsMap(this.initComponents(config))
     }
 
     protected abstract getMessage(): string 
-    protected abstract initComponents(): UIComponent[]
+    protected abstract initComponents(config: Config): UIComponent[]
     
     protected updateComponents(): void {
         this.components.forEach((component) => {
@@ -33,40 +33,46 @@ export abstract class UserInterface {
         const paginationRow = new ActionRowBuilder<UserInterfaceComponentBuilder>()
 
         this.components.forEach((component) => {
+
+            // Special cases :
+            // Separators
             if (component instanceof ComponentSeparator) {
                 rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>())
                 return
             }
 
+            // Pagination buttons
             if (component.comp.customId.endsWith("page")) {
                 paginationRow.addComponents(component.comp.getComponent())
+                return
             }
-            else if (component.comp.componentType == ComponentType.Button) {
-                if (rows.length == 0) {
-                    rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.comp.getComponent()))
-                }
-                else {
-                    const lastRow = rows[rows.length - 1]
-                    if (lastRow === undefined) return 
-                    const lastRowFirstComponentType = lastRow.components[0]?.data.type
-        
-                    if (lastRowFirstComponentType && selectMenuComponents.includes(lastRowFirstComponentType)) {
-                        rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.comp.getComponent()))
-                    } else {
-                        lastRow.addComponents(component.comp.getComponent())
-                    }
-                }
-            }
-            else if (selectMenuComponents.includes(component.comp.componentType)) {
+            
+            const lastRow = rows.length == 0 ? undefined : rows[rows.length - 1]
+
+            // Adding to a new row if :
+            //   - there is no last row (adding first component)
+            //   - last row has a select menu
+            //   - last row already has 5 components
+            if (
+                lastRow === undefined ||
+                (lastRow.components[0]?.data.type && selectMenuComponents.includes(lastRow.components[0]?.data.type)) ||
+                lastRow.components.length >= 5
+            ) {
                 rows.push(new ActionRowBuilder<UserInterfaceComponentBuilder>().addComponents(component.comp.getComponent()))
+                return
             }
+
+            // Continue adding to last row when it's not full
+            lastRow.addComponents(component.comp.getComponent())
         })
 
         if (paginationRow.components.length > 0) {
             rows.push(paginationRow)
         }
 
-        return rows
+        const nonEmptyRows = rows.filter((row) => row.components.length > 0)
+
+        return nonEmptyRows
     }
 
     protected getInteractionUpdateOptions(): InteractionEditReplyOptions {

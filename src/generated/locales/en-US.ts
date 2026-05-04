@@ -204,10 +204,6 @@ export const locale = {
                     "name": "add",
                     "description": "Add a new product",
                     "options": {
-                        "price": {
-                            "name": "price",
-                            "description": "The price of the product"
-                        },
                         "stock": {
                             "name": "stock",
                             "description": "The stock of the product (optional)"
@@ -226,16 +222,6 @@ export const locale = {
                     "name": "edit",
                     "description": "Edit a product",
                     "options": {
-                        "price": {
-                            "name": "price",
-                            "description": "Change price. You will select the product later",
-                            "options": {
-                                "price": {
-                                    "name": "new-price",
-                                    "description": "The new price of the product"
-                                }
-                            }
-                        },
                         "stock": {
                             "name": "stock",
                             "description": "Change stock. You will select the product later",
@@ -608,6 +594,7 @@ export const locale = {
             },
             "components": {
                 "submitButton": "Add product",
+                "submitActionButton": "Submit action",
                 "setAmountButton": "Set amount",
                 "editAmountModalTitle": "Amount"
             }

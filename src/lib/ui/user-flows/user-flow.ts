@@ -1,13 +1,14 @@
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
-import { ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
 import { UIComponent, UserInterface } from "../user-interfaces/user-interfaces.js"
+import { ExtendedButtonComponent } from "../ui-components/button.js"
 
-export abstract class UserFlow<T extends Record<string, unknown> | void = void> extends UserInterface {
+export abstract class UserFlow<T extends Record<string, unknown> | void = void> extends UserInterface<T> {
     protected params: T
     constructor(parameters: T) {
-        super()
+        super(parameters)
         this.params = parameters
     }
     protected async prestart(_interaction: ChatInputCommandInteraction): Promise<Result<boolean, ErrorLike<"Error">>> {
@@ -44,7 +45,7 @@ export abstract class StagedUserFlow<T extends Record<string, unknown> | void = 
 
     constructor(parameters: T) {
         super(parameters)
-        this.componentsByStage = this.initStageComponents()
+        this.componentsByStage = this.initStageComponents(parameters)
     }
 
     public override async start(interaction: ChatInputCommandInteraction) {
@@ -53,15 +54,18 @@ export abstract class StagedUserFlow<T extends Record<string, unknown> | void = 
         return response
     }
 
-    protected abstract initStageComponents(): Array<UIComponent[]>
-    protected override initComponents(): UIComponent[] {
-        const components = this.initStageComponents()[0]
+    protected abstract initStageComponents(config: T): Array<UIComponent[]>
+    protected override initComponents(config: T): UIComponent[] {
+        const components = this.initStageComponents(config)[0]
         if (!components) throw new Error("No components for stage 0")
         return components
     }
 
-    protected changeStage(stage: number) {
-        this.stage = stage
+    protected changeStage(stage: number | "next" | "prev") {
+        this.stage = 
+            stage == "next" ? this.stage + 1 : 
+            stage == "prev" ? this.stage - 1 : 
+            stage
 
         this.destroyComponentsCollectors()
 
@@ -73,5 +77,30 @@ export abstract class StagedUserFlow<T extends Record<string, unknown> | void = 
         this.createComponentsCollectors(this.response)
 
         this.updateComponents()
+    }
+
+    protected getStageSwitchButtons(onClick?: (interaction: ButtonInteraction) => void) {
+        return {
+            prev: new ExtendedButtonComponent({
+                customId: `${this.id}+previous-page`,
+                time: 120_000,
+                emoji: "⬅️",
+                style: ButtonStyle.Secondary,
+            }, (interaction: ButtonInteraction) => {
+                if (onClick) onClick(interaction)
+                this.changeStage("prev")
+                this.updateInteraction(interaction)
+            }),
+            next: new ExtendedButtonComponent({
+                customId: `${this.id}+next-page`,
+                time: 120_000,
+                emoji: "➡️",
+                style: ButtonStyle.Secondary,
+            }, (interaction: ButtonInteraction) => {
+                if (onClick) onClick(interaction)
+                this.changeStage("next")
+                this.updateInteraction(interaction)
+            })
+        }
     }
 }

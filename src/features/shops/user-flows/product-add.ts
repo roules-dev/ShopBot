@@ -13,15 +13,18 @@ import { MapKey } from "@/lib/types/collections.js";
 import { Identifiable } from "@/lib/types/core.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
-import { createComponent } from "@/lib/ui/ui-components/extended-components.js";
+import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/extended-components.js";
 import { showModal, showValidatedSingleInputModal } from "@/lib/ui/ui-components/modals.js";
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js";
 import { StagedUserFlow } from "@/lib/ui/user-flows/user-flow.js";
+import { UIComponent } from "@/lib/ui/user-interfaces/user-interfaces.js";
 import { optionalOrNull } from "@/schemas/optional-to-null.js";
 import { formattedEmojiableName } from "@/utils/formatting.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import z from "zod";
+import { getAction, productActions } from "../data/product-actions/index.js";
 import { Shop } from "../database/shops.types.js";
+import { productActionSchema, productActionSchemaKinds } from "../schemas/products.schemas.js";
 import { formatPrice } from "../services/price.js";
 
 
@@ -33,15 +36,15 @@ export const addProductParamsSchema = z.object({
     stock: optionalOrNull(z.number().min(0)),
 })
 
-export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductParamsSchema>> {
+export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> extends StagedUserFlow<S> {
     protected override stage: number = 0
     public override get id(): string { 
         return "add-product" 
     }
 
-    private selectedItem: Item & Identifiable<NanoId> | null = null
-    private price: Record<NanoId, number> | null = null
-    private selectedShop: Shop & Identifiable<NanoId> | null = null
+    protected selectedItem: Item & Identifiable<NanoId> | null = null
+    protected price: Record<NanoId, number> | null = null
+    protected selectedShop: Shop & Identifiable<NanoId> | null = null
 
     protected override async prestart(_interaction: ChatInputCommandInteraction) {
         const items = getItems()
@@ -77,7 +80,7 @@ export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductPara
         return message
     }
 
-    protected override initStageComponents() {
+    protected override initStageComponents(_params: S): Array<UIComponent[]> {
         const itemSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-item`,
@@ -101,8 +104,7 @@ export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductPara
                 time: 120_000
             },
             (interaction: ButtonInteraction) => {
-                this.changeStage(1)
-                this.price = {}
+                this.changeStage("next")
                 this.updateInteraction(interaction)
             }
         )
@@ -171,11 +173,12 @@ export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductPara
                 label: "Submit Price",
                 emoji: "✅",
                 style: ButtonStyle.Success,
-                disabled: true,
+                disabled: false,
                 time: 120_000
             },
             (interaction) => {
-                this.changeStage(2)
+                this.price = this.price ?? {}
+                this.changeStage("next")
                 this.updateInteraction(interaction)
             }
         )
@@ -214,11 +217,15 @@ export class AddProductFlow extends StagedUserFlow<z.infer<typeof addProductPara
             [
                 createComponent(addPriceWithCurrencySelect, () => addPriceWithCurrencySelect.toggle(this.price == null || Object.keys(this.price).length < MAX_PRICE_LENGTH)),
                 createComponent(removePricePieceButton, () => removePricePieceButton.toggle(this.price != null && Object.values(this.price).length > 0)),
-                createComponent(submitPriceButton, () => submitPriceButton.toggle(this.price != null)),
+                createComponent(submitPriceButton),
+                new ComponentSeparator("sep_price"),
+                createComponent(this.getStageSwitchButtons().prev),
             ],
             [
                 createComponent(shopSelectMenu, () => shopSelectMenu.toggle(this.selectedItem != null && this.price != null)), 
                 createComponent(submitShopButton, () => submitShopButton.toggle(this.selectedShop != null && this.selectedItem != null && this.price != null)),
+                new ComponentSeparator("sep_shop"),
+                createComponent(this.getStageSwitchButtons().prev),
             ]
         ]
     }
@@ -299,6 +306,103 @@ async function showPricePieceSelectModal(
 }
 
 
+
+
+export const addActionProductParamsSchema = z.object({
+    stock: optionalOrNull(z.number().min(0)),
+    action: productActionSchemaKinds
+})
+
+type AddActionProductParams = z.infer<typeof addActionProductParamsSchema>
+
+export class AddActionProductFlow extends AddProductFlow<AddActionProductParams> {
+    public override get id(): string { 
+        return "add-action-product" 
+    }
+
+    private selectedAction: z.infer<typeof productActionSchema> | null = null
+
+    protected override getMessage() {
+        const addProductMessage = super.getMessage()
+        if (this.stage < 2) return addProductMessage
+        
+        const actionMessage = getAction(this.params.action).getMessage(this.selectedAction?.options, HYDRATOR)
+
+        return `${addProductMessage}\n${t(`userFlows.productAdd.messages.action`)} ${actionMessage}`
+    }
+    
+    protected override initStageComponents(params: AddActionProductParams) {
+        const [selectItem, buildPrice, submit] = super.initStageComponents(params)
+        if (!selectItem || !buildPrice || !submit) throw new Error("Unxpected Error loading AddActionProductFlow components")
+
+
+        const createActionComponents = productActions[params.action].getEditComponents(
+            this.id, 
+            (interaction, action) => {
+                this.selectedAction = action
+                this.updateInteraction(interaction)
+            }, 
+            i => this.updateInteraction(i)
+        )
+
+        const submitActionButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+submit`,
+                label: t(`userFlows.productAdd.components.submitActionButton`),
+                emoji: "✅",
+                style: ButtonStyle.Success,
+                disabled: true,
+                time: 120_000,
+            },
+            (interaction: ButtonInteraction) => {
+                this.changeStage("next")
+                this.updateInteraction(interaction)
+            }
+        )
+
+        const actionComponents = [
+            ...createActionComponents,
+            createComponent(submitActionButton, () => submitActionButton.toggle(this.selectedAction != null)),
+            new ComponentSeparator("sep_action"),
+            createComponent(this.getStageSwitchButtons().prev),
+        ]
+
+
+        return [
+            selectItem,
+            buildPrice,
+            actionComponents,
+            submit
+        ] 
+    }
+
+    protected override async success(interaction: UserInterfaceInteraction) {
+        if (!(this.selectedShop && this.selectedItem && (this.price !== null))) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+        const optionals = {
+            ...(this.params.stock ? {stock: this.params.stock} : {}),
+        }
+        
+        const [error, _] = await addProduct(this.selectedShop.id, {
+            itemId: this.selectedItem.id,
+            price: this.price,
+            action: this.selectedAction,
+            ...optionals
+        })
+        if (error) return await updateAsErrorMessage(interaction, error.message)
+
+        const message = t(`userFlows.productAdd.messages.success`, {
+            product: bold(formattedEmojiableName(this.selectedItem)),
+            shop: bold(formattedEmojiableName(this.selectedShop))
+        })
+
+        const withActionMessage = t(`userFlows.productAdd.messages.withAction`, { action: bold(`${getAction(this.params.action).name}`) })
+        const actionMessage = getAction(this.params.action).getMessage(this.selectedAction?.options, HYDRATOR)
+
+        return await updateAsSuccessMessage(interaction, `${message} ${withActionMessage}\n${t(`userFlows.productAdd.messages.action`)} ${actionMessage}`)
+    }
+
+}
 // TODO: add action product
 // const ADD_ACTION_PRODUCT_FLOW_STAGE = {
 //     SELECT_SHOP: "SELECT_SHOP",

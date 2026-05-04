@@ -3,15 +3,15 @@ import { ApiError, Balance, NanoId } from "@/database/database.types.js"
 import { Account } from "@/features/accounts/database/accounts.type.js"
 import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { Item } from "@/features/items/database/items.types.js"
-import { productActions } from "@/features/shops/data/product-actions/index.js"
+import { getAction } from "@/features/shops/data/product-actions/index.js"
 import { Product } from "@/features/shops/database/products.types.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { MapValue } from "@/lib/types/collections.js"
 import { Emojiable, Identifiable, Labelled } from "@/lib/types/core.js"
 import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
 import { objectEntries } from "@/utils/objects.js"
 import { AccountsDatabase, CurrenciesDatabase, ItemsDatabase, ShopsDatabase } from "./database.types.js"
-import { MapValue } from "@/lib/types/collections.js"
 
 export type HydratedPrice = Map<NanoId, Balance<Currency>>
 export type HydratedProduct = MapValue<AwaitedObjectResultReturn<Hydrator, "fullyHydrateShop">["products"]>
@@ -54,7 +54,7 @@ export class Hydrator {
     public getHydratedProductAction(product: Product) {
         if (!product.action) return err("NoActionToHydrate")
         
-        return productActions[product.action.kind].hydrate(product.action.options, this)
+        return getAction(product.action.kind).hydrate(product.action.options, this)
     }
 
 

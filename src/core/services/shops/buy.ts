@@ -1,6 +1,6 @@
 import { NanoId } from "@/database/database.types.js"
 import { addCurrenciesAmounts, missingCurrenciesFor, setAccountItemAmount } from "@/features/accounts/services/accounts.services.js"
-import { productActions } from "@/features/shops/data/product-actions/index.js"
+import { getAction } from "@/features/shops/data/product-actions/index.js"
 import { Product } from "@/features/shops/database/products.types.js"
 import { Shop } from "@/features/shops/database/shops.types.js"
 import { applyQuantityAndDiscount } from "@/features/shops/services/price.js"
@@ -50,7 +50,7 @@ export async function processPurchase(
     if (error3) return err(error3)
     
     if (product.action != undefined) {
-        const [error4, actionMessage] = await productActions[product.action.kind].execute(member, product.action.options)
+        const [error4, actionMessage] = await getAction(product.action.kind).execute(member, product.action.options)
         if (error4) return err(error4)
 
         return ok({ quantity: actualQuantity, message: actionMessage })

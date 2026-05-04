@@ -4,8 +4,10 @@ import { snowflakeSchema } from "@/schemas/utils.js"
 import { bold, roleMention } from "discord.js"
 import z from "zod"
 import { ProductAction } from "./product-action.js"
+import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 
-export const giveRoleActionSchema = z.object({
+const giveRoleActionSchema = z.object({
     kind: z.literal("give-role"),
     options: z.object({
         roleId: snowflakeSchema
@@ -25,5 +27,28 @@ export const giveRoleProductAction: ProductAction<"give-role", typeof giveRoleAc
                 { role: bold(roleMention(roleId)) }
             ))
     },
-    hydrate: (options) => ok({ kind: "give-role", options })
+    hydrate: (options) => ok({ kind: "give-role", options }),
+
+
+    getMessage: (options) => t(
+        `userFlows.productAdd.messages.actions.giveRole`, 
+        { role: options?.roleId ? bold(roleMention(options.roleId)) : t("defaultComponents.selectRole") }
+    ),
+
+    getEditComponents: (flowId, callback) => {
+        const roleSelectMenu = new ExtendedRoleSelectMenuComponent(
+            {
+                customId: `${flowId}+select-role`,
+                placeholder: t("defaultComponents.selectRole"),
+                time: 120_000
+            },
+            (interaction, selectedRoleId) => {
+                callback(interaction, { kind: "give-role", options: { roleId: selectedRoleId } })
+            }
+        )
+
+        return [
+            createComponent(roleSelectMenu)
+        ]
+    }
 }
