@@ -5,11 +5,13 @@ import { MapValue } from "@/lib/types/collections.js";
 import { formattedEmojiableName } from "@/utils/formatting.js";
 import { objectEntries } from "@/utils/objects.js";
 
+export const MAX_PRICE_LENGTH = 20
+
 function discounted(price: number, discount: number) {
     return price * (1 - discount / 100)
 }
 
-function priceFormat(price: number) {
+export function priceFormat(price: number) {
     return price.toLocaleString(getLocale(), { 
         minimumFractionDigits: 2, 
         maximumFractionDigits: 2 

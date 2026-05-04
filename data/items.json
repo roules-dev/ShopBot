@@ -75,7 +75,7 @@
         "name": "overcooked baguette",
         "emoji": "🔥",
         "description": "a little bit burnt baguette, that's why its a bit cheaper",
-        "refCount": 1
+        "refCount": 2
     },
     "5qpg3DPSth4IG1pAyesc5": {
         "name": "Boss",
@@ -109,7 +109,7 @@
     },
     "9x2jf1OhnJxF1uWYXjS2Q": {
         "name": "Magic Potion",
-        "emoji": null,
+        "emoji": "🍹",
         "description": "You don't know what it does until you try it",
         "refCount": 1
     }

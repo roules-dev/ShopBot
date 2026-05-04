@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { productActions } from "@/features/shops/data/product-actions/index.js"
 import { AddActionProductFlow, addActionProductParamsSchema, AddProductFlow, addProductParamsSchema } from "@/features/shops/ui/user-flows/product-add.js"
-import { EditProductFlow, editProductParamsSchema } from "@/features/shops/ui/user-flows/product-edit.js"
+import { EditProductFlow, EditProductItemFlow, editProductParamsSchema, EditProductPriceFlow } from "@/features/shops/ui/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/ui/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -49,9 +49,15 @@ export const data = new SlashCommandBuilder()
                 .setMinValue(0)
             )
         )
-        // TODO : Action edit
-        // TODO : Price edit
-        // TODO : Item edit
+        .addSubcommand(subcommand => subcommand
+            .setName("price")
+            .setDescription("Change Price")
+        )
+        .addSubcommand(subcommand => subcommand
+            .setName("item")
+            .setDescription("Change Item")
+        )
+        // TODO : action edit
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
@@ -81,6 +87,15 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             
         default:
             if (subCommandGroup == "edit") {
+                switch (subCommand) {
+                    case "price":
+                        new EditProductPriceFlow().start(interaction)
+                        return
+                    case "item":
+                        new EditProductItemFlow().start(interaction)
+                        return
+                }
+
                 const [error, options] = validateCommandOptions(interaction.options, editProductParamsSchema, { kind: subCommand })
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 

@@ -17,6 +17,10 @@ import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formattin
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
 import z from "zod";
 import { Shop } from "../../database/shops.types.js";
+import { formatPrice, MAX_PRICE_LENGTH } from "../../services/price.js";
+import { getPricePieceComponents } from "../components/price-piece-components.js";
+import { Item } from "@/features/items/database/items.types.js";
+import { getItems } from "@/core/services/items/items.services.js";
 
 
 export const editProductParamsSchema = z.discriminatedUnion("kind", [
@@ -26,14 +30,13 @@ export const editProductParamsSchema = z.discriminatedUnion("kind", [
     })
 ])
 
-
 export class EditProductFlow extends UserFlow<z.infer<typeof editProductParamsSchema>> {
     public override get id(): string { 
         return "product-edit" 
     }
 
-    private selectedShop: Shop & Identifiable<NanoId> | null = null
-    private selectedProduct: HydratedProduct | null = null
+    protected selectedShop: Shop & Identifiable<NanoId> | null = null
+    protected selectedProduct: HydratedProduct | null = null
 
     protected override async prestart(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
@@ -60,7 +63,7 @@ export class EditProductFlow extends UserFlow<z.infer<typeof editProductParamsSc
     }
 
     protected override initComponents() {
-                const shopSelectMenu = new ExtendedStringSelectMenuComponent(
+        const shopSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-shop`,
                 placeholder: t("defaultComponents.selectShop"),
@@ -140,6 +143,177 @@ export class EditProductFlow extends UserFlow<z.infer<typeof editProductParamsSc
             option: bold(this.params.kind),
             value: bold(getDisplayOptionValue(this.params, t("defaultComponents.unset")))
         })
+
+        return await updateAsSuccessMessage(interaction, message)
+    }
+}
+
+
+//? Here inheritance is really annoying, we're forced to do some wizardry in constructors
+//? consider refactoring to something more like composition
+
+export class EditProductPriceFlow extends EditProductFlow {
+    public override get id(): string { 
+        return "product-edit+price" 
+    }
+
+    constructor() {
+        super({kind: "stock",stock: null})
+    }
+
+    private price: Record<NanoId, number> | null = null
+
+    private getPriceDisplay() {
+        if (this.price == null) return t("defaultComponents.unset")
+        
+        const [error, price] = HYDRATOR.getHydratedPrice(this.price)
+        if (error) return "❌ error displaying price"
+        
+        return price.size > 0 ? formatPrice(price) : t("userInterfaces.shop.embeds.shop.free")
+    }
+
+    protected override getMessage(): string {
+        if (this.selectedShop == null) {
+            return t(`userFlows.productEdit.messages.shopSelectStage`, {
+                shop: bold(t("defaultComponents.selectShop")),
+                option: bold("price"),
+                value: bold(this.getPriceDisplay())
+            })
+        }
+
+        return t(`userFlows.productEdit.messages.productSelectStage`, {
+            product: bold(formattedEmojiableName(this.selectedProduct?.item) || t("defaultComponents.selectProduct")),
+            shop: bold(formattedEmojiableName(this.selectedShop)),
+            option: bold("price"),
+            value: bold(this.getPriceDisplay())
+        })
+    }
+
+
+    protected override initComponents() {
+        const [shopSelect, productSelect, submit] = super.initComponents()
+        if (!shopSelect || !productSelect || !submit) throw new Error("Unxpected Error loading EditPriceFlow components")
+
+        const { addPriceWithCurrencySelect, removePricePieceButton } = getPricePieceComponents(
+            this.id, 
+            this.price, 
+            (price) => this.price = price, 
+            (interaction) => this.updateInteraction(interaction)
+        )
+        
+        return [
+            shopSelect,
+            productSelect,
+
+            createComponent(addPriceWithCurrencySelect, () => addPriceWithCurrencySelect.toggle(
+                this.selectedShop != null && 
+                this.selectedProduct != null && 
+                (this.price == null || Object.keys(this.price).length < MAX_PRICE_LENGTH))
+            ),
+            createComponent(removePricePieceButton, () => removePricePieceButton.toggle(this.price != null && Object.keys(this.price).length > 0)),
+
+            createComponent(submit.comp, () => submit.comp.toggle(this.selectedShop != null && this.selectedProduct != null && this.price != null))
+        ]
+    }
+
+    protected override async success(interaction: UserInterfaceInteraction) {
+        this.disableComponents()
+
+        if (!this.selectedShop || !this.selectedProduct || !this.price) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+        const [error] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, {price: this.price})
+
+        if (error) return updateAsErrorMessage(interaction, error.message)
+
+        const message = t(`userFlows.productEdit.messages.success`, 
+            {
+                product: bold(formattedEmojiableName(this.selectedProduct.item)),
+                shop: bold(formattedEmojiableName(this.selectedShop)),
+                option: bold("price"),
+                value: bold(this.getPriceDisplay())
+            }
+        )
+
+        return await updateAsSuccessMessage(interaction, message)
+    }
+}
+
+
+export class EditProductItemFlow extends EditProductFlow {
+    public override get id(): string { 
+        return "product-edit+price" 
+    }
+
+    constructor() {
+        super({kind: "stock",stock: null})
+    }
+
+    private selectedItem: Item & Identifiable<NanoId> | null = null
+
+
+    protected override getMessage(): string {
+        if (this.selectedShop == null) {
+            return t(`userFlows.productEdit.messages.shopSelectStage`, {
+                shop: bold(t("defaultComponents.selectShop")),
+                option: bold("item"),
+                value: bold(t("defaultComponents.selectItem"))
+            })
+        }
+
+        return t(`userFlows.productEdit.messages.productSelectStage`, {
+            product: bold(formattedEmojiableName(this.selectedProduct?.item) || t("defaultComponents.selectProduct")),
+            shop: bold(formattedEmojiableName(this.selectedShop)),
+            option: bold("item"),
+            value: bold(formattedEmojiableName(this.selectedItem) ?? t("defaultComponents.selectItem"))
+        })
+    }
+
+
+    protected override initComponents() {
+        const [shopSelect, productSelect, submit] = super.initComponents()
+        if (!shopSelect || !productSelect || !submit) throw new Error("Unxpected Error loading EditPriceFlow components")
+
+        const itemSelectMenu = new ExtendedStringSelectMenuComponent(
+            {
+                customId: `${this.id}+select-item`,
+                placeholder: t("defaultComponents.selectItem"),
+                time: 120_000
+            },
+            getItems(),
+            (interaction) => this.updateInteraction(interaction),
+            (interaction, selectedItem) => {
+                this.selectedItem = selectedItem
+                this.updateInteraction(interaction)
+            }
+        )
+        
+        return [
+            shopSelect,
+            productSelect,
+
+            createComponent(itemSelectMenu, () => itemSelectMenu.toggle(this.selectedShop != null && this.selectedProduct != null)),
+
+            createComponent(submit.comp, () => submit.comp.toggle(this.selectedShop != null && this.selectedProduct != null && this.selectedItem != null))
+        ]
+    }
+
+    protected override async success(interaction: UserInterfaceInteraction) {
+        this.disableComponents()
+
+        if (!this.selectedShop || !this.selectedProduct || !this.selectedItem) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+        const [error] = await updateProduct(this.selectedShop.id, this.selectedProduct.id, {itemId: this.selectedItem.id})
+
+        if (error) return updateAsErrorMessage(interaction, error.message)
+
+        const message = t(`userFlows.productEdit.messages.success`, 
+            {
+                product: bold(formattedEmojiableName(this.selectedProduct.item)),
+                shop: bold(formattedEmojiableName(this.selectedShop)),
+                option: bold("item"),
+                value: bold(formattedEmojiableName(this.selectedItem))
+            }
+        )
 
         return await updateAsSuccessMessage(interaction, message)
     }
