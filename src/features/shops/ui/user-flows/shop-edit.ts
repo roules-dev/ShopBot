@@ -13,7 +13,8 @@ import { emojiSchema, snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
-import { Shop } from "../database/shops.types.js"
+import { Shop } from "../../database/shops.types.js"
+
 
 export const editShopParamsSchema = z.discriminatedUnion("kind", [
     z.object({ 

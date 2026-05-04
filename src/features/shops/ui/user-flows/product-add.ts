@@ -22,10 +22,10 @@ import { optionalOrNull } from "@/schemas/optional-to-null.js";
 import { formattedEmojiableName } from "@/utils/formatting.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import z from "zod";
-import { getAction, productActions } from "../data/product-actions/index.js";
-import { Shop } from "../database/shops.types.js";
-import { productActionSchema, productActionSchemaKinds } from "../schemas/products.schemas.js";
-import { formatPrice } from "../services/price.js";
+import { getAction, productActions } from "../../data/product-actions/index.js";
+import { Shop } from "../../database/shops.types.js";
+import { productActionSchemaKinds, productActionSchema } from "../../schemas/products.schemas.js";
+import { formatPrice } from "../../services/price.js";
 
 
 // TODO update translation

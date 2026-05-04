@@ -17,9 +17,9 @@ import { formattedEmojiableName } from "@/utils/formatting.js"
 import { stringifyObj } from "@/utils/objects.js"
 import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
-import { Product } from "../database/products.types.js"
-import { Shop } from "../database/shops.types.js"
-import { applyQuantityHydrated, formatPrice } from "../services/price.js"
+import { Product } from "../../database/products.types.js"
+import { Shop } from "../../database/shops.types.js"
+import { formatPrice, applyQuantityHydrated } from "../../services/price.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {

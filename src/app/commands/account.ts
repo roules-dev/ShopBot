@@ -1,4 +1,4 @@
-import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
+import { AccountUserInterface } from "@/features/accounts/ui/user-interfaces/account-ui.js"
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js"
 
 

@@ -11,7 +11,7 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
-import { Shop } from "../database/shops.types.js"
+import { Shop } from "../../database/shops.types.js"
 
 
 export const discountCodeCreateParamsSchema = z.object({

@@ -16,7 +16,8 @@ import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, roleMention, userMention } from "discord.js"
 import z from "zod"
-import { setAccountCurrencyAmount } from "../services/accounts.services.js"
+import { setAccountCurrencyAmount } from "../../services/accounts.services.js"
+
 
 abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends UserFlow<T> {
     protected selectedCurrency: Currency & Identifiable<NanoId> | null = null;

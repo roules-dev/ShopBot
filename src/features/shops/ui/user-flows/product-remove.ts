@@ -14,8 +14,8 @@ import { NanoId } from "@/database/database.types.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
-import { Product } from "../database/products.types.js"
-import { Shop } from "../database/shops.types.js"
+import { Product } from "../../database/products.types.js"
+import { Shop } from "../../database/shops.types.js"
 
 
 export class RemoveProductFlow extends UserFlow {

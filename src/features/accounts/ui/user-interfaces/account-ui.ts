@@ -12,7 +12,8 @@ import { MultiplePaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/sp
 import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
-import { Account } from "../database/accounts.type.js"
+import { Account } from "../../database/accounts.type.js"
+
 
 export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
     public override get id(): string { 

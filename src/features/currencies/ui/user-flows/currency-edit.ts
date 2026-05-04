@@ -14,7 +14,7 @@ import { emojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
-import { Currency } from "../database/currencies.types.js"
+import { Currency } from "../../database/currencies.types.js"
 
 
 export const editCurrencyParamsSchema = z.discriminatedUnion("kind", [

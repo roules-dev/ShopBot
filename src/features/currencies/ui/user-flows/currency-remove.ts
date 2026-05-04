@@ -9,11 +9,11 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
-import { Currency } from "../database/currencies.types.js"
 import { takeCurrencyFromAccounts } from "@/features/accounts/services/accounts.services.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { NanoId } from "@/database/database.types.js"
 import { Identifiable } from "@/lib/types/core.js"
+import { Currency } from "../../database/currencies.types.js"
 
 
 export class CurrencyRemoveFlow extends UserFlow {

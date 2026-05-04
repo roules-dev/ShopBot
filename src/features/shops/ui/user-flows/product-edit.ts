@@ -16,7 +16,7 @@ import { optionalOrNull } from "@/schemas/optional-to-null.js";
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
 import z from "zod";
-import { Shop } from "../database/shops.types.js";
+import { Shop } from "../../database/shops.types.js";
 
 
 export const editProductParamsSchema = z.discriminatedUnion("kind", [

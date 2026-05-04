@@ -16,7 +16,7 @@ import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, userMention } from "discord.js"
 import z from "zod"
-import { emptyAccount, setAccountCurrencyAmount } from "../services/accounts.services.js"
+import { emptyAccount, setAccountCurrencyAmount } from "../../services/accounts.services.js"
 
 
 export const accountTakeParamsSchema = z.object({

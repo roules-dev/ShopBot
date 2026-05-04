@@ -14,7 +14,7 @@ import { emojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
-import { Item } from "../database/items.types.js"
+import { Item } from "../../database/items.types.js"
 
 
 export const editItemParamsSchema = z.discriminatedUnion("kind", [

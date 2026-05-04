@@ -10,7 +10,7 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold } from "discord.js"
-import { Shop } from "../database/shops.types.js"
+import { Shop } from "../../database/shops.types.js"
 
 
 export class ShopRemoveFlow extends UserFlow {

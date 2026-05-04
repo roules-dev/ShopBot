@@ -11,9 +11,9 @@ import { bold, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { NanoId } from "@/database/database.types.js"
 import { Identifiable } from "@/lib/types/core.js"
-import { Item } from "../database/items.types.js"
 import { getItems } from "@/core/services/items/items.services.js"
 import { deleteItem } from "@/core/services/items/items.services.js"
+import { Item } from "../../database/items.types.js"
 
 
 export class ItemRemoveFlow extends UserFlow {

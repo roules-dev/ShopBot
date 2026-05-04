@@ -15,7 +15,7 @@ import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { snowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, userMention } from "discord.js"
 import z from "zod"
-import { emptyAccount, setAccountItemAmount } from "../services/accounts.services.js"
+import { emptyAccount, setAccountItemAmount } from "../../services/accounts.services.js"
 
 // TODO: implement inventory take / bulk take
 //? user suggestion #14
