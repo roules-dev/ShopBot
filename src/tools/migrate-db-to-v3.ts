@@ -128,7 +128,7 @@ async function migrateShops() {
                 item = newProductWithoutPriceWithoutIdWithoutAction
             }
 
-            const newPrice = Object.fromEntries([[currencyId, priceNum]])
+            const newPrice = priceNum == 0 ? {} : Object.fromEntries([[currencyId, priceNum]])
 
             let newProduct: z.infer<typeof productRawSchema> = { price: newPrice, itemId: nanoIdSchema.parse(id) }
 
