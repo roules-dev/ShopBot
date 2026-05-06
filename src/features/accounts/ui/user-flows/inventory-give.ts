@@ -114,7 +114,7 @@ export class InventoryGiveFlow extends BaseItemGiveFlow<z.infer<typeof inventory
 
 export const bulkInventoryGiveParamsSchema = z.object({
     amount: z.number(),
-    targetRole: snowflakeSchema,
+    role: snowflakeSchema,
 })
 
 export class BulkInventoryGiveFlow extends BaseItemGiveFlow<z.infer<typeof bulkInventoryGiveParamsSchema>> {
@@ -129,7 +129,7 @@ export class BulkInventoryGiveFlow extends BaseItemGiveFlow<z.infer<typeof bulkI
             { 
                 amount: bold(`${this.params.amount}`), 
                 item: bold(`[${formattedEmojiableName(this.selectedItem) || t("defaultComponents.selectItem")}]`), 
-                role: roleMention(this.params.targetRole) 
+                role: roleMention(this.params.role) 
             }
         )
     }
@@ -139,7 +139,7 @@ export class BulkInventoryGiveFlow extends BaseItemGiveFlow<z.infer<typeof bulkI
         
         if (!this.selectedItem) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const targetUsersIds = (await interaction.guild?.roles.fetch(this.params.targetRole))?.members.map(m => m.user.id) || []
+        const targetUsersIds = (await interaction.guild?.roles.fetch(this.params.role))?.members.map(m => m.user.id) || []
 
         for (const userId of targetUsersIds) {
             const [error, targetId] = validate(snowflakeSchema, userId)
@@ -159,12 +159,12 @@ export class BulkInventoryGiveFlow extends BaseItemGiveFlow<z.infer<typeof bulkI
             { 
                 amount: bold(`${this.params.amount}`), 
                 item: formattedEmojiableName(this.selectedItem), 
-                role: roleMention(this.params.targetRole) 
+                role: roleMention(this.params.role) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave **${this.params.amount} ${formattedEmojiableName(this.selectedItem)}** to ${roleMention(this.params.targetRole)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.params.amount} ${formattedEmojiableName(this.selectedItem)}** to ${roleMention(this.params.role)}`)
         }
 
         return await updateAsSuccessMessage(interaction, message)

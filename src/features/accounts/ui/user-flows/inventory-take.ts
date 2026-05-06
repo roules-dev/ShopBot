@@ -7,19 +7,20 @@ import { Item } from "@/features/items/database/items.types.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { snowflakeSchema } from "@/schemas/utils.js"
-import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, userMention } from "discord.js"
-import z from "zod"
-import { emptyAccount, setAccountItemAmount } from "../../services/accounts.services.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
+import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, roleMention, userMention } from "discord.js"
+import z from "zod"
+import { emptyAccount, setAccountItemAmount, takeItemFromAccounts } from "../../services/accounts.services.js"
+import { getItems } from "@/core/services/items/items.services.js"
 
-// TODO: implement inventory bulk take
-//? user suggestion #14
+
 
 export const inventoryTakeParamsSchema = z.object({
     amount: z.number(),
@@ -43,7 +44,7 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
             `userFlows.inventoryTake.messages.default`, 
             { 
                 amount: bold(`${this.params.amount}`), 
-                item: bold(`[${this.selectedItem?.name || t("defaultComponents.selectItem")}]`), 
+                item: bold(`[${formattedEmojiableName(this.selectedItem) || t("defaultComponents.selectItem")}]`), 
                 user: userMention(this.params.target) 
             }
         )
@@ -172,5 +173,77 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
 
         return await updateAsSuccessMessage(interaction, successMessage)
 
+    }
+}
+
+export const bulkInventoryRemoveItemParamsSchema = z.object({
+    role: snowflakeSchema
+})
+
+export class BulkInventoryRemoveItemFlow extends UserFlow<z.infer<typeof bulkInventoryRemoveItemParamsSchema>> {
+    public override get id(): string { 
+        return "bulk-inventory-remove-item" 
+    }
+
+    private selectedItem: Item & Identifiable<NanoId> | null = null
+
+    protected override getMessage() {
+        return t(
+            `userFlows.inventoryTake.messages.bulkRemoveItem`, 
+            {
+                item: bold(`[${formattedEmojiableName(this.selectedItem) || t("defaultComponents.selectItem")}]`), 
+                role: roleMention(this.params.role) 
+            }
+        )
+    }
+
+    protected override initComponents() {
+        const itemSelectMenu = new ExtendedStringSelectMenuComponent(
+            { customId: `${this.id}+select-item`, placeholder: t("defaultComponents.selectItem"), time: 120_000 },
+            getItems(),
+            (interaction) => this.updateInteraction(interaction),
+            (interaction, selectedItem) => {
+                this.selectedItem = selectedItem
+                this.updateInteraction(interaction)
+            }
+        )
+
+        const submitButton = new ExtendedButtonComponent(
+            {
+                customId: `${this.id}+submit`,
+                label: t(`userFlows.inventoryTake.components.submitButton`),
+                emoji: "✅",
+                style: ButtonStyle.Success,
+                disabled: true,
+                time: 120_000,
+            },
+            (interaction: ButtonInteraction) => this.success(interaction)
+        )
+
+        return [
+            createComponent(itemSelectMenu),
+            createComponent(submitButton, () => submitButton.toggle(this.selectedItem != null))
+        ]
+    }
+
+    protected override async success(interaction: UserInterfaceInteraction) {
+        this.disableComponents()
+
+        if (!this.selectedItem) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+        const [error] = await takeItemFromAccounts(this.selectedItem.id)
+        if (error) return updateAsErrorMessage(interaction, error.message)
+        
+        await updateAsSuccessMessage(interaction, t(
+            `userFlows.inventoryTake.messages.bulkRemoveItemSuccess`, 
+            {
+                item: bold(`[${formattedEmojiableName(this.selectedItem)}]`), 
+                role: roleMention(this.params.role) 
+            }
+        ))
+
+        if (interaction.guild) {
+            logToDiscord(interaction.guild, `${interaction.member} removed **${formattedEmojiableName(this.selectedItem)}** from the inventories of all members with role ${roleMention(this.params.role)}`)
+        }
     }
 }

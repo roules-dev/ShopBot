@@ -514,8 +514,10 @@ export const locale = {
         "inventoryTake": {
             "messages": {
                 "default": "Take {amount} {item} from {user}",
+                "bulkRemoveItem": "Remove {item} from all users with role {role}",
                 "successfullyEmptied": "You successfully emptied {user} inventory",
-                "success": "You successfully took {amount} {item} from {user}"
+                "success": "You successfully took {amount} {item} from {user}",
+                "bulkRemoveItemSuccess": "You successfully removed {item} from all users with role {role}"
             },
             "components": {
                 "submitButton": "Submit",

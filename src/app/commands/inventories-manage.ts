@@ -1,6 +1,6 @@
 import { t } from "@/core/i18n/i18n.js"
 import { BulkInventoryGiveFlow, bulkInventoryGiveParamsSchema, InventoryGiveFlow, inventoryGiveParamsSchema } from "@/features/accounts/ui/user-flows/inventory-give.js"
-import { InventoryTakeFlow, inventoryTakeParamsSchema } from "@/features/accounts/ui/user-flows/inventory-take.js"
+import { BulkInventoryRemoveItemFlow, bulkInventoryRemoveItemParamsSchema, InventoryTakeFlow, inventoryTakeParamsSchema } from "@/features/accounts/ui/user-flows/inventory-take.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { SlashCommandBuilder, PermissionFlagsBits, Client, ChatInputCommandInteraction } from "discord.js"
@@ -56,6 +56,15 @@ export const data = new SlashCommandBuilder()
             .setMinValue(1)
         )
     )
+    .addSubcommand(subcommand => subcommand
+        .setName("bulk-remove-item")
+        .setDescription("Remove an item from users with a certain role")
+        .addRoleOption(option => option
+            .setName("role")
+            .setDescription("The role you want to remove the item from")
+            .setRequired(true)    
+        )
+    )
 
 export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
@@ -81,6 +90,13 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
             new InventoryTakeFlow(options).start(interaction)
+            break
+        }
+        case "bulk-remove-item": {
+            const [error, options] = validateCommandOptions(interaction.options, bulkInventoryRemoveItemParamsSchema)
+            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+
+            new BulkInventoryRemoveItemFlow(options).start(interaction)
             break
         }
         default:

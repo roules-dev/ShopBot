@@ -14,6 +14,7 @@ import { Identifiable } from "@/lib/types/core.js"
 import { getItems } from "@/core/services/items/items.services.js"
 import { deleteItem } from "@/core/services/items/items.services.js"
 import { Item } from "../../database/items.types.js"
+import { takeItemFromAccounts } from "@/features/accounts/services/accounts.services.js"
 
 
 export class ItemRemoveFlow extends UserFlow {
@@ -94,10 +95,8 @@ export class ItemRemoveFlow extends UserFlow {
             }))
         }
 
-        // TODO: Remove item from accounts
-        // const [error] = await takeItemFromAccounts(this.selectedItem.id)
-        // if (error) return updateAsErrorMessage(interaction, error.message)
-
+        const [error] = await takeItemFromAccounts(this.selectedItem.id)
+        if (error) return updateAsErrorMessage(interaction, error.message)
 
         const [error2] = await deleteItem(this.selectedItem.id)
         if (error2) return updateAsErrorMessage(interaction, error2.message)

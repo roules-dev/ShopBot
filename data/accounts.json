@@ -1,13 +1,14 @@
 {
     "628298729405022216": {
         "currencies": {
-            "0f2SNbp60vAwWjhKjRR0u": 58313.8,
-            "7kiuf_CPO2ocrr75mTXuV": 9999854
+            "0f2SNbp60vAwWjhKjRR0u": 58333.8,
+            "7kiuf_CPO2ocrr75mTXuV": 9999854,
+            "M2JfD9vMX2WzslISmBh2U": 20
         },
         "inventory": {
             "nxtWWm9IEe3qSLh4fj5qn": 37,
             "SQWzMyipYZO3fnCmhAttr": 1,
-            "Uasu0unlCLGnsJNQb_3S0": 16,
+            "Uasu0unlCLGnsJNQb_3S0": 0,
             "m3AmJIuCmlpXYh89Kf-HZ": 1,
             "w9zcCjKIt-yDjhXi2TLMB": 101,
             "FbZgPJ-aJOkvm1QAB3ucE": 1,
@@ -20,12 +21,21 @@
         }
     },
     "1109842206832988272": {
-        "currencies": {},
-        "inventory": {}
+        "currencies": {
+            "0f2SNbp60vAwWjhKjRR0u": 20
+        },
+        "inventory": {
+            "Uasu0unlCLGnsJNQb_3S0": 0
+        }
     },
     "665849503978618891": {
-        "currencies": {},
-        "inventory": {}
+        "currencies": {
+            "M2JfD9vMX2WzslISmBh2U": 20,
+            "0f2SNbp60vAwWjhKjRR0u": 20
+        },
+        "inventory": {
+            "Uasu0unlCLGnsJNQb_3S0": 0
+        }
     },
     "650585321729425448": {
         "currencies": {},
@@ -33,10 +43,19 @@
     },
     "1429578846767677511": {
         "currencies": {
-            "0f2SNbp60vAwWjhKjRR0u": 9999451
+            "0f2SNbp60vAwWjhKjRR0u": 9999471
         },
         "inventory": {
-            "nxtWWm9IEe3qSLh4fj5qn": 100
+            "nxtWWm9IEe3qSLh4fj5qn": 100,
+            "Uasu0unlCLGnsJNQb_3S0": 0
+        }
+    },
+    "1259153114297270273": {
+        "currencies": {
+            "0f2SNbp60vAwWjhKjRR0u": 20
+        },
+        "inventory": {
+            "Uasu0unlCLGnsJNQb_3S0": 0
         }
     }
 }

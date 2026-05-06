@@ -28,6 +28,14 @@ export function dbGetAccountsWithCurrency(db: AccountsDatabase, currencyId: Nano
     return accountsWithCurrency
 }
 
+export function dbGetAccountsWithItem(db: AccountsDatabase, itemId: NanoId) {
+    const accountsWithItem = new Map<BrandedSnowflake, DeepReadonly<Account>>()
+    db.list().forEach((account, id) => {
+        if (Object.keys(account.inventory).includes(itemId)) accountsWithItem.set(id, account)
+    })
+    return accountsWithItem
+}
+
 export async function dbUpdateAccount(db: AccountsDatabase, id: BrandedSnowflake, options: Partial<Account>) {
     const account = db.get(id)
     if (!account) return err(new ApiError("AccountDoesNotExist"))

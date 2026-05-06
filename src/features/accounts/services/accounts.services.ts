@@ -1,4 +1,4 @@
-import { getAccountsWithCurrency, getOrCreateAccount, updateAccount, updateBalance } from "@/core/services/accounts/accounts.services.js"
+import { getAccountsWithCurrency, getAccountsWithItem, getOrCreateAccount, updateAccount, updateBalance } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
 import { getItems } from "@/core/services/items/items.services.js"
 import { ApiError, NanoId } from "@/database/database.types.js"
@@ -82,6 +82,21 @@ export async function takeCurrencyFromAccounts(currencyId: NanoId) {
 
     return ok(accountsWithCurrency)
 }
+
+export async function takeItemFromAccounts(itemId: NanoId) {
+    const item = getItems().get(itemId)
+    if (!item) return err(new ApiError("ItemDoesNotExist"))
+
+    const accountsWithItem = getAccountsWithItem(itemId)
+
+    for (const [id] of accountsWithItem) {
+        const [error] = await updateBalance(id, "inventory", itemId, 0)
+        if (error) return err(error)
+    }
+
+    return ok(accountsWithItem)
+}
+
 
 export async function missingCurrenciesFor(id: BrandedSnowflake, price: Record<NanoId, number>) {
     const [error, account] = await getOrCreateAccount(id)
