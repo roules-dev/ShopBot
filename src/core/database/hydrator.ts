@@ -12,6 +12,7 @@ import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
 import { BrandedSnowflake } from "@/schemas/utils.js"
 import { objectEntries } from "@/utils/objects.js"
 import { AccountsDatabase, CurrenciesDatabase, ItemsDatabase, ShopsDatabase } from "./database.types.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
 
 export type HydratedPrice = Map<NanoId, Balance<Currency>>
 export type HydratedProduct = MapValue<AwaitedObjectResultReturn<Hydrator, "fullyHydrateShop">["products"]>
@@ -117,14 +118,23 @@ export class Hydrator {
         })
     }
 
-    public fullyHydrateShop(shopId: NanoId) {
+    public fullyHydrateShop(
+        shopId: NanoId, 
+        options: { allowPartial?: boolean } = {}
+    ) {
+        const { allowPartial = true } = options
+
         const [error1, shopWithProducts] = this.hydrateShop(shopId)
         if (error1) return err(error1)
 
         const resolvedProducts: Map<NanoId, AwaitedObjectResultReturn<Hydrator, "resolveProductItem"> & Labelled & Identifiable<NanoId> & Emojiable> = new Map()
         for (const productId of shopWithProducts.products.keys()) {
             const [error, resolvedProduct] = this.resolveProductItem(shopId, productId)
-            if (error) return err(error)
+            if (error) {
+                if (!allowPartial) return err(error)
+                PrettyLog.warn(`Failed to resolve product ${productId} of shop ${shopId} (full hydration) : ${error.message}`)
+                continue
+            }
 
             resolvedProducts.set(productId, {...resolvedProduct, name: resolvedProduct.item.name, emoji: resolvedProduct.item.emoji, id: productId})
         }
@@ -137,37 +147,60 @@ export class Hydrator {
 
 
     // if required: maybe inject id inside items and currencies ?
-    public getHydratedAccountCurrencies(account: Pick<Account, "currencies">) {
+    public getHydratedAccountCurrencies(
+        account: Pick<Account, "currencies">,
+        options: { allowPartial?: boolean } = {}
+    ) {
+        const { allowPartial = true } = options
+
         const currencies: Map<NanoId, Balance<Currency>> = new Map()
         for (const [currencyId, amount] of objectEntries(account.currencies)) {
             const currency = this.currenciesDb.get(currencyId)
-            if (!currency) return err(new ApiError("CurrencyDoesNotExist"))
+            if (!currency) {
+                if (!allowPartial) return err(new ApiError("CurrencyDoesNotExist"))
+                PrettyLog.warn(`Currency with id ${currencyId} does not exist (account hydration)`)
+                continue
+            }
             
             currencies.set(currencyId, { amount, resource: currency })
         }
         return ok(currencies)
     }
 
-    public getHydratedAccountInventory(account: Pick<Account, "inventory">) {
+    public getHydratedAccountInventory(
+        account: Pick<Account, "inventory">,
+        options: { allowPartial?: boolean } = {}
+    ) {
+        const { allowPartial = true } = options
+
         const inventory: Map<NanoId, Balance<Item>> = new Map()
         for (const [itemId, amount] of objectEntries(account.inventory)) {
 
             const item = this.itemsDb.get(itemId)
-            if (!item) return err(new ApiError("ItemDoesNotExist"))
+            if (!item) {
+                if (!allowPartial) return err(new ApiError("ItemDoesNotExist"))
+                PrettyLog.warn(`Item with id ${itemId} does not exist (inventory hydration)`)
+                continue
+            }
             
             inventory.set(itemId, { amount, resource: item })
         }
         return ok(inventory)
     }
 
-    public hydrateAccount(id: BrandedSnowflake) {
+    public hydrateAccount(
+        id: BrandedSnowflake,
+        options: { allowPartial?: boolean } = {}
+    ) {
+        const { allowPartial = true } = options
+
         const accountRaw = this.accountsDb.get(id)
         if (!accountRaw) return err(new ApiError("AccountDoesNotExist"))
 
-        const [error1, currencies] = this.getHydratedAccountCurrencies(accountRaw)
+        const [error1, currencies] = this.getHydratedAccountCurrencies(accountRaw, { allowPartial })
         if (error1) return err(error1)
 
-        const [error2, inventory] = this.getHydratedAccountInventory(accountRaw)
+        const [error2, inventory] = this.getHydratedAccountInventory(accountRaw, { allowPartial })
         if (error2) return err(error2)
 
         return ok({
