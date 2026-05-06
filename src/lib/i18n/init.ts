@@ -133,10 +133,17 @@ export function getTranslationByKey(obj: LanguageMessages, key: string) {
 
 
 function replaceTemplates(str: string, templates: { [key: string]: string | number }) {
-    let result = str
-    for (const key in templates) {
-        const value = templates[key]
-        result = result.replace(new RegExp(`{${key}}`, "g"), String(value)) 
-    }
-    return result
+    let hasUnexpectedTemplates = false
+
+    const result = str.replace(/{(\w+)}/g, (match, key) => {
+        if (key in templates) {
+            return String(templates[key]);
+        }
+        
+        hasUnexpectedTemplates = true
+        return match
+    })
+
+    return hasUnexpectedTemplates ? undefined : result
+    
 }
