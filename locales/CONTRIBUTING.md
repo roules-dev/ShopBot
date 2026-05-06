@@ -19,7 +19,7 @@ Your contributions make a huge difference. This guide explains how to add or imp
    git checkout -b add-language-<language-code>
    ```
 
-   Example: `add-language-fr` for French.
+> eg: `add-language-fr` for French.
 
 ## 🌐 Where Translations Live
 
@@ -42,7 +42,7 @@ For example:
 
 If your language doesn’t exist yet, create a new file named after the [Discord locales codes](https://discord.com/developers/docs/reference#locales)
 
-> Example: `de.json` for German, `ja.json` for Japanese, etc.
+> eg: `de.json` for German, `ja.json` for Japanese, etc.
 
 ## 🧩 Translation Format
 
@@ -66,26 +66,28 @@ To add your translation, **keep the same keys** and replace the English text wit
 }
 ```
 
-✅ **Important Notes:**
+> [!IMPORTANT]
+>
+> - **Do not change keys** — only translate the values.
+> - **Preserve case (uppercase/lowercase)** as in the original English text.
+> - **Don't remove markdown formatting** such as `**`, `__`, `~~`, `#`, etc
+> - **Don't remove special characters** such as `\n`
+> - **Keep placeholders intact.** For example:
+> 
+>   ```json
+>   "welcomeUser": "Welcome, {username}!"
+>   ```
+> 
+>   should stay as:
+> 
+>   ```json
+>   "welcomeUser": "Bienvenue, {username} !"
+>   ```
+> 
+> - Use **UTF-8** encoding.
+> - **When translating commands and options** make sure to follow [discord's naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
-- **Do not change keys** — only translate the values.
-- **Preserve case (uppercase/lowercase)** as in the original English text.
-- **Don't remove markdown formatting** such as `**`, `__`, `~~`, `#`, etc
-- **Don't remove special characters** such as `\n`
-- **Keep placeholders intact.** For example:
 
-  ```json
-  "welcomeUser": "Welcome, {username}!"
-  ```
-
-  should stay as:
-
-  ```json
-  "welcomeUser": "Bienvenue, {username} !"
-  ```
-
-- Use **UTF-8** encoding.
-- **When translating commands and options** make sure to follow the [naming conventions](https://discord.com/developers/docs/interactions/application-commands#command-name-naming-conventions).
 
 ## 🧪 Testing Your Translation
 
