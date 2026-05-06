@@ -8,7 +8,7 @@ import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answ
 import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { ComponentSeparator, createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
@@ -17,11 +17,12 @@ import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountCurrencyAmount } from "../../services/accounts.services.js"
+import { HYDRATOR } from "@/core/database/init-databases.js"
 
 
 export const accountTakeParamsSchema = z.object({
     amount: z.number(),
-    target: z.looseObject({ id: snowflakeSchema }),
+    target: snowflakeSchema,
 })
 
 export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSchema>> {
@@ -34,7 +35,10 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
     protected override async prestart() {
         const currencies = getCurrencies();
         if (!currencies.size) 
-            return err(`${t(`userFlows.accountTake.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`);
+            return err(`${t(`userFlows.accountTake.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)
+
+        await this.populateCurrenctSelectMenu()
+
         return ok(true);
     }
 
@@ -44,7 +48,7 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
             { 
                 amount: bold(`${this.params.amount}`), 
                 currency: bold(`[${formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency")}]`), 
-                user: userMention(this.params.target.id) 
+                user: userMention(this.params.target) 
             }
         )
     }
@@ -52,7 +56,7 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
     protected override initComponents() {
         const currencySelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-currency`, placeholder: t("defaultComponents.selectCurrency"), time: 120_000 },
-            getCurrencies(), 
+            new Map<NanoId, Currency>(),
             (interaction) => this.updateInteraction(interaction),
             (interaction, selectedCurrency) => {
                 this.selectedCurrency = selectedCurrency
@@ -84,7 +88,7 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
             async (interaction: ButtonInteraction) => {
                 if (!this.selectedCurrency) return this.updateInteraction(interaction)
 
-                const [error, account] = await getOrCreateAccount(this.params.target.id)
+                const [error, account] = await getOrCreateAccount(this.params.target)
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.params.amount = account.currencies[this.selectedCurrency.id] || 0
@@ -105,10 +109,10 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
 
                 if (!confirmed) return this.updateInteraction(modalSubmitInteraction)
 
-                const [error] = await emptyAccount(this.params.target.id, "currencies")
+                const [error] = await emptyAccount(this.params.target, "currencies")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
-                await updateAsSuccessMessage(modalSubmitInteraction, t(`userFlows.accountTake.messages.successfullyEmptied`, { user: userMention(this.params.target.id) }))
+                await updateAsSuccessMessage(modalSubmitInteraction, t(`userFlows.accountTake.messages.successfullyEmptied`, { user: userMention(this.params.target) }))
             }
         )
 
@@ -121,34 +125,55 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
         ]
     }
 
+    private async populateCurrenctSelectMenu() {
+        const [error, account] = await getOrCreateAccount(this.params.target)
+        if (error) throw error
+
+        const [error2, currencies] = HYDRATOR.getHydratedAccountCurrencies(account)
+        if (error2) throw error2
+
+        const currenciesMap = new Map<NanoId, Currency>()
+        for (const [currenctId, currencyBalance] of currencies) {
+            currenciesMap.set(currenctId, currencyBalance.resource)
+        }
+
+        const currencySelectMenu = this.components.get(`${this.id}+select-currency`)
+        if (!currencySelectMenu) throw new Error("Unexpected error: currencySelectMenu is null")
+        if (currencySelectMenu instanceof ComponentSeparator || !(currencySelectMenu.comp instanceof ExtendedStringSelectMenuComponent)) throw new Error("Unexpected error: currencySelectMenu is not ExtendedStringSelectMenuComponent")
+        
+        currencySelectMenu.comp.updateMap(currenciesMap)
+    }
+
 
     protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const targetId = this.params.target.id
+        const targetId = this.params.target
 
         const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currentBalance = account.currencies[this.selectedCurrency.id] || 0
-        const newBalance = Math.max(currentBalance - this.params.amount, 0)
+        const prevBalance = account.currencies[this.selectedCurrency.id] || 0
+        const newBalance = Math.max(prevBalance - this.params.amount, 0)
         
         const [error2, _] = await setAccountCurrencyAmount(targetId, this.selectedCurrency.id, newBalance)
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
+        const takenAmount = Math.min(prevBalance, this.params.amount)
+
         const successMessage = t(
             `userFlows.accountTake.messages.success`, 
             { 
-                amount: bold(`${this.params.amount}`), 
+                amount: bold(`${takenAmount}`), 
                 currency: formattedEmojiableName(this.selectedCurrency), 
-                user: userMention(this.params.target.id) 
+                user: userMention(this.params.target) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} took **${this.params.amount} ${this.selectedCurrency.name}** from ${userMention(this.params.target.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} took **${takenAmount} ${formattedEmojiableName(this.selectedCurrency)}** from ${userMention(this.params.target)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)

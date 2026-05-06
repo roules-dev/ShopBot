@@ -62,7 +62,7 @@ abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends U
 
 export const accountGiveParamsSchema = z.object({
     amount: z.number(),
-    target: z.looseObject({ id: snowflakeSchema }),
+    target: snowflakeSchema,
 })
 
 export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof accountGiveParamsSchema>> {
@@ -74,7 +74,7 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof account
             { 
                 amount: bold(`${this.params.amount}`), 
                 currency: bold(`[${formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency")}]`), 
-                user: userMention(this.params.target.id) 
+                user: userMention(this.params.target) 
             }
         )
     }
@@ -84,7 +84,7 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof account
         
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const targetId = this.params.target.id
+        const targetId = this.params.target
 
         const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
@@ -99,12 +99,12 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof account
             { 
                 amount: bold(`${this.params.amount}`), 
                 currency: formattedEmojiableName(this.selectedCurrency), 
-                user: userMention(this.params.target.id) 
+                user: userMention(this.params.target) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave **${this.params.amount} ${this.selectedCurrency.name}** to ${userMention(this.params.target.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.params.amount} ${formattedEmojiableName(this.selectedCurrency)}** to ${userMention(this.params.target)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)
@@ -113,7 +113,7 @@ export class AccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof account
 
 export const bulkAccountGiveParamsSchema = z.object({
     amount: z.number(),
-    targetRole: z.looseObject({ id: snowflakeSchema }),
+    targetRole: snowflakeSchema,
 })
 
 export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof bulkAccountGiveParamsSchema>> {
@@ -128,7 +128,7 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof bul
             { 
                 amount: bold(`${this.params.amount}`), 
                 currency: bold(`[${formattedEmojiableName(this.selectedCurrency) || t("defaultComponents.selectCurrency")}]`), 
-                role: roleMention(this.params.targetRole.id) 
+                role: roleMention(this.params.targetRole) 
             }
         )
     }
@@ -138,7 +138,7 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof bul
         
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const targetUsersIds = (await interaction.guild?.roles.fetch(this.params.targetRole.id))?.members.map(m => m.user.id) || []
+        const targetUsersIds = (await interaction.guild?.roles.fetch(this.params.targetRole))?.members.map(m => m.user.id) || []
 
         for (const userId of targetUsersIds) {
             const [error, targetId] = validate(snowflakeSchema, userId)
@@ -158,12 +158,12 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof bul
             { 
                 amount: bold(`${this.params.amount}`), 
                 currency: formattedEmojiableName(this.selectedCurrency), 
-                role: roleMention(this.params.targetRole.id) 
+                role: roleMention(this.params.targetRole) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} gave **${this.params.amount} ${this.selectedCurrency.name}** to ${roleMention(this.params.targetRole.id)}`)
+            logToDiscord(interaction.guild, `${interaction.member} gave **${this.params.amount} ${formattedEmojiableName(this.selectedCurrency)}** to ${roleMention(this.params.targetRole)}`)
         }
 
         return await updateAsSuccessMessage(interaction, message)

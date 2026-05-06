@@ -16,13 +16,14 @@ import { snowflakeSchema } from "@/schemas/utils.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountItemAmount } from "../../services/accounts.services.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 
-// TODO: implement inventory take / bulk take
+// TODO: implement inventory bulk take
 //? user suggestion #14
 
 export const inventoryTakeParamsSchema = z.object({
     amount: z.number(),
-    target: z.looseObject({ id: snowflakeSchema }),
+    target: snowflakeSchema,
 })
 
 export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakeParamsSchema>> {
@@ -43,14 +44,12 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
             { 
                 amount: bold(`${this.params.amount}`), 
                 item: bold(`[${this.selectedItem?.name || t("defaultComponents.selectItem")}]`), 
-                user: userMention(this.params.target.id) 
+                user: userMention(this.params.target) 
             }
         )
     }
 
     protected override initComponents() {
-        const targetId = snowflakeSchema.parse(this.params.target.id)
-
         const itemSelectMenu = new ExtendedStringSelectMenuComponent(
             { customId: `${this.id}+select-item`, placeholder: t("defaultComponents.selectItem"), time: 120_000 },
             new Map<NanoId, Item>(),
@@ -85,7 +84,7 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
             async (interaction: ButtonInteraction) => {
                 if (!this.selectedItem) return this.updateInteraction(interaction)
 
-                const [error, account] = await getOrCreateAccount(targetId)
+                const [error, account] = await getOrCreateAccount(this.params.target)
                 if (error) return updateAsErrorMessage(interaction, error.message)
 
                 this.params.amount = account.inventory[this.selectedItem.id] || 0
@@ -106,10 +105,10 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
 
                 if (!confirmed) return this.updateInteraction(modalSubmitInteraction)
 
-                const [error] = await emptyAccount(targetId, "currencies")
+                const [error] = await emptyAccount(this.params.target, "inventory")
                 if (error) return updateAsErrorMessage(modalSubmitInteraction, error.message)
 
-                await updateAsSuccessMessage(modalSubmitInteraction, t(`userFlows.inventoryTake.messages.successfullyEmptied`, { user: userMention(this.params.target.id) }))
+                await updateAsSuccessMessage(modalSubmitInteraction, t(`userFlows.inventoryTake.messages.successfullyEmptied`, { user: userMention(this.params.target) }))
             }
         )
 
@@ -122,7 +121,7 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
     }
 
     private async populateItemSelectMenu() {
-        const [error, account] = await getOrCreateAccount(this.params.target.id)
+        const [error, account] = await getOrCreateAccount(this.params.target)
         if (error) throw error
 
         const [error2, inventory] = HYDRATOR.getHydratedAccountInventory(account)
@@ -138,7 +137,6 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
         if (itemSelectMenu instanceof ComponentSeparator || !(itemSelectMenu.comp instanceof ExtendedStringSelectMenuComponent)) throw new Error("Unexpected error: itemSelectMenu is not ExtendedStringSelectMenuComponent")
         
         itemSelectMenu.comp.updateMap(inventoryMap)
-
     }
 
     protected async success(interaction: ButtonInteraction) {
@@ -146,28 +144,30 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
 
         if (!this.selectedItem) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
-        const targetId = this.params.target.id
+        const targetId = this.params.target
 
         const [error, account] = await getOrCreateAccount(targetId)
         if (error) return updateAsErrorMessage(interaction, error.message)
 
-        const currentBalance = account.inventory[this.selectedItem.id] || 0
-        const newBalance = Math.max(currentBalance - this.params.amount, 0)
+        const prevBalance = account.inventory[this.selectedItem.id] || 0
+        const newBalance = Math.max(prevBalance - this.params.amount, 0)
         
         const [error2] = await setAccountItemAmount(targetId, this.selectedItem.id, newBalance)
         if (error2) return updateAsErrorMessage(interaction, error2.message)
 
+        const takenAmount = Math.min(prevBalance, this.params.amount)
+
         const successMessage = t(
             `userFlows.inventoryTake.messages.success`, 
             { 
-                amount: bold(`${this.params.amount}`), 
-                item: this.selectedItem.name, 
+                amount: bold(`${takenAmount}`), 
+                item: formattedEmojiableName(this.selectedItem), 
                 user: userMention(targetId) 
             }
         )
 
         if (interaction.guild) {
-            logToDiscord(interaction.guild, `${interaction.member} took **${this.params.amount} ${this.selectedItem.name}** from ${userMention(targetId)}`)
+            logToDiscord(interaction.guild, `${interaction.member} took **${takenAmount} ${formattedEmojiableName(this.selectedItem)}** from ${userMention(targetId)}`)
         }
 
         return await updateAsSuccessMessage(interaction, successMessage)

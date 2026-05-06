@@ -498,6 +498,9 @@ export const locale = {
             }
         },
         "inventoryGive": {
+            "errorMessages": {
+                "cantGiveItem": "Can't give item."
+            },
             "messages": {
                 "default": "Give {amount} {item} to {user}",
                 "bulkGive": "Give {amount} {item} to all users with role {role}",
