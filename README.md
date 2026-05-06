@@ -27,15 +27,15 @@ Thanks to **Discord**'s features, you can customize the permissions for each com
 
 #### ✅ Fully customizable shops, currencies, products.
 
-You can **create** **currencies**, then use them in **shops** you created, in which you can add **products**, with a name, an emoji, a description and a price.
+You can **create** **currencies** and **items**, then use them in **shops** you created, to sell **products**, with customizable **prices** and **stocks**.
 
-Of course, you can **manage** these currencies, shops and products. You can **delete** and **edit** them, if you want to change their name, description.. or get rid of them !
+Of course, you can **manage** these currencies, shops and items and products. You can **delete** and **edit** them, if you want to change their name, emoji, description.. or get rid of them !
 
 #### ✅ Shop features
 
 You can **create** **discount codes** for your shops.
 
-You can set a product to be in **limited stock** or **unlimited stock**
+You can set a product to be in **limited** or **unlimited stock**
 
 You can have products that **trigger an action** when bought (such as: give money to a user, give a role to a user, _[any other ideas?](https://github.com/roules-dev/ShopBot/issues)_)
 
@@ -54,13 +54,12 @@ You can setup a **log channel** to see logs about purchases, gives and takes.
 #### ✅ Multi language support
 
 The bot currently supports **English**, **Spanish** and **French**. You can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
-
+<!-- To be added : a section with automatically filled translations percentages by language  -->
 <br>
 
 ### To be added
 
 - ❓ API to automate actions like: filling accounts; managing currencies, shops and products
-- Create a release, a precompiled version of the bot, with an easier way of installing it.
 
 See the detailed roadmap [here](https://github.com/roules-dev/ShopBot/blob/main/roadmap.md).
 <br>
@@ -115,9 +114,8 @@ npm run setup
 ```
 npm run serve
 ```
-
-> Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background
-
+> [!TIP]
+> Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background  
 > You can also create a routine such that this command is executed from the bot's folder each time the server is restarted
 
 All done ! You did it, your bot should be working perfectly !
@@ -134,8 +132,8 @@ As mentionned earlier, this bot enables you to create and manage shops, currenci
 
 #### Managing Shops
 
-The shops have a name, an optionnal description and emoji.
-They also have an assigned currency. Shops can be reserved for a certain role.
+The shops have a name, an optional description and emoji.
+Shops can be reserved for a certain role.
 All of these can be edited after the Shop has been created.
 
 You can also create discount codes for the shops.
@@ -155,39 +153,58 @@ You can also create discount codes for the shops.
 
 #### Managing Currencies
 
-The currencies have a name and an emoji.
+The currencies have a name and an optional emoji.
 All of these can be edited after the Currency has been created.
 
 ##### Commands :
 
 ```
   /currencies-manage
-    | create <name> <emoji>
+    | create <name> <emoji?>
     | edit <name/emoji> <new-value>
+    | remove
+```
+
+#### Managing Items
+
+The items have a name, and optionally a description and an emoji.
+All of these can be edited after the Currency has been created.
+
+##### Commands :
+
+```
+  /items-manage
+    | create <name> <description?> <emoji?>
+    | edit <name/description/emoji> <new-value>
     | remove
 ```
 
 #### Managing Products
 
-The products have a name, a price, an optionnal description and emoji.
+The products hold an item, have a price and optionally a set stock.
 All of these can be edited after the Product has been created.
 A product is assigned to a specific shop.
 
 You can create 'Action Products', these are products that will trigger an action when bought.
-It can be used to give money to a user, give the user a role. (That's all for now but I'm willing to add more in the future, feel free to give your suggestions in the [Issues](https://github.com/roules-dev/ShopBot/issues))
+It can be used to give money to a user, give the user a role. (That's all for now but I'm willing to add more in the future, feel free to give your suggestions [here](https://github.com/roules-dev/ShopBot/issues))
 
 ##### Commands :
 
 ```
   /products-manage
-    | add <name> <price> <description> <emoji> <action?>
-    | edit <name/price/description/emoji> <new-value>
+    | add <stock> <action?>
+    | edit <stock> <new-value?>
     | remove
 ```
+> [!TIP]
+> When using this command, you will be prompted to select an item, a shop, and you will build the price of the product, all of that with UI components to make it easier.
+
+> [!NOTE]
+> Products actions are not editable yet
 
 #### Managing Users
 
-The users have an account and an inventory, initially empty. In addition to being able to view their account and inventory, you can give or take money to users, and empty their account.
+The users have an account and an inventory, initially empty. In addition to being able to view their account and inventory, you can give or take money or items to users, and empty their accounts.
 
 ##### Commands :
 
@@ -197,6 +214,13 @@ The users have an account and an inventory, initially empty. In addition to bein
     | give <target> <amount>
     | bulk-give <role> <amount>
     | take <target> <amount>
+```
+```
+  /inventories-manage
+    | give <target> <amount>
+    | bulk-give <role> <amount>
+    | take <target> <amount>
+    | bulk-remove-item <role>
 ```
 
 #### Edit settings:
@@ -263,7 +287,7 @@ And you can do [many more things](#-documentation)... Create discount codes, add
 ### Multi language support ?
 
 Implemented ! It is community driven, the currently available languages are : English, French, Spanish. <br>
-If your language is not mentionned here, you can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
+If your language is not mentionned here, you can help the development of the bot by [translating it](locales/CONTRIBUTING.md)
 
 ### New features ?
 
