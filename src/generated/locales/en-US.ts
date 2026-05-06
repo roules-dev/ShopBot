@@ -7,7 +7,7 @@ export const locale = {
         "noShops": "There aren't any shops.\n-# Use `/shops-manage create` to create a new one",
         "noCurrencies": "There aren't any currencies.\n-# Use `/currencies-manage create` to create a new currency",
         "noProducts": "The selected shop has no products",
-        "noItems": "There aren't any items",
+        "noItems": "There aren't any items yet.\n-# Use `/items-manage create` to add one",
         "notOnlyEmojisInName": "The name can't contain only custom emojis",
         "shopDoesNotExist": "Shop does not exist",
         "shopAlreadyExists": "Shop already exists",

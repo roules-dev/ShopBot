@@ -7,6 +7,7 @@ export const locale = {
         "noShops": "Il n'y a pas de boutique.\n-# Utilisez `/shops-manage create` pour en créer une nouvelle",
         "noCurrencies": "Il n'y a pas de devise.\n-# Utilisez `/currencies-manage create` pour créer une nouvelle devise",
         "noProducts": "La boutique sélectionnée n'a pas de produits",
+        "noItems": "Il n'y a pas d'objet.\n-# Utilisez `/items-manage create` pour en ajouter un nouveau",
         "notOnlyEmojisInName": "Le nom ne peut pas contenir que des emojis personnalisés",
         "shopDoesNotExist": "La boutique n'existe pas",
         "shopAlreadyExists": "La boutique existe déjà",
@@ -439,6 +440,34 @@ export const locale = {
                 "submitButton": "Valider",
                 "takeAllButton": "Tout prendre",
                 "emptyAccountButton": "Vider le compte"
+            }
+        },
+        "inventoryGive": {
+            "errorMessages": {
+                "cantGiveItem": "Impossible de donner un objet."
+            },
+            "messages": {
+                "default": "Donner {amount} {item} à {user}",
+                "bulkGive": "Donner {amount} {item} à tous les utilisateurs avec le rôle {role}",
+                "success": "Vous avez donné avec succès {amount} {item} à {user}",
+                "bulkGiveSuccess": "Vous avez donné avec succès {amount} {item} à tous les utilisateurs avec le rôle {role}"
+            },
+            "components": {
+                "submitButton": "Valider"
+            }
+        },
+        "inventoryTake": {
+            "messages": {
+                "default": "Prendre {amount} {item} de {user}",
+                "bulkRemoveItem": "Retirer {item} de tous les utilisateurs avec le rôle {role}",
+                "successfullyEmptied": "Vous avez vidé avec succès l'inventaire de {user}",
+                "success": "Vous avez pris avec succès {amount} {item} de {user}",
+                "bulkRemoveItemSuccess": "Vous avez supprimé avec succès {item} de tous les utilisateurs avec le rôle {role}"
+            },
+            "components": {
+                "submitButton": "Valider",
+                "takeAllButton": "Tout prendre",
+                "emptyInventoryButton": "Vider l'inventaire"
             }
         },
         "currencyCreate": {
