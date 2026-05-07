@@ -167,7 +167,7 @@ export class EditProductPriceFlow extends EditProductFlow {
         if (this.price == null) return t("defaultComponents.unset")
         
         const [error, price] = HYDRATOR.getHydratedPrice(this.price)
-        if (error) return "❌ error displaying price"
+        if (error) return t("errorMessages.hydration.priceDisplayFailed")
         
         return price.size > 0 ? formatPrice(price) : t("userInterfaces.shop.embeds.shop.free")
     }

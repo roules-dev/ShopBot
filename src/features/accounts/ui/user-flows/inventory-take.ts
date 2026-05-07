@@ -102,7 +102,10 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
                 time: 120_000,
             },
             async (interaction: ButtonInteraction) => {
-                const [modalSubmitInteraction, confirmed] = await showConfirmationModal(interaction)
+                const [modalSubmitInteraction, confirmed] = await showConfirmationModal(
+                    interaction,
+                    t(`userFlows.inventoryTake.components.confirmationModalTitle`, { user: userMention(this.params.target) })
+                )
 
                 if (!confirmed) return this.updateInteraction(modalSubmitInteraction)
 

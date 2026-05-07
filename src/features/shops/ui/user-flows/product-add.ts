@@ -25,9 +25,6 @@ import { formatPrice, MAX_PRICE_LENGTH } from "../../services/price.js";
 import { getPricePieceComponents } from "../components/price-piece-components.js";
 
 
-// TODO update translation
-
-
 export const addProductParamsSchema = z.object({
     stock: optionalOrNull(z.number().min(0)),
 })
@@ -44,7 +41,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
 
     protected override async prestart(_interaction: ChatInputCommandInteraction) {
         const items = getItems()
-        if (!items.size) return err("No items") // err(t("errorMessages.noItems")) TODO : translation 
+        if (!items.size) return err(t("errorMessages.noItems"))
 
         const shops = getShops()
         if (!shops.size) return err(t("errorMessages.noShops"))
@@ -55,14 +52,14 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
     protected override getMessage() {
         const nameString = bold(formattedEmojiableName(this.selectedItem) || t("defaultComponents.selectItem"))
 
-        let priceString = "Add price"
+        let priceString = t("userFlows.productAdd.components.addPriceButton")
         if (this.price !== null) {
             const [error, price] = HYDRATOR.getHydratedPrice(this.price)
             if (!error) {
                 priceString = price.size > 0 ? formatPrice(price) : "Free"
             }
             else {
-                priceString = "❌ error displaying price"
+                priceString = t("errorMessages.hydration.priceDisplayFailed")
             } 
         }
         
@@ -93,7 +90,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
         const submitItem = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit-item`,
-                label: "Submit Item",
+                label: t(`userFlows.productAdd.components.submitItemButton`),
                 emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: true,
@@ -115,7 +112,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
         const submitPriceButton = new ExtendedButtonComponent(
             {
                 customId: `${this.id}+submit-price`,
-                label: "Submit Price",
+                label: t(`userFlows.productAdd.components.submitPriceButton`),
                 emoji: "✅",
                 style: ButtonStyle.Success,
                 disabled: false,

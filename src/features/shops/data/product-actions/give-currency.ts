@@ -63,7 +63,7 @@ export const giveCurrencyProductAction: ProductAction<"give-currency", typeof gi
         const currencyString = options?.currencyId === undefined 
             ? t("defaultComponents.selectCurrency")
             : formattedEmojiableName(hydrator.hydrateCurrency(options?.currencyId)[1]) 
-            ?? "❌ error displaying currency"
+            ?? t("errorMessages.hydration.currencyDisplayFailed")
 
         return t(`userFlows.productAdd.messages.actions.giveCurrency`, { 
             currency: bold(currencyString), 

@@ -17,7 +17,11 @@ export const locale = {
         "productDoesNotExist": "Product does not exist",
         "accountDoesNotExist": "Account does not exist",
         "invalidSettingType": "Provided setting type is invalid",
-        "duplicateSettingName": "Provided setting name already exists"
+        "duplicateSettingName": "Provided setting name already exists",
+        "hydration": {
+            "priceDisplayFailed": "❌ error displaying price",
+            "currencyDisplayFailed": "❌ error displaying currency"
+        }
     },
     "commands": {
         "account": {
@@ -492,7 +496,8 @@ export const locale = {
             "components": {
                 "submitButton": "Submit",
                 "takeAllButton": "Take all",
-                "emptyAccountButton": "Empty account"
+                "emptyAccountButton": "Empty account",
+                "confirmationModalTitle": "⚠️ Are you sure you want to empty {user} account?"
             }
         },
         "inventoryGive": {
@@ -520,7 +525,8 @@ export const locale = {
             "components": {
                 "submitButton": "Submit",
                 "takeAllButton": "Take all",
-                "emptyInventoryButton": "Empty inventory"
+                "emptyInventoryButton": "Empty inventory",
+                "confirmationModalTitle": "⚠️ Are you sure you want to empty {user} inventory?"
             }
         },
         "currencyCreate": {
@@ -598,6 +604,9 @@ export const locale = {
                 }
             },
             "components": {
+                "submitItemButton": "Submit item",
+                "addPriceButton": "Add price",
+                "submitPriceButton": "Submit price",
                 "submitButton": "Add product",
                 "submitActionButton": "Submit action",
                 "setAmountButton": "Set amount",

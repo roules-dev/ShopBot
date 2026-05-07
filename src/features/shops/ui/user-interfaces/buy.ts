@@ -254,7 +254,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const [error, price] = HYDRATOR.getHydratedPrice(this.selectedProduct.price)
         if (error) {
             PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
-            return "❌ error displaying price"
+            return t("errorMessages.hydration.priceDisplayFailed")
         }    
 
         return price.size > 0 ? formatPrice(applyQuantityHydrated(price, this.quantity), this.discount) : t("userInterfaces.buy.messages.free")
@@ -265,7 +265,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const productName = formattedEmojiableName(product)
         const shopName = formattedEmojiableName(this.selectedShop)
-        const priceString = this.priceString() ?? "❌ error displaying price"
+        const priceString = this.priceString() ?? t("errorMessages.hydration.priceDisplayFailed")
         const discountCodeString = this.discountCode ? this.discountCode : "none"
 
         const message = t(`userInterfaces.buy.messages.success`, { 
