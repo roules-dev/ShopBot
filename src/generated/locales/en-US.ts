@@ -359,9 +359,7 @@ export const locale = {
         "confirmationModal": {
             "title": "⚠️ Are you sure?",
             "cantBeUndone": "This action can't be undone",
-            "selectYes": "Select 'Yes' to confirm",
-            "yes": "Yes",
-            "no": "No"
+            "confirmCheckbox": "I confirm"
         },
         "editModal": {
             "title": "Edit {edit}",
@@ -539,7 +537,8 @@ export const locale = {
                 "success": "You successfully removed the currency {currency}"
             },
             "components": {
-                "submitButton": "Remove currency"
+                "submitButton": "Remove currency",
+                "confirmationModalTitle": "⚠️ Are you sure you want to remove {currency}?"
             }
         },
         "currencyEdit": {
@@ -569,7 +568,8 @@ export const locale = {
                 "success": "You successfully removed the item {item}"
             },
             "components": {
-                "submitButton": "Remove item"
+                "submitButton": "Remove item",
+                "confirmationModalTitle": "⚠️ Are you sure you want to remove {item}?"
             }
         },
         "itemEdit": {

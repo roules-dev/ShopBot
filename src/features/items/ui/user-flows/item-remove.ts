@@ -1,20 +1,19 @@
 import { t } from "@/core/i18n/i18n.js"
+import { deleteItem, getItems } from "@/core/services/items/items.services.js"
+import { NanoId } from "@/database/database.types.js"
+import { takeItemFromAccounts } from "@/features/accounts/services/accounts.services.js"
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { showConfirmationModal } from "@/lib/ui/ui-components/modals.js"
+import { doAfterConfirmation } from "@/lib/ui/ui-components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
-import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
-import { NanoId } from "@/database/database.types.js"
-import { Identifiable } from "@/lib/types/core.js"
-import { getItems } from "@/core/services/items/items.services.js"
-import { deleteItem } from "@/core/services/items/items.services.js"
 import { Item } from "../../database/items.types.js"
-import { takeItemFromAccounts } from "@/features/accounts/services/accounts.services.js"
 
 
 export class ItemRemoveFlow extends UserFlow {
@@ -53,11 +52,13 @@ export class ItemRemoveFlow extends UserFlow {
                 time: 120_000,
             },
             async (interaction) => {
-                const [modalSubmitInteraction, confirmed] = await showConfirmationModal(interaction)
-                
-                if (confirmed) return this.success(modalSubmitInteraction)
-                
-                return this.updateInteraction(modalSubmitInteraction)
+                doAfterConfirmation(interaction, 
+                    async i => await this.success(i),
+                    async i => await this.updateInteraction(i) ,
+                    t(`userFlows.itemRemove.components.confirmationModalTitle`, { 
+                        item: formattedEmojiableName(this.selectedItem)! 
+                    })
+                )
             }
         )
 

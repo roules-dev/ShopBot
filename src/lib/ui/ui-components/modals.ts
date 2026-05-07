@@ -4,13 +4,15 @@ import { validate } from "@/lib/validation/validation.js"
 import { ChatInputCommandInteraction, CheckboxGroupBuilder, CheckboxGroupOptionBuilder, DiscordjsError, DiscordjsErrorCodes, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitFields, ModalSubmitInteraction, TextInputBuilder, TextInputStyle } from "discord.js"
 import z from "zod"
 
+type BeforeModalInteraction = MessageComponentInteraction | ChatInputCommandInteraction
+
 type ModalResponse<T, E extends Error = never> = Promise<[
-    ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, 
+    ModalSubmitInteraction | BeforeModalInteraction, 
     Result<T, ErrorLike<"Error"> | ErrorLike<"ModalTimeout"> | E>
 ]>
 
 export async function showModal(
-    interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
+    interaction: BeforeModalInteraction, 
     modal: ModalBuilder
 ): ModalResponse<ModalSubmitFields> {
     const modalId = modal.toJSON().custom_id
@@ -34,8 +36,9 @@ export async function showModal(
 
 
 export async function showConfirmationModal(
-    interaction: MessageComponentInteraction | ChatInputCommandInteraction
-): Promise<[ModalSubmitInteraction | MessageComponentInteraction | ChatInputCommandInteraction, boolean]> {
+    interaction: BeforeModalInteraction,
+    title?: string
+): Promise<[ModalSubmitInteraction | BeforeModalInteraction, boolean]> {
     const modalLocale = "extendedComponents.confirmationModal"
 
     const modalId = "confirmation-modal"
@@ -45,7 +48,7 @@ export async function showConfirmationModal(
 
     const modal = new ModalBuilder()
         .setCustomId(modalId)
-        .setTitle(t(`${modalLocale}.title`))
+        .setTitle(title ?? t(`${modalLocale}.title`))
 
     const checkboxLabel = new LabelBuilder()
         .setLabel(t(`${modalLocale}.cantBeUndone`))
@@ -54,7 +57,7 @@ export async function showConfirmationModal(
                 .setCustomId(checkboxGrpId)
                 .addOptions(
                     new CheckboxGroupOptionBuilder()
-                        .setLabel("I confirm") // TODO : translation
+                        .setLabel(t(`${modalLocale}.confirmCheckbox`))
                         .setValue(CONFIRMED)
                 )
         )
@@ -68,8 +71,23 @@ export async function showConfirmationModal(
     
     const field = fields.getField(checkboxGrpId)
     if (!("values" in field)) return [modalSubmit, false]
+    // Note : discord.js doesnt handle checkboxes correctly at the moment, this manual check is required
 
     return [modalSubmit, field.values[0] === CONFIRMED]
+}
+
+export async function doAfterConfirmation<T, U>(
+    interaction: BeforeModalInteraction, 
+    onConfirm: (interaction: BeforeModalInteraction | ModalSubmitInteraction) => Promise<T> | T,
+    onCancel?: (interaction: BeforeModalInteraction | ModalSubmitInteraction) => Promise<U> | U,
+    title?: string
+) {
+    const [confirmationInteraction, confirmed] = await showConfirmationModal(interaction, title)
+    if (!confirmed) {
+        return onCancel ? await onCancel(confirmationInteraction) : undefined
+    }
+
+    return await onConfirm(confirmationInteraction)
 }
 
 
@@ -84,8 +102,9 @@ type ModalOptions = {
 }
 
 
+
 export async function showSingleInputModal(
-    interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
+    interaction: BeforeModalInteraction, 
     { id, title, inputLabel, placeholder, required, minLength, maxLength }: ModalOptions
 ): ModalResponse<string> {
     const datedId = `id.${Date.now().toString()}`
@@ -120,7 +139,7 @@ export async function showSingleInputModal(
 }
 
 export async function showValidatedSingleInputModal<T>(    
-    interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
+    interaction: BeforeModalInteraction, 
     options: ModalOptions,
     schema: z.ZodType<T>
 ): ModalResponse<T, z.ZodError> {
@@ -139,7 +158,7 @@ type EditModalOptions = {
     maxLength?: number
 }
 
-export async function showEditModal(interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
+export async function showEditModal(interaction: BeforeModalInteraction, 
     { edit, previousValue, required, minLength, maxLength }: EditModalOptions
 ): ModalResponse<string> {
     const modalLocale = "extendedComponents.editModal"
@@ -159,7 +178,7 @@ export async function showEditModal(interaction: MessageComponentInteraction | C
 }
 
 export async function showValidatedEditModal<T extends z.ZodType>(    
-    interaction: MessageComponentInteraction | ChatInputCommandInteraction, 
+    interaction: BeforeModalInteraction, 
     options: EditModalOptions,
     schema: T
 ): ModalResponse<z.output<T>, z.ZodError> {
