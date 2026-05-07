@@ -1,19 +1,19 @@
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { NanoId } from "@/database/database.types.js"
 import { setAccountCurrencyAmount } from "@/features/accounts/services/accounts.services.js"
+import { errorFormat, replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { err, ok } from "@/lib/error-handling.js"
+import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
+import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
+import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { BrandedSnowflake, nanoIdSchema } from "@/schemas/utils.js"
+import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle } from "discord.js"
 import z from "zod"
 import { ProductAction } from "./product-action.js"
-import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
-import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
-import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
-import { showValidatedEditModal } from "@/lib/ui/ui-components/modals.js"
-import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
-import { NanoId } from "@/database/database.types.js"
-import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
-import { formattedEmojiableName } from "@/utils/formatting.js"
 
 
 const giveCurrencyActionSchema = z.object({
@@ -63,7 +63,7 @@ export const giveCurrencyProductAction: ProductAction<"give-currency", typeof gi
         const currencyString = options?.currencyId === undefined 
             ? t("defaultComponents.selectCurrency")
             : formattedEmojiableName(hydrator.hydrateCurrency(options?.currencyId)[1]) 
-            ?? t("errorMessages.hydration.currencyDisplayFailed")
+            ?? errorFormat(t("errorMessages.hydration.currencyDisplayFailed"))
 
         return t(`userFlows.productAdd.messages.actions.giveCurrency`, { 
             currency: bold(currencyString), 
@@ -110,7 +110,7 @@ export const giveCurrencyProductAction: ProductAction<"give-currency", typeof gi
                 selectedAmount = amount
                 callback(modalSubmit, { kind: "give-currency", options: { currencyId: selectedCurrencyId, amount }})
             }
-        ) // could be replaced with a system similar to "select price piece"
+        ) // could be replaced with a system similar to "select price element"
 
         return [
             createComponent(currencySelectMenu),

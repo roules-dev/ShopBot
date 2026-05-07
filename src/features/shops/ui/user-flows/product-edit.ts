@@ -1,10 +1,12 @@
 import { HydratedProduct } from "@/core/database/hydrator.js";
 import { HYDRATOR } from "@/core/database/init-databases.js";
 import { t } from "@/core/i18n/i18n.js";
+import { getItems } from "@/core/services/items/items.services.js";
 import { updateProduct } from "@/core/services/shops/products.services.js";
 import { getShops } from "@/core/services/shops/shops.services.js";
 import { NanoId } from "@/database/database.types.js";
-import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
+import { Item } from "@/features/items/database/items.types.js";
+import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { err, ok } from "@/lib/error-handling.js";
 import { Identifiable } from "@/lib/types/core.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
@@ -18,9 +20,7 @@ import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } fro
 import z from "zod";
 import { Shop } from "../../database/shops.types.js";
 import { formatPrice, MAX_PRICE_LENGTH } from "../../services/price.js";
-import { getPricePieceComponents } from "../components/price-piece-components.js";
-import { Item } from "@/features/items/database/items.types.js";
-import { getItems } from "@/core/services/items/items.services.js";
+import { getPriceElementComponents } from "../components/price-element-components.js";
 
 
 export const editProductParamsSchema = z.discriminatedUnion("kind", [
@@ -72,7 +72,11 @@ export class EditProductFlow extends UserFlow<z.infer<typeof editProductParamsSc
             getShops(),
             (interaction) => this.updateInteraction(interaction),
             (interaction, selected) => {
-                // TODO : check if shop has no products update interaction with error message
+                if (Object.keys(selected.products).length === 0) {
+                    this.updateInteraction(interaction, errorFormat(t("errorMessages.shopHasNoProducts")))
+                    return
+                }
+                
                 this.selectedShop = selected
                 this.selectedProduct = null
                 this.updateInteraction(interaction)
@@ -167,7 +171,7 @@ export class EditProductPriceFlow extends EditProductFlow {
         if (this.price == null) return t("defaultComponents.unset")
         
         const [error, price] = HYDRATOR.getHydratedPrice(this.price)
-        if (error) return t("errorMessages.hydration.priceDisplayFailed")
+        if (error) return errorFormat(t("errorMessages.hydration.priceDisplayFailed"))
         
         return price.size > 0 ? formatPrice(price) : t("userInterfaces.shop.embeds.shop.free")
     }
@@ -194,7 +198,7 @@ export class EditProductPriceFlow extends EditProductFlow {
         const [shopSelect, productSelect, submit] = super.initComponents()
         if (!shopSelect || !productSelect || !submit) throw new Error("Unxpected Error loading EditPriceFlow components")
 
-        const { addPriceWithCurrencySelect, removePricePieceButton } = getPricePieceComponents(
+        const { addPriceWithCurrencySelect, removePriceElementButton } = getPriceElementComponents(
             this.id, 
             this.price, 
             (price) => this.price = price, 
@@ -210,7 +214,7 @@ export class EditProductPriceFlow extends EditProductFlow {
                 this.selectedProduct != null && 
                 (this.price == null || Object.keys(this.price).length < MAX_PRICE_LENGTH))
             ),
-            createComponent(removePricePieceButton, () => removePricePieceButton.toggle(this.price != null && Object.keys(this.price).length > 0)),
+            createComponent(removePriceElementButton, () => removePriceElementButton.toggle(this.price != null && Object.keys(this.price).length > 0)),
 
             createComponent(submit.comp, () => submit.comp.toggle(this.selectedShop != null && this.selectedProduct != null && this.price != null))
         ]

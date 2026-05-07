@@ -18,7 +18,7 @@ export function priceFormat(price: number) {
     })
 }
 
-function formatPricePiece(price: MapValue<HydratedPrice>, discount?: number) {
+function formatPriceElement(price: MapValue<HydratedPrice>, discount?: number) {
     if (discount !== undefined && discount > 0) {
         return `~~${priceFormat(price.amount)}~~ ${priceFormat(discounted(price.amount, discount))} ${formattedEmojiableName(price.resource)}`
     }
@@ -28,7 +28,7 @@ function formatPricePiece(price: MapValue<HydratedPrice>, discount?: number) {
 
 export function formatPrice(price: HydratedPrice, discount?: number) {
     return Array.from(price.values())
-        .map(onCurrencyPrice => formatPricePiece(onCurrencyPrice, discount))
+        .map(onCurrencyPrice => formatPriceElement(onCurrencyPrice, discount))
         .join(", ")
 }
 

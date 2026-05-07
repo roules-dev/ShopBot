@@ -3,7 +3,7 @@ import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { processPurchase } from "@/core/services/shops/buy.js"
 import { NanoId } from "@/database/database.types.js"
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { errorFormat, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { assertNeverReached } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
@@ -19,7 +19,7 @@ import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
 import { Product } from "../../database/products.types.js"
 import { Shop } from "../../database/shops.types.js"
-import { formatPrice, applyQuantityHydrated } from "../../services/price.js"
+import { applyQuantityHydrated, formatPrice } from "../../services/price.js"
 
 
 export class BuyProductUserInterface extends MessageUserInterface {
@@ -254,7 +254,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
         const [error, price] = HYDRATOR.getHydratedPrice(this.selectedProduct.price)
         if (error) {
             PrettyLog.error(`${error.name} (${error.status}) - ${error.message}`)
-            return t("errorMessages.hydration.priceDisplayFailed")
+            return errorFormat(t("errorMessages.hydration.priceDisplayFailed"))
         }    
 
         return price.size > 0 ? formatPrice(applyQuantityHydrated(price, this.quantity), this.discount) : t("userInterfaces.buy.messages.free")
@@ -265,7 +265,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         const productName = formattedEmojiableName(product)
         const shopName = formattedEmojiableName(this.selectedShop)
-        const priceString = this.priceString() ?? t("errorMessages.hydration.priceDisplayFailed")
+        const priceString = this.priceString() ?? errorFormat(t("errorMessages.hydration.priceDisplayFailed"))
         const discountCodeString = this.discountCode ? this.discountCode : "none"
 
         const message = t(`userInterfaces.buy.messages.success`, { 

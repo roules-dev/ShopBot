@@ -79,10 +79,17 @@ export abstract class UserInterface<Config = void> {
         return { content: this.getMessage(), components: this.getComponentRows() }
     }
 
-    protected async updateInteraction(interaction: UserInterfaceInteraction) {
+    protected async updateInteraction(
+        interaction: UserInterfaceInteraction,
+        additionalMessageContent: string | null = null,
+    ) {
         this.updateComponents()
 
         const updateOptions = this.getInteractionUpdateOptions()
+        if (additionalMessageContent) {
+            updateOptions.content = `${updateOptions.content}\n\n${additionalMessageContent}`
+        }
+
         try {
             if (interaction.deferred) {
                 await interaction.editReply(updateOptions)

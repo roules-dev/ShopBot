@@ -5,7 +5,7 @@ import { addProduct } from "@/core/services/shops/products.services.js";
 import { getShops } from "@/core/services/shops/shops.services.js";
 import { NanoId } from "@/database/database.types.js";
 import { Item } from "@/features/items/database/items.types.js";
-import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
+import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { err, ok } from "@/lib/error-handling.js";
 import { Identifiable } from "@/lib/types/core.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
@@ -22,7 +22,7 @@ import { getAction, productActions } from "../../data/product-actions/index.js";
 import { Shop } from "../../database/shops.types.js";
 import { productActionSchema, productActionSchemaKinds } from "../../schemas/products.schemas.js";
 import { formatPrice, MAX_PRICE_LENGTH } from "../../services/price.js";
-import { getPricePieceComponents } from "../components/price-piece-components.js";
+import { getPriceElementComponents } from "../components/price-element-components.js";
 
 
 export const addProductParamsSchema = z.object({
@@ -59,7 +59,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
                 priceString = price.size > 0 ? formatPrice(price) : "Free"
             }
             else {
-                priceString = t("errorMessages.hydration.priceDisplayFailed")
+                priceString = errorFormat(t("errorMessages.hydration.priceDisplayFailed"))
             } 
         }
         
@@ -102,7 +102,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
             }
         )
 
-        const { addPriceWithCurrencySelect, removePricePieceButton } = getPricePieceComponents(
+        const { addPriceWithCurrencySelect, removePriceElementButton } = getPriceElementComponents(
             this.id, 
             this.price, 
             (price) => this.price = price, 
@@ -158,7 +158,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
             ],
             [
                 createComponent(addPriceWithCurrencySelect, () => addPriceWithCurrencySelect.toggle(this.price == null || Object.keys(this.price).length < MAX_PRICE_LENGTH)),
-                createComponent(removePricePieceButton, () => removePricePieceButton.toggle(this.price != null && Object.values(this.price).length > 0)),
+                createComponent(removePriceElementButton, () => removePriceElementButton.toggle(this.price != null && Object.values(this.price).length > 0)),
                 createComponent(submitPriceButton),
                 new ComponentSeparator("sep_price"),
                 createComponent(this.getStageSwitchButtons().prev),

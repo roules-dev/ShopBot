@@ -1,5 +1,5 @@
 import { t } from "@/core/i18n/i18n.js"
-import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
+import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js"
 import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
@@ -54,7 +54,11 @@ export class RemoveProductFlow extends UserFlow {
             getShops(),
             (interaction) => this.updateInteraction(interaction),
             (interaction, selected) => {
-                // TODO : check if shop has no products update interaction with error message
+                if (Object.keys(selected.products).length === 0) {
+                    this.updateInteraction(interaction, errorFormat(t("errorMessages.shopHasNoProducts")))
+                    return
+                }
+                
                 this.selectedShop = selected
                 this.selectedProduct = null
                 this.updateInteraction(interaction)

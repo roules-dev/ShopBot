@@ -4,12 +4,14 @@ export const locale = {
         "default": "An error occured while executing this command, please try again later.",
         "invalidSubcommand": "Invalid subcommand",
         "insufficientParameters": "Insufficient parameters",
+        "noAnswer": "No answer received",
         "noShops": "There aren't any shops.\n-# Use `/shops-manage create` to create a new one",
         "noCurrencies": "There aren't any currencies.\n-# Use `/currencies-manage create` to create a new currency",
         "noProducts": "The selected shop has no products",
         "noItems": "There aren't any items yet.\n-# Use `/items-manage create` to add one",
         "notOnlyEmojisInName": "The name can't contain only custom emojis",
         "shopDoesNotExist": "Shop does not exist",
+        "shopHasNoProducts": "This shop has no products",
         "shopAlreadyExists": "Shop already exists",
         "invalidPosition": "Invalid position",
         "currencyDoesNotExist": "Currency does not exist",
@@ -19,8 +21,8 @@ export const locale = {
         "invalidSettingType": "Provided setting type is invalid",
         "duplicateSettingName": "Provided setting name already exists",
         "hydration": {
-            "priceDisplayFailed": "❌ error displaying price",
-            "currencyDisplayFailed": "❌ error displaying currency"
+            "priceDisplayFailed": "Couldn't display price",
+            "currencyDisplayFailed": "Couldn't display currency"
         }
     },
     "commands": {
@@ -610,7 +612,14 @@ export const locale = {
                 "submitButton": "Add product",
                 "submitActionButton": "Submit action",
                 "setAmountButton": "Set amount",
-                "editAmountModalTitle": "Amount"
+                "editAmountModalTitle": "Amount",
+                "priceElement": {
+                    "priceElement": "Price Element",
+                    "addToPrice": "➕ Add to price (or update)",
+                    "select": "Select price element",
+                    "remove": "Remove price element",
+                    "noPriceElementSelected": "No price element selected"
+                }
             }
         },
         "productRemove": {

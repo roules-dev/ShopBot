@@ -34,10 +34,17 @@ async function updateWithMessage(interaction: UserInterfaceInteraction, message:
 }
 
 function getErrorMessage(errorMessage?: string) {
-    return `❌ ${errorMessage ? errorMessage : t("errorMessages.default")}`
+    return errorFormat(errorMessage ? errorMessage : t("errorMessages.default"))
+}
+export function errorFormat(message: string) {
+    return `❌ ${message}`
 }
 
 function getSuccessMessage(successMessage: string) {
-    return `✅ ${successMessage}`
+    return successFormat(successMessage)
+}
+
+export function successFormat(message: string) {
+    return `✅ ${message}`
 }
 

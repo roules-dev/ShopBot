@@ -1,6 +1,7 @@
 import { HydratedPrice } from "@/core/database/hydrator.js"
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
+import { errorFormat } from "@/lib/discord/answer-interactions.js"
 import { ErrorLike, Result, err, ok } from "@/lib/error-handling.js"
 import { MapKey } from "@/lib/types/collections.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
@@ -10,14 +11,22 @@ import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string
 import { ButtonStyle, ChatInputCommandInteraction, LabelBuilder, MessageComponentInteraction, ModalBuilder, ModalSubmitInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js"
 import z from "zod"
 import { priceFormat } from "../../services/price.js"
+import { t } from "@/core/i18n/i18n.js"
 
-export function getPricePieceComponents(flowId: string, previousPrice: Record<string, number> | null, onPriceSet: (price: Record<string, number>) => void, update: (interaction: UserInterfaceInteraction) => void) {
+
+export function getPriceElementComponents(
+    flowId: string, 
+    previousPrice: Record<string, number> | null, 
+    onPriceSet: (price: Record<string, number>) => void, 
+    update: (interaction: UserInterfaceInteraction, additionalMessage?: string) => void
+) {
+
     let price = previousPrice
 
     const addPriceWithCurrencySelect = new ExtendedStringSelectMenuComponent(
         {
             customId: `${flowId}+select-currency`,
-            placeholder: "➕ Add to price (or update)",
+            placeholder: t("userFlows.productAdd.components.priceElement.addToPrice"),
             time: 120_000
         },
         getCurrencies(),
@@ -29,15 +38,15 @@ export function getPricePieceComponents(flowId: string, previousPrice: Record<st
             
             const [modalSubmit, [error, amount]] = await showValidatedSingleInputModal(interaction, {
                 id: `${flowId}+amount`,
-                title: "Amount",
-                inputLabel: "Amount",
-                placeholder: previousAmount?.toString() ?? "Amount",
+                title: t("userFlows.productAdd.components.editAmountModalTitle"),
+                inputLabel: t("userFlows.productAdd.components.editAmountModalTitle"),
+                placeholder: previousAmount?.toString() ?? t("userFlows.productAdd.components.editAmountModalTitle"),
                 required: true
             }, z.coerce.number().positive())
 
             if (error) {
                 if (error.name === "ModalTimeout") return
-                return update(modalSubmit) // TODO it should not fail silently
+                return update(modalSubmit, errorFormat(t("errorMessages.noAnswer")))
             }
 
             price[selectedCurrency.id] = amount
@@ -46,9 +55,9 @@ export function getPricePieceComponents(flowId: string, previousPrice: Record<st
             update(modalSubmit)
         }
     )
-    const removePricePieceButton = new ExtendedButtonComponent(
+    const removePriceElementButton = new ExtendedButtonComponent(
         {
-            customId: `${flowId}+remove-price-piece`,
+            customId: `${flowId}+remove-price-element`,
             emoji: "➖",
             style: ButtonStyle.Primary,
             time: 120_000
@@ -56,19 +65,22 @@ export function getPricePieceComponents(flowId: string, previousPrice: Record<st
         async (interaction) => {
             const [error1, hydratedPrice] = HYDRATOR.getHydratedPrice(price ?? {})
             if (error1) {
-                update(interaction)
-                return // TODO it should not fail silently
+                update(interaction, errorFormat(t("errorMessages.hydration.priceDisplayFailed")))
+                return
             }
-            const [modalSubmit, [error2, pricePieceCurrencyId]] = await showPricePieceSelectModal(interaction, {id: flowId, title: "Remove price piece" }, hydratedPrice)
+            const [modalSubmit, [error2, priceElementCurrencyId]] = await showPriceElementSelectModal(interaction, {
+                id: flowId, 
+                title: t("userFlows.productAdd.components.priceElement.remove") 
+            }, hydratedPrice)
 
             if (error2) {
                 if (error2.name === "ModalTimeout") return
 
-                return update(modalSubmit) // TODO it should not fail silently
+                return update(modalSubmit, errorFormat(t("errorMessages.noAnswer"))) 
             }
 
             price = price ?? {}
-            delete price[pricePieceCurrencyId]
+            delete price[priceElementCurrencyId]
 
             onPriceSet(price)
             update(modalSubmit)
@@ -76,13 +88,13 @@ export function getPricePieceComponents(flowId: string, previousPrice: Record<st
     )
     return {
         addPriceWithCurrencySelect,
-        removePricePieceButton
+        removePriceElementButton: removePriceElementButton
     }
 }
 
 
 
-async function showPricePieceSelectModal( 
+async function showPriceElementSelectModal( 
     interaction: MessageComponentInteraction | ChatInputCommandInteraction,
     { id, title }: { 
         id: string, 
@@ -97,10 +109,10 @@ async function showPricePieceSelectModal(
         .setCustomId(id)
         .setTitle(title)
 
-    const SELECT_ID = `${id}+price-piece-select`
-    const pricePieceSelect = new StringSelectMenuBuilder()
-        .setCustomId(`${id}+price-piece-select`)
-        .setPlaceholder("Select price piece")
+    const SELECT_ID = `${id}+price-element-select`
+    const priceElementSelect = new StringSelectMenuBuilder()
+        .setCustomId(`${id}+price-element-select`)
+        .setPlaceholder(t("userFlows.productAdd.components.priceElement.select"))
 
     const options: StringSelectMenuOptionBuilder[] = []
     hydratedPrice.forEach((value, key) => {
@@ -115,19 +127,19 @@ async function showPricePieceSelectModal(
         options.push(option)
     })
     
-    pricePieceSelect.setOptions(options)
+    priceElementSelect.setOptions(options)
 
-    const pricePieceLabel = new LabelBuilder()
-        .setLabel("Price piece")
-        .setStringSelectMenuComponent(pricePieceSelect)
+    const priceElementLabel = new LabelBuilder()
+        .setLabel(t("userFlows.productAdd.components.priceElement.priceElement"))
+        .setStringSelectMenuComponent(priceElementSelect)
 
-    modal.addLabelComponents(pricePieceLabel)
+    modal.addLabelComponents(priceElementLabel)
 
     const [modalSubmit, [error, fields]] = await showModal(interaction, modal)
     if (error) return [modalSubmit, err(error)]
 
     const inputValue = fields.getStringSelectValues(SELECT_ID)[0]
-    if (!inputValue) return [modalSubmit, err("No price piece selected")]
+    if (!inputValue) return [modalSubmit, err(t("userFlows.productAdd.components.priceElement.noPriceElementSelected"))]
 
     return [modalSubmit, ok(inputValue as MapKey<HydratedPrice>)]
 
