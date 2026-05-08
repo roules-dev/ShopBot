@@ -2,6 +2,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   update-translations-progress:
@@ -10,7 +12,6 @@ jobs:
     permissions:
       contents: write
 
-    if: github.actor != 'roules-bot'
     steps:
       - name: Update Translation Progress
         id: translation-progress-update
