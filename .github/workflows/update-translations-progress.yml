@@ -10,9 +10,10 @@ jobs:
     permissions:
       contents: write
 
+    if: github.actor != 'roules-bot'
     steps:
       - name: Update Translation Progress
         id: translation-progress-update
         uses: roules-dev/update-translation-progress-action@v1.0.1
         with:
-          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          gh-token: ${{ secrets.ACTION_WRITE_PAT }}
