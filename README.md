@@ -319,4 +319,3 @@ Don't forget to leave a **🌟Star**, it helps a lot !
 ---
 
 If something is missing in this document, please open an [issue](https://github.com/roules-dev/ShopBot/issues).
-<!-- test -->
