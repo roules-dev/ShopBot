@@ -55,6 +55,9 @@ You can setup a **log channel** to see logs about purchases, gives and takes.
 The commands and UI are by default in english but they are translated, the current translation progress is :
 <!-- DO NOT EDIT - update translation progress action marker -->
 <!-- Translations - START -->
+| 🇪🇸 Spanish (Spain) | 🇫🇷 French |
+| --- | --- |
+| 100% | 100% |
 <!-- Translations - END -->
 
 You can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
