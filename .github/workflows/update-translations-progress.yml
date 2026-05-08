@@ -7,6 +7,8 @@ jobs:
   update-translations-progress:
     name: Display translations progress inside readme.md
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Update Translation Progress
