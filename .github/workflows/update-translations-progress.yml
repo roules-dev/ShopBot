@@ -15,4 +15,4 @@ jobs:
         id: translation-progress-update
         uses: roules-dev/update-translation-progress-action@v1.0.1
         with:
-          gh-token: ${{ secrets.ACTION_WRITE_PAT }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
