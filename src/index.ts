@@ -7,12 +7,13 @@ import "@/core/database/init-databases.js"
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
 import { reconcileRefCounts } from "./core/jobs/reconcile-refcounts.js"
+import { env } from "./global-settings.js"
 
 function isTsx() {
     return process.argv.includes('--use-ts')
 }
 
-if (process.env["NODE_ENV"] === "development") {
+if (env["NODE_ENV"] === "development") {
 	PrettyLog.warn("Development mode enabled")
 	PrettyLog.warn("Unhandled errors won't be caught by the error handler")
 }
@@ -26,4 +27,3 @@ await reconcileRefCounts()
 
 // Start the bot
 await startClient(isTsx())
-

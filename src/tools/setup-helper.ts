@@ -1,5 +1,5 @@
-import config from "@/../config/config.json" with { type: "json" }
 import { appDeployCommands } from "@/app/deploy-commands.js"
+import { loadAndParseEnv, saveEnvFile } from "@/lib/env/dotenv-handler.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import fs from "node:fs/promises"
 import readline from "node:readline"
@@ -12,32 +12,34 @@ const rl = readline.createInterface({
 const databasesPaths = [
     "./data/shops.json",
     "./data/accounts.json",
-    "./data/currencies.json"
+    "./data/currencies.json",
+    "./data/items.json",
 ]
 
-
 async function setup() {
+    const env = loadAndParseEnv()
+
     console.log("\n\n———————————————————————————\n")
     PrettyLog.info("Dependencies installed, please enter your bot credentials", false)
 
     const id = await questionWithCondition(`\nBot client ID: `, id => /^\d{17,20}$/.test(id), "Client ID not valid")
-    config.clientId = id
+    env["CLIENT_ID"] = id
 
     const token = await questionWithCondition(`\nBot token: `, token => token.length > 0, "Please enter a token")
-    config.token = token
+    env["TOKEN"] = token
 
     const resetData = await questionWithCondition(
         "\nReset data? (y/n): ", 
         answer => answer.toLocaleLowerCase() === "y" || answer.toLocaleLowerCase() === "n"
     )
 
-    if (resetData === "y") {
+    if (resetData.toLocaleLowerCase() === "y") {
         for (const path of databasesPaths) {
             await fs.writeFile(path, JSON.stringify({}, null, 4))
         }
     }
 
-    await saveConfig()
+    saveEnvFile(env)
     PrettyLog.success("Configuration saved", false)
 
     rl.close()
@@ -66,12 +68,4 @@ function questionWithCondition(question: string, condition: (answer: string) => 
             }
         })
     })
-}
-
-
-async function saveConfig() {
-
-    console.dir(config)
-
-    await fs.writeFile("./config/config.json", JSON.stringify(config, null, 4))
 }

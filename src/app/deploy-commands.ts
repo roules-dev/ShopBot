@@ -1,14 +1,14 @@
 import { addLocalisationToCommand } from "@/core/i18n/i18n.js"
+import { loadAndParseEnv } from "@/lib/env/dotenv-handler.js"
 import { PrettyLog, drawProgressBar } from "@/lib/pretty-log.js"
 import { REST, RESTPostAPIChatInputApplicationCommandsJSONBody, Routes, SlashCommandBuilder, Snowflake } from "discord.js"
 import fs from "fs"
 import path from "path"
 import { fileURLToPath, pathToFileURL } from "url"
+import z from "zod"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-
-let config: { clientId: string, token: string } | undefined
 
 let rest: REST | undefined
 
@@ -62,7 +62,7 @@ async function getCommands() {
 
 export async function appDeployCommands() { 
     try {
-        await getRest().put(Routes.applicationCommands(getClientId()), { body: await getCommands() })
+        await getRest().put(Routes.applicationCommands(getEnv().CLIENT_ID), { body: await getCommands() })
 
         PrettyLog.success("Successfully registered application commands.", false)
         return true
@@ -77,7 +77,7 @@ export async function appDeployCommands() {
 
 export async function appDeleteCommands() {
     try {    
-        await getRest().put(Routes.applicationCommands(getClientId()), { body: [] })
+        await getRest().put(Routes.applicationCommands(getEnv().CLIENT_ID), { body: [] })
         
         PrettyLog.success("Successfully deleted application commands.", false)
         return true
@@ -92,7 +92,7 @@ export async function appDeleteCommands() {
 
 export async function guildDeployCommands(guildId: Snowflake) {
     try {
-        await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: await getCommands() })
+        await getRest().put(Routes.applicationGuildCommands(getEnv().CLIENT_ID, guildId), { body: await getCommands() })
 
         PrettyLog.success("Successfully registered all guild commands.", false)
         return true       
@@ -107,7 +107,7 @@ export async function guildDeployCommands(guildId: Snowflake) {
 
 export async function guildDeleteCommands(guildId: Snowflake) {
     try {    
-        await getRest().put(Routes.applicationGuildCommands(getClientId(), guildId), { body: [] })
+        await getRest().put(Routes.applicationGuildCommands(getEnv().CLIENT_ID, guildId), { body: [] })
         
         PrettyLog.success("Successfully deleted all guild commands.", false)
         return true
@@ -163,64 +163,22 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 
-
 function getRest() {
     if (rest !== undefined) return rest
 
-    const token = getToken()
-
-    if (!getClientId() || !token) {
-        PrettyLog.error("Missing clientId or token in config.json", false)
-        process.exit(1)
-    }
-
-    rest = new REST({ version: "10" }).setToken(token)
-    
-    return rest
-}
-
-function getConfig() {
-    if (config !== undefined 
-        && config.token !== undefined && config.token !== ""
-        && config.clientId !== undefined && config.clientId !== "") {
-        return config
-    }
-
-    const _config = JSON.parse(fs.readFileSync("./config/config.json", "utf-8"))
-
-    config = _config
-    return _config
+    return new REST({ version: "10" }).setToken(getEnv().TOKEN)
 }
 
 
-function getClientId() {
-    const config = getConfig()
+const envSchema = z.object({
+    TOKEN: z.string().min(1, "Token is required"),
+    CLIENT_ID: z.string().min(1, "Client ID is required")
+})
+let config: z.infer<typeof envSchema> | undefined
 
-    if (!config) {
-        PrettyLog.error("Missing config.json")
-        process.exit(1)
-    }
+function getEnv() {
+    if (config !== undefined) return config
 
-    if (!config.clientId) {
-        PrettyLog.error("Missing clientId in config.json")
-        process.exit(1)
-    }
-
-    return getConfig().clientId
-}
-
-function getToken() {
-    const config = getConfig()
-
-    if (!config) {
-        PrettyLog.error("Missing config.json")
-        process.exit(1)
-    }
-
-    if (!config.token) {
-        PrettyLog.error("Missing token in config.json")
-        process.exit(1)
-    }
-
-    return getConfig().token
+    config = envSchema.parse(loadAndParseEnv())
+    return config
 }

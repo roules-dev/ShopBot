@@ -1,10 +1,10 @@
-import config from "@/../config/config.json" with { type: "json" }
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from "fs/promises"
 import path from "path"
 
 import { EVENTS } from "@/core/events/event-bus.js"
+import { env } from "@/global-settings.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { setActivity } from "./status.js"
 const __filename = fileURLToPath(import.meta.url)
@@ -62,15 +62,10 @@ async function registerEvents(client: Client, isTs: boolean = false) {
 }
 
 export async function startClient(isTs: boolean = false) {
-    if (!config.token) {
-        PrettyLog.error("Missing token in config.json")
-        process.exit(1)
-    }
-
     await registerCommands(client, isTs)
     await registerEvents(client, isTs)
 
-    await client.login(config.token)
+    await client.login(env.TOKEN)
 }
 
 EVENTS.on("settingUpdated", async (settingId, _) => {
