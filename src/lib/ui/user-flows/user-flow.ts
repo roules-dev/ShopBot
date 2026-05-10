@@ -1,5 +1,4 @@
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
-import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
 import { UIComponent, UserInterface } from "../user-interfaces/user-interfaces.js"
@@ -11,16 +10,13 @@ export abstract class UserFlow<T extends Record<string, unknown> | void = void> 
         super(parameters)
         this.params = parameters
     }
-    protected async prestart(_interaction: ChatInputCommandInteraction): Promise<Result<boolean, ErrorLike<"Error">>> {
-        return ok(true)
-    }
 
     protected setup(_interaction: UserInterfaceInteraction) {
         this.updateComponents()
     }
 
     public async start(interaction: ChatInputCommandInteraction) {
-        const [error] = await this.prestart(interaction)
+        const [error] = await this.prepare(interaction)
         if (error) {
             await replyErrorMessage(interaction, error.message)
             return null

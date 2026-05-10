@@ -44,7 +44,7 @@ export class EditShopFlow extends UserFlow<z.infer<typeof editShopParamsSchema>>
 
     private selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    protected override async prestart(interaction: ChatInputCommandInteraction) {
+    protected override async prepare(interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return err(t("errorMessages.noShops"))
 
@@ -129,7 +129,7 @@ export class ShopReorderFlow extends UserFlow {
     private selectedShop: Shop & Identifiable<NanoId> | null = null
     private selectedPosition: number | null = null
 
-    public override async prestart(_interaction: ChatInputCommandInteraction) {
+    public override async prepare(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
         if (!firstShopEntry) return err(t("errorMessages.noShops"))

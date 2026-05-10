@@ -22,7 +22,7 @@ import { setAccountItemAmount } from "../../services/accounts.services.js";
 abstract class BaseItemGiveFlow<T extends Record<string, unknown>> extends UserFlow<T> {
     protected selectedItem: Item & Identifiable<NanoId> | null = null;
 
-    protected override async prestart() {
+    protected override async prepare() {
         const items = getItems()
         if (!items.size) 
             return err(`${t(`userFlows.inventoryGive.errorMessages.cantGiveItem`)} ${t("errorMessages.noItems")}`);

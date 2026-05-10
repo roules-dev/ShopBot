@@ -22,7 +22,7 @@ import { setAccountCurrencyAmount } from "../../services/accounts.services.js"
 abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends UserFlow<T> {
     protected selectedCurrency: Currency & Identifiable<NanoId> | null = null;
 
-    protected override async prestart() {
+    protected override async prepare() {
         const currencies = getCurrencies();
         if (!currencies.size) 
             return err(`${t(`userFlows.accountGive.errorMessages.cantGiveMoney`)} ${t("errorMessages.noCurrencies")}`);

@@ -40,7 +40,7 @@ export class EditItemFlow extends UserFlow<z.infer<typeof editItemParamsSchema>>
 
     private selectedItem: Item & Identifiable<NanoId> | null = null
     
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+    protected override async prepare(_interaction: ChatInputCommandInteraction) {
         const items = getItems()
         if (items.size == 0) return err(t("errorMessages.noItems"))
 

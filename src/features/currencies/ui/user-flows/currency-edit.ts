@@ -36,7 +36,7 @@ export class EditCurrencyFlow extends UserFlow<z.infer<typeof editCurrencyParams
 
     private selectedCurrency: Currency & Identifiable<NanoId> | null = null
     
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+    protected override async prepare(_interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (currencies.size == 0) return err(t("errorMessages.noCurrencies"))
 

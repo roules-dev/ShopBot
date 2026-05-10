@@ -1,4 +1,5 @@
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ActionRowBuilder, APIEmbedField, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
 import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
@@ -14,6 +15,10 @@ export abstract class UserInterface<Config = void> {
         this.components = this.getComponentsMap(this.initComponents(config))
     }
 
+    protected async prepare(_interaction: UserInterfaceInteraction): Promise<Result<unknown, ErrorLike>> {
+        return ok(true)
+    }
+    
     protected abstract getMessage(): string 
     protected abstract initComponents(config: Config): UIComponent[]
     
@@ -141,18 +146,15 @@ export abstract class UserInterface<Config = void> {
 }
 
 export abstract class MessageUserInterface extends UserInterface {
-    protected async predisplay(_interaction: UserInterfaceInteraction): Promise<boolean> {
-        return true
-    }
 
     protected setup(_interaction: UserInterfaceInteraction): void {
         this.updateComponents()
     }
 
     public async display(interaction: UserInterfaceInteraction) {
-        const success = await this.predisplay(interaction)
-        if (!success) {
-            await replyErrorMessage(interaction)
+        const [error] = await this.prepare(interaction)
+        if (error) {
+            await replyErrorMessage(interaction, error.message)
             return null
         }
 
@@ -179,7 +181,7 @@ export abstract class EmbedUserInterface extends MessageUserInterface {
     protected reset() {}
 
     public override async display(interaction: UserInterfaceInteraction) {
-        await this.predisplay(interaction)
+        await this.prepare(interaction)
 
         this.setup(interaction)
 

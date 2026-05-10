@@ -2,6 +2,7 @@ import { logToDiscord } from "@/app/services/logging.js"
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
+import { getItems } from "@/core/services/items/items.services.js"
 import { NanoId } from "@/database/database.types.js"
 import { Item } from "@/features/items/database/items.types.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
@@ -18,7 +19,6 @@ import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, roleMention, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountItemAmount, takeItemFromAccounts } from "../../services/accounts.services.js"
-import { getItems } from "@/core/services/items/items.services.js"
 
 
 
@@ -34,7 +34,7 @@ export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakePara
 
     private selectedItem: Item & Identifiable<NanoId> | null = null
 
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+    protected override async prepare(_interaction: ChatInputCommandInteraction) {
         await this.populateItemSelectMenu()
         return ok(true)
     }

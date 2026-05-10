@@ -39,7 +39,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
     protected price: Record<NanoId, number> | null = null
     protected selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+    protected override async prepare(_interaction: ChatInputCommandInteraction) {
         const items = getItems()
         if (!items.size) return err(t("errorMessages.noItems"))
 

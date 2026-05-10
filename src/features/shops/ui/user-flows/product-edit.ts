@@ -38,7 +38,7 @@ export class EditProductFlow extends UserFlow<z.infer<typeof editProductParamsSc
     protected selectedShop: Shop & Identifiable<NanoId> | null = null
     protected selectedProduct: HydratedProduct | null = null
 
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+    protected override async prepare(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (shops.size == 0) return err(t("errorMessages.noShops"))
 

@@ -20,7 +20,7 @@ export class ShopRemoveFlow extends UserFlow {
 
     private selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    public override async prestart(_interaction: ChatInputCommandInteraction) {
+    public override async prepare(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return err( t("errorMessages.noShops"))
 

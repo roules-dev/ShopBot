@@ -3,7 +3,8 @@ import { t } from "@/core/i18n/i18n.js"
 import { getShops } from "@/core/services/shops/shops.services.js"
 import { NanoId } from "@/database/database.types.js"
 import { AccountUserInterface } from "@/features/accounts/ui/user-interfaces/account-ui.js"
-import { replyErrorMessage, updateAsErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { updateAsErrorMessage } from "@/lib/discord/answer-interactions.js"
+import { err, ok } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
@@ -12,7 +13,7 @@ import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js"
 import { PaginatedEmbedUserInterface } from "@/lib/ui/user-interfaces/special-embed-ui.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
-import { EmbedBuilder, InteractionCallbackResponse, GuildMember, ButtonStyle, ButtonInteraction, roleMention, Colors, italic, APIEmbedField } from "discord.js"
+import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, GuildMember, InteractionCallbackResponse, italic, roleMention } from "discord.js"
 import { Shop } from "../../database/shops.types.js"
 import { formatPrice } from "../../services/price.js"
 import { BuyProductUserInterface } from "./buy.js"
@@ -31,23 +32,22 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
 
     private member: GuildMember | null = null
 
-    protected override async predisplay(interaction: UserInterfaceInteraction) {
+    protected override async prepare(interaction: UserInterfaceInteraction) {
         const shops = getShops()
         const firstShopEntry = shops.entries().next().value
 
         if (!firstShopEntry) {
-            replyErrorMessage(interaction, t("errorMessages.noShops"))
-            return false
+            return err(t("errorMessages.noShops"))
         }
 
         this.selectedShop = { ...firstShopEntry[1], id: firstShopEntry[0] }
 
         const member = interaction.member
-        if (!(member instanceof GuildMember)) return false
+        if (!(member instanceof GuildMember)) return err("Unexpected error: Invalid member")
 
         this.member = member
 
-        return true
+        return ok(true)
     }
 
     protected override getMessage() { return "" }

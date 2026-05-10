@@ -4,7 +4,7 @@ import { t } from "@/core/i18n/i18n.js"
 import { processPurchase } from "@/core/services/shops/buy.js"
 import { NanoId } from "@/database/database.types.js"
 import { errorFormat, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
-import { assertNeverReached } from "@/lib/error-handling.js"
+import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
@@ -41,12 +41,11 @@ export class BuyProductUserInterface extends MessageUserInterface {
         this.populateProductSelectMenu()
     }
 
-    protected override async predisplay(interaction: UserInterfaceInteraction) {
+    protected override async prepare(_interaction: UserInterfaceInteraction) {
         if (Object.keys(this.selectedShop.products).length === 0) {
-            await replyErrorMessage(interaction, t("errorMessages.noProducts"))
-            return false
+            return err(t("errorMessages.noProducts"))
         }
-        return true
+        return ok(true)
     }
 
     protected override getMessage() {

@@ -22,7 +22,7 @@ export class ItemRemoveFlow extends UserFlow {
     }
     private selectedItem: Item & Identifiable<NanoId> | null = null
 
-    public override async prestart(_interaction: ChatInputCommandInteraction) {
+    public override async prepare(_interaction: ChatInputCommandInteraction) {
         const items = getItems()
         if (items.size == 0) return err(t("errorMessages.noItems"))
 

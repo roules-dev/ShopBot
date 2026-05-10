@@ -26,7 +26,7 @@ export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof discountCode
     
     private selectedShop: Shop & Identifiable<NanoId> | null = null
 
-    protected override async prestart(_interaction: ChatInputCommandInteraction) {
+    protected override async prepare(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return err(t("errorMessages.noShops"))
         
@@ -108,7 +108,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
     private selectedDiscountCode: string | null = null
 
 
-    public override async prestart(_interaction: ChatInputCommandInteraction) {
+    public override async prepare(_interaction: ChatInputCommandInteraction) {
         const shops = getShops()
         if (!shops.size) return err(t("errorMessages.noShops"))
 

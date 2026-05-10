@@ -1,4 +1,5 @@
 import { logToDiscord } from "@/app/services/logging.js"
+import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
 import { getCurrencies } from "@/core/services/currencies/currencies.services.js"
@@ -17,7 +18,6 @@ import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountCurrencyAmount } from "../../services/accounts.services.js"
-import { HYDRATOR } from "@/core/database/init-databases.js"
 
 
 export const accountTakeParamsSchema = z.object({
@@ -32,7 +32,7 @@ export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSc
 
     private selectedCurrency: Currency & Identifiable<NanoId> | null = null
 
-    protected override async prestart() {
+    protected override async prepare() {
         const currencies = getCurrencies();
         if (!currencies.size) 
             return err(`${t(`userFlows.accountTake.errorMessages.cantTakeMoney`)} ${t("errorMessages.noCurrencies")}`)

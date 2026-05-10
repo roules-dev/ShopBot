@@ -1,8 +1,7 @@
 import { HYDRATOR } from "@/core/database/init-databases.js"
 import { t } from "@/core/i18n/i18n.js"
 import { getOrCreateAccount } from "@/core/services/accounts/accounts.services.js"
-import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
-import { assertNeverReached } from "@/lib/error-handling.js"
+import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { ObjectValues } from "@/lib/types/collections.js"
 import { DeepReadonly } from "@/lib/types/readonly.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
@@ -13,6 +12,7 @@ import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, Colors, EmbedBuilder, InteractionCallbackResponse, User } from "discord.js"
 import { Account } from "../../database/accounts.type.js"
+
 
 
 export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
@@ -43,15 +43,12 @@ export class AccountUserInterface extends MultiplePaginatedEmbedUserInterface {
         this.user = user
     }
 
-    protected override async predisplay(interaction: UserInterfaceInteraction) {
+    protected override async prepare(_interaction: UserInterfaceInteraction) {
         const [error, account] = await getOrCreateAccount(snowflakeSchema.parse(this.user.id))
-        if (error) {
-            await replyErrorMessage(interaction, error.message)
-            return false
-        }
+        if (error) return err(error)
 
         this.account = account
-        return true
+        return ok(true)
     }
 
     protected override getMessage() {

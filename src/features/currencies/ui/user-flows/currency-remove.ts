@@ -22,7 +22,7 @@ export class CurrencyRemoveFlow extends UserFlow {
     }
     private selectedCurrency: Currency & Identifiable<NanoId> | null = null
 
-    public override async prestart(_interaction: ChatInputCommandInteraction) {
+    public override async prepare(_interaction: ChatInputCommandInteraction) {
         const currencies = getCurrencies()
         if (currencies.size == 0) return err(t("errorMessages.noCurrencies"))
 
