@@ -110,7 +110,7 @@ export abstract class UserInterface<Config = void> {
 
         } catch (error) {
             replyErrorMessage(interaction)
-            PrettyLog.error(`${error}`)
+            PrettyLog.error(`${error}`, true, (error instanceof Error ? error : undefined))
         }
     }
 

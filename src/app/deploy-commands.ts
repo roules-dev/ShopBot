@@ -67,7 +67,7 @@ export async function appDeployCommands() {
         PrettyLog.success("Successfully registered application commands.", false)
         return true
     } catch (e) {
-        PrettyLog.error("Failed to deploy commands", false)
+        PrettyLog.error("Failed to deploy commands", true, (e instanceof Error ? e : undefined))
         console.error(e)
 
         return false
@@ -83,7 +83,7 @@ export async function appDeleteCommands() {
         return true
     }
     catch (e) {
-        PrettyLog.error("Failed to deploy commands", false)
+        PrettyLog.error("Failed to deploy commands", true, (e instanceof Error ? e : undefined))
         console.error(e)
 
         return false
@@ -98,7 +98,7 @@ export async function guildDeployCommands(guildId: Snowflake) {
         return true       
     }
     catch (e) {
-        PrettyLog.error("Failed to deploy commands", false)
+        PrettyLog.error("Failed to deploy commands", true, (e instanceof Error ? e : undefined))
         console.error(e)
 
         return false
@@ -113,7 +113,7 @@ export async function guildDeleteCommands(guildId: Snowflake) {
         return true
     }
     catch (e) {
-        PrettyLog.error("Failed to deploy commands", false)
+        PrettyLog.error("Failed to deploy commands", true, (e instanceof Error ? e : undefined))
         console.error(e)
 
         return false

@@ -205,8 +205,7 @@ async function migrateCurrencies() {
         }
     } catch (error) {
         log(() => {
-            PrettyLog.error(`Migration of currencies failed, not saving changes.\n`)
-            PrettyLog.error(`${error}`)
+            PrettyLog.error(`Migration of currencies failed, not saving changes.\n`, true, (error instanceof Error ? error : undefined))
         })
         return false
     }

@@ -26,11 +26,14 @@ export class PrettyLog {
         this.loadStepCount = 1
     }
 
-    static error(message: string, save = true) {
+    static error(message: string, save = true, error?: Error) {
         console.log(`${INVERT} ✕ ${RED_FG} Error ${RESET} ${RED_FG}${message}${RESET}`)
 
         if (!save) return
         this.saveLogs(`✕ Error - ${message}`)
+        if (error) {
+            this.saveLogs(`Error details: \n${error.stack || "No stack trace available"}\n${error.message}`)
+        }
     }
     
     static warn(message: string, save = true) {

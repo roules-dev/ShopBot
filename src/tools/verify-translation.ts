@@ -82,11 +82,7 @@ async function loadLocaleFile(localeCode: string) {
         return locale
     } 
     catch (error) {
-        PrettyLog.error(`Locale ${localeCode} not found.`)
-
-        if (error instanceof Error) {
-            PrettyLog.error(error.message)
-        }
+        PrettyLog.error(`Locale ${localeCode} not found.`, true, (error instanceof Error ? error : undefined))
 
         process.exit(1)
     }
