@@ -1,7 +1,7 @@
 import { AbstractConstructor } from "@/lib/types/abstraction.js"
 import { APIEmbedField, ButtonInteraction, ButtonStyle, InteractionCallbackResponse } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
-import { ExtendedButtonComponent } from "../ui-components/button.js"
+import { ExtendedButtonComponent } from "../components/button.js"
 import { EmbedUserInterface } from "./user-interfaces.js"
 
 export function Paginated<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: TBase) {

@@ -2,7 +2,7 @@ import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, MessageFlags } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
 import { UIComponent, UserInterface } from "../user-interfaces/user-interfaces.js"
-import { ExtendedButtonComponent } from "../ui-components/button.js"
+import { ExtendedButtonComponent } from "../components/button.js"
 
 export abstract class UserFlow<T extends Record<string, unknown> | void = void> extends UserInterface<T> {
     protected params: T

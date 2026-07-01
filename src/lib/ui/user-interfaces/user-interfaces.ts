@@ -3,7 +3,7 @@ import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ActionRowBuilder, APIEmbedField, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
 import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
-import { ComponentSeparator, UpdateableComponent } from "../ui-components/extended-components.js"
+import { ComponentSeparator, UpdateableComponent } from "../components/extended-components.js"
 
 export type UIComponent = UpdateableComponent | ComponentSeparator
 

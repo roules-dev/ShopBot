@@ -10,9 +10,9 @@ import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib
 import { err, ok } from "@/lib/error-handling.js";
 import { Identifiable } from "@/lib/types/core.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
-import { ExtendedButtonComponent } from "@/lib/ui/ui-components/button.js";
-import { createComponent } from "@/lib/ui/ui-components/extended-components.js";
-import { ExtendedStringSelectMenuComponent } from "@/lib/ui/ui-components/string-select-menu.js";
+import { ExtendedButtonComponent } from "@/lib/ui/components/button.js";
+import { createComponent } from "@/lib/ui/components/extended-components.js";
+import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js";
 import { UserFlow } from "@/lib/ui/user-flows/user-flow.js";
 import { optionalOrNull } from "@/schemas/optional-to-null.js";
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js";

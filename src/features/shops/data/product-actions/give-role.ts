@@ -4,8 +4,8 @@ import { snowflakeSchema } from "@/schemas/utils.js"
 import { bold, roleMention } from "discord.js"
 import z from "zod"
 import { ProductAction } from "./product-action.js"
-import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/ui-components/select-menus.js"
-import { createComponent } from "@/lib/ui/ui-components/extended-components.js"
+import { ExtendedRoleSelectMenuComponent } from "@/lib/ui/components/select-menus.js"
+import { createComponent } from "@/lib/ui/components/extended-components.js"
 
 const giveRoleActionSchema = z.object({
     kind: z.literal("give-role"),
