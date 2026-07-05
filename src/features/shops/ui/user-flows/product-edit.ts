@@ -322,3 +322,7 @@ export class EditProductItemFlow extends EditProductFlow {
         return await updateAsSuccessMessage(interaction, message)
     }
 }
+
+// export class EditProductActionFlow extends EditProductActionFlow {
+
+// }

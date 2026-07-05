@@ -57,7 +57,10 @@ export const data = new SlashCommandBuilder()
             .setName("item")
             .setDescription("Change Item")
         )
-        // TODO : action edit
+        .addSubcommand(subcommand => subcommand // TODO : translation
+            .setName("action")
+            .setDescription("Edit or remove action")
+        )
     )
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
 
@@ -93,6 +96,9 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                         return
                     case "item":
                         new EditProductItemFlow().start(interaction)
+                        return
+                    case "action":
+                        replyErrorMessage(interaction, 'Not implemented yet')
                         return
                 }
 

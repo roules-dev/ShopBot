@@ -67,7 +67,7 @@ export abstract class UserInterface<Config = void> {
                 return
             }
 
-            // Continue adding to last row when it's not full
+            // Continue adding to last row while it's not full
             lastRow.addComponents(component.comp.getComponent())
         })
 
