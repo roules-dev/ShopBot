@@ -32,7 +32,7 @@ export const giveRoleProductAction: ProductAction<"give-role", typeof giveRoleAc
 
     getMessage: (options) => t(
         `userFlows.productAdd.messages.actions.giveRole`, 
-        { role: options?.roleId ? bold(roleMention(options.roleId)) : t("defaultComponents.selectRole") }
+        { role: bold(options?.roleId ? roleMention(options.roleId) : t("defaultComponents.selectRole")) }
     ),
 
     getEditComponents: (flowId, callback) => {

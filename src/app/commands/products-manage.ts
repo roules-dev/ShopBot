@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { productActions } from "@/features/shops/data/product-actions/index.js"
 import { AddActionProductFlow, addActionProductParamsSchema, AddProductFlow, addProductParamsSchema } from "@/features/shops/ui/user-flows/product-add.js"
-import { EditProductFlow, EditProductItemFlow, editProductParamsSchema, EditProductPriceFlow } from "@/features/shops/ui/user-flows/product-edit.js"
+import { EditProductActionFlow, EditProductFlow, EditProductItemFlow, editProductParamsSchema, EditProductPriceFlow } from "@/features/shops/ui/user-flows/product-edit.js"
 import { RemoveProductFlow } from "@/features/shops/ui/user-flows/product-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -98,7 +98,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                         new EditProductItemFlow().start(interaction)
                         return
                     case "action":
-                        replyErrorMessage(interaction, 'Not implemented yet')
+                        new EditProductActionFlow().start(interaction)
                         return
                 }
 

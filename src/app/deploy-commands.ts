@@ -12,6 +12,12 @@ const __dirname = path.dirname(__filename)
 
 let rest: REST | undefined
 
+const envSchema = z.object({
+    TOKEN: z.string().min(1, "Token is required"),
+    CLIENT_ID: z.string().min(1, "Client ID is required")
+})
+let config: z.infer<typeof envSchema> | undefined
+
 const commands: { cache: RESTPostAPIChatInputApplicationCommandsJSONBody[], expired: boolean } = { cache: [], expired: true }
 
 
@@ -170,11 +176,7 @@ function getRest() {
 }
 
 
-const envSchema = z.object({
-    TOKEN: z.string().min(1, "Token is required"),
-    CLIENT_ID: z.string().min(1, "Client ID is required")
-})
-let config: z.infer<typeof envSchema> | undefined
+
 
 function getEnv() {
     if (config !== undefined) return config

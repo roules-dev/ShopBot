@@ -6,7 +6,6 @@ import { Exact } from "@/lib/types/constraints.js"
 
 
 export function getShops() {
-    console.log("getShops has been called")
     return shopsDatabase.list()
 }
 
