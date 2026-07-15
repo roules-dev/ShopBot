@@ -56,7 +56,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
         if (this.price !== null) {
             const [error, price] = HYDRATOR.getHydratedPrice(this.price)
             if (!error) {
-                priceString = price.size > 0 ? formatPrice(price) : "Free"
+                priceString = formatPrice(price)
             }
             else {
                 priceString = errorFormat(t("errorMessages.hydration.priceDisplayFailed"))

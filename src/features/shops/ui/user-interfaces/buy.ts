@@ -256,7 +256,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
             return errorFormat(t("errorMessages.hydration.priceDisplayFailed"))
         }    
 
-        return price.size > 0 ? formatPrice(applyQuantityHydrated(price, this.quantity), this.discount) : t("userInterfaces.buy.messages.free")
+        return formatPrice(applyQuantityHydrated(price, this.quantity), this.discount)
     }
 
 
@@ -280,7 +280,7 @@ export class BuyProductUserInterface extends MessageUserInterface {
 
         if (interaction.guild) {
             logToDiscord(interaction.guild, 
-                `${interaction.member} purchased ${quantity}x **${productName}** from **${shopName}** for ${priceString}.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.kind} (${stringifyObj(product.action.options)})` : "none"}`
+                `${interaction.member} purchased ${quantity}x **${productName}** from **${shopName}** for **${priceString}**.\nDiscount code: ${discountCodeString}. Action: ${product.action != undefined ? `${product.action.kind} (${stringifyObj(product.action.options)})` : "none"}`
             )
         }
     }

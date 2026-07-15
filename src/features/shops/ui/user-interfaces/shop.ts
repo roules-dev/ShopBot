@@ -167,7 +167,7 @@ export class ShopUserInterface extends PaginatedEmbedUserInterface {
                 return
             }
 
-            const formattedPrice = price.size > 0 ? formatPrice(price) : t("userInterfaces.shop.embeds.shop.free")
+            const formattedPrice = formatPrice(price)
 
             fields.push({ 
                 name: formattedEmojiableName(product.item),

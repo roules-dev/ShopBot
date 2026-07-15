@@ -1,5 +1,5 @@
 import { HydratedPrice } from "@/core/database/hydrator.js";
-import { getLocale } from "@/core/i18n/i18n.js";
+import { getLocale, t } from "@/core/i18n/i18n.js";
 import { NanoId } from "@/database/database.types.js";
 import { MapValue } from "@/lib/types/collections.js";
 import { formattedEmojiableName } from "@/utils/formatting.js";
@@ -27,6 +27,7 @@ function formatPriceElement(price: MapValue<HydratedPrice>, discount?: number) {
 }
 
 export function formatPrice(price: HydratedPrice, discount?: number) {
+    if (price.size === 0) return t("userInterfaces.shop.embeds.shop.free")
     return Array.from(price.values())
         .map(onCurrencyPrice => formatPriceElement(onCurrencyPrice, discount))
         .join(", ")

@@ -175,7 +175,7 @@ export class EditProductPriceFlow extends BaseEditProductFlow<void> {
         const [error, price] = HYDRATOR.getHydratedPrice(this.price)
         if (error) return errorFormat(t("errorMessages.hydration.priceDisplayFailed"))
         
-        return price.size > 0 ? formatPrice(price) : t("userInterfaces.shop.embeds.shop.free")
+        return formatPrice(price)
     }
 
     protected override getMessage(): string {
