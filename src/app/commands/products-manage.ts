@@ -6,6 +6,7 @@ import { RemoveProductFlow } from "@/features/shops/ui/user-flows/product-remove
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
+import { validateOptionsAndStartFlow } from "../services/user-flow-launching.js"
 
 // TODO : product commands probably belongs to shops-manage command as a subcommand group instead of being a separate command
 
@@ -71,21 +72,15 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
     switch (subCommand) {
         case "add":
             if (interaction.options.getString("action") != null) {
-                const [error, options] = validateCommandOptions(interaction.options, addActionProductParamsSchema)
-                if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-                new AddActionProductFlow(options).start(interaction)
+                validateOptionsAndStartFlow(interaction, addActionProductParamsSchema, AddActionProductFlow)
                 break
             }
-            const [error, options] = validateCommandOptions(interaction.options, addProductParamsSchema)
-            if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new AddProductFlow(options).start(interaction)
+            
+            validateOptionsAndStartFlow(interaction, addProductParamsSchema, AddProductFlow)
             break
 
         case "remove":
             new RemoveProductFlow().start(interaction)
-
             break
             
         default:

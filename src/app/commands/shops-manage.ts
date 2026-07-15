@@ -7,6 +7,7 @@ import { ShopRemoveFlow } from "@/features/shops/ui/user-flows/shop-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
+import { validateOptionsAndStartFlow } from "../services/user-flow-launching.js"
 
 export const data = new SlashCommandBuilder()
     .setName("shops-manage") 
@@ -125,10 +126,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             new ShopReorderFlow().start(interaction)
             break
         case "create-discount-code": {
-            const [error, options] = validateCommandOptions(interaction.options, discountCodeCreateParamsSchema)
-            if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-            
-            new DiscountCodeCreateFlow(options).start(interaction)
+            validateOptionsAndStartFlow(interaction, discountCodeCreateParamsSchema, DiscountCodeCreateFlow)
             break
         }
         case "remove-discount-code":

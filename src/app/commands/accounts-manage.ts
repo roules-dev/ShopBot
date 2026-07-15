@@ -1,13 +1,13 @@
 import { t } from "@/core/i18n/i18n.js"
-import { accountGiveParamsSchema, AccountGiveFlow, bulkAccountGiveParamsSchema, BulkAccountGiveFlow } from "@/features/accounts/ui/user-flows/account-give.js"
-import { accountTakeParamsSchema, AccountTakeFlow } from "@/features/accounts/ui/user-flows/account-take.js"
+import { AccountGiveFlow, accountGiveParamsSchema, BulkAccountGiveFlow, bulkAccountGiveParamsSchema } from "@/features/accounts/ui/user-flows/account-give.js"
+import { AccountTakeFlow, accountTakeParamsSchema } from "@/features/accounts/ui/user-flows/account-take.js"
 import { AccountUserInterface } from "@/features/accounts/ui/user-interfaces/account-ui.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
-import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { ChatInputCommandInteraction, Client, PermissionFlagsBits, SlashCommandBuilder } from "discord.js"
+import { validateOptionsAndStartFlow } from "../services/user-flow-launching.js"
 
 export const data = new SlashCommandBuilder()
-    .setName("accounts-manage") 
+    .setName("accounts-manage")
     .setDescription("Manage your users")
     .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(subcommand => subcommand
@@ -25,7 +25,7 @@ export const data = new SlashCommandBuilder()
         .addUserOption(option => option
             .setName("target")
             .setDescription("The user you want to give money")
-            .setRequired(true)    
+            .setRequired(true)
         )
         .addNumberOption(option => option
             .setName("amount")
@@ -41,7 +41,7 @@ export const data = new SlashCommandBuilder()
         .addRoleOption(option => option
             .setName("role")
             .setDescription("The role you want to give money to")
-            .setRequired(true)    
+            .setRequired(true)
         )
         .addNumberOption(option => option
             .setName("amount")
@@ -57,7 +57,7 @@ export const data = new SlashCommandBuilder()
         .addUserOption(option => option
             .setName("target")
             .setDescription("The user you want to take money")
-            .setRequired(true)    
+            .setRequired(true)
         )
         .addNumberOption(option => option
             .setName("amount")
@@ -67,45 +67,27 @@ export const data = new SlashCommandBuilder()
         )
     )
 
+const subCommandHandlers: Record<string, (interaction: ChatInputCommandInteraction) => Promise<void>> = {
+    "view-account": async (interaction) => {
+        const user = interaction.options.getUser("target")
+        if (!user) {
+            replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
+            return
+        }
+        await new AccountUserInterface(user).display(interaction)
+    },
+    "give": async (interaction) => await validateOptionsAndStartFlow(interaction, accountGiveParamsSchema, AccountGiveFlow),
+    "bulk-give": async (interaction) => await validateOptionsAndStartFlow(interaction, bulkAccountGiveParamsSchema, BulkAccountGiveFlow),
+    "take": async (interaction) => await validateOptionsAndStartFlow(interaction, accountTakeParamsSchema, AccountTakeFlow)
+}
+
 export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
 
-    switch (subCommand) {
-        case "view-account": {
-            const user = interaction.options.getUser("target")
-            if (!user) {
-                replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-                break
-            }
-    
-            new AccountUserInterface(user).display(interaction)
-            
-            break
-        }
-        case "give": {
-            const [error, options] = validateCommandOptions(interaction.options, accountGiveParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new AccountGiveFlow(options).start(interaction)    
-            break
-        }
-
-        case "bulk-give": {
-            const [error, options] = validateCommandOptions(interaction.options, bulkAccountGiveParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new BulkAccountGiveFlow(options).start(interaction)
-            break
-        }
-        case "take": {
-            const [error, options] = validateCommandOptions(interaction.options, accountTakeParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new AccountTakeFlow(options).start(interaction)
-            break
-        }
-        default:
-            await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
-            break
+    const handler = subCommandHandlers[subCommand]
+    if (handler) {
+        await handler(interaction)
+    } else {
+        await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
     }
 }

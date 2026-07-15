@@ -2,8 +2,8 @@ import { t } from "@/core/i18n/i18n.js"
 import { BulkInventoryGiveFlow, bulkInventoryGiveParamsSchema, InventoryGiveFlow, inventoryGiveParamsSchema } from "@/features/accounts/ui/user-flows/inventory-give.js"
 import { BulkInventoryRemoveItemFlow, bulkInventoryRemoveItemParamsSchema, InventoryTakeFlow, inventoryTakeParamsSchema } from "@/features/accounts/ui/user-flows/inventory-take.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
-import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
 import { SlashCommandBuilder, PermissionFlagsBits, Client, ChatInputCommandInteraction } from "discord.js"
+import { validateOptionsAndStartFlow } from "../services/user-flow-launching.js"
 
 export const data = new SlashCommandBuilder()
     .setName("inventories-manage") 
@@ -66,41 +66,26 @@ export const data = new SlashCommandBuilder()
         )
     )
 
+
+const subCommandHandlers: Record<string, (interaction: ChatInputCommandInteraction) => Promise<void>> = {
+    "give": async (interaction) => 
+        await validateOptionsAndStartFlow(interaction, inventoryGiveParamsSchema, InventoryGiveFlow),
+    "bulk-give": async (interaction) => 
+        await validateOptionsAndStartFlow(interaction, bulkInventoryGiveParamsSchema, BulkInventoryGiveFlow),
+    "take": async (interaction) => 
+        await validateOptionsAndStartFlow(interaction, inventoryTakeParamsSchema, InventoryTakeFlow),
+    "bulk-remove-item": async (interaction) => 
+        await validateOptionsAndStartFlow(interaction, bulkInventoryRemoveItemParamsSchema, BulkInventoryRemoveItemFlow)
+}
+
+
 export async function execute(_client: Client, interaction: ChatInputCommandInteraction) {
     const subCommand = interaction.options.getSubcommand()
 
-    switch (subCommand) {
-        case "give": {
-            const [error, options] = validateCommandOptions(interaction.options, inventoryGiveParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new InventoryGiveFlow(options).start(interaction)    
-            break
-        }
-
-        case "bulk-give": {
-            const [error, options] = validateCommandOptions(interaction.options, bulkInventoryGiveParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new BulkInventoryGiveFlow(options).start(interaction)
-            break
-        }
-        case "take": {
-            const [error, options] = validateCommandOptions(interaction.options, inventoryTakeParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new InventoryTakeFlow(options).start(interaction)
-            break
-        }
-        case "bulk-remove-item": {
-            const [error, options] = validateCommandOptions(interaction.options, bulkInventoryRemoveItemParamsSchema)
-            if (error) return replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
-
-            new BulkInventoryRemoveItemFlow(options).start(interaction)
-            break
-        }
-        default:
-            await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
-            break
+    const handler = subCommandHandlers[subCommand]
+    if (handler) {
+        await handler(interaction)
+    } else {
+        await replyErrorMessage(interaction, t("errorMessages.invalidSubcommand"))
     }
 }
