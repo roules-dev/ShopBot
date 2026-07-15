@@ -309,11 +309,13 @@ This project is **not affiliated with, endorsed by, or associated with Discord I
 
 ## ⭐ Star History
 
-<a href="https://www.star-history.com/#roules-dev/ShopBot&Date">
+## Star History
+
+<a href="https://www.star-history.com/?repos=roules-dev%2FShopBot&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=roules-dev/ShopBot&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=roules-dev/ShopBot&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=roules-dev/ShopBot&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=roules-dev/ShopBot&type=date&theme=dark&legend=top-left&sealed_token=8zdGh_LPjGnR94oPP85AsABz2J787m3jQyq3dRQ9YlVAmMCbZAcdUTDhPKdUnfArsaYloqCtUuzkvmwvRNdQta1Rl4jtP2pI3N0949DxxlHZ925lBf0zQ5IJVSGrOqud9HP0mjkLSMpt6-8Nk1KQX-87it-y-zsrrGsSvMQLPJinl50MPgRQ9NO9-o4a" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=roules-dev/ShopBot&type=date&legend=top-left&sealed_token=8zdGh_LPjGnR94oPP85AsABz2J787m3jQyq3dRQ9YlVAmMCbZAcdUTDhPKdUnfArsaYloqCtUuzkvmwvRNdQta1Rl4jtP2pI3N0949DxxlHZ925lBf0zQ5IJVSGrOqud9HP0mjkLSMpt6-8Nk1KQX-87it-y-zsrrGsSvMQLPJinl50MPgRQ9NO9-o4a" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=roules-dev/ShopBot&type=date&legend=top-left&sealed_token=8zdGh_LPjGnR94oPP85AsABz2J787m3jQyq3dRQ9YlVAmMCbZAcdUTDhPKdUnfArsaYloqCtUuzkvmwvRNdQta1Rl4jtP2pI3N0949DxxlHZ925lBf0zQ5IJVSGrOqud9HP0mjkLSMpt6-8Nk1KQX-87it-y-zsrrGsSvMQLPJinl50MPgRQ9NO9-o4a" />
  </picture>
 </a>
 
