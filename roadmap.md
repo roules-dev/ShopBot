@@ -4,7 +4,7 @@
 
 1. ~~products with a set stock~~
 1. (v3 done) ability to buy a certain amount of a product ([#17](https://github.com/roules-dev/ShopBot/issues/17))
-1. (v3) removing items for inventories - and bulk removing of an item. ([#14](https://github.com/roules-dev/ShopBot/issues/14))
+1. (v3 done) removing items for inventories - and bulk removing of an item. ([#14](https://github.com/roules-dev/ShopBot/issues/14))
 1. (v3 done) admin actions logging ([#18](https://github.com/roules-dev/ShopBot/issues/18))
 1. item/currency limit option ([#28](https://github.com/roules-dev/ShopBot/issues/28))
 1. api
@@ -38,7 +38,7 @@
 - [x] improve folder structure (implement feature base folder structure)
 - [x] products must become items, independant of shops
 - [ ] avoid repeating the code for some basic components such as CurrencySelect or ShopSelect by storing them in the relevant feature
-- [ ] improve UI updateInteraction : ability to display a message at the end of the normal message(could be an error or something else)
+- [x] improve UI updateInteraction : ability to display a message at the end of the normal message(could be an error or something else)
 - [ ] look into CRLF/LF issue with generated files 
 
 
