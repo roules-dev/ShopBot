@@ -8,6 +8,7 @@ import { getSetting } from "@/features/settings/database/settings.database.js"
 import en_US_locale from "@/generated/locales/en-US.js"
 import es_ES_locale from "@/generated/locales/es-ES.js"
 import fr_locale from "@/generated/locales/fr.js"
+import { env } from "process"
 
 
 declare module "@/lib/i18n/translations.js" {
@@ -66,13 +67,17 @@ async function getLocaleStrings(path: string, maxLength?: number) {
         if (translation !== undefined) {
             if (maxLength && translation.length > maxLength) {
                 translation = translation.slice(0, maxLength)
-                PrettyLog.warn(`Localisation ${path} is longer than ${maxLength} characters in ${loc} locale.`)
+                if (env["NODE_ENV"] === "development") {
+                    PrettyLog.warn(`Localisation ${path} is longer than ${maxLength} characters in ${loc} locale.`)
+                }
             }
             result[loc] = translation
         }
         else {
             result[loc] = undefined
-            PrettyLog.warn(`Localisation ${path} is missing in ${loc} locale.`)
+            if (env["NODE_ENV"] === "development") {
+                PrettyLog.warn(`Localisation ${path} is missing in ${loc} locale.`)
+            }
         }
     }
 

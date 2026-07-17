@@ -2,9 +2,10 @@ import fs from "node:fs/promises"
 import { zip } from 'zip-a-folder'
 import { replaceTscAliasPaths } from 'tsc-alias';
 
-const config = {
-    token: "",
-    clientId: ""
+const env = {
+    "NODE_ENV": "production",
+    "CLIENT_ID": "",
+    "TOKEN": ""
 }
 
 const scriptsToKeep = [
@@ -17,6 +18,19 @@ const scriptsToKeep = [
 const scriptsParamsToRemove = {
     "serve": "--enable-source-maps",
     "setup": "--omit=dev"
+}
+
+function recordToEnv(obj) {
+    return Object.entries(obj)
+        .map(([key, value]) => {
+            const strValue = String(value)
+            const quotedValue = /[^\w./\-]/.test(strValue) 
+                ? `"${strValue}"` 
+                : strValue
+
+            return `${key.toUpperCase()}=${quotedValue}`
+        })
+        .join('\n')
 }
 
 async function main() {
@@ -43,9 +57,8 @@ async function main() {
 
         await fs.copyFile("./LICENSE", "./build/LICENSE")
 
-        console.log("Creating config.json...")
-        await fs.mkdir("./build/config", { recursive: true })
-        await fs.writeFile("./build/config/config.json", JSON.stringify(config, null, 4))
+        console.log("Creating .env...")
+        await fs.writeFile("./build/.env", recordToEnv(env))
 
         console.log("Copying data...")
         await fs.mkdir("./build/data", { recursive: true })
