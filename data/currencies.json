@@ -1,17 +1,22 @@
 {
     "0f2SNbp60vAwWjhKjRR0u": {
-        "id": "0f2SNbp60vAwWjhKjRR0u",
         "name": "Dollar",
-        "emoji": "💵"
+        "emoji": "💵",
+        "refCount": 20
     },
     "w3OuB15nMZBWTm33SvVfr": {
-        "id": "w3OuB15nMZBWTm33SvVfr",
         "name": "Euro",
-        "emoji": "💶"
+        "emoji": "💶",
+        "refCount": 1
     },
     "7kiuf_CPO2ocrr75mTXuV": {
-        "id": "7kiuf_CPO2ocrr75mTXuV",
         "name": "Pound",
-        "emoji": "💷"
+        "emoji": "💷",
+        "refCount": 4
+    },
+    "M2JfD9vMX2WzslISmBh2U": {
+        "name": "Yen",
+        "emoji": "💴",
+        "refCount": 2
     }
 }

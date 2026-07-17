@@ -1,8 +1,8 @@
 import { Register } from "./translations.js"
 
 export type RegisteredTranslations = Register extends { translations: infer T }
-  ? T 
-  : LanguageMessages
+    ? T 
+    : LanguageMessages
 
 type I18nMessage = string
 
@@ -23,8 +23,6 @@ export type DotPathsFor<T extends object = RegisteredTranslations> = {
         ? Join<K, DotPathsFor<T[K]>>
         : never
 }[keyof T]
-
-type x = DotPathsFor<RegisteredTranslations>
 
 type ExtractParamArgs<S extends string> = 
     S extends `${string}{${infer Param}}${infer Rest}`
@@ -74,11 +72,11 @@ export function initI18n({
     function translate<S extends PathsWithNoParams>(key: S): string
     function translate<S extends PathsWithParams, A extends Params<S>>(key: S, args: A): string
 
-    function translate<S extends DotPathsFor, A extends Params<S>>(key: S, args?: A): string {
+    function translate<S extends DotPathsFor, A extends Params<S>>(key: S, args?: A) {
         for (const locale of orderedLocales()) {
             const translationFile = translations[locale]
             if (translationFile == null) continue
-            const translation = getTranslation(locale, translationFile, key, args)
+            const translation = getTranslation(translationFile, key, args)
             if (translation) return translation
         }
         return key
@@ -96,7 +94,6 @@ export function initI18n({
 }
 
 function getTranslation<S extends DotPathsFor, A extends Params<S>>(
-    locale: string,
     translations: LanguageMessages,
     key: S,
     args?: A
@@ -118,6 +115,8 @@ export function getTranslationByKey(obj: LanguageMessages, key: string) {
 
     for (let i = 0; i <= keys.length - 1; i++) {
         const k = keys[i]
+        if (k == undefined) return undefined
+        
         const newObj = currentObj[k]
         if (newObj == null) return undefined
 
@@ -133,11 +132,18 @@ export function getTranslationByKey(obj: LanguageMessages, key: string) {
 }
 
 
-function replaceTemplates(str: string, templates: { [key: string]: string | number }): string {
-    let result = str
-    for (const key in templates) {
-        const value = templates[key]
-        result = result.replace(new RegExp(`{${key}}`, 'g'), String(value)) 
-    }
-    return result
+function replaceTemplates(str: string, templates: { [key: string]: string | number }) {
+    let hasUnexpectedTemplates = false
+
+    const result = str.replace(/{(\w+)}/g, (match, key) => {
+        if (key in templates) {
+            return String(templates[key]);
+        }
+        
+        hasUnexpectedTemplates = true
+        return match
+    })
+
+    return hasUnexpectedTemplates ? undefined : result
+    
 }

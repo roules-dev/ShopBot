@@ -1,39 +1,57 @@
-import { DEFAULT_LOCALE_CODE, LOCALES } from '@/lib/localization.js'
-import { PrettyLog } from '@/lib/pretty-log.js'
-import { fileURLToPath, pathToFileURL } from 'node:url'
+import { DEFAULT_LOCALE_CODE } from "@/core/i18n/i18n.js"
+import { PrettyLog } from "@/lib/pretty-log.js"
+import { is } from "@/lib/validation/validation.js"
+import { fileURLToPath, pathToFileURL } from "node:url"
+import z from "zod"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean, string[]] {
+function isRecord(val: unknown) {
+    return is(z.record(z.string(), z.unknown()), val)
+}
+
+function sameStructure(a: Record<string, unknown>, b: Record<string, unknown>): [boolean, string[]] {
     if (typeof a !== "object" || typeof b !== "object") {
         return [false, ["Not an object"]]
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    function sameStructureRec(a: Record<string, any>, b: Record<string, any>, path: string[] = []): [boolean, string[]] {
-        if (typeof a === "string" && typeof b === "string") {
+    function sameStructureRec(ref: unknown, tested: unknown, path: string[] = []): [boolean, string[]] {
+        const pathString = path.join(".")
+
+        if (typeof ref === "string" && typeof tested === "string") {
+
+            const refTemplateKeys = getTemplateKeys(ref)
+            const testedTemplateKeys = getTemplateKeys(tested)
+
+            if (refTemplateKeys.length !== testedTemplateKeys.length) {
+                const missingKeys = refTemplateKeys.filter(k => !testedTemplateKeys.includes(k))
+                return [false, [`Missing template keys (${missingKeys.join(", ")}): ${pathString}`]]
+            }
+
             return [true, []]
         }
 
-        if (typeof a !== "object" || typeof b !== "object") {
-            return [false, [`Incorect type: ${path.join('.')}`]]
+        if (!isRecord(ref) || !isRecord(tested)) {
+            return [false, [`Incorrect type: ${pathString}`]]
         }
 
         const errors: string[] = []
 
-        const aKeys = Object.keys(a)
-
-        for (let i = 0; i < aKeys.length; i++) {
-            const key = aKeys[i]
-
-            if (!Object.prototype.hasOwnProperty.call(b, key)) {
-                errors.push(`Missing key: ${path.join('.')}.${key}`)
+        for (const key in ref) {
+            if (!Object.prototype.hasOwnProperty.call(tested, key)) {
+                errors.push(`Missing key: ${pathString}.${key}`)
                 continue
             }
 
-            const [same, subErrors] = sameStructureRec(a[key], b[key], [...path, key])
+            const [same, subErrors] = sameStructureRec(ref[key], tested[key], [...path, key])
 
             if (!same) {
                 errors.push(...subErrors)
+            }
+        }
+
+        for (const key in tested) {
+            if (!Object.prototype.hasOwnProperty.call(ref, key)) {
+                errors.push(`Extra key: ${pathString}.${key}`)
             }
         }
 
@@ -43,23 +61,28 @@ function sameStructure(a: Record<string, any>, b: Record<string, any>): [boolean
     return sameStructureRec(a, b, [])
 }
 
+function getTemplateKeys(template: string) {
+    const matches = template.matchAll(/{(.+?)}/g)
+    const keys = []
+    for (const match of matches) {
+        keys.push(match[1])
+    }
+    return keys
+}
+
 async function loadLocaleFile(localeCode: string) {
     try {
         const locale = (await import(pathToFileURL(`./locales/${localeCode}.json`).href, {
             with: { type: "json" } 
         })).default
 
-        if (typeof locale !== 'object') throw new Error(`Locale ${localeCode} is not an object.`)
+        if (typeof locale !== "object") throw new Error(`Locale ${localeCode} is not an object.`)
     
         if (!locale) throw new Error(`Locale ${localeCode} is empty or not found.`)
         return locale
     } 
     catch (error) {
-        PrettyLog.error(`Locale ${localeCode} not found.`)
-
-        if (error instanceof Error) {
-            PrettyLog.error(error.message)
-        }
+        PrettyLog.error(`Locale ${localeCode} not found.`, true, (error instanceof Error ? error : undefined))
 
         process.exit(1)
     }
@@ -72,9 +95,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
         process.exit(1)
     }
 
+    const defaultLocale = await loadLocaleFile(DEFAULT_LOCALE_CODE)
     const locale = await loadLocaleFile(localeCode)
 
-    const [same, errors] = sameStructure(LOCALES[DEFAULT_LOCALE_CODE], locale)
+    const [same, errors] = sameStructure(defaultLocale, locale)
 
     if (same) {
         PrettyLog.success(`The locale ${localeCode} does not miss any translation`)
@@ -82,7 +106,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     else {
         PrettyLog.error(`The locale ${localeCode} misses some translations or has extra keys.`)
 
-        PrettyLog.error(`Found ${errors.length} error${errors.length === 1 ? '' : 's'}:`)
+        PrettyLog.error(`Found ${errors.length} error${errors.length === 1 ? "" : "s"}:`)
         
         for (const error of errors) {
             PrettyLog.error(`- ${error}`)

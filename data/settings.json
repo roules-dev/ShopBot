@@ -1,46 +1,61 @@
 {
     "logChannelId": {
-        "id": "logChannelId",
         "name": "Log Channel",
-        "value": "1332836427238739988",
-        "type": "channelId"
+        "id": "logChannelId",
+        "kind": "channelId",
+        "value": "1332836427238739988"
     },
     "activityMessage": {
-        "id": "activityMessage",
         "name": "Activity Message",
-        "value": "Theodora",
-        "type": "string"
+        "id": "activityMessage",
+        "kind": "string",
+        "value": "Lushe"
     },
     "activityType": {
-        "id": "activityType",
         "name": "Activity Type",
+        "id": "activityType",
+        "kind": "enum",
         "value": "Listening",
         "options": [
-            "Playing",
-            "Streaming",
-            "Listening",
-            "Watching",
-            "Competing"
-        ],
-        "type": "enum"
+            {
+                "label": "Playing",
+                "value": "playing"
+            },
+            {
+                "label": "Streaming",
+                "value": "Streaming"
+            },
+            {
+                "label": "Listening",
+                "value": "Listening"
+            },
+            {
+                "label": "Watching",
+                "value": "Watching"
+            },
+            {
+                "label": "Competing",
+                "value": "Competing"
+            }
+        ]
     },
     "language": {
-        "id": "language",
         "name": "Language",
+        "id": "language",
+        "kind": "enum",
         "value": "en-US",
-        "type": "enum",
         "options": [
             {
-                "value": "en-US",
-                "label": "English (US)"
+                "label": "English (US)",
+                "value": "en-US"
             },
             {
-                "value": "fr",
-                "label": "French"
+                "label": "French",
+                "value": "fr"
             },
             {
-                "value": "es-ES",
-                "label": "Spanish (Spain)"
+                "label": "Spanish (Spain)",
+                "value": "es-ES"
             }
         ]
     }

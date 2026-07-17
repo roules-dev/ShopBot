@@ -1,37 +1,46 @@
 {
-  "name": "shopbot",
-  "version": "2.4.1",
-  "author": "roules-dev",
-  "funding": "https://ko-fi.com/roules_",
-  "type": "module",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc && npx tsc-alias",
-    "clean:dist": "(rd /s /q dist || rm -rf dist) && mkdir dist",
-    "build:clean": "npm run clean:dist --silent && npm run build",
-    "build:prod": "npm run clean:dist --silent && tsc -p tsconfig.build.json && npx tsc-alias",
-    "dev": "nodemon src/index.ts",
-    "start": "npm run build && npm run serve",
-    "serve": "node --enable-source-maps dist/index.js",
-    "deploy": "node ./dist/app/deploy-commands.js",
-    "test": "npm run build && node ./dist/test.js",
-    "setup": "npm i --omit=dev --silent && node ./dist/tools/setup-helper.js",
-    "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
-    "verify-translation": "node ./dist/tools/verify-translation.js",
-    "generate:locales": "node ./dist/tools/generate-locales.js"
-  },
-  "license": "GPL-3.0",
-  "devDependencies": {
-    "@types/luxon": "^3.4.2",
-    "@types/node": "^25.0.3",
-    "tsc-alias": "^1.8.16"
-  },
-  "dependencies": {
-    "@discordjs/rest": "^2.6.0",
-    "discord.js": "^14.25.1",
-    "dotenv": "^17.2.3",
-    "fs": "^0.0.1-security",
-    "luxon": "^3.5.0",
-    "nanoid": "^5.1.6"
-  }
+    "name": "shopbot",
+    "version": "3.0.0",
+    "author": "roules-dev",
+    "funding": "https://ko-fi.com/roules_",
+    "type": "module",
+    "main": "dist/index.js",
+    "node": ">=22.5.0",
+    "scripts": {
+        "clean:dist": "(if exist dist rd /s /q dist || rm -rf dist) && mkdir dist",
+        "clean:build": "(if exist \"build\" rd /s /q \"build\" || rm -rf \"build\") && mkdir \"build\"",
+        "prebuild": "npm run generate:locales",
+        "build": "npx tsc -p tsconfig.json && npx tsc-alias",
+        "build:clean": "npm run clean:dist --silent && npm run build",
+        "build:prod": "npm run generate:locales && npm run clean:build --silent && npx tsc -p tsconfig.build.json && node ./scripts/build.mjs",
+        
+        "start:ts": "npm run prebuild && tsx --env-file=.env src/index.ts --use-ts",
+        "start": "npm run build && npm run serve",
+        "serve": "node --env-file=.env --enable-source-maps dist/index.js",
+        "deploy": "node --env-file=.env ./dist/app/deploy-commands.js",
+        "scratch": "npx tsx src/scratch.ts",
+        
+        "test": "vitest",
+        "test:watch": "vitest --watch",
+        
+        "setup": "npm i --omit=dev --silent && node --env-file=.env ./dist/tools/setup-helper.js",
+        "migrate-db-to-nanoid": "node ./dist/tools/migrate-db-to-nanoid.js",
+        "update-db": "node ./dist/tools/migrate-db-to-v3.js",
+        "verify-translation": "node ./dist/tools/verify-translation.js",
+        "generate:locales": "node ./scripts/generate-locales.mjs"
+    },
+    "license": "GPL-3.0",
+    "devDependencies": {
+        "@types/node": "^25.0.3",
+        "tsc-alias": "^1.8.16",
+        "tsx": "^4.21.0",
+        "typescript": "^6.0.3",
+        "vitest": "^4.1.0",
+        "zip-a-folder": "^4.0.4"
+    },
+    "dependencies": {
+        "discord.js": "^14.26.2",
+        "nanoid": "^5.1.6",
+        "zod": "^4.3.6"
+    }
 }

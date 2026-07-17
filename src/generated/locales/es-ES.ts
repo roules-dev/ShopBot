@@ -1,4 +1,4 @@
-// AUTO-GENERATED FILE — DO NOT EDIT
+//! AUTO-GENERATED FILE — DO NOT EDIT
 export const locale = {
     "errorMessages": {
         "default": "Ha ocurrido un error al ejecutar este comando, por favor inténtalo más tarde.",
@@ -111,7 +111,7 @@ export const locale = {
                             "name": "nombre",
                             "description": "Cambiar el nombre. Seleccionarás la moneda más tarde",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "nuevo-nombre",
                                     "description": "El nuevo nombre de la moneda"
                                 }
@@ -121,9 +121,9 @@ export const locale = {
                             "name": "emoji",
                             "description": "Cambiar el emoji. Seleccionarás la moneda más tarde",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "nuevo-emoji",
-                                    "description": "El nuevo emoji de la moneda (si solo quieres eliminarlo, escribe cualquier cosa)"
+                                    "description": "El nuevo emoji de la moneda (déjalo vacío para eliminarlo)"
                                 }
                             }
                         }
@@ -139,23 +139,11 @@ export const locale = {
                     "name": "agregar",
                     "description": "Agregar un nuevo producto",
                     "options": {
-                        "name": {
-                            "name": "nombre",
-                            "description": "El nombre del producto"
-                        },
                         "price": {
                             "name": "precio",
                             "description": "El precio del producto"
                         },
-                        "description": {
-                            "name": "descripcion",
-                            "description": "La descripción del producto (opcional)"
-                        },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "El emoji del producto (opcional)"
-                        },
-                        "amount": {
+                        "stock": {
                             "name": "cantidad",
                             "description": "La cantidad del producto (opcional)"
                         },
@@ -173,53 +161,23 @@ export const locale = {
                     "name": "modificar",
                     "description": "Modificar un producto",
                     "options": {
-                        "name": {
-                            "name": "nombre",
-                            "description": "Cambiar el nombre. Seleccionarás el producto más tarde",
-                            "options": {
-                                "new-name": {
-                                    "name": "nuevo-nombre",
-                                    "description": "El nuevo nombre del producto"
-                                }
-                            }
-                        },
-                        "description": {
-                            "name": "descripcion",
-                            "description": "Cambiar la descripción. Seleccionarás el producto más tarde",
-                            "options": {
-                                "new-description": {
-                                    "name": "nueva-descripcion",
-                                    "description": "La nueva descripción del producto"
-                                }
-                            }
-                        },
                         "price": {
                             "name": "precio",
                             "description": "Cambiar el precio. Seleccionarás el producto más tarde",
                             "options": {
-                                "new-price": {
+                                "price": {
                                     "name": "nuevo-precio",
                                     "description": "El nuevo precio del producto"
                                 }
                             }
                         },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "Cambiar el emoji. Seleccionarás el producto más tarde",
-                            "options": {
-                                "new-emoji": {
-                                    "name": "nuevo-emoji",
-                                    "description": "El nuevo emoji del producto (si solo quieres eliminarlo, escribe cualquier cosa)"
-                                }
-                            }
-                        },
-                        "amount": {
+                        "stock": {
                             "name": "cantidad",
                             "description": "Cambiar la cantidad. Seleccionarás el producto más tarde",
                             "options": {
-                                "new-amount": {
+                                "stock": {
                                     "name": "nueva-cantidad",
-                                    "description": "La nueva cantidad del producto (-1 para ilimitado)"
+                                    "description": "La nueva cantidad del producto (déjalo vacío para eliminarlo)"
                                 }
                             }
                         }
@@ -255,7 +213,7 @@ export const locale = {
                             "name": "emoji",
                             "description": "El emoji de la tienda (opcional)"
                         },
-                        "reserved-to-role": {
+                        "reserved_to_role": {
                             "name": "reservada-a-rol",
                             "description": "Especifica si la tienda debe estar reservada a un rol (opcional)"
                         }
@@ -295,7 +253,7 @@ export const locale = {
                             "name": "nombre",
                             "description": "Cambiar el nombre. Seleccionarás la tienda más tarde",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "nuevo-nombre",
                                     "description": "El nuevo nombre de la tienda"
                                 }
@@ -305,9 +263,9 @@ export const locale = {
                             "name": "descripcion",
                             "description": "Cambiar la descripción. Seleccionarás la tienda más tarde",
                             "options": {
-                                "new-description": {
+                                "description": {
                                     "name": "nueva-descripcion",
-                                    "description": "La nueva descripción de la tienda"
+                                    "description": "La nueva descripción de la tienda (déjalo vacío para eliminarlo)"
                                 }
                             }
                         },
@@ -315,25 +273,21 @@ export const locale = {
                             "name": "emoji",
                             "description": "Cambiar el emoji. Seleccionarás la tienda más tarde",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "nuevo-emoji",
-                                    "description": "El nuevo emoji de la tienda"
+                                    "description": "El nuevo emoji de la tienda (déjalo vacío para eliminarlo)"
                                 }
                             }
                         },
-                        "reserved-to-role": {
+                        "reserved_to_role": {
                             "name": "reservada-a-rol",
                             "description": "Cambiar el rol al que está reservada la tienda. Seleccionarás la tienda más tarde",
                             "options": {
-                                "new-role": {
+                                "role": {
                                     "name": "nuevo-rol",
-                                    "description": "El nuevo rol al que estará reservada la tienda. Déjalo vacío para eliminarlo"
+                                    "description": "El nuevo rol al que estará reservada la tienda (déjalo vacío para eliminarlo)"
                                 }
                             }
-                        },
-                        "currency": {
-                            "name": "moneda",
-                            "description": "Cambiar la moneda. Seleccionarás la tienda más tarde"
                         }
                     }
                 }
@@ -381,8 +335,8 @@ export const locale = {
                     "toggleOff": "Desactivar"
                 },
                 "selector": {
-                    "title": "Seleccionar {type} para {name}",
-                    "types": {
+                    "title": "Seleccionar {kind} para {name}",
+                    "kinds": {
                         "role": "un rol",
                         "user": "un usuario",
                         "channel": "un canal",
@@ -429,10 +383,10 @@ export const locale = {
         },
         "buy": {
             "messages": {
-                "default": "Comprar {product} de {shop}",
+                "default": "Comprar {quantity}{product} de {shop}",
                 "discountCode": "Código de descuento:",
                 "price": "por {price}",
-                "success": "Has comprado {product} con éxito en {shop} por {price}"
+                "success": "Has comprado {quantity}{product} con éxito en {shop} por {price}"
             },
             "errorMessages": {
                 "cantBuyHere": "No puedes comprar nada en esta tienda.",
@@ -452,7 +406,7 @@ export const locale = {
                     "message": "Has recibido el rol {role}"
                 },
                 "giveCurrency": {
-                    "message": "Has recibido **{amount} {currency}**"
+                    "message": "Has recibido {amount} {currency}"
                 }
             }
         }
@@ -493,10 +447,6 @@ export const locale = {
             }
         },
         "currencyRemove": {
-            "errorMessages": {
-                "cantRemoveCurrency": "⚠️ ¡No se puede eliminar {currency}! Las siguientes tiendas todavía la usan: {shops}.",
-                "changeShopsCurrencies": "Por favor elimínalas (`/shops-manage remove`) o cambia su moneda (`/shops-manage change-currency`) antes de eliminar la moneda."
-            },
             "messages": {
                 "default": "Eliminar {currency}, ⚠️ __**esto también la eliminará de las cuentas de los usuarios**__",
                 "success": "Has eliminado con éxito la moneda {currency}"
@@ -520,8 +470,7 @@ export const locale = {
         },
         "productAdd": {
             "messages": {
-                "default": "Agregar un producto: {product} por {price} {currency} en {shop}{description}",
-                "description": "Descripción:",
+                "default": "Agregar un producto: {product} por {price} en {shop}",
                 "success": "Has agregado con éxito el producto {product} a la tienda {shop}",
                 "withAction": "con la acción {action}",
                 "action": "Acción:",
@@ -564,23 +513,12 @@ export const locale = {
                 "emoji": "emoji",
                 "price": "precio",
                 "description": "descripción",
-                "amount": "cantidad"
+                "stock": "cantidad"
             }
         },
         "shopCreate": {
-            "errorMessages": {
-                "cantCreateShop": "No se puede crear una nueva tienda"
-            },
             "messages": {
-                "default": "Crear la tienda {shop} con la moneda {currency}",
-                "success": "Has creado con éxito la tienda {shop} con la moneda {currency}.\n-# Usa `/shops-manage remove` para eliminarla"
-            },
-            "components": {
-                "submitButton": "Crear la tienda",
-                "changeShopNameButton": "Cambiar el nombre",
-                "changeShopEmojiButton": "Cambiar el emoji",
-                "editNameModalTitle": "Nombre de la tienda",
-                "editEmojiModalTitle": "Emoji de la tienda"
+                "success": "Has creado con éxito la tienda {shop}.\n-# Usa `/shops-manage remove` para eliminarla"
             }
         },
         "shopRemove": {
@@ -614,7 +552,7 @@ export const locale = {
                 "name": "nombre",
                 "emoji": "emoji",
                 "description": "descripción",
-                "reserved-to-role": "reservada al rol"
+                "reserved_to_role": "reservada al rol"
             }
         },
         "shopChangeCurrency": {
@@ -629,7 +567,7 @@ export const locale = {
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Crear un código de descuento para la tienda {shop}.\n**Código**: {code}\nCantidad: {amount}% de descuento",
+                "default": "Crear un código de descuento para la tienda {shop}.\nCódigo: {code}\nCantidad: {amount}% de descuento",
                 "success": "Has creado con éxito el código de descuento {code} para {shop} con {amount}% de descuento"
             },
             "components": {

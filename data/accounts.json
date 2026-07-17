@@ -1,38 +1,62 @@
 {
     "628298729405022216": {
         "currencies": {
-            "0f2SNbp60vAwWjhKjRR0u": {
-                "item": "0f2SNbp60vAwWjhKjRR0u",
-                "amount": 9221.76
-            }
+            "0f2SNbp60vAwWjhKjRR0u": 58331.8,
+            "7kiuf_CPO2ocrr75mTXuV": 9999854,
+            "M2JfD9vMX2WzslISmBh2U": 20
         },
         "inventory": {
-            "nxtWWm9IEe3qSLh4fj5qn": {
-                "item": {
-                    "id": "nxtWWm9IEe3qSLh4fj5qn",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 2
-            },
-            "SQWzMyipYZO3fnCmhAttr": {
-                "item": {
-                    "id": "SQWzMyipYZO3fnCmhAttr",
-                    "shopId": "h3G8N_1F2LzI1T29bjdxJ"
-                },
-                "amount": 1
-            }
+            "nxtWWm9IEe3qSLh4fj5qn": 37,
+            "SQWzMyipYZO3fnCmhAttr": 1,
+            "Uasu0unlCLGnsJNQb_3S0": 0,
+            "m3AmJIuCmlpXYh89Kf-HZ": 1,
+            "w9zcCjKIt-yDjhXi2TLMB": 101,
+            "FbZgPJ-aJOkvm1QAB3ucE": 1,
+            "a8aSYSlPsS9SP5WxNCLq6": 1,
+            "yLs7vNX4Z4j3OFe2VcsmT": 1,
+            "Dfs5AihBk8iBX9by0RL9U": 1,
+            "6lb722Z-cvgTL23LeXnyZ": 1,
+            "k1nWe7JbqmwirLQ5XLWXE": 1,
+            "jREXpbU4e0mrY6K3RzWbY": 0
         }
     },
     "1109842206832988272": {
-        "currencies": {},
-        "inventory": {}
+        "currencies": {
+            "0f2SNbp60vAwWjhKjRR0u": 20
+        },
+        "inventory": {
+            "Uasu0unlCLGnsJNQb_3S0": 0
+        }
     },
     "665849503978618891": {
-        "currencies": {},
-        "inventory": {}
+        "currencies": {
+            "M2JfD9vMX2WzslISmBh2U": 20,
+            "0f2SNbp60vAwWjhKjRR0u": 20
+        },
+        "inventory": {
+            "Uasu0unlCLGnsJNQb_3S0": 15,
+            "9x2jf1OhnJxF1uWYXjS2Q": 15
+        }
     },
     "650585321729425448": {
         "currencies": {},
         "inventory": {}
+    },
+    "1429578846767677511": {
+        "currencies": {
+            "0f2SNbp60vAwWjhKjRR0u": 9999471
+        },
+        "inventory": {
+            "nxtWWm9IEe3qSLh4fj5qn": 100,
+            "Uasu0unlCLGnsJNQb_3S0": 0
+        }
+    },
+    "1259153114297270273": {
+        "currencies": {
+            "0f2SNbp60vAwWjhKjRR0u": 20
+        },
+        "inventory": {
+            "Uasu0unlCLGnsJNQb_3S0": 0
+        }
     }
 }

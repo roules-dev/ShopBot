@@ -1,0 +1,107 @@
+import "@/utils/strings.js"
+import { _AddUndefinedToPossiblyUndefinedPropertiesOfInterface, APIApplicationCommandOption, SlashCommandBuilder } from "discord.js"
+import { getTranslationByKey, initI18n } from "../../lib/i18n/init.js"
+import { PrettyLog } from "../../lib/pretty-log.js"
+
+import { EVENTS } from "@/core/events/event-bus.js"
+import { getSetting } from "@/features/settings/database/settings.database.js"
+import en_US_locale from "@/generated/locales/en-US.js"
+import es_ES_locale from "@/generated/locales/es-ES.js"
+import fr_locale from "@/generated/locales/fr.js"
+import { env } from "process"
+
+
+declare module "@/lib/i18n/translations.js" {
+	interface Register {
+		translations: typeof en_US_locale
+	}
+}
+
+export const DEFAULT_LOCALE_CODE = "en-US"
+export const LOCALES = {
+	"en-US": en_US_locale,
+	"es-ES": es_ES_locale,
+	"fr": fr_locale
+} as const
+
+
+export async function addLocalisationToCommand(commandData: SlashCommandBuilder) {
+    const commandDataJson = commandData.toJSON()
+
+    if (!commandDataJson || !(commandDataJson.name in LOCALES[DEFAULT_LOCALE_CODE].commands)) {
+        return commandDataJson
+    }
+
+    commandDataJson.name_localizations = await getLocaleStrings(`commands.${commandDataJson.name}.name`)
+    commandDataJson.description_localizations = await getLocaleStrings(`commands.${commandDataJson.name}.description`)
+
+    if (!commandDataJson.options) {
+        return commandDataJson
+    }
+    await addLocalisationToOptions(commandDataJson.options, `commands.${commandDataJson.name}.options`)
+
+    return commandDataJson
+}
+
+async function addLocalisationToOptions(
+    options: _AddUndefinedToPossiblyUndefinedPropertiesOfInterface<APIApplicationCommandOption[]>, 
+    path: string
+) {
+    for (const option of options) {
+        option.name_localizations = await getLocaleStrings(`${path}.${option.name}.name`)
+        option.description_localizations = await getLocaleStrings(`${path}.${option.name}.description`)
+        if ("options" in option && option.options) {
+            await addLocalisationToOptions(option.options, `${path}.${option.name}.options`)
+        }
+    }
+}
+
+
+async function getLocaleStrings(path: string, maxLength?: number) {
+    const result: { [key: string]: string | undefined } = {}
+
+    for (const locale in LOCALES) {
+        const loc = locale as keyof typeof LOCALES
+        let translation = getTranslationByKey(LOCALES[loc], path)
+
+        if (translation !== undefined) {
+            if (maxLength && translation.length > maxLength) {
+                translation = translation.slice(0, maxLength)
+                if (env["NODE_ENV"] === "development") {
+                    PrettyLog.warn(`Localisation ${path} is longer than ${maxLength} characters in ${loc} locale.`)
+                }
+            }
+            result[loc] = translation
+        }
+        else {
+            result[loc] = undefined
+            if (env["NODE_ENV"] === "development") {
+                PrettyLog.warn(`Localisation ${path} is missing in ${loc} locale.`)
+            }
+        }
+    }
+
+    return result
+}
+
+const { t, setLocale, getLocale } = initI18n({
+	locale: "en-US",
+	fallbackLocale: DEFAULT_LOCALE_CODE,
+	translations: LOCALES
+})
+
+export { t, getLocale }
+
+EVENTS.on("settingUpdated", async (settingId, setting) => {
+	if (settingId !== "language") return
+	if (setting.value === undefined) return setLocale(DEFAULT_LOCALE_CODE)
+	if (typeof setting.value !== "string") return
+
+	setLocale(setting.value)
+})
+
+const localeSetting = getSetting("language")
+
+if (localeSetting && typeof localeSetting.value === "string") {
+	setLocale(localeSetting.value)
+}

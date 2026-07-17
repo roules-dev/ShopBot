@@ -1,50 +1,57 @@
-import { DateTime } from "luxon"
-import path from "node:path"
-import { fileURLToPath } from "node:url"
 import fs from "node:fs/promises"
+import { now } from "./now/now.js"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const LOG_FILE_PATH = "./logs.txt"
+
+const INVERT  = "\x1b[7m"
+const GREEN_FG = "\x1b[32m"
+const YELLOW_FG = "\x1b[33m"
+const BLUE_FG = "\x1b[34m"
+const RED_FG = "\x1b[31m"
+const RESET = "\x1b[0m"
 
 export class PrettyLog {
     private static loadStepCount = 1
     static logLoadStep(message: string, more?: string) {
-        console.log(`${this.stepX()} \x1b[32m${message}\x1b[0m \x1b[34m${more != undefined ? more : ''}\x1b[0m`)
+        console.log(`${this.stepX()} ${GREEN_FG}${message}${RESET} ${BLUE_FG}${more != undefined ? more : ""}${RESET}`)
 
-        this.saveLogs(`✓ Step ${this.loadStepCount - 1} - ${message} ${more != undefined ? more : ''}`)
+        this.saveLogs(`✓ Step ${this.loadStepCount - 1} - ${message} ${more != undefined ? more : ""}`)
     }
     
     static logLoadSuccess() {
-        console.log(`\n\x1b[7m ✓ \x1b[32m Loading finished after ${this.loadStepCount - 1} steps \x1b[0m\n`)
+        console.log(`\n${INVERT} ✓ ${GREEN_FG} Loading finished after ${this.loadStepCount - 1} steps ${RESET}\n`)
         
         this.saveLogs(`✓ Loading finished after ${this.loadStepCount - 1} steps`)
 
         this.loadStepCount = 1
     }
 
-    static error(message: string, save = true) {
-        console.log(`\x1b[7m ✕ \x1b[31m Error \x1b[0m \x1b[31m${message}\x1b[0m`)
+    static error(message: string, save = true, error?: Error) {
+        console.log(`${INVERT} ✕ ${RED_FG} Error ${RESET} ${RED_FG}${message}${RESET}`)
 
         if (!save) return
         this.saveLogs(`✕ Error - ${message}`)
+        if (error) {
+            this.saveLogs(`Error details: \n${error.stack || "No stack trace available"}\n${error.message}`)
+        }
     }
     
     static warn(message: string, save = true) {
-        console.log(`\x1b[7m ! \x1b[33m Warning \x1b[0m \x1b[33m${message}\x1b[0m`)
+        console.log(`${INVERT} ! ${YELLOW_FG} Warning ${RESET} ${YELLOW_FG}${message}${RESET}`)
 
         if (!save) return
         this.saveLogs(`! Warning - ${message}`)
     }
 
     static info(message: string, save = true) {
-        console.log(`\x1b[7m ? \x1b[34m Info \x1b[0m ${message}`)
+        console.log(`${INVERT} ? ${BLUE_FG} Info ${RESET} ${message}`)
 
         if (!save) return
         this.saveLogs(`? Info - ${message}`)
     }
 
     static success(message: string, save = true) {
-        console.log(`\x1b[7m ✓ \x1b[32m Success \x1b[0m \x1b[32m${message}\x1b[0m`)
+        console.log(`${INVERT} ✓ ${GREEN_FG} Success ${RESET} ${GREEN_FG}${message}${RESET}`)
 
         if (!save) return
         this.saveLogs(`✓ Success - ${message}`)
@@ -52,33 +59,43 @@ export class PrettyLog {
     
     static stepX(): string{
         this.loadStepCount ++
-        return `\x1b[7m ✓ \x1b[32m Step ${this.loadStepCount - 1} \x1b[0m`
+        return `${INVERT} ✓ ${GREEN_FG} Step ${this.loadStepCount - 1} ${RESET}`
     }
 
-    static bold(message: string): string {
-        return `\x1b[1m${message}\x1b[0m`
+    static bold(message: string) {
+        const BOLD = "\x1b[1m"
+        return `${BOLD}${message}${RESET}`
     }
 
-    static underline(message: string): string {
-        return `\x1b[4m${message}\x1b[0m`
+    static underline(message: string) {
+        const UNDERLINE = "\x1b[4m"
+        return `${UNDERLINE}${message}${RESET}`
     }
 
-    static italic(message: string): string {
-        return `\x1b[3m${message}\x1b[0m`
+    static italic(message: string) {
+        const ITALIC = "\x1b[3m"
+        return `${ITALIC}${message}${RESET}`
     }
 
+    private static writeLock: Promise<void> = Promise.resolve()
 
     private static async saveLogs(message: string) {
+        this.writeLock = this.writeLock.then(async () => {
+            try {
+                const sanatizedMessage = message.replace(new RegExp(/\\x1b\[\d+m/, "gm"), "")
+                await fs.appendFile(LOG_FILE_PATH, `[${now()}] ${sanatizedMessage}\n`)
+            } catch (e) {
+                throw e instanceof Error
+                    ? e
+                    : new Error(`Unknown error while saving logs`)
+            }
+        })
+
         try {
-            const sanatizedMessage = message.replace(new RegExp(/\\x1b\[\d+m/, 'gm'), '')
-            await fs.appendFile(path.join(__dirname, '..', '..', 'logs.txt'), `[${this.getNowTimeString()}] ${sanatizedMessage}\n`)
+            await this.writeLock
         } catch (error) {
             console.log(`Failed to save logs: ${error}`)
         }
-    }
-
-    private static getNowTimeString(): string | null {
-        return DateTime.now().setZone('Europe/Paris').toSQL({ includeOffset: false })
     }
 }
 
@@ -86,6 +103,6 @@ export class PrettyLog {
 export function drawProgressBar(progress: number, barWidth = 30) {
     const filledWidth = Math.floor(progress / 100 * barWidth)
     const emptyWidth = barWidth - filledWidth
-    const progressBar = '█'.repeat(filledWidth) + '▒'.repeat(emptyWidth)
+    const progressBar = "█".repeat(filledWidth) + "▒".repeat(emptyWidth)
     process.stdout.write(`\r[${progressBar}] ${progress.toFixed(0)}%  `)
 }

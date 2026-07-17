@@ -1,14 +1,17 @@
-// AUTO-GENERATED FILE — DO NOT EDIT
+//! AUTO-GENERATED FILE — DO NOT EDIT
 export const locale = {
     "errorMessages": {
         "default": "An error occured while executing this command, please try again later.",
         "invalidSubcommand": "Invalid subcommand",
         "insufficientParameters": "Insufficient parameters",
-        "noShops": "There isn't any shop.\n-# Use `/shops-manage create` to create a new one",
-        "noCurrencies": "There isn't any currency.\n-# Use `/currencies-manage create` to create a new currency",
+        "noAnswer": "No answer received",
+        "noShops": "There aren't any shops.\n-# Use `/shops-manage create` to create a new one",
+        "noCurrencies": "There aren't any currencies.\n-# Use `/currencies-manage create` to create a new currency",
         "noProducts": "The selected shop has no products",
+        "noItems": "There aren't any items yet.\n-# Use `/items-manage create` to add one",
         "notOnlyEmojisInName": "The name can't contain only custom emojis",
         "shopDoesNotExist": "Shop does not exist",
+        "shopHasNoProducts": "This shop has no products",
         "shopAlreadyExists": "Shop already exists",
         "invalidPosition": "Invalid position",
         "currencyDoesNotExist": "Currency does not exist",
@@ -16,7 +19,11 @@ export const locale = {
         "productDoesNotExist": "Product does not exist",
         "accountDoesNotExist": "Account does not exist",
         "invalidSettingType": "Provided setting type is invalid",
-        "duplicateSettingName": "Provided setting name already exists"
+        "duplicateSettingName": "Provided setting name already exists",
+        "hydration": {
+            "priceDisplayFailed": "Couldn't display price",
+            "currencyDisplayFailed": "Couldn't display currency"
+        }
     },
     "commands": {
         "account": {
@@ -111,7 +118,7 @@ export const locale = {
                             "name": "name",
                             "description": "Change name. You will select the currency later",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "new-name",
                                     "description": "The new name of the currency"
                                 }
@@ -121,9 +128,73 @@ export const locale = {
                             "name": "emoji",
                             "description": "Change Emoji. You will select the currency later",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "new-emoji",
-                                    "description": "The new emoji of the currency (if you just want to remove it write anything)"
+                                    "description": "The new emoji of the currency (leave empty to remove)"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "items-manage": {
+            "name": "items-manage",
+            "description": "Manage your available items",
+            "options": {
+                "create": {
+                    "name": "create",
+                    "description": "Create a new item",
+                    "options": {
+                        "name": {
+                            "name": "name",
+                            "description": "The name of the item"
+                        },
+                        "description": {
+                            "name": "description",
+                            "description": "The description of the item"
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "The emoji of the item (optional)"
+                        }
+                    }
+                },
+                "remove": {
+                    "name": "remove",
+                    "description": "Remove the selected item"
+                },
+                "edit": {
+                    "name": "edit",
+                    "description": "Edit an item",
+                    "options": {
+                        "name": {
+                            "name": "name",
+                            "description": "Change name. You will select the item later",
+                            "options": {
+                                "name": {
+                                    "name": "new-name",
+                                    "description": "The new name of the item"
+                                }
+                            }
+                        },
+                        "description": {
+                            "name": "description",
+                            "description": "Change description. You will select the item later",
+                            "options": {
+                                "description": {
+                                    "name": "new-description",
+                                    "description": "The new description of the item (leave empty to remove)"
+                                }
+                            }
+                        },
+                        "emoji": {
+                            "name": "emoji",
+                            "description": "Change emoji. You will select the item later",
+                            "options": {
+                                "emoji": {
+                                    "name": "new-emoji",
+                                    "description": "The new emoji of the item (leave empty to remove)"
                                 }
                             }
                         }
@@ -139,25 +210,9 @@ export const locale = {
                     "name": "add",
                     "description": "Add a new product",
                     "options": {
-                        "name": {
-                            "name": "name",
-                            "description": "The name of the product"
-                        },
-                        "price": {
-                            "name": "price",
-                            "description": "The price of the product"
-                        },
-                        "description": {
-                            "name": "description",
-                            "description": "The description of the product (optional)"
-                        },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "The emoji of the product (optional)"
-                        },
-                        "amount": {
-                            "name": "amount",
-                            "description": "The amount of the product (optional)"
+                        "stock": {
+                            "name": "stock",
+                            "description": "The stock of the product (optional)"
                         },
                         "action": {
                             "name": "action",
@@ -173,53 +228,13 @@ export const locale = {
                     "name": "edit",
                     "description": "Edit a product",
                     "options": {
-                        "name": {
-                            "name": "name",
-                            "description": "Change name. You will select the product later",
+                        "stock": {
+                            "name": "stock",
+                            "description": "Change stock. You will select the product later",
                             "options": {
-                                "new-name": {
-                                    "name": "new-name",
-                                    "description": "The new name of the product"
-                                }
-                            }
-                        },
-                        "description": {
-                            "name": "description",
-                            "description": "Change description. You will select the product later",
-                            "options": {
-                                "new-description": {
-                                    "name": "new-description",
-                                    "description": "The new description of the product"
-                                }
-                            }
-                        },
-                        "price": {
-                            "name": "price",
-                            "description": "Change price. You will select the product later",
-                            "options": {
-                                "new-price": {
-                                    "name": "new-price",
-                                    "description": "The new price of the product"
-                                }
-                            }
-                        },
-                        "emoji": {
-                            "name": "emoji",
-                            "description": "Change emoji. You will select the product later",
-                            "options": {
-                                "new-emoji": {
-                                    "name": "new-emoji",
-                                    "description": "The new emoji of the product (if you just want to remove it write anything)"
-                                }
-                            }
-                        },
-                        "amount": {
-                            "name": "amount",
-                            "description": "Change amount. You will select the product later",
-                            "options": {
-                                "new-amount": {
-                                    "name": "new-amount",
-                                    "description": "The new amount of the product (-1 for unlimited)"
+                                "stock": {
+                                    "name": "new-stock",
+                                    "description": "The new stock of the product (leave empty for unlimited)"
                                 }
                             }
                         }
@@ -255,8 +270,8 @@ export const locale = {
                             "name": "emoji",
                             "description": "The emoji of the shop (optional)"
                         },
-                        "reserved-to-role": {
-                            "name": "reserved-to-role",
+                        "reserved_to_role": {
+                            "name": "reserved_to_role",
                             "description": "Specify if should be reserved to a role (optional)"
                         }
                     }
@@ -295,7 +310,7 @@ export const locale = {
                             "name": "name",
                             "description": "Change name. You will select the shop later",
                             "options": {
-                                "new-name": {
+                                "name": {
                                     "name": "new-name",
                                     "description": "The new name of the shop"
                                 }
@@ -305,9 +320,9 @@ export const locale = {
                             "name": "description",
                             "description": "Change description. You will select the shop later",
                             "options": {
-                                "new-description": {
+                                "description": {
                                     "name": "new-description",
-                                    "description": "The new description of the shop"
+                                    "description": "The new description of the shop (leave empty to remove)"
                                 }
                             }
                         },
@@ -315,25 +330,21 @@ export const locale = {
                             "name": "emoji",
                             "description": "Change emoji. You will select the shop later",
                             "options": {
-                                "new-emoji": {
+                                "emoji": {
                                     "name": "new-emoji",
-                                    "description": "The new emoji of the shop"
+                                    "description": "The new emoji of the shop (leave empty to remove)"
                                 }
                             }
                         },
-                        "reserved-to-role": {
-                            "name": "reserved-to-role",
+                        "reserved_to_role": {
+                            "name": "reserved_to_role",
                             "description": "Change the role the shop is reserved to. You will select the shop later",
                             "options": {
-                                "new-role": {
+                                "role": {
                                     "name": "new-role",
-                                    "description": "The new role the shop will be reserved to. Leave empty to delete"
+                                    "description": "The new role the shop will be reserved to (leave empty to remove)"
                                 }
                             }
-                        },
-                        "currency": {
-                            "name": "currency",
-                            "description": "Change currency. You will select the shop later"
                         }
                     }
                 }
@@ -345,6 +356,7 @@ export const locale = {
         "selectShop": "Select a shop",
         "selectRole": "Select a role",
         "selectProduct": "Select a product",
+        "selectItem": "Select an item",
         "changeShopButton": "Change shop",
         "submitShopButton": "Submit shop",
         "unset": "Unset"
@@ -353,9 +365,7 @@ export const locale = {
         "confirmationModal": {
             "title": "⚠️ Are you sure?",
             "cantBeUndone": "This action can't be undone",
-            "selectYes": "Select 'Yes' to confirm",
-            "yes": "Yes",
-            "no": "No"
+            "confirmCheckbox": "I confirm"
         },
         "editModal": {
             "title": "Edit {edit}",
@@ -381,8 +391,8 @@ export const locale = {
                     "toggleOff": "Disable"
                 },
                 "selector": {
-                    "title": "Select {type} for {name}",
-                    "types": {
+                    "title": "Select {kind} for {name}",
+                    "kinds": {
                         "role": "a role",
                         "user": "a user",
                         "channel": "a channel",
@@ -416,10 +426,11 @@ export const locale = {
                 "shop": {
                     "products": "Products:",
                     "reservedTo": "{role} only",
-                    "noProduct": "There is no product available here",
+                    "noProduct": "There are no products available here",
                     "xProductsLeft": "{x} left",
                     "outOfStock": "Out of stock",
-                    "price": "Price:"
+                    "price": "Price:",
+                    "free": "Free"
                 }
             },
             "components": {
@@ -429,10 +440,11 @@ export const locale = {
         },
         "buy": {
             "messages": {
-                "default": "Buy {product} from {shop}",
+                "default": "Buy {quantity}{product} from {shop}",
                 "discountCode": "Discount code:",
                 "price": "for {price}",
-                "success": "You successfully bought {product} in {shop} for {price}"
+                "free": "free",
+                "success": "You successfully bought {quantity}{product} in {shop} for {price}"
             },
             "errorMessages": {
                 "cantBuyHere": "You can't buy products from this shop",
@@ -441,6 +453,8 @@ export const locale = {
             },
             "components": {
                 "buyButton": "Buy",
+                "setQuantityButton": "Set quantity",
+                "editQuantityModalTitle": "Quantity",
                 "discountCodeButton": "I have a discount code",
                 "setDiscountCodeModal": {
                     "title": "Set discount code",
@@ -452,7 +466,7 @@ export const locale = {
                     "message": "You were granted the role {role}"
                 },
                 "giveCurrency": {
-                    "message": "You were given **{amount} {currency}**"
+                    "message": "You were given {amount} {currency}"
                 }
             }
         }
@@ -484,7 +498,37 @@ export const locale = {
             "components": {
                 "submitButton": "Submit",
                 "takeAllButton": "Take all",
-                "emptyAccountButton": "Empty account"
+                "emptyAccountButton": "Empty account",
+                "confirmationModalTitle": "⚠️ Are you sure you want to empty {user} account?"
+            }
+        },
+        "inventoryGive": {
+            "errorMessages": {
+                "cantGiveItem": "Can't give item."
+            },
+            "messages": {
+                "default": "Give {amount} {item} to {user}",
+                "bulkGive": "Give {amount} {item} to all users with role {role}",
+                "success": "You successfully gave {amount} {item} to {user}",
+                "bulkGiveSuccess": "You successfully gave {amount} {item} to all users with role {role}"
+            },
+            "components": {
+                "submitButton": "Submit"
+            }
+        },
+        "inventoryTake": {
+            "messages": {
+                "default": "Take {amount} {item} from {user}",
+                "bulkRemoveItem": "Remove {item} from all users with role {role}",
+                "successfullyEmptied": "You successfully emptied {user} inventory",
+                "success": "You successfully took {amount} {item} from {user}",
+                "bulkRemoveItemSuccess": "You successfully removed {item} from all users with role {role}"
+            },
+            "components": {
+                "submitButton": "Submit",
+                "takeAllButton": "Take all",
+                "emptyInventoryButton": "Empty inventory",
+                "confirmationModalTitle": "⚠️ Are you sure you want to empty {user} inventory?"
             }
         },
         "currencyCreate": {
@@ -494,20 +538,20 @@ export const locale = {
         },
         "currencyRemove": {
             "errorMessages": {
-                "cantRemoveCurrency": "⚠️ Can't remove {currency}! The following shops are still using it : {shops}.",
-                "changeShopsCurrencies": "Please consider removing them (`/shops-manage remove`) or changing their currency (`/shops-manage change-currency`) before removing the currency."
+                "cantRemoveCurrency": "⚠️ Can't remove {currency}! Some product(s) still have it in their price or action."
             },
             "messages": {
                 "default": "Remove {currency}, ⚠️ __**it will also take it from user's accounts**__",
                 "success": "You successfully removed the currency {currency}"
             },
             "components": {
-                "submitButton": "Remove currency"
+                "submitButton": "Remove currency",
+                "confirmationModalTitle": "⚠️ Are you sure you want to remove {currency}?"
             }
         },
         "currencyEdit": {
             "messages": {
-                "default": "Edit {currency}.\n**New** {option}: {value}",
+                "default": "Edit {currency}.\nNew {option}: {value}",
                 "success": "You successfully edited the currency {currency}. \nNew {option}: {value}"
             },
             "components": {
@@ -518,10 +562,41 @@ export const locale = {
                 "emoji": "emoji"
             }
         },
+        "itemCreate": {
+            "messages": {
+                "success": "You successfully created the item {item}. \n-# Use `/items-manage remove` to remove it"
+            }
+        },
+        "itemRemove": {
+            "errorMessages": {
+                "cantRemoveItem": "⚠️ Can't remove {item}! Some product(s) still sell it."
+            },
+            "messages": {
+                "default": "Remove {item}, ⚠️ __**it will also take it from user's accounts**__",
+                "success": "You successfully removed the item {item}"
+            },
+            "components": {
+                "submitButton": "Remove item",
+                "confirmationModalTitle": "⚠️ Are you sure you want to remove {item}?"
+            }
+        },
+        "itemEdit": {
+            "messages": {
+                "default": "Edit {item}.\nNew {option}: {value}",
+                "success": "You successfully edited the item {item}. \nNew {option}: {value}"
+            },
+            "components": {
+                "submitButton": "Edit item"
+            },
+            "editOptions": {
+                "name": "name",
+                "emoji": "emoji",
+                "description": "description"
+            }
+        },
         "productAdd": {
             "messages": {
-                "default": "Add Product: {product} for {price} {currency} in {shop}{description}",
-                "description": "Description:",
+                "default": "Add Product: {product} for {price} in {shop}",
                 "success": "You successfully added the product {product} to the shop {shop}",
                 "withAction": "with the action {action}",
                 "action": "Action:",
@@ -531,9 +606,20 @@ export const locale = {
                 }
             },
             "components": {
+                "submitItemButton": "Submit item",
+                "addPriceButton": "Add price",
+                "submitPriceButton": "Submit price",
                 "submitButton": "Add product",
+                "submitActionButton": "Submit action",
                 "setAmountButton": "Set amount",
-                "editAmountModalTitle": "Amount"
+                "editAmountModalTitle": "Amount",
+                "priceElement": {
+                    "priceElement": "Price Element",
+                    "addToPrice": "➕ Add to price (or update)",
+                    "select": "Select price element",
+                    "remove": "Remove price element",
+                    "noPriceElementSelected": "No price element selected"
+                }
             }
         },
         "productRemove": {
@@ -548,39 +634,24 @@ export const locale = {
         },
         "productEdit": {
             "errorMessages": {
-                "noShopsWithProducts": "There isn't any shop with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
+                "noShopsWithProducts": "There aren't any shops with products./n-# Use `/shops-manage create` to create a new shop, and `/products-manage add` to add products"
             },
             "messages": {
                 "shopSelectStage": "Edit a product from {shop}.\nNew {option}: {value}",
                 "productSelectStage": "Edit product: {product} from {shop}. \nNew {option}: {value}",
-                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}",
-                "unlimited": "unlimited"
+                "success": "You successfully updated the product {product} from the shop {shop}. \nNew {option}: {value}"
             },
             "components": {
                 "submitButton": "Edit product"
             },
             "editOptions": {
-                "name": "name",
-                "emoji": "emoji",
-                "price": "price",
-                "description": "description",
-                "amount": "amount"
+                "stock": "stock",
+                "action": "action"
             }
         },
         "shopCreate": {
-            "errorMessages": {
-                "cantCreateShop": "Can't create a new shop."
-            },
             "messages": {
-                "default": "Create the shop {shop} with currency {currency}",
-                "success": "You successfully created the shop {shop} with currency {currency}. \n-# Use `/shops-manage remove` to remove it"
-            },
-            "components": {
-                "submitButton": "Create shop",
-                "changeShopNameButton": "Change shop name",
-                "changeShopEmojiButton": "Change shop emoji",
-                "editNameModalTitle": "Shop name",
-                "editEmojiModalTitle": "Shop emoji"
+                "success": "You successfully created the shop {shop}. \n-# Use `/shops-manage remove` to remove it"
             }
         },
         "shopRemove": {
@@ -614,7 +685,7 @@ export const locale = {
                 "name": "name",
                 "emoji": "emoji",
                 "description": "description",
-                "reserved-to-role": "reserved to role"
+                "reserved_to_role": "reserved to role"
             }
         },
         "shopChangeCurrency": {
@@ -629,7 +700,7 @@ export const locale = {
         },
         "discountCodeCreate": {
             "messages": {
-                "default": "Create a discount code for {shop}.\n**Code**: {code}\nAmount: {amount}% off",
+                "default": "Create a discount code for {shop}.\nCode: {code}\nAmount: {amount}% off",
                 "success": "You successfully created the discount code {code} for {shop} with {amount}% off"
             },
             "components": {

@@ -1,14 +1,12 @@
-import { getSetting } from "@/features/settings/database/settings-handler.js"
-import { ActivityType, Client, ActivityOptions } from "discord.js"
-
-
+import { getSetting } from "@/features/settings/database/settings.database.js"
+import { ActivityOptions, ActivityType, Client } from "discord.js"
 
 
 function getActivity() {
-	const activityMessage = getSetting('activityMessage')?.value
-	if (typeof activityMessage !== 'string') return undefined
+	const activityMessage = getSetting("activityMessage")?.value
+	if (typeof activityMessage !== "string") return undefined
 
-	const activityTypeName = getSetting('activityType')?.value
+	const activityTypeName = getSetting("activityType")?.value
 
 	const activityType = activityTypeName == "Playing" ? ActivityType.Playing :
 						 activityTypeName == "Streaming" ? ActivityType.Streaming :

@@ -1,10 +1,10 @@
-import { AccountUserInterface } from "@/features/accounts/user-interfaces/account-ui.js"
+import { AccountUserInterface } from "@/features/accounts/ui/user-interfaces/account-ui.js"
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js"
 
 
 export const data = new SlashCommandBuilder()
-    .setName('account')
-    .setDescription('Display your account')
+    .setName("account")
+    .setDescription("Display your account")
 
     //? (user suggestion - issue #13) add option to display a "snapshot" of the account publicly
 

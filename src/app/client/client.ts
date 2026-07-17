@@ -1,10 +1,10 @@
-import config from "@/../config/config.json" with { type: "json" }
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Client, Collection, GatewayIntentBits, Interaction, SlashCommandBuilder } from "discord.js"
 import fs from "fs/promises"
 import path from "path"
 
-import { EVENTS } from "@/middleware.js"
+import { EVENTS } from "@/core/events/event-bus.js"
+import { env } from "@/global-settings.js"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { setActivity } from "./status.js"
 const __filename = fileURLToPath(import.meta.url)
@@ -25,10 +25,12 @@ declare module "discord.js" {
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildPresences] })
 
 
-async function registerCommands(client: Client) {
+async function registerCommands(client: Client, isTs: boolean = false) {
     client.commands = new Collection()
     const commandsPath = path.join(__dirname, "..", "commands")
-    const commandFiles = (await fs.readdir(commandsPath)).filter((file) => file.endsWith(".js"))
+
+    const ext = isTs ? ".ts" : ".js"
+    const commandFiles = (await fs.readdir(commandsPath)).filter((file) => file.endsWith(ext))
 
     for (const file of commandFiles) {
         const filePath = path.join(commandsPath, file)
@@ -40,9 +42,11 @@ async function registerCommands(client: Client) {
     PrettyLog.logLoadStep("Commands registered")
 }
 
-async function registerEvents(client: Client<boolean>) {
+async function registerEvents(client: Client, isTs: boolean = false) {
     const eventsPath = path.join(__dirname, "..", "events")
-    const eventFiles = (await fs.readdir(eventsPath)).filter((file) => file.endsWith(".js"))
+
+    const ext = isTs ? ".ts" : ".js"
+    const eventFiles = (await fs.readdir(eventsPath)).filter((file) => file.endsWith(ext))
 
     for (const file of eventFiles) {
         const filePath = path.join(eventsPath, file)
@@ -57,19 +61,14 @@ async function registerEvents(client: Client<boolean>) {
     PrettyLog.logLoadStep("Events registered")
 }
 
-export async function startClient() {
-    if (!config.token) {
-        PrettyLog.error("Missing token in config.json")
-        process.exit(1)
-    }
+export async function startClient(isTs: boolean = false) {
+    await registerCommands(client, isTs)
+    await registerEvents(client, isTs)
 
-    await registerCommands(client)
-    await registerEvents(client)
-
-    await client.login(config.token)
+    await client.login(env.TOKEN)
 }
 
-EVENTS.on('settingUpdated', async (settingId, _) => {
-    if (settingId !== 'activityMessage' && settingId !== 'activityType') return
+EVENTS.on("settingUpdated", async (settingId, _) => {
+    if (settingId !== "activityMessage" && settingId !== "activityType") return
     setActivity(client)
 })

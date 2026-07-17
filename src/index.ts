@@ -1,15 +1,21 @@
+import "./global-settings.js"
 import "@/utils/strings.js"
-import "@/lib/localization.js"
-import "dotenv/config"
+import "@/core/i18n/i18n.js"
+import "@/features/settings/database/settings.database.js"
+import "@/core/database/init-databases.js"
 
 import { startClient } from "./app/client/client.js"
 import { PrettyLog } from "./lib/pretty-log.js"
+import { reconcileRefCounts } from "./core/jobs/reconcile-refcounts.js"
+import { env } from "./global-settings.js"
 
+function isTsx() {
+    return process.argv.includes('--use-ts')
+}
 
-
-if (process.env["NODE_ENV"] && process.env.NODE_ENV === "development") {
+if (env["NODE_ENV"] === "development") {
 	PrettyLog.warn("Development mode enabled")
-	PrettyLog.warn("Errors won\"t be caught by the error handler")
+	PrettyLog.warn("Unhandled errors won't be caught by the error handler")
 }
 else {
 	process.on("unhandledRejection", (reason: unknown) => PrettyLog.error(`${reason}`))
@@ -17,7 +23,7 @@ else {
 	process.on("uncaughtExceptionMonitor", (reason: unknown) => PrettyLog.error(`${reason}`))
 }
 
+await reconcileRefCounts()
 
 // Start the bot
-startClient()
-
+await startClient(isTsx())
