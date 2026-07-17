@@ -1,5 +1,9 @@
 # Roadmap and planned features
 
+> [!NOTE]
+> I’m currently working on this project on my own (pull requests are welcome), alongside my studies, which take up a lot of my time.  
+> So I’m not necessarily making very rapid progress on the objectives set out in this roadmap
+
 ## Roadmap
 
 1. ~~products with a set stock~~
@@ -40,6 +44,3 @@
 - [ ] avoid repeating the code for some basic components such as CurrencySelect or ShopSelect by storing them in the relevant feature
 - [x] improve UI updateInteraction : ability to display a message at the end of the normal message(could be an error or something else)
 - [ ] look into CRLF/LF issue with generated files 
-
-
-<!-- idea : github CI which automates displaying available translations and the % of translation for each language -->

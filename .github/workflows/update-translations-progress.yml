@@ -1,0 +1,20 @@
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+
+jobs:
+  update-translations-progress:
+    name: Display translations progress inside readme.md
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Update Translation Progress
+        id: translation-progress-update
+        uses: roules-dev/update-translation-progress-action@v1.0.1
+        with:
+          gh-token: ${{ secrets.ACTION_WRITE_PAT }}
