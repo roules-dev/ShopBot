@@ -86,6 +86,12 @@ Once you found the hosting solution for your bot, here are the steps to follow: 
 
 ### 🔧 Installing the bot
 
+
+
+https://github.com/user-attachments/assets/0d214c16-18df-4b47-8d84-477ff70cd750
+
+
+
 #### 🤖 Creating the bot
 
 1. Go on [Discord Developer Portal](https://discord.com/developers/applications) and login
@@ -106,7 +112,7 @@ Once you found the hosting solution for your bot, here are the steps to follow: 
 
 Now, we'll link the code to the bot, and upload it on the server.
 
-1. You need to have [Node.js](https://nodejs.org/en) installed on the machine where you want to host the bot. (Node version >= 22)
+1. You need to have [Node.js](https://nodejs.org/en) installed on the machine where you want to host the bot. (Node version >= 22.5, I recommend using LTS)
 2. Download the code from the [latest release](https://github.com/roules-dev/ShopBot/releases) and extract it from the ZIP file, open the folder where it's located, and open a terminal from here.
 3. Execute the following command
 
@@ -121,6 +127,9 @@ npm run setup
 ```
 npm run serve
 ```
+7. Stop it using `Ctrl+C`
+8. Upload the files (everything but the `node_modules` folder) to your hosting solution
+9. Make sure Node.js is installed and the version is >= 22.5, install libs (`npm i`) and then run the bot again (`npm run serve`)
 > [!TIP]
 > Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background  
 > You can also create a routine such that this command is executed from the bot's folder each time the server is restarted
