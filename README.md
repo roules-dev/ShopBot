@@ -90,7 +90,8 @@ Once you found the hosting solution for your bot, here are the steps to follow: 
 
 https://github.com/user-attachments/assets/0d214c16-18df-4b47-8d84-477ff70cd750
 
-
+> [!NOTE]
+> You could also set up the bot on the vps from the beginning
 
 #### 🤖 Creating the bot
 
