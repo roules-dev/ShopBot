@@ -90,9 +90,6 @@ Once you found the hosting solution for your bot, here are the steps to follow: 
 
 https://github.com/user-attachments/assets/0d214c16-18df-4b47-8d84-477ff70cd750
 
-> [!NOTE]
-> You could also set up the bot on the vps from the beginning
-
 #### 🤖 Creating the bot
 
 1. Go on [Discord Developer Portal](https://discord.com/developers/applications) and login
@@ -130,6 +127,8 @@ npm run serve
 ```
 7. Stop it using `Ctrl+C`
 8. Upload the files (everything but the `node_modules` folder) to your hosting solution
+> [!NOTE]
+> You can also set up the bot on the vps from the beginning 
 9. Make sure Node.js is installed and the version is >= 22.5, install libs (`npm i`) and then run the bot again (`npm run serve`)
 > [!TIP]
 > Depending on your hosting solution, you may need to use a tool like `screen` (Linux) to keep the bot running in the background  
