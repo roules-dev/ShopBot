@@ -246,7 +246,7 @@ The users have an account and an inventory, initially empty. In addition to bein
 #### How to use admin commands ?
 
 Commands that require selecting a specific Shop or Currency will prompt you to do so with a drop-down list after you executed the command.
-For example, when creating a shop (`/shops-manage create <name>`) you select the currency after sending the command, and then the shop is created.
+For example, when editing a currency's emoji (`/currencies-manage edit emoji 🪙`) you select the currency after sending the command, and then the currency is edited.
 When you give some amount of any currency to a user, you first specify the amount and then select the currency.
 When deleting any shop or currency, you also do select it after sending the command.
 
