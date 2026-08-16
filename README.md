@@ -215,8 +215,6 @@ It can be used to give money to a user, give the user a role. (That's all for no
 > [!TIP]
 > When using this command, you will be prompted to select an item, a shop, and you will build the price of the product, all of that with UI components to make it easier.
 
-> [!NOTE]
-> Products actions are not editable yet
 
 #### Managing Users
 
