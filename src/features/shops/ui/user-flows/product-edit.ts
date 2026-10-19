@@ -385,7 +385,7 @@ export class EditProductActionFlow extends BaseEditProductFlow<void> {
         const actionKindSelectMenu = new ExtendedStringSelectMenuComponent(
             {
                 customId: `${this.id}+select-action-kind`,
-                placeholder: "Select Action",// TODO t("defaultComponents.selectAction"),
+                placeholder: t("defaultComponents.selectAction"),
                 time: 120_000
             },
             actionKindMap,

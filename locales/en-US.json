@@ -377,6 +377,7 @@
         "selectRole": "Select a role",
         "selectProduct": "Select a product",
         "selectItem": "Select an item",
+        "selectAction": "Select an action",
         "changeShopButton": "Change shop",
         "submitShopButton": "Submit shop",
         "unset": "Unset"
