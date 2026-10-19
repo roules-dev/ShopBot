@@ -15,6 +15,6 @@ jobs:
     steps:
       - name: Update Translation Progress
         id: translation-progress-update
-        uses: roules-dev/update-translation-progress-action@v1.0.1
+        uses: roules-dev/update-translation-progress-action@v1.1.0
         with:
           gh-token: ${{ secrets.ACTION_WRITE_PAT }}
