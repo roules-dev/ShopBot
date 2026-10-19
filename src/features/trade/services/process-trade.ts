@@ -10,14 +10,13 @@ import { ButtonInteraction, userMention } from "discord.js";
 import { TradePayload } from "../types/trade.types.js";
 
 
-
+// TODO: Locales missing
 
 export function processTrade(interaction: ButtonInteraction, id: NanoId, status: "accept" | "deny") {
     if (status === "deny") return denyTrade(interaction, id)
 
     return acceptTrade(interaction, id)
 }
-
 
 
 async function denyTrade(interaction: ButtonInteraction, id: NanoId) {
@@ -65,7 +64,7 @@ async function acceptTrade(interaction: ButtonInteraction, id: NanoId) {
 }
 
 
-async function isTradeValid(payload: TradePayload) {
+export async function isTradeValid(payload: TradePayload) {
     const [err1, traderAccount] = await getOrCreateAccount(payload.traderId)
     if (err1) return err(err1)
 
@@ -97,7 +96,7 @@ async function isTradeValid(payload: TradePayload) {
 
 
 // TODO : some kind of security rollback should be implemented here, in case of error during trade execution -> revert changes (requires db transaction to be implemented)
-async function executeTrade(payload: TradePayload) {
+export async function executeTrade(payload: TradePayload) {
     const [err1, traderAccount] = await getOrCreateAccount(payload.traderId)
     if (err1) return err(err1)
 

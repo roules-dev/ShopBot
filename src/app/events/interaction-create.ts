@@ -44,8 +44,8 @@ async function handleSlashCommand(interaction: ChatInputCommandInteraction) {
 
 
 async function handleButton(interaction: ButtonInteraction) {
-    if (interaction.customId.startsWith("trade")) {
-        const tradeInfo = interaction.customId.substring("trade-".length)
+    if (interaction.customId.startsWith("trade-offer")) {
+        const tradeInfo = interaction.customId.substring("trade-offer-".length)
         const [_status, _id] = tradeInfo.split(":")
         
         try {

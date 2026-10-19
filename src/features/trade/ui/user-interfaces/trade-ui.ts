@@ -15,7 +15,8 @@ import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, Butt
 import { tradePayloadSchema } from "../../schemas/trade.schema.js";
 import { Trade } from "../../types/trade.types.js";
 import { getTradeEmbed, getTradeEmbedFields } from "../embeds/trade.embed.js";
-import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
+import { executeTrade, isTradeValid } from "../../services/process-trade.js";
 
 type TradeUserInterfaceConfig = {
     tradePartnerMember: GuildMember
@@ -197,13 +198,24 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
     private async sendTrade(interaction: MessageComponentInteraction) {
         this.disableComponents()
 
+        const tradePayload = this.getTradePayload()
+
         if (!this.member) return
         if (Object.keys(this.trade.tradePartnerCurrencies).length === 0 && Object.keys(this.trade.tradePartnerItems).length === 0) {
-            // TODO send everything without request
-            return
+            const [err1, valid] = await isTradeValid(tradePayload)
+            if (err1) return replyErrorMessage(interaction, err1.message)
+
+            if (!valid) {
+                replyErrorMessage(interaction, "You do not have enough resources to make this trade")
+                return
+            }
+
+            const [err2] = await executeTrade(tradePayload)
+            if (err2) return replyErrorMessage(interaction, err2.message)
+            
+            return updateAsSuccessMessage(interaction, "Trade made !")
         }
 
-        const tradePayload = this.getTradePayload()
 
         const [err, id] = await createTrade(tradePayload)
         if (err) return console.error(err)
@@ -211,14 +223,14 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
 
         const tradeEmbed = getTradeEmbed(tradePayload, "trade-offer")
         const acceptButton = new ButtonBuilder({
-            customId: `trade-accept:${id}`,
+            customId: `trade-offer-accept:${id}`,
             label: "Accept",
             style: ButtonStyle.Success,
             emoji: "✅"
         })
 
         const denyButton = new ButtonBuilder({
-            customId: `trade-deny:${id}`,
+            customId: `trade-offer-deny:${id}`,
             label: "Deny",
             style: ButtonStyle.Danger,
             emoji: "✖️"
