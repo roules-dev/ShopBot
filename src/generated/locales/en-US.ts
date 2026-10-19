@@ -5,6 +5,7 @@ export const locale = {
         "invalidSubcommand": "Invalid subcommand",
         "insufficientParameters": "Insufficient parameters",
         "noAnswer": "No answer received",
+        "invalidAmount": "Invalid amount",
         "noShops": "There aren't any shops.\n-# Use `/shops-manage create` to create a new one",
         "noCurrencies": "There aren't any currencies.\n-# Use `/currencies-manage create` to create a new currency",
         "noProducts": "The selected shop has no products",
@@ -613,12 +614,9 @@ export const locale = {
                 "submitActionButton": "Submit action",
                 "setAmountButton": "Set amount",
                 "editAmountModalTitle": "Amount",
+                "editAmountModalInputLabel": "Amount (0 to remove)",
                 "priceElement": {
-                    "priceElement": "Price Element",
-                    "addToPrice": "➕ Add to price (or update)",
-                    "select": "Select price element",
-                    "remove": "Remove price element",
-                    "noPriceElementSelected": "No price element selected"
+                    "addToPrice": "➕ Add to price (or update)"
                 }
             }
         },

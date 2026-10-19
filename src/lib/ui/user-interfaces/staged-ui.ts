@@ -1,9 +1,9 @@
 import { AbstractConstructor } from "@/lib/types/abstraction.js";
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse } from "discord.js";
 import { ExtendedButtonComponent } from "../components/button.js";
-import { UIComponent, UserInterface } from "./user-interfaces.js";
+import { UIComponent, UIConfig, UserInterface } from "./user-interfaces.js";
 
-export function Staged<T extends Record<string, unknown>, TBase extends AbstractConstructor<UserInterface<T>>>(Base: TBase) {
+export function Staged<T extends UIConfig, TBase extends AbstractConstructor<UserInterface<T>>>(Base: TBase) {
     abstract class StagedUI extends Base {
         protected abstract stage: number
         protected componentsByStage: Array<UIComponent[]> = this.initStageComponents(this.params)
