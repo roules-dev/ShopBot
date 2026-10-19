@@ -57,7 +57,7 @@ The commands and UI are by default in english but they are translated, the curre
 <!-- Translations - START -->
 | 🇪🇸 Spanish (Spain) | 🇫🇷 French |
 | --- | --- |
-| 76% | 81% |
+| 76% | 82% |
 <!-- Translations - END -->
 
 You can help the development of the bot by [translating it](https://github.com/roules-dev/ShopBot/blob/main/locales/CONTRIBUTING.md)
