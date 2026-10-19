@@ -37,18 +37,6 @@
             }
         }
     },
-    "xtAaPyeKdKXZIT8SIUSqP": {
-        "traderId": "628298729405022216",
-        "tradePartnerId": "665849503978618891",
-        "trade": {
-            "traderItems": {},
-            "traderCurrencies": {},
-            "tradePartnerItems": {
-                "Uasu0unlCLGnsJNQb_3S0": 1
-            },
-            "tradePartnerCurrencies": {}
-        }
-    },
     "ddwKOqhe1AaBApTIQRHzL": {
         "traderId": "628298729405022216",
         "tradePartnerId": "665849503978618891",
@@ -73,18 +61,6 @@
             },
             "tradePartnerItems": {
                 "SQWzMyipYZO3fnCmhAttr": 1
-            },
-            "tradePartnerCurrencies": {}
-        }
-    },
-    "HenZLE7pzBCVVQQPmKoJe": {
-        "traderId": "628298729405022216",
-        "tradePartnerId": "665849503978618891",
-        "trade": {
-            "traderItems": {},
-            "traderCurrencies": {},
-            "tradePartnerItems": {
-                "9-fiMoU-faP7vOVhO58Su": 1
             },
             "tradePartnerCurrencies": {}
         }

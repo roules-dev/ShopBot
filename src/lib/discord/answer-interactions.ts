@@ -28,9 +28,11 @@ export async function replyWithMessage(interaction: UserInterfaceInteraction, me
 }
 
 async function updateWithMessage(interaction: UserInterfaceInteraction, message: string) {
-    if (interaction.deferred) return await interaction.editReply({ content: message, components: [] })
-    if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) return await interaction.update({ content: message, components: [] })
-    return await interaction.editReply({ content: message, components: [] })
+    const payload = { content: message, components: [], embeds: [] }
+
+    if (interaction.deferred) return await interaction.editReply(payload)
+    if (interaction.isMessageComponent() || (interaction.isModalSubmit() && interaction.isFromMessage())) return await interaction.update(payload)
+    return await interaction.editReply(payload)
 }
 
 function getErrorMessage(errorMessage?: string) {

@@ -163,6 +163,8 @@ export class Hydrator {
 
         const currencies: Map<NanoId, Balance<Currency>> = new Map()
         for (const [currencyId, amount] of objectEntries(account.currencies)) {
+            if (amount === 0) continue
+
             const currency = this.currenciesDb.get(currencyId)
             if (!currency) {
                 if (!allowPartial) return err(new ApiError("CurrencyDoesNotExist"))
@@ -183,6 +185,7 @@ export class Hydrator {
 
         const inventory: Map<NanoId, Balance<Item>> = new Map()
         for (const [itemId, amount] of objectEntries(account.inventory)) {
+            if (amount === 0) continue
 
             const item = this.itemsDb.get(itemId)
             if (!item) {

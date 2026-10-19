@@ -15,6 +15,7 @@ import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, Butt
 import { tradePayloadSchema } from "../../schemas/trade.schema.js";
 import { Trade } from "../../types/trade.types.js";
 import { getTradeEmbed, getTradeEmbedFields } from "../embeds/trade.embed.js";
+import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 
 type TradeUserInterfaceConfig = {
     tradePartnerMember: GuildMember
@@ -226,7 +227,12 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
 
         const success = await sendDM(this.tradePartnerMember, { embeds: [tradeEmbed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(acceptButton, denyButton)] })
 
-        interaction.update({ content: success ? "✅ Trade offer sent" : "❌ Failed to send trade offer", components: [], embeds: [] })
+        if (success) {
+            updateAsSuccessMessage(interaction, "Trade offer sent")
+        } 
+        else {
+            updateAsErrorMessage(interaction, "Failed to send trade offer")
+        }
     }
 
     private getTradePayload() {

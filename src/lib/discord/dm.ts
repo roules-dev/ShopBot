@@ -1,7 +1,7 @@
-import { GuildMember, MessageCreateOptions, MessagePayload } from "discord.js";
 import { RESTJSONErrorCodes } from 'discord-api-types/v10';
+import { GuildMember, MessageCreateOptions, MessagePayload, User } from 'discord.js';
 
-export async function canDM(member: GuildMember) {
+export async function canDM(member: User | GuildMember) {
     try {
         const dmChannel = await member.createDM()
         await dmChannel.send("")
@@ -14,7 +14,7 @@ export async function canDM(member: GuildMember) {
     }
 }
 
-export async function sendDM(member: GuildMember, options: string | MessagePayload | MessageCreateOptions) {
+export async function sendDM(member: User | GuildMember, options: string | MessagePayload | MessageCreateOptions) {
     try {
         const dmChannel = await member.createDM()
         await dmChannel.send(options)
