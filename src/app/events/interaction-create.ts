@@ -49,7 +49,7 @@ async function handleButton(interaction: ButtonInteraction) {
         const [_status, _id] = tradeInfo.split(":")
         
         try {
-            const status = z.enum(["accept", "deny"]).parse(_status)
+            const status = z.enum(["accept", "decline"]).parse(_status)
             const id = nanoIdSchema.parse(_id)
             
             processTrade(interaction, id, status)

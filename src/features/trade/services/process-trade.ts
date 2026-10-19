@@ -8,28 +8,27 @@ import { err, ok } from "@/lib/error-handling.js";
 import { objectEntries } from "@/utils/objects.js";
 import { ButtonInteraction, userMention } from "discord.js";
 import { TradePayload } from "../types/trade.types.js";
+import { t } from "@/core/i18n/i18n.js";
 
 
-// TODO: Locales missing
-
-export function processTrade(interaction: ButtonInteraction, id: NanoId, status: "accept" | "deny") {
-    if (status === "deny") return denyTrade(interaction, id)
+export function processTrade(interaction: ButtonInteraction, id: NanoId, status: "accept" | "decline") {
+    if (status === "decline") return declineTrade(interaction, id)
 
     return acceptTrade(interaction, id)
 }
 
 
-async function denyTrade(interaction: ButtonInteraction, id: NanoId) {
+async function declineTrade(interaction: ButtonInteraction, id: NanoId) {
     const [err1, trade] = await getTrade(id)
     if (err1) return replyErrorMessage(interaction, err1.message)
     const [err2, _] = await removeTrade(id)
     if (err2) return replyErrorMessage(interaction, err2.message)
 
-    updateAsSuccessMessage(interaction, "Successfully denied trade")
+    updateAsSuccessMessage(interaction, t("userInterfaces.trade.messages.successfullyDeclined"))
 
     sendDM(
         await interaction.client.users.fetch(trade.traderId), 
-        `${userMention(trade.tradePartnerId)} has denied your trade offer`
+        t("userInterfaces.trade.messages.hasDeclined", { user: userMention(trade.tradePartnerId) })
     )
 }
 
@@ -45,7 +44,7 @@ async function acceptTrade(interaction: ButtonInteraction, id: NanoId) {
     const trader = await interaction.client.users.fetch(trade.traderId)
     
     if (!valid) {
-        replyErrorMessage(interaction, `You or ${userMention(trade.traderId)} do not have enough resources to accept this trade offer`)
+        replyErrorMessage(interaction, t("userInterfaces.trade.errorMessages.youOrUserNotEnoughResources", { user: userMention(trade.traderId) }))
         return
     }
 
@@ -55,11 +54,11 @@ async function acceptTrade(interaction: ButtonInteraction, id: NanoId) {
     const [err4, _] = await removeTrade(id)
     if (err4) return replyErrorMessage(interaction, err4.message)
 
-    updateAsSuccessMessage(interaction, "Successfully accepted trade, your account and inventory have been updated")
+    updateAsSuccessMessage(interaction, t("userInterfaces.trade.messages.successfullyAccepted"))
 
     sendDM(
         trader, 
-        `${userMention(trade.tradePartnerId)} has accepted your trade offer, your account and inventory have been updated`
+        t("userInterfaces.trade.messages.hasAccepted", { user: userMention(trade.tradePartnerId) })
     )
 }
 

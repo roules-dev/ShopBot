@@ -5,6 +5,7 @@
         "insufficientParameters": "Insufficient parameters",
         "noAnswer": "No answer received",
         "invalidAmount": "Invalid amount",
+        "invalidMember": "Invalid member",
 
         "noShops": "There aren't any shops.\n-# Use `/shops-manage create` to create a new one",
         "noCurrencies": "There aren't any currencies.\n-# Use `/currencies-manage create` to create a new currency",
@@ -358,6 +359,16 @@
                     }
                 }
             }
+        },
+        "trade": {
+            "name": "trade",
+            "description": "Trade items and currencies with other users",
+            "options": {
+                "user": {
+                    "name": "user",
+                    "description": "The user you want to trade with"
+                }
+            }
         }
     },
     "defaultComponents": {
@@ -479,6 +490,52 @@
                 "giveCurrency": {
                     "message": "You were given {amount} {currency}"
                 }
+            }
+        },
+        "trade": {
+            "messages": {
+                "newTrade": "New trade offer",
+
+                "youGive": "You give",
+                "youReceive": "You receive",
+
+                "buildTrade": "Build your trade offer with {user}",
+                "hasSentTrade": "{user} has sent you a trade offer",
+
+                "tradeMade": "Trade made !",
+                "tradeOfferSent": "Trade offer sent to {user}",
+
+                "successfullyDeclined": "You successfully declined the trade offer",
+                "hasDeclined": "{user} has declined the trade offer",
+
+                "successfullyAccepted": "Successfully accepted trade, your account and inventory have been updated",
+                "hasAccepted": "{user} has accepted your trade offer, your account and inventory have been updated"
+
+            },
+            "errorMessages": {
+                "cannotTradeWithYourself": "You cannot trade with yourself",
+                "yourDmsDisabled": "You cannot trade, you have DMs disabled",
+                "theirDmsDisabled": "You cannot trade with this user, they have DMs disabled",
+
+                "notEnoughResources": "You do not have enough resources to make this trade",
+                "youOrUserNotEnoughResources": "You or {user} do not have enough resources to accept this trade offer",
+
+                "tradeFailedToSend": "Failed to send trade offer"
+            },
+
+            "components": {
+                "giveACurrency": "➕ Give a currency",
+                "giveAnItem": "➕ Give an item",
+                "requestACurrency": "➕ Request a currency",
+                "requestAnItem": "➕ Request an item",
+
+                "send": "Send",
+                "addRequests": "Add requests",
+                "sendOffer": "Send trade offer",
+
+                "backButton": "Back",
+                "accept": "Accept",
+                "decline": "Decline"
             }
         }
     },

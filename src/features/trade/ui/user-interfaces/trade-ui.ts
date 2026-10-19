@@ -3,6 +3,7 @@ import { getCurrencies } from "@/core/services/currencies/currencies.services.js
 import { getItems } from "@/core/services/items/items.services.js";
 import { createTrade } from "@/core/services/trades/trades.services.js";
 import { MAX_PRICE_LENGTH } from "@/features/currencies/services/price.js";
+import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { canDM, sendDM } from "@/lib/discord/dm.js";
 import { err, ok } from "@/lib/error-handling.js";
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js";
@@ -11,18 +12,15 @@ import { getSelectionBuilder } from "@/lib/ui/components/selection-builder.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
 import { Staged } from "@/lib/ui/user-interfaces/staged-ui.js";
 import { UIComponent, UserInterface, WithEmbeds } from "@/lib/ui/user-interfaces/user-interfaces.js";
-import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, GuildMember, MessageComponentInteraction } from "discord.js";
+import { ActionRowBuilder, APIEmbedField, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedBuilder, GuildMember, MessageComponentInteraction, userMention } from "discord.js";
 import { tradePayloadSchema } from "../../schemas/trade.schema.js";
+import { executeTrade, isTradeValid } from "../../services/process-trade.js";
 import { Trade } from "../../types/trade.types.js";
 import { getTradeEmbed, getTradeEmbedFields } from "../embeds/trade.embed.js";
-import { replyErrorMessage, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
-import { executeTrade, isTradeValid } from "../../services/process-trade.js";
 
 type TradeUserInterfaceConfig = {
     tradePartnerMember: GuildMember
 }
-
-// TODO Locales missing
 
 export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends WithEmbeds(Staged(UserInterface)) {
     public override get id(): string { 
@@ -49,13 +47,13 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
 
     protected override async prepare(interaction: UserInterfaceInteraction) {
         const member = interaction.member
-        if (!(member instanceof GuildMember)) return err("Unexpected error: Invalid member")
+        if (!(member instanceof GuildMember)) return err(t("errorMessages.invalidMember"))
 
-        if (member.id === this.tradePartnerMember.id) return err("You cannot trade with yourself")
+        if (member.id === this.tradePartnerMember.id) return err(t("userInterfaces.trade.errorMessages.cannotTradeWithYourself"))
         this.member = member
     
-        if (!await canDM(member)) return err("You cannot trade, you have DMs disabled")
-        if (!await canDM(this.tradePartnerMember)) return err("You cannot trade with this user, they have DMs disabled")
+        if (!await canDM(member)) return err(t("userInterfaces.trade.errorMessages.yourDmsDisabled"))
+        if (!await canDM(this.tradePartnerMember)) return err(t("userInterfaces.trade.errorMessages.theirDmsDisabled"))
 
         return ok(true)
     }
@@ -72,7 +70,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
         const addTraderCurrencyWithSelect = getSelectionBuilder(
             `${this.id}+trader-currency-select`, 
             null, 
-            {...currencySelectionStrings, selectMenuPlaceholder: "➕ Give a currency",},
+            {...currencySelectionStrings, selectMenuPlaceholder: t("userInterfaces.trade.components.giveACurrency"),},
 
             getCurrencies(),
 
@@ -83,7 +81,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
         const addTraderItemWithSelect = getSelectionBuilder(
             `${this.id}+trader-item-select`, 
             null, 
-            {...currencySelectionStrings, selectMenuPlaceholder: "➕ Give an item",},
+            {...currencySelectionStrings, selectMenuPlaceholder: t("userInterfaces.trade.components.giveAnItem"),},
 
             getItems(),
 
@@ -93,7 +91,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
 
         const sendButton = new ExtendedButtonComponent({
             customId: `${this.id}+send-trade`,
-            label: "Send",
+            label: t("userInterfaces.trade.components.send"),
             style: ButtonStyle.Success,
             emoji: "📨",
             time: 120_000,
@@ -102,7 +100,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
         
         const addRequestsButton = new ExtendedButtonComponent({
             customId: `${this.id}+add-requests`,
-            label: "Add requests",
+            label: t("userInterfaces.trade.components.addRequests"),
             style: ButtonStyle.Secondary,
             emoji: "📥",
             time: 120_000
@@ -114,7 +112,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
         const addTradePartnerCurrencyWithSelect = getSelectionBuilder(
             `${this.id}+trade-partner-currency-select`, 
             null, 
-            {...currencySelectionStrings, selectMenuPlaceholder: "➕ Request a currency",},
+            {...currencySelectionStrings, selectMenuPlaceholder: t("userInterfaces.trade.components.requestACurrency"),},
 
             getCurrencies(),
 
@@ -125,7 +123,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
         const addTradePartnerItemWithSelect = getSelectionBuilder(
             `${this.id}+trade-partner-item-select`, 
             null, 
-            {...currencySelectionStrings, selectMenuPlaceholder: "➕ Request an item",},
+            {...currencySelectionStrings, selectMenuPlaceholder: t("userInterfaces.trade.components.requestAnItem"),},
 
             getItems(),
 
@@ -135,7 +133,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
 
         const backButton = new ExtendedButtonComponent({
             customId: `${this.id}+back`,
-            label: "Back",
+            label: t("userInterfaces.trade.components.backButton"),
             style: ButtonStyle.Secondary,
             emoji: "⬅️",
             time: 120_000
@@ -147,7 +145,7 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
 
         const sendTradeOfferButton = new ExtendedButtonComponent({
             customId: `${this.id}+send-trade`,
-            label: "Send trade offer",
+            label: t("userInterfaces.trade.components.sendOffer"),
             style: ButtonStyle.Success,
             emoji: "📨",
             time: 120_000,
@@ -206,14 +204,14 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
             if (err1) return replyErrorMessage(interaction, err1.message)
 
             if (!valid) {
-                replyErrorMessage(interaction, "You do not have enough resources to make this trade")
+                replyErrorMessage(interaction, t("userInterfaces.trade.errorMessages.notEnoughResources"))
                 return
             }
 
             const [err2] = await executeTrade(tradePayload)
             if (err2) return replyErrorMessage(interaction, err2.message)
             
-            return updateAsSuccessMessage(interaction, "Trade made !")
+            return updateAsSuccessMessage(interaction, t("userInterfaces.trade.messages.tradeMade"))
         }
 
 
@@ -224,26 +222,26 @@ export class TradeUserInterface<Config extends TradeUserInterfaceConfig> extends
         const tradeEmbed = getTradeEmbed(tradePayload, "trade-offer")
         const acceptButton = new ButtonBuilder({
             customId: `trade-offer-accept:${id}`,
-            label: "Accept",
+            label: t("userInterfaces.trade.components.accept"),
             style: ButtonStyle.Success,
             emoji: "✅"
         })
 
-        const denyButton = new ButtonBuilder({
-            customId: `trade-offer-deny:${id}`,
-            label: "Deny",
+        const declineButton = new ButtonBuilder({
+            customId: `trade-offer-decline:${id}`,
+            label: t("userInterfaces.trade.components.decline"),
             style: ButtonStyle.Danger,
             emoji: "✖️"
         })
 
 
-        const success = await sendDM(this.tradePartnerMember, { embeds: [tradeEmbed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(acceptButton, denyButton)] })
+        const success = await sendDM(this.tradePartnerMember, { embeds: [tradeEmbed], components: [new ActionRowBuilder<ButtonBuilder>().addComponents(acceptButton, declineButton)] })
 
         if (success) {
-            updateAsSuccessMessage(interaction, "Trade offer sent")
+            updateAsSuccessMessage(interaction, t("userInterfaces.trade.messages.tradeOfferSent", { user: userMention(this.tradePartnerMember.id) }))
         } 
         else {
-            updateAsErrorMessage(interaction, "Failed to send trade offer")
+            updateAsErrorMessage(interaction, t("userInterfaces.trade.errorMessages.tradeFailedToSend"))
         }
     }
 

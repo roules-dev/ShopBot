@@ -1,4 +1,5 @@
 import { HYDRATOR } from "@/core/database/init-databases.js";
+import { t } from "@/core/i18n/i18n.js";
 import { formattedEmojiableName } from "@/utils/formatting.js";
 import { bold, Colors, EmbedBuilder, italic, userMention } from "discord.js";
 import { Trade, TradePayload } from "../../types/trade.types.js";
@@ -17,12 +18,12 @@ export function getTradeEmbedFields(trade: Trade, context: "trade-build" | "trad
 
     return [
         { 
-            name: "You give", 
+            name: t("userInterfaces.trade.messages.youGive"), 
             value: context === "trade-build" ? traderGivesString : traderReceivesString, 
             inline: true 
         },
         { 
-            name: "You receive", 
+            name: t("userInterfaces.trade.messages.youReceive"), 
             value: context === "trade-build" ? traderReceivesString : traderGivesString, 
             inline: true
         }
@@ -34,11 +35,11 @@ export function getTradeEmbed(tradePayload: TradePayload, context: "trade-build"
     const { traderId, tradePartnerId, trade } = tradePayload  
     
     const description = 
-        context === "trade-build" ? `Build your trade offer with ${userMention(tradePartnerId)}` 
-            : `${userMention(traderId)} has sent you a trade offer`
+        context === "trade-build" ? t("userInterfaces.trade.messages.buildTrade", { user: userMention(tradePartnerId) })
+            : t("userInterfaces.trade.messages.hasSentTrade", { user: userMention(traderId) })
 
     const tradeEmbed = new EmbedBuilder()
-        .setTitle("New trade offer")
+        .setTitle(t("userInterfaces.trade.messages.newTrade"))
         .setDescription(description)    
         .setColor(Colors.Purple)
 
