@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { ITEM_DESCRIPTION_MAX_LENGTH, ITEM_NAME_MAX_LENGTH } from "@/features/items/schemas/items.schemas.js"
 import { createItemFlow } from "@/features/items/ui/user-flows/item-create.js"
-import { editItemParamsSchema, EditItemFlow } from "@/features/items/ui/user-flows/item-edit.js"
+import { EditItemFlow, editItemParamsSchema } from "@/features/items/ui/user-flows/item-edit.js"
 import { ItemRemoveFlow } from "@/features/items/ui/user-flows/item-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -81,7 +81,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             await createItemFlow(interaction)
             break
         case "remove": {
-            new ItemRemoveFlow().start(interaction)
+            new ItemRemoveFlow().display(interaction)
             break 
         }
         default:
@@ -90,7 +90,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                     
 
-                new EditItemFlow(options).start(interaction)
+                new EditItemFlow(options).display(interaction)
                 return
             }
 

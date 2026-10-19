@@ -12,12 +12,12 @@ import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { ComponentSeparator, createComponent } from "@/lib/ui/components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountCurrencyAmount } from "../../services/accounts.services.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
 export const accountTakeParamsSchema = z.object({
@@ -25,7 +25,7 @@ export const accountTakeParamsSchema = z.object({
     target: snowflakeSchema,
 })
 
-export class AccountTakeFlow extends UserFlow<z.infer<typeof accountTakeParamsSchema>> {
+export class AccountTakeFlow extends UserInterface<z.infer<typeof accountTakeParamsSchema>> {
     public override get id(): string { 
         return "account-take" 
     }

@@ -7,22 +7,22 @@ import { errorFormat, replyErrorMessage, updateAsErrorMessage, updateAsSuccessMe
 import { assertNeverReached, err, ok } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { Identifiable, Labelled } from "@/lib/types/core.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { ComponentSeparator, createComponent } from "@/lib/ui/components/extended-components.js"
 import { showSingleInputModal, showValidatedEditModal } from "@/lib/ui/components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { MessageUserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { stringifyObj } from "@/utils/objects.js"
 import { bold, ButtonInteraction, ButtonStyle, GuildMember } from "discord.js"
 import z from "zod"
+import { applyQuantityHydrated, formatPrice } from "../../../currencies/services/price.js"
 import { Product } from "../../database/products.types.js"
 import { Shop } from "../../database/shops.types.js"
-import { applyQuantityHydrated, formatPrice } from "../../services/price.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
-export class BuyProductUserInterface extends MessageUserInterface {
+export class BuyProductUserInterface extends UserInterface {
     public override get id(): string { 
         return "buy-product-ui" 
     }

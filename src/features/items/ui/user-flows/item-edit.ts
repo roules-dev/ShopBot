@@ -4,17 +4,17 @@ import { NanoId } from "@/database/database.types.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { err, ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { createComponent } from "@/lib/ui/components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { optionalOrNull } from "@/schemas/optional-to-null.js"
 import { emojiSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
 import { Item } from "../../database/items.types.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
 export const editItemParamsSchema = z.discriminatedUnion("kind", [
@@ -33,7 +33,7 @@ export const editItemParamsSchema = z.discriminatedUnion("kind", [
 ])
 
 
-export class EditItemFlow extends UserFlow<z.infer<typeof editItemParamsSchema>> {
+export class EditItemFlow extends UserInterface<z.infer<typeof editItemParamsSchema>> {
     public override get id(): string { 
         return "item-edit" 
     }
@@ -86,7 +86,7 @@ export class EditItemFlow extends UserFlow<z.infer<typeof editItemParamsSchema>>
         ]
     }
 
-    protected override async success(interaction: UserInterfaceInteraction) {
+    protected async success(interaction: UserInterfaceInteraction) {
         if (!this.selectedItem) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
         
         const oldName = formattedEmojiableName(this.selectedItem)

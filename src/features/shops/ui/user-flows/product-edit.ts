@@ -5,30 +5,29 @@ import { getItems } from "@/core/services/items/items.services.js";
 import { updateProduct } from "@/core/services/shops/products.services.js";
 import { getShops } from "@/core/services/shops/shops.services.js";
 import { NanoId } from "@/database/database.types.js";
+import { getPriceElementComponents } from "@/features/currencies/ui/components/price-builder.js";
 import { Item } from "@/features/items/database/items.types.js";
 import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { err, ok } from "@/lib/error-handling.js";
 import { Identifiable } from "@/lib/types/core.js";
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js";
 import { ComponentSeparator, createComponent } from "@/lib/ui/components/extended-components.js";
+import { showConfirmationModal } from "@/lib/ui/components/modals.js";
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js";
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js";
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
+import { UIComponent, UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js";
 import { optionalOrNull } from "@/schemas/optional-to-null.js";
 import { formattedEmojiableName, getDisplayOptionValue } from "@/utils/formatting.js";
+import { objectEntries } from "@/utils/objects.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, InteractionCallbackResponse, italic } from "discord.js";
 import z from "zod";
-import { Shop } from "../../database/shops.types.js";
-import { formatPrice, MAX_PRICE_LENGTH } from "../../services/price.js";
-import { getPriceElementComponents } from "../components/price-element-components.js";
+import { formatPrice, MAX_PRICE_LENGTH } from "../../../currencies/services/price.js";
 import { getAction, productActions } from "../../data/product-actions/index.js";
-import { objectEntries } from "@/utils/objects.js";
-import { UIComponent } from "@/lib/ui/user-interfaces/user-interfaces.js";
+import { Shop } from "../../database/shops.types.js";
 import { productActionSchema } from "../../schemas/products.schemas.js";
-import { showConfirmationModal } from "@/lib/ui/components/modals.js";
 
 
-abstract class BaseEditProductFlow<T extends Record<string, unknown> | void> extends UserFlow<T>  {
+abstract class BaseEditProductFlow<T extends Record<string, unknown> | void> extends UserInterface<T>  {
     protected selectedShop: Shop & Identifiable<NanoId> | null = null
     protected selectedProduct: HydratedProduct | null = null
 
@@ -105,6 +104,8 @@ abstract class BaseEditProductFlow<T extends Record<string, unknown> | void> ext
             )),
         ]
     }
+
+    protected abstract success(interaction: UserInterfaceInteraction): Promise<void>
 }
 
 
@@ -137,7 +138,7 @@ export class EditProductFlow extends BaseEditProductFlow<z.infer<typeof editProd
         })
     }
 
-    protected override async success(interaction: UserInterfaceInteraction) {
+    protected async success(interaction: UserInterfaceInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop || !this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -200,9 +201,19 @@ export class EditProductPriceFlow extends BaseEditProductFlow<void> {
         const [shopSelect, productSelect, submit] = super.initComponents()
         if (!shopSelect || !productSelect || !submit || !("comp" in submit)) throw new Error("Unxpected Error loading EditPriceFlow components")
 
+        const strings = {
+            addToPrice: t("userFlows.productAdd.components.priceElement.addToPrice"),
+            editAmountModalTitle: t("userFlows.productAdd.components.editAmountModalTitle"),
+            priceElement: t("userFlows.productAdd.components.priceElement.priceElement"),
+            priceElementRemove: t("userFlows.productAdd.components.priceElement.remove"),
+            priceElementSelect: t("userFlows.productAdd.components.priceElement.select"),
+            noPriceElementSelected: t("userFlows.productAdd.components.priceElement.noPriceElementSelected")
+        }
+
         const { addPriceWithCurrencySelect, removePriceElementButton } = getPriceElementComponents(
             this.id, 
             this.price, 
+            strings,
             (price) => this.price = price, 
             (interaction) => this.updateInteraction(interaction)
         )
@@ -222,7 +233,7 @@ export class EditProductPriceFlow extends BaseEditProductFlow<void> {
         ]
     }
 
-    protected override async success(interaction: UserInterfaceInteraction) {
+    protected async success(interaction: UserInterfaceInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop || !this.selectedProduct || !this.price) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -337,8 +348,8 @@ export class EditProductActionFlow extends BaseEditProductFlow<void> {
     private selectedAction: z.infer<typeof productActionSchema> | null = null
     
 
-    public override async start(interaction: ChatInputCommandInteraction) {
-        const response = await super.start(interaction)
+    public override async display(interaction: ChatInputCommandInteraction) {
+        const response = await super.display(interaction)
         this.response = response
         return response
     }
@@ -470,7 +481,7 @@ export class EditProductActionFlow extends BaseEditProductFlow<void> {
     }
 
 
-    protected override async success(interaction: UserInterfaceInteraction) {
+    protected async success(interaction: UserInterfaceInteraction) {
         this.disableComponents()
         
         if (!this.selectedShop || !this.selectedProduct) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

@@ -80,27 +80,27 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             break
 
         case "remove":
-            new RemoveProductFlow().start(interaction)
+            new RemoveProductFlow().display(interaction)
             break
             
         default:
             if (subCommandGroup == "edit") {
                 switch (subCommand) {
                     case "price":
-                        new EditProductPriceFlow().start(interaction)
+                        new EditProductPriceFlow().display(interaction)
                         return
                     case "item":
-                        new EditProductItemFlow().start(interaction)
+                        new EditProductItemFlow().display(interaction)
                         return
                     case "action":
-                        new EditProductActionFlow().start(interaction)
+                        new EditProductActionFlow().display(interaction)
                         return
                 }
 
                 const [error, options] = validateCommandOptions(interaction.options, editProductParamsSchema, { kind: subCommand })
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
                 
-                new EditProductFlow(options).start(interaction)
+                new EditProductFlow(options).display(interaction)
                 break
             }
 

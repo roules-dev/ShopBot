@@ -10,16 +10,17 @@ import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { createComponent } from "@/lib/ui/components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { validate } from "@/lib/validation/validation.js"
 import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, bold, roleMention, userMention } from "discord.js"
 import z from "zod"
 import { setAccountCurrencyAmount } from "../../services/accounts.services.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 
 
-abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends UserFlow<T> {
+abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends UserInterface<T> {
     protected selectedCurrency: Currency & Identifiable<NanoId> | null = null;
 
     protected override async prepare() {
@@ -57,6 +58,8 @@ abstract class BaseCurrencyGiveFlow<T extends Record<string, unknown>> extends U
             createComponent(submitButton, () => submitButton.toggle(this.selectedCurrency != null)),
         ]
     }
+
+    protected abstract success(interaction: UserInterfaceInteraction): Promise<void>
 }
 
 
@@ -133,7 +136,7 @@ export class BulkAccountGiveFlow extends BaseCurrencyGiveFlow<z.infer<typeof bul
         )
     }
 
-    protected override async success(interaction: ButtonInteraction) {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
         
         if (!this.selectedCurrency) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

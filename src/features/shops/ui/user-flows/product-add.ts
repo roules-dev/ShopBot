@@ -4,32 +4,32 @@ import { getItems } from "@/core/services/items/items.services.js";
 import { addProduct } from "@/core/services/shops/products.services.js";
 import { getShops } from "@/core/services/shops/shops.services.js";
 import { NanoId } from "@/database/database.types.js";
+import { getPriceElementComponents } from "@/features/currencies/ui/components/price-builder.js";
 import { Item } from "@/features/items/database/items.types.js";
 import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { err, ok } from "@/lib/error-handling.js";
 import { Identifiable } from "@/lib/types/core.js";
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js";
 import { ComponentSeparator, createComponent } from "@/lib/ui/components/extended-components.js";
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js";
-import { StagedUserFlow } from "@/lib/ui/user-flows/user-flow.js";
-import { UIComponent } from "@/lib/ui/user-interfaces/user-interfaces.js";
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
+import { Staged } from "@/lib/ui/user-interfaces/staged-ui.js";
+import { UIComponent, UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js";
 import { optionalOrNull } from "@/schemas/optional-to-null.js";
 import { formattedEmojiableName } from "@/utils/formatting.js";
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js";
 import z from "zod";
+import { formatPrice, MAX_PRICE_LENGTH } from "../../../currencies/services/price.js";
 import { getAction, productActions } from "../../data/product-actions/index.js";
 import { Shop } from "../../database/shops.types.js";
 import { productActionSchema, productActionSchemaKinds } from "../../schemas/products.schemas.js";
-import { formatPrice, MAX_PRICE_LENGTH } from "../../services/price.js";
-import { getPriceElementComponents } from "../components/price-element-components.js";
 
 
 export const addProductParamsSchema = z.object({
     stock: optionalOrNull(z.number().min(0)),
 })
 
-export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> extends StagedUserFlow<S> {
+export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> extends Staged(UserInterface)<S> {
     protected override stage: number = 0
     public override get id(): string { 
         return "add-product" 
@@ -102,9 +102,19 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
             }
         )
 
+        const strings = {
+            addToPrice: t("userFlows.productAdd.components.priceElement.addToPrice"),
+            editAmountModalTitle: t("userFlows.productAdd.components.editAmountModalTitle"),
+            priceElement: t("userFlows.productAdd.components.priceElement.priceElement"),
+            priceElementRemove: t("userFlows.productAdd.components.priceElement.remove"),
+            priceElementSelect: t("userFlows.productAdd.components.priceElement.select"),
+            noPriceElementSelected: t("userFlows.productAdd.components.priceElement.noPriceElementSelected")
+        }
+
         const { addPriceWithCurrencySelect, removePriceElementButton } = getPriceElementComponents(
             this.id, 
             this.price, 
+            strings,
             (price) => this.price = price, 
             (interaction) => this.updateInteraction(interaction)
         )
@@ -173,7 +183,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
     }
 
 
-    protected override async success(interaction: UserInterfaceInteraction) {
+    protected async success(interaction: UserInterfaceInteraction) {
         if (!(this.selectedShop && this.selectedItem && (this.price !== null))) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
         const optionals = {

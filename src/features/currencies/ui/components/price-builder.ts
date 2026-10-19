@@ -13,10 +13,20 @@ import z from "zod"
 import { priceFormat } from "../../services/price.js"
 import { t } from "@/core/i18n/i18n.js"
 
+export type PriceElementComponentsStrings = {
+    addToPrice: string,
+    editAmountModalTitle: string,
+
+    priceElement: string,
+    priceElementRemove: string,
+    priceElementSelect: string,
+    noPriceElementSelected: string
+}
 
 export function getPriceElementComponents(
     flowId: string, 
     previousPrice: Record<string, number> | null, 
+    strings: PriceElementComponentsStrings,
     onPriceSet: (price: Record<string, number>) => void, 
     update: (interaction: UserInterfaceInteraction, additionalMessage?: string) => void
 ) {
@@ -26,7 +36,7 @@ export function getPriceElementComponents(
     const addPriceWithCurrencySelect = new ExtendedStringSelectMenuComponent(
         {
             customId: `${flowId}+select-currency`,
-            placeholder: t("userFlows.productAdd.components.priceElement.addToPrice"),
+            placeholder: strings.addToPrice,
             time: 120_000
         },
         getCurrencies(),
@@ -38,9 +48,9 @@ export function getPriceElementComponents(
             
             const [modalSubmit, [error, amount]] = await showValidatedSingleInputModal(interaction, {
                 id: `${flowId}+amount`,
-                title: t("userFlows.productAdd.components.editAmountModalTitle"),
-                inputLabel: t("userFlows.productAdd.components.editAmountModalTitle"),
-                placeholder: previousAmount?.toString() ?? t("userFlows.productAdd.components.editAmountModalTitle"),
+                title: strings.editAmountModalTitle,
+                inputLabel: strings.editAmountModalTitle,
+                placeholder: previousAmount?.toString() ?? strings.editAmountModalTitle,
                 required: true
             }, z.coerce.number().positive())
 
@@ -70,7 +80,7 @@ export function getPriceElementComponents(
             }
             const [modalSubmit, [error2, priceElementCurrencyId]] = await showPriceElementSelectModal(interaction, {
                 id: flowId, 
-                title: t("userFlows.productAdd.components.priceElement.remove") 
+                strings 
             }, hydratedPrice)
 
             if (error2) {
@@ -96,9 +106,9 @@ export function getPriceElementComponents(
 
 async function showPriceElementSelectModal( 
     interaction: MessageComponentInteraction | ChatInputCommandInteraction,
-    { id, title }: { 
+    { id, strings }: { 
         id: string, 
-        title: string 
+        strings: PriceElementComponentsStrings, 
     }, 
     hydratedPrice: HydratedPrice
 ): Promise<[
@@ -107,12 +117,12 @@ async function showPriceElementSelectModal(
 > {
     const modal = new ModalBuilder()
         .setCustomId(id)
-        .setTitle(title)
+        .setTitle(strings.priceElementRemove)
 
     const SELECT_ID = `${id}+price-element-select`
     const priceElementSelect = new StringSelectMenuBuilder()
         .setCustomId(`${id}+price-element-select`)
-        .setPlaceholder(t("userFlows.productAdd.components.priceElement.select"))
+        .setPlaceholder(strings.priceElementSelect)
 
     const options: StringSelectMenuOptionBuilder[] = []
     hydratedPrice.forEach((value, key) => {
@@ -130,7 +140,7 @@ async function showPriceElementSelectModal(
     priceElementSelect.setOptions(options)
 
     const priceElementLabel = new LabelBuilder()
-        .setLabel(t("userFlows.productAdd.components.priceElement.priceElement"))
+        .setLabel(strings.priceElement)
         .setStringSelectMenuComponent(priceElementSelect)
 
     modal.addLabelComponents(priceElementLabel)
@@ -139,7 +149,7 @@ async function showPriceElementSelectModal(
     if (error) return [modalSubmit, err(error)]
 
     const inputValue = fields.getStringSelectValues(SELECT_ID)[0]
-    if (!inputValue) return [modalSubmit, err(t("userFlows.productAdd.components.priceElement.noPriceElementSelected"))]
+    if (!inputValue) return [modalSubmit, err(strings.noPriceElementSelected)]
 
     return [modalSubmit, ok(inputValue as MapKey<HydratedPrice>)]
 

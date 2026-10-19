@@ -27,18 +27,25 @@ export const LOCALES = {
 
 export async function addLocalisationToCommand(commandData: SlashCommandBuilder) {
     const commandDataJson = commandData.toJSON()
+    if (!commandDataJson) {
+        return commandDataJson
+    }
+    const commandName = commandDataJson.name
 
-    if (!commandDataJson || !(commandDataJson.name in LOCALES[DEFAULT_LOCALE_CODE].commands)) {
+    if (!(commandName in LOCALES[DEFAULT_LOCALE_CODE].commands)) {
+        if (env["NODE_ENV"] === "development") {
+            PrettyLog.warn(`Localisation for the command ${commandName} is missing in ${DEFAULT_LOCALE_CODE} locale (default).`)
+        }
         return commandDataJson
     }
 
-    commandDataJson.name_localizations = await getLocaleStrings(`commands.${commandDataJson.name}.name`)
-    commandDataJson.description_localizations = await getLocaleStrings(`commands.${commandDataJson.name}.description`)
+    commandDataJson.name_localizations = await getLocaleStrings(`commands.${commandName}.name`)
+    commandDataJson.description_localizations = await getLocaleStrings(`commands.${commandName}.description`)
 
     if (!commandDataJson.options) {
         return commandDataJson
     }
-    await addLocalisationToOptions(commandDataJson.options, `commands.${commandDataJson.name}.options`)
+    await addLocalisationToOptions(commandDataJson.options, `commands.${commandName}.options`)
 
     return commandDataJson
 }

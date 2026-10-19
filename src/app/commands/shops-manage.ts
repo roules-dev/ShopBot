@@ -120,24 +120,24 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             createShopFlow(interaction)
             break
         case "remove":
-            new ShopRemoveFlow().start(interaction)
+            new ShopRemoveFlow().display(interaction)
             break
         case "reorder":
-            new ShopReorderFlow().start(interaction)
+            new ShopReorderFlow().display(interaction)
             break
         case "create-discount-code": {
             validateOptionsAndStartFlow(interaction, discountCodeCreateParamsSchema, DiscountCodeCreateFlow)
             break
         }
         case "remove-discount-code":
-            new DiscountCodeRemoveFlow().start(interaction)
+            new DiscountCodeRemoveFlow().display(interaction)
             break
         default:
             if (subCommandGroup == "edit") {
                 const [error, options] = validateCommandOptions(interaction.options, editShopParamsSchema, { kind: subCommand })
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                new EditShopFlow(options).start(interaction)
+                new EditShopFlow(options).display(interaction)
                 return
             }
 

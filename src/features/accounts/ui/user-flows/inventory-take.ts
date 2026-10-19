@@ -8,17 +8,17 @@ import { Item } from "@/features/items/database/items.types.js"
 import { updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js"
 import { ok } from "@/lib/error-handling.js"
 import { Identifiable } from "@/lib/types/core.js"
-import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { ComponentSeparator, createComponent } from "@/lib/ui/components/extended-components.js"
 import { showConfirmationModal } from "@/lib/ui/components/modals.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
+import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { snowflakeSchema } from "@/schemas/utils.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold, roleMention, userMention } from "discord.js"
 import z from "zod"
 import { emptyAccount, setAccountItemAmount, takeItemFromAccounts } from "../../services/accounts.services.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
 
@@ -27,7 +27,7 @@ export const inventoryTakeParamsSchema = z.object({
     target: snowflakeSchema,
 })
 
-export class InventoryTakeFlow extends UserFlow<z.infer<typeof inventoryTakeParamsSchema>> {
+export class InventoryTakeFlow extends UserInterface<z.infer<typeof inventoryTakeParamsSchema>> {
     public override get id(): string { 
         return "account-take" 
     }
@@ -183,7 +183,7 @@ export const bulkInventoryRemoveItemParamsSchema = z.object({
     role: snowflakeSchema
 })
 
-export class BulkInventoryRemoveItemFlow extends UserFlow<z.infer<typeof bulkInventoryRemoveItemParamsSchema>> {
+export class BulkInventoryRemoveItemFlow extends UserInterface<z.infer<typeof bulkInventoryRemoveItemParamsSchema>> {
     public override get id(): string { 
         return "bulk-inventory-remove-item" 
     }
@@ -229,7 +229,7 @@ export class BulkInventoryRemoveItemFlow extends UserFlow<z.infer<typeof bulkInv
         ]
     }
 
-    protected override async success(interaction: UserInterfaceInteraction) {
+    protected async success(interaction: UserInterfaceInteraction) {
         this.disableComponents()
 
         if (!this.selectedItem) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

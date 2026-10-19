@@ -7,11 +7,11 @@ import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { createComponent } from "@/lib/ui/components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 import z from "zod"
 import { Shop } from "../../database/shops.types.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
 export const discountCodeCreateParamsSchema = z.object({
@@ -19,7 +19,7 @@ export const discountCodeCreateParamsSchema = z.object({
     amount: z.number()
 })
 
-export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof discountCodeCreateParamsSchema>> {
+export class DiscountCodeCreateFlow extends UserInterface<z.infer<typeof discountCodeCreateParamsSchema>> {
     public override get id(): string { 
         return "discount-code-create" 
     }
@@ -77,7 +77,7 @@ export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof discountCode
     }
 
 
-    protected override async success(interaction: ButtonInteraction) {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))
@@ -98,7 +98,7 @@ export class DiscountCodeCreateFlow extends UserFlow<z.infer<typeof discountCode
 }
 
 
-export class DiscountCodeRemoveFlow extends UserFlow {
+export class DiscountCodeRemoveFlow extends UserInterface {
     public override get id(): string { 
         return "discount-code-remove" 
     }
@@ -186,7 +186,7 @@ export class DiscountCodeRemoveFlow extends UserFlow {
         ]
     }
 
-    protected override async success(interaction: ButtonInteraction) {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

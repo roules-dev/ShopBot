@@ -2,9 +2,9 @@ import { AbstractConstructor } from "@/lib/types/abstraction.js"
 import { ObjectValues } from "@/lib/types/collections.js"
 import { EmbedBuilder } from "discord.js"
 import { UserInterfaceInteraction } from "../types/ui.js"
-import { EmbedUserInterface } from "./user-interfaces.js"
+import { EmbedUserInterfaceInstance } from "./user-interfaces.js"
 
-export function Multiple<TBase extends AbstractConstructor<EmbedUserInterface>>(Base: TBase) {
+export function Multiple<TBase extends AbstractConstructor<EmbedUserInterfaceInstance>>(Base: TBase) {
     abstract class Multiple extends Base {
         protected abstract readonly modes: {
             [key: string]: string

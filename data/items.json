@@ -27,7 +27,7 @@
         "name": "Basic yet very cool bread",
         "emoji": "🍞",
         "description": "A quite basic piece of bread",
-        "refCount": 2
+        "refCount": 3
     },
     "jREXpbU4e0mrY6K3RzWbY": {
         "name": "CROISSANT",
@@ -111,6 +111,6 @@
         "name": "Magic Potion",
         "emoji": "🍹",
         "description": "You don't know what it does until you try it",
-        "refCount": 1
+        "refCount": 2
     }
 }

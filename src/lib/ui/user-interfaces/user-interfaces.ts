@@ -2,21 +2,51 @@ import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { ErrorLike, ok, Result } from "@/lib/error-handling.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
 import { ActionRowBuilder, APIEmbedField, EmbedBuilder, InteractionCallbackResponse, InteractionEditReplyOptions, MessageFlags } from "discord.js"
-import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
 import { ComponentSeparator, UpdateableComponent } from "../components/extended-components.js"
+import { selectMenuComponents, UserInterfaceComponentBuilder, UserInterfaceInteraction } from "../types/ui.js"
+import { AbstractConstructor } from "@/lib/types/abstraction.js"
 
+
+
+// unify userflows and user interfaces, so that they can be used interchangeably in the future if needed
+
+export type UIConfig = Record<string, unknown> | void
 export type UIComponent = UpdateableComponent | ComponentSeparator
 
-export abstract class UserInterface<Config = void> {
+export abstract class UserInterface<Config extends UIConfig = void> {
+    protected params: Config
+
     public abstract id: string
     protected components: Map<string, UIComponent>
 
     constructor(config: Config) {
         this.components = this.getComponentsMap(this.initComponents(config))
+        this.params = config
     }
 
     protected async prepare(_interaction: UserInterfaceInteraction): Promise<Result<unknown, ErrorLike>> {
         return ok(true)
+    }
+
+    protected setup(_interaction: UserInterfaceInteraction): void {
+        this.updateComponents()
+    }
+
+    public async display(interaction: UserInterfaceInteraction) {
+        const [error] = await this.prepare(interaction)
+        if (error) {
+            await replyErrorMessage(interaction, error.message)
+            return null
+        }
+
+        this.setup(interaction)
+
+        const options = this.getInteractionUpdateOptions()
+        const response = await interaction.reply({...options, content: options.content ?? "", flags: MessageFlags.Ephemeral, withResponse: true })
+
+        this.createComponentsCollectors(response)
+
+        return response
     }
     
     protected abstract getMessage(): string 
@@ -33,7 +63,7 @@ export abstract class UserInterface<Config = void> {
 
     protected onUpdateComponents(): void {}
 
-    protected getComponentRows(): ActionRowBuilder<UserInterfaceComponentBuilder>[] {
+    private getComponentRows(): ActionRowBuilder<UserInterfaceComponentBuilder>[] {
         const rows: ActionRowBuilder<UserInterfaceComponentBuilder>[] = []
         const paginationRow = new ActionRowBuilder<UserInterfaceComponentBuilder>()
 
@@ -80,7 +110,7 @@ export abstract class UserInterface<Config = void> {
         return nonEmptyRows
     }
 
-    protected getInteractionUpdateOptions(): InteractionEditReplyOptions {
+    protected getInteractionUpdateOptions(): Omit<InteractionEditReplyOptions, "flags"> {
         return { content: this.getMessage(), components: this.getComponentRows() }
     }
 
@@ -145,69 +175,65 @@ export abstract class UserInterface<Config = void> {
     }
 }
 
-export abstract class MessageUserInterface extends UserInterface {
+// export abstract class MessageUserInterface<Config = void> extends UserInterface<Config> {
 
-    protected setup(_interaction: UserInterfaceInteraction): void {
-        this.updateComponents()
-    }
+//     protected setup(_interaction: UserInterfaceInteraction): void {
+//         this.updateComponents()
+//     }
 
-    public async display(interaction: UserInterfaceInteraction) {
-        const [error] = await this.prepare(interaction)
-        if (error) {
-            await replyErrorMessage(interaction, error.message)
-            return null
+//     public async display(interaction: UserInterfaceInteraction) {
+//         const [error] = await this.prepare(interaction)
+//         if (error) {
+//             await replyErrorMessage(interaction, error.message)
+//             return null
+//         }
+
+//         this.setup(interaction)
+
+//         const options = this.getInteractionUpdateOptions()
+//         const response = await interaction.reply({...options, content: options.content ?? "", flags: MessageFlags.Ephemeral, withResponse: true })
+
+//         this.createComponentsCollectors(response)
+
+//         return response
+//     }
+// }
+
+export function WithEmbeds<Config extends UIConfig, TBase extends AbstractConstructor<UserInterface<Config>>>(Base: TBase) {
+    abstract class WithEmbeds extends Base {
+        protected abstract embed: EmbedBuilder | null
+
+        protected override setup(interaction: UserInterfaceInteraction): void {
+            this.initEmbeds(interaction)
+
+            this.updateComponents()
+            this.updateEmbeds()
         }
 
-        this.setup(interaction)
+        protected reset() {}
 
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
+        protected override getInteractionUpdateOptions() {
+            const options = super.getInteractionUpdateOptions()
+            return {...options, embeds: this.getEmbeds() }
+        }
 
-        return response
+        protected override async updateInteraction(interaction: UserInterfaceInteraction) {
+            this.updateEmbeds()
+            super.updateInteraction(interaction)
+        }
+
+        protected getEmbeds(): EmbedBuilder[] {
+            return this.embed ? [this.embed] : []
+        }
+
+        protected abstract getEmbedFields(): APIEmbedField[] 
+
+        protected abstract initEmbeds(interaction: UserInterfaceInteraction): void
+        protected abstract updateEmbeds(): void
     }
+    
+    return WithEmbeds
 }
 
-//* do the same thing as for components but for embeds where they get intialized in the constructor ?
-export abstract class EmbedUserInterface extends MessageUserInterface {
-    protected abstract embed: EmbedBuilder | null
-
-    protected override setup(interaction: UserInterfaceInteraction): void {
-        this.initEmbeds(interaction)
-
-        this.updateComponents()
-        this.updateEmbeds()
-    }
-
-    protected reset() {}
-
-    public override async display(interaction: UserInterfaceInteraction) {
-        await this.prepare(interaction)
-
-        this.setup(interaction)
-
-        const response = await interaction.reply({ content: this.getMessage(), components: this.getComponentRows(), embeds: this.getEmbeds(), flags: MessageFlags.Ephemeral, withResponse: true })
-        this.createComponentsCollectors(response)
-
-        return response
-    }
-
-    protected override getInteractionUpdateOptions(): InteractionEditReplyOptions {
-        return { content: this.getMessage(), components: this.getComponentRows(), embeds: this.getEmbeds() }
-    }
-
-    protected override async updateInteraction(interaction: UserInterfaceInteraction) {
-        this.updateEmbeds()
-        super.updateInteraction(interaction)
-    }
-
-    protected getEmbeds(): EmbedBuilder[] {
-        return this.embed ? [this.embed] : []
-    }
-
-    protected abstract getEmbedFields(): APIEmbedField[] 
-
-    protected abstract initEmbeds(interaction: UserInterfaceInteraction): void
-    protected abstract updateEmbeds(): void
-}
-
-
+export const EmbedUserInterface = WithEmbeds(UserInterface)
+export type EmbedUserInterfaceInstance = InstanceType<typeof EmbedUserInterface>

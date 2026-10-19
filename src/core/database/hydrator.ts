@@ -5,7 +5,7 @@ import { Currency } from "@/features/currencies/database/currencies.types.js"
 import { Item } from "@/features/items/database/items.types.js"
 import { getAction } from "@/features/shops/data/product-actions/index.js"
 import { Product } from "@/features/shops/database/products.types.js"
-import { err, ok } from "@/lib/error-handling.js"
+import { err, ok, unwrapOr } from "@/lib/error-handling.js"
 import { MapValue } from "@/lib/types/collections.js"
 import { Emojiable, Identifiable, Labelled } from "@/lib/types/core.js"
 import { AwaitedObjectResultReturn } from "@/lib/types/helpers.js"
@@ -13,9 +13,17 @@ import { BrandedSnowflake } from "@/schemas/utils.js"
 import { objectEntries } from "@/utils/objects.js"
 import { AccountsDatabase, CurrenciesDatabase, ItemsDatabase, ShopsDatabase } from "./database.types.js"
 import { PrettyLog } from "@/lib/pretty-log.js"
+import { Trade } from "@/features/trade/types/trade-types.js"
 
 export type HydratedPrice = Map<NanoId, Balance<Currency>>
 export type HydratedProduct = MapValue<AwaitedObjectResultReturn<Hydrator, "fullyHydrateShop">["products"]>
+
+export type HydratedTrade = {
+    traderItems: Map<NanoId, Balance<Item>>
+    traderCurrencies: HydratedPrice
+    tradePartnerItems: Map<NanoId, Balance<Item>>
+    tradePartnerCurrencies: HydratedPrice
+}
 
 export class Hydrator {
     private currenciesDb: CurrenciesDatabase
@@ -207,5 +215,43 @@ export class Hydrator {
             currencies,
             inventory
         }) 
+    }
+
+
+    public hydrateTrade(trade: Trade): HydratedTrade {
+        const traderItems: Map<NanoId, Balance<Item>> = new Map()
+        for (const [itemId, amount] of objectEntries(trade.traderItems)) {
+            const item = this.itemsDb.get(itemId)
+            if (!item) {
+                PrettyLog.warn(`Item with id ${itemId} does not exist (trade hydration)`)
+                continue
+            }
+            
+            traderItems.set(itemId, { amount, resource: item })
+        }
+
+        const traderCurrencies: HydratedPrice = unwrapOr(this.getHydratedPrice(trade.traderCurrencies), new Map()) || new Map()
+
+
+        const tradePartnerItems: Map<NanoId, Balance<Item>> = new Map()
+        for (const [itemId, amount] of objectEntries(trade.tradePartnerItems)) {
+            const item = this.itemsDb.get(itemId)
+            if (!item) {
+                PrettyLog.warn(`Item with id ${itemId} does not exist (trade hydration)`)
+                continue
+            }
+            
+            tradePartnerItems.set(itemId, { amount, resource: item })
+        }
+        
+        const tradePartnerCurrencies: HydratedPrice = unwrapOr(this.getHydratedPrice(trade.tradePartnerCurrencies), new Map()) || new Map()
+        
+
+        return {
+            traderItems,
+            traderCurrencies,
+            tradePartnerItems,
+            tradePartnerCurrencies,
+        }
     }
 }

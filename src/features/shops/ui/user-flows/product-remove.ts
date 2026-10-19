@@ -3,7 +3,6 @@ import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { createComponent } from "@/lib/ui/components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { bold, ButtonInteraction, ButtonStyle, ChatInputCommandInteraction } from "discord.js"
 
@@ -16,9 +15,10 @@ import { Identifiable, Labelled } from "@/lib/types/core.js"
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js"
 import { Product } from "../../database/products.types.js"
 import { Shop } from "../../database/shops.types.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
-export class RemoveProductFlow extends UserFlow {
+export class RemoveProductFlow extends UserInterface {
     public override get id(): string { 
         return "remove-product" 
     }

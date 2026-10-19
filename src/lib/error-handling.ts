@@ -35,3 +35,12 @@ export function err<const N extends string, E extends ErrorLike<N>, T extends Re
 export function assertNeverReached(_: never): never {
     throw new Error("Did not expect to get here")
 }
+
+
+export function unwrapOr<S, E extends ErrorLike>(result: Result<S, E>, defaultValue: S): S {
+    const [error, value] = result
+    if (error) {
+        return defaultValue
+    }
+    return value || defaultValue
+}

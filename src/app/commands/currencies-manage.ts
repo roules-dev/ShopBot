@@ -1,7 +1,7 @@
 import { t } from "@/core/i18n/i18n.js"
 import { CURRENCY_NAME_MAX_LENGTH } from "@/features/currencies/schemas/currencies.schemas.js"
 import { createCurrencyFlow } from "@/features/currencies/ui/user-flows/currency-create.js"
-import { editCurrencyParamsSchema, EditCurrencyFlow } from "@/features/currencies/ui/user-flows/currency-edit.js"
+import { EditCurrencyFlow, editCurrencyParamsSchema } from "@/features/currencies/ui/user-flows/currency-edit.js"
 import { CurrencyRemoveFlow } from "@/features/currencies/ui/user-flows/currency-remove.js"
 import { replyErrorMessage } from "@/lib/discord/answer-interactions.js"
 import { validateCommandOptions } from "@/lib/discord/command-options-validation.js"
@@ -67,7 +67,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
             await createCurrencyFlow(interaction)
             break
         case "remove": {
-            new CurrencyRemoveFlow().start(interaction)
+            new CurrencyRemoveFlow().display(interaction)
             break 
         }
         default:
@@ -75,7 +75,7 @@ export async function execute(_client: Client, interaction: ChatInputCommandInte
                 const [error, options] = validateCommandOptions(interaction.options, editCurrencyParamsSchema, { kind: subCommand })
                 if (error) return await replyErrorMessage(interaction, t("errorMessages.insufficientParameters"))
 
-                new EditCurrencyFlow(options).start(interaction)
+                new EditCurrencyFlow(options).display(interaction)
                 return
             }
 

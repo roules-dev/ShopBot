@@ -17,7 +17,7 @@
         "start:ts": "npm run prebuild && tsx --env-file=.env src/index.ts --use-ts",
         "start": "npm run build && npm run serve",
         "serve": "node --env-file=.env --enable-source-maps dist/index.js",
-        "deploy": "node --env-file=.env ./dist/app/deploy-commands.js",
+        "deploy": "npm run build && node --env-file=.env ./dist/app/deploy-commands.js",
         "scratch": "npx tsx src/scratch.ts",
         
         "test": "vitest",

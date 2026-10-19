@@ -7,13 +7,13 @@ import { Identifiable } from "@/lib/types/core.js"
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js"
 import { createComponent } from "@/lib/ui/components/extended-components.js"
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js"
-import { UserFlow } from "@/lib/ui/user-flows/user-flow.js"
 import { formattedEmojiableName } from "@/utils/formatting.js"
 import { ButtonInteraction, ButtonStyle, ChatInputCommandInteraction, bold } from "discord.js"
 import { Shop } from "../../database/shops.types.js"
+import { UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js"
 
 
-export class ShopRemoveFlow extends UserFlow {
+export class ShopRemoveFlow extends UserInterface {
     public override get id(): string { 
         return "shop-remove" 
     }
@@ -64,7 +64,7 @@ export class ShopRemoveFlow extends UserFlow {
 
 
 
-    protected override async success(interaction: ButtonInteraction) {
+    protected async success(interaction: ButtonInteraction) {
         this.disableComponents()
 
         if (!this.selectedShop) return updateAsErrorMessage(interaction, t("errorMessages.insufficientParameters"))

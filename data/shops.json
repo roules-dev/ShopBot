@@ -85,6 +85,12 @@
                 "price": {
                     "7kiuf_CPO2ocrr75mTXuV": 12
                 }
+            },
+            "Z9D1hHHWKN8-uFN7Unr_j": {
+                "itemId": "9x2jf1OhnJxF1uWYXjS2Q",
+                "price": {
+                    "7kiuf_CPO2ocrr75mTXuV": 12
+                }
             }
         }
     },
@@ -154,6 +160,13 @@
                 "price": {
                     "0f2SNbp60vAwWjhKjRR0u": 0.8
                 }
+            },
+            "hYnqnQcKjaPvs1DHtnpFe": {
+                "itemId": "w9zcCjKIt-yDjhXi2TLMB",
+                "price": {
+                    "M2JfD9vMX2WzslISmBh2U": 12
+                },
+                "stock": 12
             }
         }
     },
