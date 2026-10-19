@@ -1,11 +1,11 @@
 import { HydratedProduct } from "@/core/database/hydrator.js";
 import { HYDRATOR } from "@/core/database/init-databases.js";
 import { t } from "@/core/i18n/i18n.js";
+import { getCurrencies } from "@/core/services/currencies/currencies.services.js";
 import { getItems } from "@/core/services/items/items.services.js";
 import { updateProduct } from "@/core/services/shops/products.services.js";
 import { getShops } from "@/core/services/shops/shops.services.js";
 import { NanoId } from "@/database/database.types.js";
-import { getPriceElementComponents } from "@/features/currencies/ui/components/price-builder.js";
 import { Item } from "@/features/items/database/items.types.js";
 import { errorFormat, updateAsErrorMessage, updateAsSuccessMessage } from "@/lib/discord/answer-interactions.js";
 import { err, ok } from "@/lib/error-handling.js";
@@ -13,6 +13,7 @@ import { Identifiable } from "@/lib/types/core.js";
 import { ExtendedButtonComponent } from "@/lib/ui/components/button.js";
 import { ComponentSeparator, createComponent } from "@/lib/ui/components/extended-components.js";
 import { showConfirmationModal } from "@/lib/ui/components/modals.js";
+import { getSelectionBuilder } from "@/lib/ui/components/selection-builder.js";
 import { ExtendedStringSelectMenuComponent } from "@/lib/ui/components/string-select-menu.js";
 import { UserInterfaceInteraction } from "@/lib/ui/types/ui.js";
 import { UIComponent, UserInterface } from "@/lib/ui/user-interfaces/user-interfaces.js";
@@ -202,18 +203,18 @@ export class EditProductPriceFlow extends BaseEditProductFlow<void> {
         if (!shopSelect || !productSelect || !submit || !("comp" in submit)) throw new Error("Unxpected Error loading EditPriceFlow components")
 
         const strings = {
-            addToPrice: t("userFlows.productAdd.components.priceElement.addToPrice"),
+            selectMenuPlaceholder: t("userFlows.productAdd.components.priceElement.addToPrice"),
             editAmountModalTitle: t("userFlows.productAdd.components.editAmountModalTitle"),
-            priceElement: t("userFlows.productAdd.components.priceElement.priceElement"),
-            priceElementRemove: t("userFlows.productAdd.components.priceElement.remove"),
-            priceElementSelect: t("userFlows.productAdd.components.priceElement.select"),
-            noPriceElementSelected: t("userFlows.productAdd.components.priceElement.noPriceElementSelected")
+            editAmountModalInputLabel: t("userFlows.productAdd.components.editAmountModalInputLabel")
         }
 
-        const { addPriceWithCurrencySelect, removePriceElementButton } = getPriceElementComponents(
+        const addPriceWithCurrencySelect = getSelectionBuilder(
             this.id, 
             this.price, 
             strings,
+
+            getCurrencies(),
+
             (price) => this.price = price, 
             (interaction) => this.updateInteraction(interaction)
         )
@@ -227,8 +228,6 @@ export class EditProductPriceFlow extends BaseEditProductFlow<void> {
                 this.selectedProduct != null && 
                 (this.price == null || Object.keys(this.price).length < MAX_PRICE_LENGTH))
             ),
-            createComponent(removePriceElementButton, () => removePriceElementButton.toggle(this.price != null && Object.keys(this.price).length > 0)),
-
             createComponent(submit.comp, () => submit.comp.toggle(this.selectedShop != null && this.selectedProduct != null && this.price != null))
         ]
     }

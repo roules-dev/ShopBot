@@ -9,6 +9,7 @@ import { currencyRawSchema } from "@/features/currencies/schemas/currencies.sche
 import { itemRawSchema } from "@/features/items/schemas/items.schemas.js"
 import { shopRawSchema } from "@/features/shops/schemas/shop.schemas.js"
 import { nanoIdSchema, snowflakeSchema } from "@/schemas/utils.js"
+import { tradePayloadSchema } from "@/features/trade/schemas/trade.schema.js"
 
 checkDbVersion()
 
@@ -16,18 +17,21 @@ const accountsDatabasePath = "./data/accounts.json"
 const currenciesDatabasePath = "./data/currencies.json"
 const shopsDatabasePath = "./data/shops.json"
 const itemsDatabasePath = "./data/items.json"
+const tradesDatabasePath = "./data/trades.json"
 
 const accountsDatabaseRaw = JSON.parse(await fs.readFile(accountsDatabasePath, "utf-8"))
 const currenciesDatabaseRaw = JSON.parse(await fs.readFile(currenciesDatabasePath, "utf-8"))
 const shopsDatabaseRaw = JSON.parse(await fs.readFile(shopsDatabasePath, "utf-8"))
 const itemsDatabaseRaw = JSON.parse(await fs.readFile(itemsDatabasePath, "utf-8"))
+const tradesDatabaseRaw = JSON.parse(await fs.readFile(tradesDatabasePath, "utf-8"))
 
 const accountsDatabase = new JsonDatabase(accountsDatabaseRaw, accountsDatabasePath, accountRawSchema, snowflakeSchema)
 const currenciesDatabase = new JsonDatabase(currenciesDatabaseRaw, currenciesDatabasePath, currencyRawSchema, nanoIdSchema)
 const shopsDatabase = new JsonDatabase(shopsDatabaseRaw, shopsDatabasePath, shopRawSchema, nanoIdSchema)
 const itemsDatabase = new JsonDatabase(itemsDatabaseRaw, itemsDatabasePath, itemRawSchema, nanoIdSchema)
+const tradesDatabase = new JsonDatabase(tradesDatabaseRaw, tradesDatabasePath, tradePayloadSchema, nanoIdSchema)
 
-export { accountsDatabase, currenciesDatabase, itemsDatabase, shopsDatabase }
+export { accountsDatabase, currenciesDatabase, itemsDatabase, shopsDatabase, tradesDatabase }
 
 const HYDRATOR = new Hydrator(currenciesDatabase, itemsDatabase, shopsDatabase, accountsDatabase)
 

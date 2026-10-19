@@ -109,7 +109,7 @@ export class AddProductFlow<S extends z.infer<typeof addProductParamsSchema>> ex
             editAmountModalInputLabel: t("userFlows.productAdd.components.editAmountModalInputLabel")
         }
 
-        const { selectionBuilderSelectMenu: addPriceWithCurrencySelect } = getSelectionBuilder(
+        const addPriceWithCurrencySelect= getSelectionBuilder(
             this.id, 
             this.price, 
             strings,

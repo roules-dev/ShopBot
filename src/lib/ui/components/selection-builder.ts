@@ -64,7 +64,5 @@ export function getSelectionBuilder(
         }
     )
     
-    return {
-        selectionBuilderSelectMenu
-    }
+    return selectionBuilderSelectMenu
 }

@@ -57,6 +57,10 @@ const API_ERRORS = {
         status: 404
     },
 
+    TradeDoesNotExist: {
+        message: "Trade does not exist",
+        status: 404
+    },
 
     InvalidSettingType: {
         message: "Provided setting type is invalid",

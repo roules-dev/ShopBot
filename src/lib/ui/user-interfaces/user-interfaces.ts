@@ -175,30 +175,6 @@ export abstract class UserInterface<Config extends UIConfig = void> {
     }
 }
 
-// export abstract class MessageUserInterface<Config = void> extends UserInterface<Config> {
-
-//     protected setup(_interaction: UserInterfaceInteraction): void {
-//         this.updateComponents()
-//     }
-
-//     public async display(interaction: UserInterfaceInteraction) {
-//         const [error] = await this.prepare(interaction)
-//         if (error) {
-//             await replyErrorMessage(interaction, error.message)
-//             return null
-//         }
-
-//         this.setup(interaction)
-
-//         const options = this.getInteractionUpdateOptions()
-//         const response = await interaction.reply({...options, content: options.content ?? "", flags: MessageFlags.Ephemeral, withResponse: true })
-
-//         this.createComponentsCollectors(response)
-
-//         return response
-//     }
-// }
-
 export function WithEmbeds<Config extends UIConfig, TBase extends AbstractConstructor<UserInterface<Config>>>(Base: TBase) {
     abstract class WithEmbeds extends Base {
         protected abstract embed: EmbedBuilder | null
